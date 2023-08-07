@@ -5,10 +5,13 @@
       "frontend": {
         "entrypoint": "dist/index.html"
       },
-      "source": [
-        "dist/"
-      ],
+      "source": ["dist/"],
       "type": "assets"
+    },
+    "vote1_backend": {
+      "candid": "src/vote1_backend/vote1_backend.did",
+      "package": "vote1_backend",
+      "type": "rust"
     }
   },
   "defaults": {
@@ -22,9 +25,7 @@
       "type": "ephemeral"
     },
     "ic": {
-      "providers": [
-        "https://mainnet.dfinity.network"
-      ],
+      "providers": ["https://mainnet.dfinity.network"],
       "type": "persistent"
     }
   },

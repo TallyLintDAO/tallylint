@@ -1,0 +1,30 @@
+{
+  "canisters": {
+    "vote1_backend": {
+      "candid": "src/vote1_backend/vote1_backend.did",
+      "package": "vote1_backend",
+      "type": "rust"
+    },
+    "vote1_frontend": {
+      "dependencies": [
+        "vote1_backend"
+      ],
+      "frontend": {
+        "entrypoint": "src/vote1_frontend/src/index.html"
+      },
+      "source": [
+        "src/vote1_frontend/assets",
+        "dist/vote1_frontend/"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
