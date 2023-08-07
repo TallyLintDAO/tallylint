@@ -1,0 +1,9 @@
+# Various IDEs and Editors
+.idea/
+**/*~
+
+# frontend
+node_modules
+dist/
+package-lock.json
+

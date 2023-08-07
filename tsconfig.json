@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "skipLibCheck": true,
+    "noImplicitAny":  false,
+    "jsx": "preserve",
+    "sourceMap": true,
+    "allowJs": true,
+    "checkJs": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom"],
+    "useDefineForClassFields": true,
+    "types": ["vite/client"],
+    "paths": {
+      "@/*": ["frontend/*"]
+    },
+    "baseUrl": ".",
+    "importsNotUsedAsValues": "error",
+    "isolatedModules": true
+  },
+  "include": [
+    "frontend/**/*.ts",
+    "frontend/**/*.d.ts",
+    "frontend/**/*.tsx",
+    "frontend/**/*.vue",
+    "frontend/types/*.d.ts"
+  ]
+}
