@@ -7,3 +7,6 @@ node_modules
 dist/
 package-lock.json
 
+# binary file , debug file 
+target
+
