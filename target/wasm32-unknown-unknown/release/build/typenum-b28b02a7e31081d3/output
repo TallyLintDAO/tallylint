@@ -1,3 +1,0 @@
-cargo:rerun-if-changed=build/main.rs
-cargo:rustc-env=TYPENUM_BUILD_CONSTS=/mnt/d/Code/IC/icrent-test/target/wasm32-unknown-unknown/release/build/typenum-b28b02a7e31081d3/out/consts.rs
-cargo:rustc-env=TYPENUM_BUILD_OP=/mnt/d/Code/IC/icrent-test/target/wasm32-unknown-unknown/release/build/typenum-b28b02a7e31081d3/out/op.rs
