@@ -1,4 +1,11 @@
+import 'element-plus/dist/index.css'; // element plus css
+
 import { createApp } from "vue"
 import App from "./App.vue"
+import router from './router';
 
-createApp(App).mount("#root")
+
+const app = createApp(App);
+app.use(router);
+
+app.mount('#app');
