@@ -8,6 +8,7 @@
 <script lang="ts" setup>
     import Navigator from '@/components/navigator/Navigator.vue';
 
+
 </script>
 
 <style lang="scss">

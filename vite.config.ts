@@ -1,4 +1,5 @@
 import { defineConfig, loadEnv, UserConfig } from 'vite';
+import vue from "@vitejs/plugin-vue"
 import path from 'path';
 import fs from 'fs';
 
@@ -44,17 +45,12 @@ export default defineConfig(({ command, mode }) => {
     process.env.network = network;
     process.env.location = location;
 
-    if (configMode !== ConfigMode.production) {
-        // 开发模式总是有个 warning 不想看到
-        canistersAlias['vue-i18n'] = 'vue-i18n/dist/vue-i18n.cjs.js';
-    }
     mode = getMode(configMode);
     const isBuild = mode === 'production';
     const common: UserConfig = {
-        publicDir: 'public', // 该目录下文件会原封不动存放至 dist
         mode, // 运行模式
         define: {
-            'process.env.NODE_ENV': JSON.stringify(getNodeEnv(configMode)), // 接口文件里面需要用来判断 莫名其妙要加双引号
+            // 'process.env.NODE_ENV': getNodeEnv(configMode), //接口文件里面需要用来判断 process.env.NODE_ENV值为production的时候会导致热更新失效
             'process.env': process.env, // 环境变量
         },
         plugins: [...createVitePlugins(viteEnv, isBuild)], // 插件
@@ -63,7 +59,6 @@ export default defineConfig(({ command, mode }) => {
                 ...canistersAlias, // canister 接口文件位置的映射
                 '@': path.resolve(__dirname, 'frontend'), // @符号要解析
                 '~/': `${path.resolve(__dirname, 'frontend')}/`, // element-plus 可能要用
-                // "vue-i18n": "vue-i18n/dist/vue-i18n.cjs.js", // 浏览器总是有 warning，这样就不显示了
             },
             extensions: ['.js', '.ts', '.jsx', '.tsx', '.vue'], // import 可以省略的拓展名
         },
@@ -106,7 +101,6 @@ export default defineConfig(({ command, mode }) => {
         envDir: 'env',
         clearScreen: false,
     };
-
     console.log(`process.env.NODE_ENV -> ${common.define['process.env.NODE_ENV']}`);
 
     if (!isBuild) {
