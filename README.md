@@ -1,3 +1,5 @@
+.dfx 文件夹下的部署文件还未生成.dont know if the gitignore is right yet.
+
 todo:可能的依赖项: dfx.json  
 
 ```
