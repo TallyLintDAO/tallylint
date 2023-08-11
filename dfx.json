@@ -19,6 +19,16 @@
       "packtool": ""
     }
   },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    },
+    "ic": {
+      "host": "https://ic0.app",
+      "wallet": "~/ic/wallet.json"
+    }
+  },
 
   "version": 1
 }
