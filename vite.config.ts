@@ -1,5 +1,4 @@
 import { defineConfig, loadEnv, UserConfig } from 'vite';
-import vue from "@vitejs/plugin-vue"
 import path from 'path';
 import fs from 'fs';
 
@@ -58,7 +57,7 @@ export default defineConfig(({ command, mode }) => {
             alias: {
                 ...canistersAlias, // canister 接口文件位置的映射
                 '@': path.resolve(__dirname, 'frontend'), // @符号要解析
-                '~/': `${path.resolve(__dirname, 'frontend')}/`, // element-plus 可能要用
+                // '~/': `${path.resolve(__dirname, 'frontend')}/`, // element-plus 可能要用
             },
             extensions: ['.js', '.ts', '.jsx', '.tsx', '.vue'], // import 可以省略的拓展名
         },
@@ -87,7 +86,7 @@ export default defineConfig(({ command, mode }) => {
                     manualChunks: {
                         // 每个 '键' 都表示一个分包块，'值' 包含列出的模块及其所有依赖项
                         vue: ['vue', 'vue-router', 'pinia'], // 目前打包还是这个最小，还没有 bug
-                        'element-plus': ['element-plus'],
+                        'quasar': ['quasar'],
                     },
                 },
             },

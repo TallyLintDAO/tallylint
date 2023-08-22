@@ -1,12 +1,13 @@
 <template>
     <div class="home-container">
         <Navigator/>
-        this is home
+        <NNS/>
     </div>
 </template>
 
 <script lang="ts" setup>
     import Navigator from '@/components/navigator/Navigator.vue';
+    import NNS from './modules/NNS.vue';
 
 
 </script>
