@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import os
 from dotenv import load_dotenv
 import openai
@@ -29,9 +23,9 @@ def askgpt(question, chat_log=None):
     chat_log.append({'role': 'assistant', 'content': answer})
     return answer, chat_log
 
-prompt='Why did the chicken cross the road?'
+prompt='Q:   Why did the chicken cross the road?'
 print(prompt)
 answer, log = askgpt(prompt)
 
-print(answer)
+print('A:  '+answer)
 print(log)
