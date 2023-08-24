@@ -29,6 +29,9 @@ def askgpt(question, chat_log=None):
     chat_log.append({'role': 'assistant', 'content': answer})
     return answer, chat_log
 
-answer, log = askgpt('Why did the chicken cross the road?')
+prompt='Why did the chicken cross the road?'
+print(prompt)
+answer, log = askgpt(prompt)
+
 print(answer)
 print(log)
