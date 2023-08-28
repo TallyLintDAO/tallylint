@@ -1,14 +1,10 @@
 import os
 from dotenv import load_dotenv
 import openai
-
-
 load_dotenv()
 OPENAI_KEY="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"
 # Set openai.api_key to the OPENAI environment variable
 openai.api_key = OPENAI_KEY
-
-
 completion = openai.ChatCompletion()
 
 def askgpt(question, chat_log=None):
