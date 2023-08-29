@@ -13,4 +13,5 @@ candid = "0.8"
 ic-cdk = "0.7"
 ic-cdk-timers = "0.1" # Feel free to remove this dependency if you don't need timers
 # openai_api_rust = "0.1.8"
-chatgpt_rs = "1.2.0"
+# chatgpt_rs = "1.2.0"
+# 上面这个包造成大量的编译错误,目前和ic-cdk有兼容问题,单独跑chagpt_rs可以调用chatgpt
