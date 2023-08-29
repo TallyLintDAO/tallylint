@@ -1,3 +1,6 @@
+deploy on ic-chain doc :  
+https://internetcomputer.org/docs/current/tutorials/deploy_sample_app#what-this-does
+
 .dfx 文件夹下的部署文件还未生成.dont know if the gitignore is right yet.
 
 

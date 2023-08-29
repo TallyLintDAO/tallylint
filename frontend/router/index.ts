@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import Home from '@/views/home/Home.vue';
 import App from '@/views/nns/Home.vue';
-import NNS from '@/views/nns/modules/nns.vue';
+import NNS from '@/views/nns/modules/NNS.vue';
 import errors from './modules/errors';
 
 const routes: Array<RouteRecordRaw> = [

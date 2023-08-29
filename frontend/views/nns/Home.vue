@@ -12,11 +12,7 @@
             </q-toolbar>
         </q-header>
 
-        <q-drawer v-model="leftDrawerOpen"
-                  side="left"
-                  show-if-above
-                  :breakpoint="430"
-                  elevated>
+        <q-drawer v-model="leftDrawerOpen" side="left" show-if-above :breakpoint="430" elevated>
             <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px">
                 <div class="absolute-bottom bg-transparent">
                     <q-avatar size="56px" class="q-mb-sm">
@@ -73,23 +69,23 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref } from 'vue'
-    import Navigator from '@/components/navigator/Navigator.vue';
-    import NNS from './modules/NNS.vue';
+import { ref } from 'vue'
+import Navigator from '@/components/navigator/Navigator.vue';
+import NNS from './modules/NNS.vue';
 
-    const leftDrawerOpen = ref(false)
-    const toggleLeftDrawer = ()=> {
-        leftDrawerOpen.value = !leftDrawerOpen.value
-    }
+const leftDrawerOpen = ref(false)
+const toggleLeftDrawer = () => {
+    leftDrawerOpen.value = !leftDrawerOpen.value
+}
 
 </script>
 
 <style lang="scss">
-    .home-container {
-        /*background-color: rgb(246, 246, 246);*/
-        min-height: 100vh;
-        /*color: black;*/
-        /*width: 100%;*/
-        /*height: 100%;*/
-    }
+.home-container {
+    /*background-color: rgb(246, 246, 246);*/
+    min-height: 100vh;
+    /*color: black;*/
+    /*width: 100%;*/
+    /*height: 100%;*/
+}
 </style>
