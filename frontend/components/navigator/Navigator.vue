@@ -10,7 +10,7 @@
                        @mouseover="showing=true"
                        @mouseout="showing=false">
                     <q-menu v-model="showing">
-                        <q-item clickable v-close-popup>
+                        <q-item clickable v-close-popup="true">
                             <q-item-section @click="onLogOut">Logout</q-item-section>
                         </q-item>
                     </q-menu>
