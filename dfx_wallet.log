@@ -1,0 +1,44 @@
+Helper commands to manage the user's cycles wallet
+
+Usage: dfx wallet [OPTIONS] <COMMAND>
+
+Commands:
+  addresses             Print wallet's address book
+  add-controller        Add a wallet controller
+  authorize             Authorize a wallet custodian
+  balance               Get the cycle balance of the selected Identity's cycles wallet
+  controllers           List the wallet's controllers
+  custodians            List the wallet's custodians
+  deauthorize           Deauthorize a wallet custodian
+  name                  Get wallet name
+  redeem-faucet-coupon  Redeem a code at the cycles faucet
+  remove-controller     Remove a wallet controller
+  send                  Send cycles to another cycles wallet
+  set-name              Set wallet name
+  upgrade               Upgrade the wallet's Wasm module to the current Wasm bundled with DFX
+  help                  Print this message or the help of the given subcommand(s)
+
+Options:
+      --network <NETWORK>
+          Override the compute network to connect to. By default, the local network is used. A valid
+          URL (starting with `http:` or `https:`) can be used here, and a special ephemeral network
+          will be created specifically for this request. E.g. "http://localhost:12345/" is a valid
+          network name
+  -v, --verbose...
+          Displays detailed information about operations. -vv will generate a very large number of
+          messages and can affect performance
+  -q, --quiet...
+          Suppresses informational messages. -qq limits to errors only; -qqqq disables them all
+      --log <LOGMODE>
+          The logging mode to use. You can log to stderr, a file, or both [default: stderr]
+          [possible values: stderr, tee, file]
+      --logfile <LOGFILE>
+          The file to log to, if logging to a file (see --logmode)
+      --identity <IDENTITY>
+          The user identity to run this command as. It contains your principal as well as some
+          things DFX associates with it like the wallet [env: DFX_IDENTITY=]
+      --provisional-create-canister-effective-canister-id <PRINCIPAL>
+          The effective canister id for provisional canister creation must be a canister id in the
+          canister ranges of the subnet on which new canisters should be created
+  -h, --help
+          Print help
