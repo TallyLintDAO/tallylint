@@ -165,3 +165,6 @@ https://coinledger.io/blog/how-to-report-cryptocurrency-on-taxes
 Tax reporting in the age of cryptocurrency
 Getting ready for cryptocurrency tax regulation
 https://www2.deloitte.com/us/en/pages/tax/articles/cryptocurrency-tax-reporting.html
+
+tax rule of IRS
+![Alt text](/assets_for_doc/image2.png)
