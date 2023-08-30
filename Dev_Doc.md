@@ -140,23 +140,23 @@ curl -v -o test.json https://sdk.dfinity.org/manifest.json
 discus on tax report: 
  https://forum.dfinity.org/t/tax-reports-on-internet-computer/22356/6
 
- leger账本简介:
- https://internetcomputer.org/docs/current/developer-docs/integrations/ledger/
- Ledger canister
- https://internetcomputer.org/docs/current/references/ledger
- dfx ledger命令
- https://internetcomputer.org/docs/current/developer-docs/integrations/ledger/interact-with-ledger
- 本地leger模拟:
- https://internetcomputer.org/docs/current/developer-docs/integrations/ledger/ledger-local-setup
+ leger账本简介:  
+ https://internetcomputer.org/docs/current/developer-docs/integrations/ledger/  
+ Ledger canister  
+ https://internetcomputer.org/docs/current/references/ledger  
+ dfx ledger命令  
+ https://internetcomputer.org/docs/current/developer-docs/integrations/ledger/interact-with-ledger  
+ 本地leger模拟:  
+ https://internetcomputer.org/docs/current/developer-docs/integrations/ledger/ledger-local-setup  
 
-Crypto tax reports in under 20 minutes:
-https://koinly.io/
-Koinly calculates your cryptocurrency taxes and helps you reduce them for next year. Simple & Reliable.
+Crypto tax reports in under 20 minutes:  
+https://koinly.io/  
+Koinly calculates your cryptocurrency taxes and helps you reduce them for next year. Simple & Reliable.  
 
 PwC Annual 
 Global Crypto 
 Tax Report 2022
-https://www.pwc.com/gx/en/financial-services/pdf/global-crypto-tax-report-2022.pdf
+https://www.pwc.com/gx/en/financial-services/pdf/global-crypto-tax-report-2022.pdf  
 
 How to Report Crypto on Your Taxes (Step-By-Step)
 https://coinledger.io/blog/how-to-report-cryptocurrency-on-taxes
