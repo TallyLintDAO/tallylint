@@ -1,4 +1,5 @@
 Todos: 
+0. 把github仓库弄好，网址弄好，就可以交grant了
 1. dfx.json 前端有个dependecies选项.不知道要不要关联上.  
 待测试
 
