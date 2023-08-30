@@ -1,4 +1,2 @@
 [workspace]
-members = [
-    "src/vote1_backend",
-]
+members = ["backend"]

@@ -2,7 +2,7 @@
 .json文件里面不允许注释?
 
 assets为前端文件
-vote1_backend 为后端文件
+backend 为后端文件
 
 这是默认的前端格式:
 ```json

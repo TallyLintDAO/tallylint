@@ -8,9 +8,9 @@
       "source": ["dist/"],
       "type": "assets"
     },
-    "vote1_backend": {
-      "candid": "src/vote1_backend/vote1_backend.did",
-      "package": "vote1_backend",
+    "backend": {
+      "candid": "backend/backend.did",
+      "package": "backend",
       "type": "rust"
     }
   },

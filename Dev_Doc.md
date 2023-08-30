@@ -1,3 +1,6 @@
+Todos: dfx.json 前端有个dependecies选项.不知道要不要关联上.  
+待测试
+
 ## Canister deploy on ic-chain and update
 deploy on ic-chain doc :  
 https://internetcomputer.org/docs/current/tutorials/deploy_sample_app#what-this-does
@@ -6,11 +9,13 @@ https://internetcomputer.org/docs/current/tutorials/deploy_sample_app#what-this-
 dfx deploy --network ic --with-cycles 1000000000000
 # 查询自己还有多少 cycles
 dfx wallet --network ic balance
+#查询自己正在用的是哪个钱包:todo 
+
 ```
 
 
 
-
+### update canister code : 
 以后修改了代码要升级不用重新deploy指令,  
 使用 upgrade指令, 要收费   
 升级罐子指南:  
@@ -22,7 +27,7 @@ https://internetcomputer.org/docs/current/developer-docs/gas-cost
 ```bash
 # 另外如果只执行 
 dfx deploy
-# 隐藏默认参数 --netwrok local . 就 不管有没有部署到ic主网上,都可以输入这个本地测试.
+# **隐藏默认参数 --netwrok local . 就 不管有没有部署到ic主网上,都可以输入这个本地测试**.
 
 ```
 
@@ -36,12 +41,12 @@ dfx deploy
   Frontend canister via browser
     assets: https://x63j6-hqaaa-aaaal-acyoa-cai.icp0.io/
   Backend canister via Candid interface:
-    vote1_backend: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=xz2pk-kiaaa-aaaal-acyoq-cai
+    backend: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=xz2pk-kiaaa-aaaal-acyoq-cai
 
 
 ```
 # 生成后端文件供罐子使用: 
-dfx deploy vote1_backend
+dfx deploy backend
 # frontend
 dfx deploy assets
 
@@ -57,7 +62,7 @@ todo:可能的依赖项: dfx.json
 ```
  "vote1_frontend": {
       "dependencies": [
-        "vote1_backend"
+        "backend"
       ],
       "frontend": {
         "entrypoint": "src/vote1_frontend/src/index.html"
