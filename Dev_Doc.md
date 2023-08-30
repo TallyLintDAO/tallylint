@@ -1,5 +1,7 @@
-Todos: dfx.json 前端有个dependecies选项.不知道要不要关联上.  
+Todos: 
+1. dfx.json 前端有个dependecies选项.不知道要不要关联上.  
 待测试
+
 
 ## Canister deploy on ic-chain and update
 deploy on ic-chain doc :  
@@ -16,10 +18,21 @@ dfx wallet --network ic balance
 
 
 ### update canister code : 
-以后修改了代码要升级不用重新deploy指令,  
+以后修改了代码要升级不用重新deploy,而是:  
 使用 upgrade指令, 要收费   
+1. Making your build reproducible: 简单说就是上网了的罐子代码都有一个SHA256. 用户可以随时校验. 自治.和对用户代码安全的一种功能.  **allowing for users to determine if a canister's contents have been edited or changed.**  
+这个投票权(determine)很好.很有去中心的概念.  
+操作指南: https://internetcomputer.org/docs/current/developer-docs/backend/reproducible-builds
+建议的是用docker或者Nix搭建持续集成(CI),使得这个上链的code是reproducible的.->目的是让用户自治和可信
+2. Once a canister has been deployed to the mainnet, the only way for new versions of the canister's code to be shipped is through planned upgrades.
 升级罐子指南:  
 https://internetcomputer.org/docs/current/developer-docs/backend/motoko/upgrading  
+
+IC上下文中的专指名称:Metrics: 
+1. gain insight into a wide range of information regarding your canister's production services  
+2. learn about your canister's statistics and productivity.  
+
+
 
 cycles的收费规则:  
 https://internetcomputer.org/docs/current/developer-docs/gas-cost
@@ -173,3 +186,70 @@ https://www2.deloitte.com/us/en/pages/tax/articles/cryptocurrency-tax-reporting.
 
 tax rule of IRS
 ![Alt text](/assets_for_doc/image2.png)
+
+
+
+## ic-rust-dev-doc
+
+
+### IC-rust中的: Globally mutable states
+抽象就是Java中的ThreadLocal. 不同services如加购物车,下订单都可以来操作这个变量.
+如把用户的认证和姓名存进去TL中,各个services可以随意CRUD.
+
+"Rust's design makes it difficult to global mutable variables."
+可能是因为线程并发安全等考虑.maybe
+反正就是语法丑一点,也许可以优化,todo~
+
+### Most of the code that depends on the System API should go into the main file. ?
+Canister code should be target-independent, so Most of the code that depends on the System API should go into the main file.   
+ but why ? 
+
+ good approach of using ic-stable (its OS persistance)
+ ![Alt text](/assets_for_doc/image_ic_stable.png)
+
+
+### Using variant types to indicate error cases
+
+```rust
+type CreateEntityResult = variant {
+  Ok  : record { entity_id : EntityId; };
+  Err : opt variant {
+    EntityAlreadyExists;
+    NoSpaceLeftInThisShard;
+  }
+};
+service : {
+  create_entity : (EntityParams) -> (CreateEntityResult);
+}
+```
+
+### DB on chain of canisters
+Stable variables vs flexible variables  
+Stable variables are global variables that the system **preserves across upgrades**. For example, a user database should probably be stable.  
+
+Flexible variables are global variables that the system **discards on code upgrade**. For example, it is reasonable to make a cache flexible if keeping this cache hot is not critical for your product.  
+
+#### DB is not use traditional SQL and specific DBMS, it use direct rust
+
+good practice : 
+1. "Putting all global variables in one place"    
+maybe just like putting all data to one DB is fine .  
+It is best practice to store all global variables privately in a single file; **the canister main file.**(recall the document says OS syscall use in main is better)  
+2. It is also recommended that you add comments that within your code that specify which variables are stable, 
+
+#### ic-DB toturial : good article!
+https://mmapped.blog/posts/14-stable-structures.html
+
+https://github.com/dfinity/stable-structures#readme
+
+## Candid Tips: 
+1. Making the .did file the canister's source of truth
+Your Candid file should be the main source of documentation for people who want to interact with your canister,
+frontend candid also vise-versa.  
+candid ref doc : https://internetcomputer.org/docs/current/references/candid-ref  
+
+
+
+
+
+

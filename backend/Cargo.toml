@@ -6,11 +6,24 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = [
+  "cdylib",
+] #  necessary to compile this Rust program into WebAssembly module.
+
 
 [dependencies]
-candid = "0.8"
+candid = "0.8" # for abstraction from backend language . some kind of middle language . decoupling 
+# example : rust-backend -> did code  ; python-backend -> did code .
+
+# The core of Rust CDK :
 ic-cdk = "0.7"
 ic-cdk-timers = "0.1" # Feel free to remove this dependency if you don't need timers
+
+
+# ic-DB : called "stable memory" 
+ic-cdk-macros = "0.6.8"
+ic-stable-structures = "0.5.6"
+
+
 # openai_api_rust = "0.1.8"
 # chatgpt_rs = "1.2.0" # 这个包造成大量的编译错误,目前和ic-cdk有兼容问题,单独跑chagpt_rs可以跑通
