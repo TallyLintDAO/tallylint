@@ -450,5 +450,69 @@ candid ref doc : https://internetcomputer.org/docs/current/references/candid-ref
 
 
 
+# Ledger-api on ic-main-chain
+https://ledger-api.internetcomputer.org/swagger-ui/
 
 
+
+# Crypto-Tax
+## How to Report Crypto on Your Taxes
+1. To report your crypto taxes, keep records of all of your cryptocurrency transactions from the year — from all of your wallets and exchanges. 
+2. Capital gains from cryptocurrency should be reported on Form 8949. 
+
+
+![Alt text](image.png)
+ IRS can track transactions through Bitcoin and Ethereum.
+
+ ![Alt text](image-1.png)
+
+
+## 1. Calculate your crypto gains and losses
+**Todo. What Tax_lint mostly do.**
+
+
+Every time you dispose( sell, trade, swap, spend, or gift your cryptocurrency to someone else) of your cryptocurrency, you’ll incur capital gains or capital losses.
+examples:
+1. Selling your cryptocurrency for fiat 
+2. Trading your cryptocurrency for another cryptocurrency 
+3. Buying goods and services with cryptocurrency 
+
+
+calculate capital gain or capital lose.  
+![Alt text](image-2.png)
+gain or lose.
+buy 1 ETH with 100USD -> after 1 month . you sell it with 120USD. cost 1USD for transaction fee.
+so. your proceed is 19USD.  
+![Alt text](image-3.png)
+lose is vise-sersa.
+how to track their original cost basis ?
+## Capital  gain or loss tax in US :IRS Form 8949
+file:
+https://www.irs.gov/pub/irs-pdf/f8949.pdf
+
+
+Form 8949 consists of two parts: Part I for Short-term and Part II for Long-term.
+
+12 months as distinguishing assets.
+less 12 months -> short-term
+more than 12 months -> long-term
+
+## non-employment income : IRS form 1099
+Cryptocurrency income may be reported on Form 1099 by some exchanges and platforms.
+ Form 1099-B reports sales and exchanges of cryptocurrency.
+
+
+ ## data collection: TODO. mostly current task now . 
+**for each dispose behaviour:**
+ 1. A description of the crypto-asset you sold (a)
+2. The date you originally acquired your crypto-asset 2(b)
+3. The date you sold or disposed of the crypto-asset (c)
+4. Proceeds from the sale (fair market value) (d)
+5. Your cost basis for purchasing the crypto-asset (fair market value) (e)
+6. Your gain or loss (h)
+
+example: ![Alt text](image-4.png)
+
+## benefit of : tax report on capital loss : 
+Remember, capital losses come with tax benefits! Capital losses can offset your capital gains and up to $3,000 of personal income. 
+![Alt text](image-5.png)
