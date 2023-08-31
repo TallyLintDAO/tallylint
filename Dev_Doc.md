@@ -461,10 +461,10 @@ https://ledger-api.internetcomputer.org/swagger-ui/
 2. Capital gains from cryptocurrency should be reported on Form 8949. 
 
 
-![Alt text](image.png)
+![Alt text](assets_for_doc/imagez.png)
  IRS can track transactions through Bitcoin and Ethereum.
 
- ![Alt text](image-1.png)
+ ![Alt text](assets_for_doc/image-1.png)
 
 
 ## 1. Calculate your crypto gains and losses
@@ -479,11 +479,11 @@ examples:
 
 
 calculate capital gain or capital lose.  
-![Alt text](image-2.png)
+![Alt text](assets_for_doc/image-2.png)
 gain or lose.
 buy 1 ETH with 100USD -> after 1 month . you sell it with 120USD. cost 1USD for transaction fee.
-so. your proceed is 19USD.  
-![Alt text](image-3.png)
+so. your proceed is 19USD. (proceed 你的资产换做coin以后,再兑换为USD的这个过程的结果. 如100USD->120USD这个proceed(也叫做sales price)) 
+![Alt text](assets_for_doc/image-3.png)
 lose is vise-sersa.
 how to track their original cost basis ?
 ## Capital  gain or loss tax in US :IRS Form 8949
@@ -508,11 +508,33 @@ Cryptocurrency income may be reported on Form 1099 by some exchanges and platfor
 2. The date you originally acquired your crypto-asset 2(b)
 3. The date you sold or disposed of the crypto-asset (c)
 4. Proceeds from the sale (fair market value) (d)
-5. Your cost basis for purchasing the crypto-asset (fair market value) (e)
-6. Your gain or loss (h)
+5. Your cost basis for purchasing the crypto-asset (fair market value) (e) ~ 购买日期,花费价格(可以没有购买单价,购买数量.) 
+6. Your gain or loss (h) ~d 和 e条目作差. 取得资本收益或者亏损.
 
-example: ![Alt text](image-4.png)
+example: ![Alt text](assets_for_doc/image-4.png)
 
 ## benefit of : tax report on capital loss : 
 Remember, capital losses come with tax benefits! Capital losses can offset your capital gains and up to $3,000 of personal income. 
-![Alt text](image-5.png)
+![Alt text](assets_for_doc/image-5.png)
+
+
+# the data we have now :
+ic-NNS offcial ouput CSV  
+![Alt text](assets_for_doc/image-6.png)
+object data:  above there. IRS  Form 8949 
+
+
+所以我们缺少 购买时间 以及 花费了多少USD. 和 卖出时间 为USD的时候得到多少 4个列
+
+**需要这四个条目的条件 都是在用USD进行买入买出才计算.**
+- [ ] 购买时间
+
+- [ ] 购买花费
+
+- [x] 卖出时间 
+
+- [x] 卖出获得 可以查询历史价格得到.
+
+
+
+
