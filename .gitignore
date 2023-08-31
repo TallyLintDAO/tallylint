@@ -1,6 +1,7 @@
 # Various IDEs and Editors
 .idea/
 **/*~
+.vscode/
 
 ##frontend code
 # dependencies:

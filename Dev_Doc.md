@@ -38,6 +38,13 @@ dfx canister id [canister-name]
 
 dfx canister install --all --mode upgrade
 dfx canister install [canister-id] --mode upgrade
+
+# canister-name ? in the dfx.json
+# output example:
+# root@btwlly9win11 ~/p/tax_lint (master) [255]# dfx canister  id backend
+# Please enter the passphrase for your identity: [hidden]
+# Decryption complete.
+# bkyz2-fmaaa-aaaaa-qaaaq-cai
 ```
 
 
