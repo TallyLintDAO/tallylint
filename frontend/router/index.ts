@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import Home from '@/views/home/Home.vue';
-import App from '@/views/nns/Home.vue';
-import NNS from '@/views/nns/modules/NNS.vue';
+import App from '@/views/app/Home.vue';
+import NNS from '@/views/app/modules/NNS.vue';
+import Wallet from '@/views/app/modules/Wallet.vue';
 import errors from './modules/errors';
 
 const routes: Array<RouteRecordRaw> = [
@@ -14,7 +15,9 @@ const routes: Array<RouteRecordRaw> = [
         path: '/',
         name: 'App',
         component: App,
-        children: [{path: 'nns', component: NNS,}],
+        children: [
+            {path: '', component: Wallet},
+            {path: 'nns', component: NNS}],
     },
     ...errors,
     {
