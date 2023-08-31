@@ -31,7 +31,8 @@ https://internetcomputer.org/docs/current/developer-docs/backend/motoko/upgradin
 这个投票权(determine)很好.很有去中心的概念.  
 操作指南: https://internetcomputer.org/docs/current/developer-docs/backend/reproducible-builds
 建议的是用docker或者Nix搭建持续集成(CI),使得这个上链的code是reproducible的.->目的是让用户自治和可信
-### upgrade in action
+### upgrade in action **for rust canister**
+following for Motoko 😅
 ```bash
 dfx start --clean --background
 dfx canister id [canister-name]
@@ -46,6 +47,49 @@ dfx canister install [canister-id] --mode upgrade
 # Decryption complete.
 # bkyz2-fmaaa-aaaaa-qaaaq-cai
 ```
+Q: // after exec upgrade cmd . its not hot updated. 
+// i tried deploy agian. it worked.
+```rust
+#[ic_cdk::query]
+fn greet(name: String) -> String {
+    format!("Hellozz, {}!", name)
+    // hello => hellozz
+}
+//  figure out ! it only works for Motoko language ~ : dfx canister install --all --mode upgrade
+```
+####  rust canister upgrade workflow
+all steps is TRANSACTIONAL. means if fail one of step ,all revert .
+pre_upgrade (if defined in code)  
+upgrade      
+post_upgrade (if defined in code)  
+
+##### Versioning stable memory, backup DB.
+because new version canister code maybe need new DB-table-like stuff.
+make it hard to align(recognize datastructure) where is the odd datas.
+
+##### test upgrade firstly
+Using testing upgrade hooks:  
+several different workflows or approaches can be used, such as shell or bash scripts, or Rust test scripts  
+```rust
+// psuedo-code
+let canister_id = install_canister(WASM);
+populate_data(canister_id);
+if should_upgrade { upgrade_canister(canister_id, WASM); }
+let data = query_canister(canister_id);
+assert_eq!(data, expected_value);
+```
+Then, your tests should be run twice in two different scenarios:
+
+In a scenario without any upgrades, to assure that your tests run successfully without executing an upgrade.  
+In a scenario with an upgrade, to assure that your tests run successfully while executing an upgrade. You then run your tests twice in different modes:  
+
+if your canister plans to store gigabytes of state data and upgrade the code, it may be worth considering using stable memory for the primary storage despite the drawbacks of the approach.
+
+##### the main upgrade steps: 
+discord question:  
+https://discord.com/channels/748416164832608337/1146653089936457848
+
+
 
 
 ### reproducible in action
