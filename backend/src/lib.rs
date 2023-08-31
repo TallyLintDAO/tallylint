@@ -36,6 +36,7 @@ fn insert(key: u128, value: u128) -> Option<u128> {
     MAP.with(|p| p.borrow_mut().insert(key, value))
 }
 
+// ic-onchain-canister-counter example code :
 use candid::types::number::Nat;
 // use std::cell::RefCell;
 
@@ -87,6 +88,7 @@ mod tests {
     }
 }
 
+// gpt api example
 // gpt api .not compatible with ic-sdk yet. compile error
 // use chatgpt::prelude::*;
 

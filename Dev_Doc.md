@@ -1,6 +1,8 @@
 Todos: 
-0. 把github仓库弄好，网址弄好，就可以交grant了
-1. dfx.json 前端有个dependecies选项.不知道要不要关联上.  
+0. 把github仓库弄好,以及建立一个Github Organization. 一个DAO.，
+1. 网址弄好，
+2. 就可以交grant了
+3. dfx.json 前端有个dependecies选项.不知道要不要关联上.默认创建项目是关联的.  
 待测试
 
 
@@ -8,7 +10,7 @@ Todos:
 deploy on ic-chain doc :  
 https://internetcomputer.org/docs/current/tutorials/deploy_sample_app#what-this-does
 ```bash
-# 第一次部署到主网收费 1TC
+# 第一次部署到主网收费 1TC 前后端2个罐子一共花费1TC
 dfx deploy --network ic --with-cycles 1000000000000
 # 查询自己还有多少 cycles
 dfx wallet --network ic balance
@@ -21,13 +23,113 @@ dfx wallet --network ic balance
 ### update canister code : 
 以后修改了代码要升级不用重新deploy,而是:  
 使用 upgrade指令, 要收费   
-1. Making your build reproducible: 简单说就是上网了的罐子代码都有一个SHA256. 用户可以随时校验. 自治.和对用户代码安全的一种功能.  **allowing for users to determine if a canister's contents have been edited or changed.**  
+1. Making your build reproducible: 简单说就是上网了的罐子代码都有一个SHA256. 用户可以随时校验. 自治.和对用户代码安全的一种功能.  **allowing for users to determine if a canister's contents have been edited or changed.** 
+(另外,这里的reproducible指的是任何一个人来下载你的代码然后上链校验hash,都能得到你公布的那个hash.就是reproducible的.) 
 这个投票权(determine)很好.很有去中心的概念.  
 操作指南: https://internetcomputer.org/docs/current/developer-docs/backend/reproducible-builds
 建议的是用docker或者Nix搭建持续集成(CI),使得这个上链的code是reproducible的.->目的是让用户自治和可信
 2. Once a canister has been deployed to the mainnet, the only way for new versions of the canister's code to be shipped is through planned upgrades.
 升级罐子指南:  
 https://internetcomputer.org/docs/current/developer-docs/backend/motoko/upgrading  
+
+
+
+### update 实操
+prepare: 
+#### 1. Which WebAssembly (wasm) code is being executed for a canister?  
+```bash
+# check dfx.json include : "output_env_file": ".env",
+cat ./.env 
+dfx canister --network ic info CANISTER_ID
+```
+output:  
+```bash
+# Controllers: bnz7o-iuaaa-aaaaa-qaaaa-cai w4q6h-2cwaj-ir5pl-pelo5-tnylh-s5qrw-63hm5-m23jy-spsak-4oesk-dae
+# Module hash: 0x4433b72a9b1723d2d394b70ea5d4d80c72a54a1c4e3c51f0f8aab46b0ffe5abd
+```
+Controllers can update the canister, so hash will also change atfer upgrade code.
+
+
+1.1 things provide to users:   
+1. source code   
+2. build env  
+3. offer Instructions on how to repeat the process of building the Wasm from the source code.  
+ result to :  .dfx, node_modules, and target directories that could contain pre-built files.
+
+##### step 2 and 3 good approach is using docker .
+before writing Dockerfile :  
+WARNING: make sure the docker is running in x86_64 architecure machine.
+otherwise: see that: https://github.com/lima-vm/lima/blob/master/docs/multi-arch.md
+```Dockerfile
+# OS , 
+# dfx_version
+
+# frontend
+# node.js -v ,vue -v  etc.. 
+
+# backend
+# cargo -v etc....
+
+# if got os_env_variables :
+
+```
+```Dockerfile 
+# offcial ic example : how a Rust build environment can be standardized using Docker.
+FROM ubuntu:22.04
+
+ENV NVM_DIR=/root/.nvm
+ENV NVM_VERSION=v0.39.1
+ENV NODE_VERSION=18.1.0
+
+ENV RUSTUP_HOME=/opt/rustup
+ENV CARGO_HOME=/opt/cargo
+ENV RUST_VERSION=1.62.0
+
+ENV DFX_VERSION=0.14.1
+
+# Install a basic environment needed for our build tools
+RUN apt -yq update && \
+    apt -yqq install --no-install-recommends curl ca-certificates \
+        build-essential pkg-config libssl-dev llvm-dev liblmdb-dev clang cmake rsync
+
+# Install Node.js using nvm
+ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
+RUN curl --fail -sSf https://raw.githubusercontent.com/creationix/nvm/${NVM_VERSION}/install.sh | bash
+RUN . "${NVM_DIR}/nvm.sh" && nvm install ${NODE_VERSION}
+RUN . "${NVM_DIR}/nvm.sh" && nvm use v${NODE_VERSION}
+RUN . "${NVM_DIR}/nvm.sh" && nvm alias default v${NODE_VERSION}
+
+# Install Rust and Cargo
+ENV PATH=/opt/cargo/bin:${PATH}
+RUN curl --fail https://sh.rustup.rs -sSf \
+        | sh -s -- -y --default-toolchain ${RUST_VERSION}-x86_64-unknown-linux-gnu --no-modify-path && \
+    rustup default ${RUST_VERSION}-x86_64-unknown-linux-gnu && \
+    rustup target add wasm32-unknown-unknown &&\
+    cargo install ic-wasm
+
+# Install dfx
+RUN sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
+
+COPY . /canister
+WORKDIR /canister
+```
+build the dockerfile into a image and run it as a container:
+```bash
+docker build -t mycanister .
+docker run -it --rm mycanister
+```
+###### abstract the above whole into a runnable script: cool~
+
+
+
+
+#### 2. The canisters are normally written in a higher-level language, such as Motoko or Rust, and not directly in Wasm. The second question is then: is the Wasm that’s running really the result of compiling the purported source code?
+
+
+
+
+
+
 
 IC上下文中的专指名称:Metrics: 
 1. gain insight into a wide range of information regarding your canister's production services  
@@ -230,7 +332,7 @@ Stable variables are global variables that the system **preserves across upgrade
 
 Flexible variables are global variables that the system **discards on code upgrade**. For example, it is reasonable to make a cache flexible if keeping this cache hot is not critical for your product.  
 
-#### DB is not use traditional SQL and specific DBMS, it use direct rust
+#### ic-DB is not use traditional SQL and specific DBMS, it use direct rust code libs
 
 good practice : 
 1. "Putting all global variables in one place"    
