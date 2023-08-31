@@ -23,18 +23,25 @@ dfx wallet --network ic balance
 ### update canister code : 
 以后修改了代码要升级不用重新deploy,而是:  
 使用 upgrade指令, 要收费   
-1. Making your build reproducible: 简单说就是上网了的罐子代码都有一个SHA256. 用户可以随时校验. 自治.和对用户代码安全的一种功能.  **allowing for users to determine if a canister's contents have been edited or changed.** 
+Once a canister has been deployed to the mainnet, the only way for new versions of the canister's code to be shipped is through planned upgrades.
+1. 升级罐子指南:  
+https://internetcomputer.org/docs/current/developer-docs/backend/motoko/upgrading  
+2. Making your build reproducible: 简单说就是上网了的罐子代码都有一个SHA256. 用户可以随时校验. 自治.和对用户代码安全的一种功能.  **allowing for users to determine if a canister's contents have been edited or changed.** 
 (另外,这里的reproducible指的是任何一个人来下载你的代码然后上链校验hash,都能得到你公布的那个hash.就是reproducible的.) 
 这个投票权(determine)很好.很有去中心的概念.  
 操作指南: https://internetcomputer.org/docs/current/developer-docs/backend/reproducible-builds
 建议的是用docker或者Nix搭建持续集成(CI),使得这个上链的code是reproducible的.->目的是让用户自治和可信
-2. Once a canister has been deployed to the mainnet, the only way for new versions of the canister's code to be shipped is through planned upgrades.
-升级罐子指南:  
-https://internetcomputer.org/docs/current/developer-docs/backend/motoko/upgrading  
+### upgrade in action
+```bash
+dfx start --clean --background
+dfx canister id [canister-name]
+
+dfx canister install --all --mode upgrade
+dfx canister install [canister-id] --mode upgrade
+```
 
 
-
-### update 实操
+### reproducible in action
 prepare: 
 #### 1. Which WebAssembly (wasm) code is being executed for a canister?  
 ```bash
@@ -58,17 +65,26 @@ Controllers can update the canister, so hash will also change atfer upgrade code
 
 ##### step 2 and 3 good approach is using docker .
 before writing Dockerfile :  
-WARNING: make sure the docker is running in x86_64 architecure machine.
+is docker itself version need to specify ? maybe ? todo 
+1. WARNING: make sure the docker is running in x86_64 architecure machine.
 otherwise: see that: https://github.com/lima-vm/lima/blob/master/docs/multi-arch.md
+2. check your code again:  
+Your own build scripts must not introduce non-determinism.
+include randomness, timestamps, concurrency, or code obfuscators.  
+Less obvious sources include locales, absolute file paths, order of files in a directory, and remote URLs whose content can change.   
+further more about rust language it self reproducibility: 😅     
+https://github.com/rust-lang/rust/labels/A-reproducibility
 ```Dockerfile
 # OS , 
 # dfx_version
 
 # frontend
 # node.js -v ,vue -v  etc.. 
+# and frontend dependencies  versions: careful with such as: package-lock.json
 
 # backend
 # cargo -v etc....
+# and bakcend dependencies versions: careful with such as: Cargo.lock
 
 # if got os_env_variables :
 
@@ -120,7 +136,29 @@ docker run -it --rm mycanister
 ```
 ###### abstract the above whole into a runnable script: cool~
 
+###### (optinal)if Reproducible is very imprtant to you :
+Debian Reproducible Builds project created a tool called reprotest, which can help you automate reproducibility tests  
+```bash
+RUN apt -yqq install --no-install-recommends reprotest disorderfs faketime rsync sudo wabt
+```
+###### (optinal) Long-term considerations
+sites may go offline and URLs might stop working -> so back up libs.
+hardware might not supporting some software. emmm~
 
+
+
+Build toolchain is still available in the future.  
+
+Dependencies are available.  
+
+Toolchain still runs and still correctly builds your dependencies.  
+
+
+###### Conclusion: 
+整个校验过程还没有全自动. 如果可以用户投票是否升级,更加体现了自治权力  
+可能NNS的区域自治有这个功能?叫做SNS: Service Nervous System  
+
+What a communism~
 
 
 #### 2. The canisters are normally written in a higher-level language, such as Motoko or Rust, and not directly in Wasm. The second question is then: is the Wasm that’s running really the result of compiling the purported source code?
@@ -296,7 +334,7 @@ tax rule of IRS
 
 
 ### IC-rust中的: Globally mutable states
-抽象就是Java中的ThreadLocal. 不同services如加购物车,下订单都可以来操作这个变量.
+抽象就是C中的ThreadLocal. 不同services如加购物车,下订单都可以来操作这个变量.
 如把用户的认证和姓名存进去TL中,各个services可以随意CRUD.
 
 "Rust's design makes it difficult to global mutable variables."
@@ -327,6 +365,7 @@ service : {
 ```
 
 ### DB on chain of canisters
+in ic way of saying: orthogonal persistence.
 Stable variables vs flexible variables  
 Stable variables are global variables that the system **preserves across upgrades**. For example, a user database should probably be stable.  
 
@@ -344,6 +383,12 @@ It is best practice to store all global variables privately in a single file; **
 https://mmapped.blog/posts/14-stable-structures.html
 
 https://github.com/dfinity/stable-structures#readme
+
+#### BACKUP ic-DB!
+todo
+
+#### delete( or truncate) ic-DB
+https://internetcomputer.org/docs/current/motoko/main/upgrades#declaring-stable-variables
 
 ## Candid Tips: 
 1. Making the .did file the canister's source of truth
