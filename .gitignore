@@ -25,3 +25,5 @@ target/
 !.dfx/ic/canisters/
 !.dfx/ic/canister_ids.json
 # todo : only want to uplaod / download but never track history? how ?
+
+.env
