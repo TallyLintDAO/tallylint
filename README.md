@@ -3,10 +3,13 @@ Try it here:  🧭
 https://x63j6-hqaaa-aaaal-acyoa-cai.icp0.io/
 
 ## Key Features
+### Manage Tax Info
+TaxLint is designed to help users who use ICP more easily count and manage their tax information. With taxlint, users will be able to record, track and calculate tax information related to their transactions and assets in the IC ecosystem.
+### Auto Calculate Tax Result
+Our main goal is to provide users in the IC ecosystem with a convenient tax management tool to help them move away from tedious manual statistics to easier automated statistics, thereby improving their tax payment experience and reducing error rates. This will improve user confidence in the use of IC and increase ICP user stickiness.
+## Any Contribution is Welcome ! 
 
-## Welcome Contribute
-
-## Code on mainnet transparency: We seriously respect that (Thanks to its consensus protocol)
+## Code on mainnet transparency: We seriously respect that (Thanks to consensus protocol)
 We make sure all the code running on ic mainnet is what you see , what you get.  
 Here is the running canister code SHA256: todo
 
