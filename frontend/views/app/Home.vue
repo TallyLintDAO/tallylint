@@ -7,7 +7,7 @@
                     <q-avatar>
                         <img src="@/assets/dfinity.svg">
                     </q-avatar>
-                    IC Vigil
+                    IC TaxLint
                 </q-toolbar-title>
             </q-toolbar>
         </q-header>
@@ -29,7 +29,7 @@
                             <q-icon name="inbox"/>
                         </q-item-section>
                         <q-item-section>
-                            NNS
+                            Wallet
                         </q-item-section>
                     </q-item>
                     <q-item clickable v-ripple="true">
