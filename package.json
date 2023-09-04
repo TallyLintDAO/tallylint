@@ -1,5 +1,5 @@
 {
-  "name": "icrent",
+  "name": "taxlint",
   "version": "0.0.1",
   "scripts": {
     "dev": "vite --mode=development",
