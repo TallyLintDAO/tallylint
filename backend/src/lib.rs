@@ -1,12 +1,3 @@
-/*
-basic hello world
- */
-#[ic_cdk::query]
-fn greet(name: String) -> String {
-    // format!("Hello, {}!", name)
-    format!("Hi there, {}!", name)
-}
-
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use std::cell::RefCell;
@@ -27,6 +18,8 @@ thread_local! {
     );
 }
 
+use ic_cdk_macros::query;
+use ic_cdk_macros::update;
 // Retrieves the value associated with the given key if it exists.
 // #[ic_cdk::query] // #[ic_cdk_macros::query] // whats the diff ??
 #[ic_cdk_macros::query]
@@ -97,10 +90,7 @@ mod tests {
 /*
 update rust canister example
 */
-use ic_cdk::{
-    api::call::ManualReply, export::Principal, init, post_upgrade, pre_upgrade, query, storage,
-    update,
-};
+use ic_cdk::{api::call::ManualReply, export::Principal, init, post_upgrade, pre_upgrade, storage};
 // use std::cell::RefCell;
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -153,4 +143,3 @@ fn pre_upgrade() {
 //     let (old_users,): (BTreeSet<Principal>,) = storage::stable_restore().unwrap();
 //     USERS.with(|users| *users.borrow_mut() = old_users);
 // }
-
