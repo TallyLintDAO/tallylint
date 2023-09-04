@@ -154,17 +154,3 @@ fn pre_upgrade() {
 //     USERS.with(|users| *users.borrow_mut() = old_users);
 // }
 
-/*
-gpt api example
-*/
-// gpt api .not compatible with ic-sdk yet. compile error
-// use chatgpt::prelude::*;
-
-// #[ic_cdk::query]
-// async fn gpt(prompt: String) -> Result<String> {
-//     let client = ChatGPT::new(String::from(
-//         "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",
-//     ))?;
-//     let response = client.send_message(&prompt).await?;
-//     return Ok(response.message().content.to_string());
-// }
