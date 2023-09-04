@@ -32,6 +32,7 @@ export const getICPTransactions = async (
     if (!response.ok)
         throw Error("error for rosetta api"+ response.statusText);
     const { transactions, total_count } = await response.json();
+    console.log("rosetta api:",transactions)
     const transactionsInfo = transactions.map(({ transaction }) =>
         formatIcpTransaccion(accountId, transaction)
     );

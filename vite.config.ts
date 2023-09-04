@@ -57,7 +57,6 @@ export default defineConfig(({ command, mode }) => {
             alias: {
                 ...canistersAlias, // canister 接口文件位置的映射
                 '@': path.resolve(__dirname, 'frontend'), // @符号要解析
-                // '~/': `${path.resolve(__dirname, 'frontend')}/`, // element-plus 可能要用
             },
             extensions: ['.js', '.ts', '.jsx', '.tsx', '.vue'], // import 可以省略的拓展名
         },

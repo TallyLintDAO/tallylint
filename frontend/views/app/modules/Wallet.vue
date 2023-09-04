@@ -7,7 +7,7 @@
             <div v-else style="width: 100%">
                 <q-btn flat color="primary" icon="file_download" label="Export CSV"
                        @click="exportToCSV"/>
-                <q-list bordered separator >
+                <q-list bordered separator>
                     <q-item v-for="transaction in walletList"
                             :key="transaction.hash"
                             clickable v-ripple="true">
@@ -24,16 +24,17 @@
                                     {{currencyCalculate(transaction.details?.amount,transaction.details?.currency.decimals)}}
                                 </div>
                                 <div class="col">
-                                    <q-icon name="arrow_right_alt" />
+                                    <q-icon name="arrow_right_alt"/>
                                 </div>
                                 <div class="col">
                                     {{ showUsername("",transaction.details?.to) }}
-                                    <a :href="'https://dashboard.internetcomputer.org/transaction/' + transaction.hash" target="_blank">
-                                        <q-icon name="open_in_new" />
+                                    <a :href="'https://dashboard.internetcomputer.org/transaction/' + transaction.hash"
+                                       target="_blank">
+                                        <q-icon name="open_in_new"/>
                                     </a>
                                 </div>
                                 <div class="col">
-                                    <q-icon name="reorder" />
+                                    <q-icon name="reorder"/>
                                 </div>
                             </div>
                         </q-item-section>
@@ -49,12 +50,15 @@
     import { ref, onMounted } from 'vue';
     import { getICPTransactions, InferredTransaction } from "@/api/rosetta";
     import { currencyCalculate, showUsername } from "@/utils/common";
+    import { exportFile } from "quasar";
+    import { getICPPriceHistory } from "@/api/token";
 
     const address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739";
     const walletList = ref<InferredTransaction[]>([]);
 
     onMounted(() => {
         getWalletHistory();
+        getICPPriceHistory();
     });
 
     const getWalletHistory = async () => {
@@ -66,7 +70,24 @@
         })
     }
     const exportToCSV = async () => {
+        const columnNames = ['Hash', 'Type', 'Status', 'Timestamp', 'From', 'To', 'Amount', 'Fee', 'Memo']
+        // 生成包含列名和数据的数组
+        const data = [columnNames, ...walletList.value.map(transaction => [
+            transaction.hash,
+            transaction.type,
+            transaction.details?.status,
+            transaction.timestamp,
+            transaction.details?.from,
+            transaction.details?.to,
+            transaction.details?.amount,
+            transaction.details?.fee?.amount,
+        ])];
 
+        // 将数据转换为 CSV 格式的字符串
+        const csvContent = data.map(row => row.join(",")).join("\n");
+
+        // 使用 exportFile 函数导出 CSV 文件
+        exportFile(address + ".csv", csvContent, "text/csv");
     }
 
 

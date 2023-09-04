@@ -2,6 +2,7 @@ import { createApp } from "vue"
 import App from "./App.vue"
 import router from './router';
 import { Quasar } from 'quasar'
+
 // Import icon libraries
 import '@quasar/extras/material-icons/material-icons.css'
 import '@quasar/extras/roboto-font-latin-ext/roboto-font-latin-ext.css'

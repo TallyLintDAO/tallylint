@@ -5,5 +5,7 @@ export const NET_ID = {
     network: '00000000000000020101',
 };
 export const ROSETTA_URL = 'https://rosetta-api.internetcomputer.org';
+export const COINGECKO_URL = 'https://api.coingecko.com';
 
 export const MILI_PER_SECOND = 1000000;
+
