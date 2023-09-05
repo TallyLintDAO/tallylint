@@ -1,6 +1,7 @@
 ## Foo : Your pesonal virtual-assets-tax helper
 Try it here:  🧭
-https://x63j6-hqaaa-aaaal-acyoa-cai.icp0.io/
+<!-- https://x63j6-hqaaa-aaaal-acyoa-cai.icp0.io/ -->
+https://vresg-vyaaa-aaaag-qcj2q-cai.icp0.io/
 
 ## Key Features
 ### Manage Tax Info
