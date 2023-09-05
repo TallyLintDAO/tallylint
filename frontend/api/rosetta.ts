@@ -1,4 +1,5 @@
 import { LEDGER_CANISTER_ID, MILI_PER_SECOND, NET_ID, ROSETTA_URL } from "@/api/constants/ic";
+import { getICPPrice } from "@/api/token";
 
 export interface InferredTransaction {
     hash: string;
@@ -33,9 +34,14 @@ export const getICPTransactions = async (
         throw Error("error for rosetta api"+ response.statusText);
     const { transactions, total_count } = await response.json();
     console.log("rosetta api:",transactions)
-    const transactionsInfo = transactions.map(({ transaction }) =>
-        formatIcpTransaccion(accountId, transaction)
-    );
+    // 使用 Promise.all 来并行获取价格
+    const transactionsInfoPromises = transactions.map(async ({ transaction }) => {
+        const formattedTransaction = await formatIcpTransaccion(accountId, transaction);
+        return formattedTransaction;
+    });
+
+    // 等待所有价格获取完成
+    const transactionsInfo = await Promise.all(transactionsInfoPromises);
     console.log("transactionsInfo",transactionsInfo)
     return {
         total: total_count,
@@ -69,16 +75,18 @@ interface RosettaTransaction {
     transaction_identifier: { hash: string };
 }
 
-export const formatIcpTransaccion = (
+export const formatIcpTransaccion = async (
     accountId: string,
     rosettaTransaction: RosettaTransaction
-): InferredTransaction => {
+): Promise<InferredTransaction>  => {
     const {
         operations,
         metadata: { timestamp },
         transaction_identifier: { hash },
     } = rosettaTransaction;
     const transaction: any = { details: { status: 'COMPLETED', fee: {} } };
+    const timestampNormal =  timestamp / MILI_PER_SECOND; //处理时间戳为正常格式
+    const price = await getICPPrice(timestampNormal); // 使用 await 获取价格
     operations.forEach(operation => {
         const value = BigInt(operation.amount.value);
         const amount = value.toString();
@@ -100,6 +108,7 @@ export const formatIcpTransaccion = (
         transaction.type =
             transaction.details.to === accountId ? 'RECEIVE' : 'SEND';
         transaction.details.amount = amount;
+        transaction.details.price = price; // 设置价格为获取的价格
         transaction.details.currency = operation.amount.currency;
         transaction.details.canisterId = LEDGER_CANISTER_ID;
     });
@@ -107,6 +116,6 @@ export const formatIcpTransaccion = (
         ...transaction,
         caller: transaction.details.from,
         hash,
-        timestamp: timestamp / MILI_PER_SECOND,
+        timestamp: timestampNormal,
     } as InferredTransaction;
 };

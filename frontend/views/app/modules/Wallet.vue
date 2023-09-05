@@ -22,6 +22,10 @@
                                 <div class="col">
                                     {{ transaction.details?.currency.symbol }}
                                     {{currencyCalculate(transaction.details?.amount,transaction.details?.currency.decimals)}}
+                                    <br/>
+                                    {{ '$ ' +
+                                    transaction.details?.price*currencyCalculate(transaction.details?.amount,transaction.details?.currency.decimals)
+                                    }}
                                 </div>
                                 <div class="col">
                                     <q-icon name="arrow_right_alt"/>
@@ -51,14 +55,15 @@
     import { getICPTransactions, InferredTransaction } from "@/api/rosetta";
     import { currencyCalculate, showUsername } from "@/utils/common";
     import { exportFile } from "quasar";
-    import { getICPPriceHistory } from "@/api/token";
+    import { getICPPrice } from "@/api/token";
 
     const address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739";
     const walletList = ref<InferredTransaction[]>([]);
 
-    onMounted(() => {
+    onMounted(async () => {
         getWalletHistory();
-        getICPPriceHistory();
+        console.log("price",await getICPPrice(1689821315677.2805));
+        console.log("price",await getICPPrice(1662996055009.1997));
     });
 
     const getWalletHistory = async () => {
