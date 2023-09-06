@@ -27,3 +27,9 @@ ic-stable-structures = "0.5.6"
 
 # openai_api_rust = "0.1.8"
 # chatgpt_rs = "1.2.0" # 这个包造成大量的编译错误,目前和ic-cdk有兼容问题,单独跑chagpt_rs可以跑通
+
+
+# from dep of dao-rights
+serde = "1.0"
+thiserror = "1.0"
+email_address = "0"
