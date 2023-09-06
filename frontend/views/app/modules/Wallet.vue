@@ -21,11 +21,7 @@
                                 </div>
                                 <div class="col">
                                     {{ transaction.details?.currency.symbol }}
-                                    {{currencyCalculate(transaction.details?.amount,transaction.details?.currency.decimals)}}
-                                    <br/>
-                                    {{ '$ ' +
-                                    transaction.details?.price*currencyCalculate(transaction.details?.amount,transaction.details?.currency.decimals)
-                                    }}
+                                    {{ transaction.details?.amount }}
                                 </div>
                                 <div class="col">
                                     <q-icon name="arrow_right_alt"/>
@@ -36,6 +32,10 @@
                                        target="_blank">
                                         <q-icon name="open_in_new"/>
                                     </a>
+                                    <br/>
+                                    {{ '≈ $' +
+                                    transaction.details?.price * transaction.details?.amount
+                                    }}
                                 </div>
                                 <div class="col">
                                     <q-icon name="reorder"/>
@@ -62,8 +62,6 @@
 
     onMounted(async () => {
         getWalletHistory();
-        console.log("price",await getICPPrice(1689821315677.2805));
-        console.log("price",await getICPPrice(1662996055009.1997));
     });
 
     const getWalletHistory = async () => {

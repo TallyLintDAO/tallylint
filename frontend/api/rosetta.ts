@@ -1,5 +1,6 @@
 import { LEDGER_CANISTER_ID, MILI_PER_SECOND, NET_ID, ROSETTA_URL } from "@/api/constants/ic";
 import { getICPPrice } from "@/api/token";
+import { currencyCalculate } from "@/utils/common";
 
 export interface InferredTransaction {
     hash: string;
@@ -31,18 +32,16 @@ export const getICPTransactions = async (
         },
     });
     if (!response.ok)
-        throw Error("error for rosetta api"+ response.statusText);
+        throw Error("error for rosetta api" + response.statusText);
     const { transactions, total_count } = await response.json();
-    console.log("rosetta api:",transactions)
-    // 使用 Promise.all 来并行获取价格
-    const transactionsInfoPromises = transactions.map(async ({ transaction }) => {
-        const formattedTransaction = await formatIcpTransaccion(accountId, transaction);
-        return formattedTransaction;
-    });
+    console.log("rosetta api:", transactions)
+    const transactionsInfo: InferredTransaction[] = [];
 
-    // 等待所有价格获取完成
-    const transactionsInfo = await Promise.all(transactionsInfoPromises);
-    console.log("transactionsInfo",transactionsInfo)
+    for (const { transaction } of transactions) {
+        const formattedTransaction = await formatIcpTransaccion(accountId, transaction);
+        transactionsInfo.push(formattedTransaction);
+    }
+    console.log("transactionsInfo", transactionsInfo)
     return {
         total: total_count,
         transactions: transactionsInfo,
@@ -78,20 +77,21 @@ interface RosettaTransaction {
 export const formatIcpTransaccion = async (
     accountId: string,
     rosettaTransaction: RosettaTransaction
-): Promise<InferredTransaction>  => {
+): Promise<InferredTransaction> => {
     const {
         operations,
-        metadata: { timestamp },
-        transaction_identifier: { hash },
+        metadata: {timestamp},
+        transaction_identifier: {hash},
     } = rosettaTransaction;
-    const transaction: any = { details: { status: 'COMPLETED', fee: {} } };
-    const timestampNormal =  timestamp / MILI_PER_SECOND; //处理时间戳为正常格式
+    const transaction: any = {details: {status: 'COMPLETED', fee: {}}};
+    const timestampNormal = timestamp / MILI_PER_SECOND; //处理时间戳为正常格式
     const price = await getICPPrice(timestampNormal); // 使用 await 获取价格
     operations.forEach(operation => {
         const value = BigInt(operation.amount.value);
         const amount = value.toString();
         if (operation.type === 'FEE') {
-            transaction.details.fee.amount = amount;
+            //直接输出真实的数量，不再使用浮点数
+            transaction.details.fee.amount = currencyCalculate(amount, operation.amount.currency.decimals);
             transaction.details.fee.currency = operation.amount.currency;
             return;
         }
@@ -102,12 +102,16 @@ export const formatIcpTransaccion = async (
         if (
             transaction.details.status === 'COMPLETED' &&
             operation.status !== 'COMPLETED'
-        )
-            transaction.details.status = operation.status;
+        ) transaction.details.status = operation.status;
 
         transaction.type =
             transaction.details.to === accountId ? 'RECEIVE' : 'SEND';
-        transaction.details.amount = amount;
+        if (transaction.type === 'SEND') {
+            // 对于发送交易，使用FIFO方法估算成本
+
+        }
+        //直接输出真实的数量，不再使用浮点数
+        transaction.details.amount = currencyCalculate(amount, operation.amount.currency.decimals);
         transaction.details.price = price; // 设置价格为获取的价格
         transaction.details.currency = operation.amount.currency;
         transaction.details.canisterId = LEDGER_CANISTER_ID;
