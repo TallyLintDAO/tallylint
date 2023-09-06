@@ -4,7 +4,7 @@ use std::{cell::RefCell, collections::HashMap};
 
 use candid::{CandidType, Deserialize, Principal};
 use ic_cdk::export::candid::candid_method;
-
+pub mod actor;
 pub mod common;
 
 pub mod context;
