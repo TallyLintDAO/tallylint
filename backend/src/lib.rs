@@ -1,3 +1,60 @@
+use crate::context::DaoContext;
+
+use std::{cell::RefCell, collections::HashMap};
+
+use candid::{CandidType, Deserialize, Principal};
+use ic_cdk::export::candid::candid_method;
+pub mod actor;
+pub mod common;
+
+pub mod context;
+
+pub mod env;
+mod user;
+
+thread_local! {
+  static CONTEXT: RefCell<DaoContext> = RefCell::default();
+  /// 初始化创始人 principal
+  static GOVERNANACE_ZHOU : Principal = Principal::from_text("ck7ij-a5lub-pklz3-xrpmk-hifoi-xikak-va7ss-hxvqo-5paw2-zx2bw-lae").unwrap();
+  static GOVERNANACE_BTWL : Principal = Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap();
+
+  // /// 初始化创始人声望值 1 亿
+  // static GOVERNANACE_CREATOR_REPUTATION : u64 = 100_000_000;
+
+}
+
+// async fn transfer(cmd: TransferCommand) -> Result<BlockIndex, String> {
+//     ic_cdk::println!(
+//         "Transferring {} tokens to principal {} ",
+//         &cmd.amount_e8s,
+//         &cmd.recipient_principal
+//     );
+//     let ledger_canister_id = MAINNET_LEDGER_CANISTER_ID;
+//     let to_subaccount = DEFAULT_SUBACCOUNT;
+//     let to_principal =
+//         Principal::from_text(cmd.recipient_principal).or(Err("Recipient format is wrong!"))?;
+
+//     let transfer_args = ic_ledger_types::TransferArgs {
+//         memo: Memo(0),
+//         amount: Tokens::from_e8s(cmd.amount_e8s),
+//         fee: DEFAULT_FEE,
+//         from_subaccount: None,
+//         to: AccountIdentifier::new(&to_principal, &to_subaccount),
+//         created_at_time: None,
+//     };
+
+//     ic_ledger_types::transfer(ledger_canister_id, transfer_args)
+//         .await
+//         .map_err(|e| format!("failed to call ledger: {:?}", e))?
+//         .map_err(|e| format!("ledger transfer error {:?}", e))
+// }
+
+// #[derive(Clone, Debug, CandidType, Deserialize)]
+// pub struct TransferCommand {
+//     pub amount_e8s: u64,
+//     pub recipient_principal: String,
+// }
+
 // use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
 // use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 // use std::cell::RefCell;
