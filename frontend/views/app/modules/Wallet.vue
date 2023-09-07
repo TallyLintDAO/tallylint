@@ -20,21 +20,25 @@
                                     {{ transaction.type }}
                                 </div>
                                 <div class="col">
-                                    {{ transaction.details?.currency.symbol }}
-                                    {{ transaction.details?.amount }}
+                                    {{ transaction.details.currency.symbol }}
+                                    {{ transaction.details.amount }}
+                                    <br/>
+                                    {{'$'+ transaction.details.cost +' cost basis'}}
                                 </div>
                                 <div class="col">
                                     <q-icon name="arrow_right_alt"/>
                                 </div>
                                 <div class="col">
-                                    {{ showUsername("",transaction.details?.to) }}
+                                    {{ showUsername("",transaction.details.to || "") }}
                                     <a :href="'https://dashboard.internetcomputer.org/transaction/' + transaction.hash"
                                        target="_blank">
                                         <q-icon name="open_in_new"/>
                                     </a>
                                     <br/>
                                     {{ '≈ $' +
-                                    transaction.details?.price * transaction.details?.amount
+                                    transaction.details.value +
+                                    ' · $ ' +
+                                    transaction.details.profit + ' profit'
                                     }}
                                 </div>
                                 <div class="col">
@@ -73,17 +77,23 @@
         })
     }
     const exportToCSV = async () => {
-        const columnNames = ['Hash', 'Type', 'Status', 'Timestamp', 'From', 'To', 'Amount', 'Fee', 'Memo']
+        const columnNames = ['Hash', 'Type', 'Status', 'Timestamp', 'From', 'To', 'Amount', 'Fee', 'Memo',
+            'Price', 'Cost', 'Income', 'Profit']
         // 生成包含列名和数据的数组
         const data = [columnNames, ...walletList.value.map(transaction => [
             transaction.hash,
             transaction.type,
-            transaction.details?.status,
-            transaction.timestamp,
+            transaction.details.status,
+            new Date(Number(transaction.timestamp)).toLocaleString(),
             transaction.details?.from,
             transaction.details?.to,
-            transaction.details?.amount,
-            transaction.details?.fee?.amount,
+            transaction.details.amount,
+            transaction.details.fee.amount,
+            '',
+            transaction.details.price,
+            transaction.details.cost,
+            transaction.details.value,
+            transaction.details.profit,
         ])];
 
         // 将数据转换为 CSV 格式的字符串
