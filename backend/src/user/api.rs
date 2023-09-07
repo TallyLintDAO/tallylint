@@ -1,6 +1,3 @@
-
-
-
 use candid::Principal;
 use ic_cdk_macros::{query, update};
 
@@ -23,14 +20,37 @@ fn register_user() -> Result<String, UserError> {
         }
 
         let now = ctx.env.now();
+
+
+
+
+
+        use rand::{thread_rng, Rng};
+        use rand::rngs::ThreadRng;
         
-        // test:
+        // fn generate_random_string(length: usize, rng: &mut ThreadRng) -> String {
+        //   let mut string = String::with_capacity(length);
+        //   let chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        
+        //   for _ in 0..length {
+        //     let random_char = chars.chars().nth(rng.gen_range(0..chars.len())).expect("Invalid char");
+        //     string.push(random_char);
+        //   }
+        
+        //   string
+        // }
+        // let mut cmd = UserRegisterCommand {
+        //     email: generate_random_string(12, &mut rng),
+        //     name: generate_random_string(12, &mut rng),
+        //     memo: generate_random_string(12, &mut rng),
+        // };
         let mut cmd = UserRegisterCommand {
-            email: "user@example.com".to_string(),
-            name: "John Doe".to_string(),
-            memo: "First User".to_string()
-          };
-          
+            email: "test_email@example.com".to_string(),
+            name: "Test User".to_string(), 
+            memo: "For testing".to_string()
+        };
+
+
         let user = cmd.build_profile(id, caller, UserStatus::Enable, now);
 
         match ctx.user_service.insert_user(user) {

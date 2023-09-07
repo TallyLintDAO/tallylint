@@ -33,3 +33,7 @@ ic-stable-structures = "0.5.6"
 serde = "1.0"
 thiserror = "1.0"
 email_address = "0"
+
+
+#new
+rand = "0.5.5" 
