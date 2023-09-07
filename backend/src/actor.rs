@@ -72,7 +72,8 @@ fn pre_upgrade() {
 //     let canister_id = id();
 //     print(format!("starting post_upgrade {:?}", canister_id));
 
-// bug here can find restore file
+// // bug here can find restore file.only if no DB data at all. of course cant restore.
+// // IMPORTANT
 //     let (payload,): (DaoDataStorage,) = storage::stable_restore().expect("failed to restore users");
 //     let state_stable = DaoContext::from(payload);
 

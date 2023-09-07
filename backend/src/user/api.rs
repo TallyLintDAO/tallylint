@@ -11,7 +11,8 @@ use crate::context::DaoContext;
 use crate::CONTEXT;
 
 #[update]
-fn register_user(cmd: UserRegisterCommand) -> Result<String, UserError> {
+// fn register_user(cmd: UserRegisterCommand) -> Result<String, UserError> {
+fn register_user() -> Result<String, UserError> {
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
         let id = ctx.id;
@@ -22,6 +23,14 @@ fn register_user(cmd: UserRegisterCommand) -> Result<String, UserError> {
         }
 
         let now = ctx.env.now();
+        
+        // test:
+        let mut cmd = UserRegisterCommand {
+            email: "user@example.com".to_string(),
+            name: "John Doe".to_string(),
+            memo: "First User".to_string()
+          };
+          
         let user = cmd.build_profile(id, caller, UserStatus::Enable, now);
 
         match ctx.user_service.insert_user(user) {

@@ -29,15 +29,20 @@ pub struct EmptyEnvironment {}
 
 impl Environment for EmptyEnvironment {
     fn now(&self) -> u64 {
-        unimplemented!()
+        // unimplemented!()
+        ic_cdk::api::time()
+
     }
 
     fn caller(&self) -> Principal {
-        unimplemented!()
+        // unimplemented!()
+        ic_cdk::caller()
     }
 
     fn canister_id(&self) -> Principal {
-        unimplemented!()
+        // unimplemented!()
+        ic_cdk::id()
+
     }
 }
 
