@@ -55,31 +55,34 @@ fn pre_upgrade() {
     CONTEXT.with(|c| {
         let context = c.borrow();
         let id = context.id;
+        // get users list from vilotile memory. just computer memory. hash structure
         let users = Vec::from_iter(context.user_service.users.values().cloned());
 
         let payload: DaoDataStorage = DaoDataStorage { id, users };
 
+        // save all userdata into IC-DB IMPORTANT
         storage::stable_save((payload,)).expect("failed to save state data");
 
         print(format!("started pre_upgrade {:?}", canister_id));
     });
 }
 
-#[post_upgrade]
-fn post_upgrade() {
-    let canister_id = id();
-    print(format!("starting post_upgrade {:?}", canister_id));
+// #[post_upgrade]
+// fn post_upgrade() {
+//     let canister_id = id();
+//     print(format!("starting post_upgrade {:?}", canister_id));
 
-    let (payload,): (DaoDataStorage,) = storage::stable_restore().expect("failed to restore users");
-    let state_stable = DaoContext::from(payload);
+// bug here can find restore file
+//     let (payload,): (DaoDataStorage,) = storage::stable_restore().expect("failed to restore users");
+//     let state_stable = DaoContext::from(payload);
 
-    CONTEXT.with(|s| {
-        let mut state = s.borrow_mut();
-        *state = state_stable;
-    });
+//     CONTEXT.with(|s| {
+//         let mut state = s.borrow_mut();
+//         *state = state_stable;
+//     });
 
-    print(format!("started post_upgrade {:?}", canister_id));
-}
+//     print(format!("started post_upgrade {:?}", canister_id));
+// }
 
 ic_cdk::export::candid::export_service!();
 
