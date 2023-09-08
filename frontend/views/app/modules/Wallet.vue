@@ -1,109 +1,104 @@
 <template>
     <div class="wallet-container">
-        <div class="q-pa-md row items-start q-gutter-md">
-            <div v-if="walletList.length===0">
-                no data
-            </div>
-            <div v-else style="width: 100%">
-                <q-btn flat color="primary" icon="file_download" label="Export CSV"
-                       @click="exportToCSV"/>
-                <q-list bordered separator>
-                    <q-item v-for="transaction in walletList"
-                            :key="transaction.hash"
-                            clickable v-ripple="true">
-                        <q-item-section>
-                            <q-item-label caption>
-                                {{ new Date(Number(transaction.timestamp)).toLocaleString() }}
-                            </q-item-label>
-                            <div class="row">
-                                <div class="col">
-                                    {{ transaction.type }}
-                                </div>
-                                <div class="col">
-                                    {{ transaction.details.currency.symbol }}
-                                    {{ transaction.details.amount }}
-                                    <br/>
-                                    {{'$'+ transaction.details.cost +' cost basis'}}
-                                </div>
-                                <div class="col">
-                                    <q-icon name="arrow_right_alt"/>
-                                </div>
-                                <div class="col">
-                                    {{ showUsername("",transaction.details.to || "") }}
-                                    <a :href="'https://dashboard.internetcomputer.org/transaction/' + transaction.hash"
-                                       target="_blank">
-                                        <q-icon name="open_in_new"/>
-                                    </a>
-                                    <br/>
-                                    {{ '≈ $' +
-                                    transaction.details.value +
-                                    ' · $ ' +
-                                    transaction.details.profit + ' profit'
-                                    }}
-                                </div>
-                                <div class="col">
-                                    <q-icon name="reorder"/>
-                                </div>
-                            </div>
-                        </q-item-section>
-                    </q-item>
-                </q-list>
-            </div>
-
+        <div class="buttons q-mb-md">
+            <q-btn color="primary" @click="addWallet = true">Add Wallet</q-btn>
         </div>
+        <q-table
+                grid
+                title="Wallets"
+                :rows="rows"
+                :columns="columns"
+                row-key="name"
+        />
+        <q-dialog v-model="addWallet" persistent>
+            <q-card style="min-width: 350px">
+                <q-card-section>
+                    <div class="text-h6">Your Wallet</div>
+                </q-card-section>
+                <q-card-section class="q-pt-none">
+                    <q-form @submit="onSubmit"
+                            ref="walletForm"
+                            class="q-gutter-md">
+                        <q-input
+                                filled
+                                v-model="wallet.address"
+                                label="Wallet address *"
+                                hint="The correct address allows us to read the"
+                                lazy-rules
+                                :rules="[ val => val && val.length > 0 || 'Please type something']"
+                        />
+                        <q-select filled v-model="wallet.type" :options="types" label="Wallet Type"/>
+                        <q-input
+                                filled
+                                v-model="wallet.name"
+                                label="Wallet name *"
+                                hint="Identify your wallet quickly"
+                                lazy-rules
+                                :rules="[ val => val && val.length > 0 || 'Please type something']"
+                        />
+                        <div class="q-gutter-sm justify-end flex">
+                            <q-btn flat label="Cancel" v-close-popup="true"/>
+                            <q-btn label="Submit" type="submit" color="primary"/>
+                        </div>
+                    </q-form>
+                </q-card-section>
+            </q-card>
+        </q-dialog>
     </div>
 </template>
 
 <script lang="ts" setup>
     import { ref, onMounted } from 'vue';
-    import { getICPTransactions, InferredTransaction } from "@/api/rosetta";
-    import { currencyCalculate, showUsername } from "@/utils/common";
-    import { exportFile } from "quasar";
-    import { getICPPrice } from "@/api/token";
+    import { WalletInfo } from "@/types/user";
 
-    const address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739";
-    const walletList = ref<InferredTransaction[]>([]);
+    const columns = [
+        {
+            name: 'address',
+            required: true,
+            label: 'Address',
+            align: 'left',
+            field: row => row.address,
+        },
+        {name: 'type', align: 'center', label: 'Type', field: 'type', sortable: true},
+        {name: 'name', align: 'center', label: 'Name', field: 'name', sortable: true},
+        {name: 'transactions', label: 'Transactions', field: 'transactions', sortable: true},
+    ]
+    const types = ["NNS", "Plug", "Stoic", "AstorMe"]
+    const addWallet = ref(false);
 
-    onMounted(async () => {
-        getWalletHistory();
+    const wallet = ref({
+        address: "",
+        type: "NNS",
+        name: "",
+        transactions: 0,
     });
+    const walletForm = ref(null);
 
-    const getWalletHistory = async () => {
-        getICPTransactions(address).then(res => {
-            console.log("getWalletHistory", res)
-            if (res.total && res.total != 0) {
-                walletList.value = res.transactions;
+    const rows = ref([
+        {
+            address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+            type: "NNS",
+            name: "wallet1",
+            transactions: 70,
+        }
+    ])
+
+    const onSubmit = () =>{
+        walletForm.value?.validate().then(success => {
+            if (success) {
+                rows.value.push(wallet.value);
+                console.log("rows",rows.value)
+                walletForm.value.resetValidation()
+            }
+            else {
+                // 数据验证失败
+                // 用户至少输入了一个无效值
             }
         })
     }
-    const exportToCSV = async () => {
-        const columnNames = ['Hash', 'Type', 'Status', 'Timestamp', 'From', 'To', 'Amount', 'Fee', 'Memo',
-            'Price', 'Cost', 'Income', 'Profit']
-        // 生成包含列名和数据的数组
-        const data = [columnNames, ...walletList.value.map(transaction => [
-            transaction.hash,
-            transaction.type,
-            transaction.details.status,
-            new Date(Number(transaction.timestamp)).toLocaleString(),
-            transaction.details?.from,
-            transaction.details?.to,
-            transaction.details.amount,
-            transaction.details.fee.amount,
-            '',
-            transaction.details.price,
-            transaction.details.cost,
-            transaction.details.value,
-            transaction.details.profit,
-        ])];
-
-        // 将数据转换为 CSV 格式的字符串
-        const csvContent = data.map(row => row.join(",")).join("\n");
-
-        // 使用 exportFile 函数导出 CSV 文件
-        exportFile(address + ".csv", csvContent, "text/csv");
-    }
-
 
 </script>
 
-<style lang="scss"></style>
+<style lang="scss" scoped>
+
+</style>

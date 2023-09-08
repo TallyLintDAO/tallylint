@@ -174,11 +174,11 @@ const calculateCost = (transaction: InferredTransaction): number => {
         return 0
     } else if (transaction.type === 'SEND') {
         let cost = 0;
-        let sendAmount = transaction.details.amount; // 存储发送数量的局部变量
+        let sendAmount = transaction.details.amount; // 存储本次交易发送的代币数量
 
         while (sendAmount > 0 && purchaseQueue.length > 0) {
             // 从最早购买的交易开始卖出
-            const earliestPurchase = {...purchaseQueue[0]};
+            const earliestPurchase = purchaseQueue[0];
 
             if (earliestPurchase.amount <= sendAmount) {
                 // 如果购买数量小于等于发送数量，则完全卖出该购买交易

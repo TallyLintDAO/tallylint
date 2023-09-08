@@ -18,3 +18,10 @@ export interface UserInfoElement {
     wallet_principal?: string[];
     avatarId?: number;
 }
+
+export interface WalletInfo {
+    address: string;
+    type: 'NNS' | 'Plug' | 'Stoic' | 'AstorMe';
+    name: string;
+    transactions: number;
+}

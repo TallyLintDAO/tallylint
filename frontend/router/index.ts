@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import Home from '@/views/home/Home.vue';
 import App from '@/views/app/Home.vue';
 import NNS from '@/views/app/modules/NNS.vue';
+import Transactions from '@/views/app/modules/Transactions.vue';
 import Wallet from '@/views/app/modules/Wallet.vue';
 import errors from './modules/errors';
 
@@ -17,6 +18,7 @@ const routes: Array<RouteRecordRaw> = [
         component: App,
         children: [
             {path: '', component: Wallet},
+            {path: 'transactions', component: Transactions},
             {path: 'nns', component: NNS}],
     },
     ...errors,
