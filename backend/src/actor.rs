@@ -38,9 +38,9 @@ fn init_canister() {
         ..DaoContext::default()
     };
 
-    let now = context.env.now();
-    let creator1 = GOVERNANACE_BTWL.with(|g| *g);
-    let creator2 = GOVERNANACE_ZHOU.with(|g| *g);
+    let _now = context.env.now();
+    let _creator1 = GOVERNANACE_BTWL.with(|g| *g);
+    let _creator2 = GOVERNANACE_ZHOU.with(|g| *g);
 
     CONTEXT.with(|c| {
         *c.borrow_mut() = context;
@@ -87,7 +87,18 @@ fn post_upgrade() {
 
     print(format!("started post_upgrade {:?}", canister_id));
 
-    save_candid();
+    // save_candid();
+    use candid::export_service;
+    // use ic_cdk_macros::*;
+    ic_cdk::export::candid::export_service!();
+    // #[query(name = "__get_candid_interface_tmp_hack")]
+    fn export_candid() -> String {
+        export_service!();
+        __export_service()
+    }
+    // export_candid();
+    println!("Output of export_candid(): {}", export_candid());
+
 }
 
 fn save_candid() {
@@ -105,7 +116,8 @@ fn save_candid() {
       use std::fs::write;
       use std::path::PathBuf;
 
-      let dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+    //   let dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+      let dir = PathBuf::from("/home/btwl/Desktop/ic/tax_lint/backend");
       println!("dir: {:?}", dir);
       // let dir = dir.parent().unwrap().parent().unwrap().join("candid");
       // println!("dir: {:?}", dir);

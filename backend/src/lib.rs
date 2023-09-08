@@ -1,9 +1,9 @@
 use crate::context::DaoContext;
 
-use std::{cell::RefCell, collections::HashMap};
+use std::{cell::RefCell};
 
-use candid::{CandidType, Deserialize, Principal};
-use ic_cdk::export::candid::candid_method;
+use candid::{Principal};
+
 pub mod actor;
 pub mod common;
 
@@ -26,8 +26,7 @@ thread_local! {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
+    
     #[test]
     fn save_candid() {
 

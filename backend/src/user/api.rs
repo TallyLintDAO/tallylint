@@ -1,10 +1,10 @@
 use candid::Principal;
-use ic_cdk_macros::{query, update};
+use ic_cdk_macros::{update};
 
 use super::{domain::*, error::UserError};
 
-use crate::common::guard::user_owner_guard;
-use crate::context::DaoContext;
+
+
 use crate::CONTEXT;
 
 #[update]
@@ -25,8 +25,8 @@ fn register_user() -> Result<String, UserError> {
 
 
 
-        use rand::{thread_rng, Rng};
-        use rand::rngs::ThreadRng;
+        
+        
         
         // fn generate_random_string(length: usize, rng: &mut ThreadRng) -> String {
         //   let mut string = String::with_capacity(length);
@@ -44,7 +44,7 @@ fn register_user() -> Result<String, UserError> {
         //     name: generate_random_string(12, &mut rng),
         //     memo: generate_random_string(12, &mut rng),
         // };
-        let mut cmd = UserRegisterCommand {
+        let cmd = UserRegisterCommand {
             email: "test_email@example.com".to_string(),
             name: "Test User".to_string(), 
             memo: "For testing".to_string()
