@@ -1,6 +1,6 @@
 <template>
-    <q-layout view="lHh lpR lFr">
-        <q-header elevated class="bg-primary text-white">
+    <q-layout view="lHh lpR lFr" class="home-container">
+        <q-header bordered class="open-header text-dark">
             <q-toolbar>
                 <q-btn dense flat round icon="menu" @click="toggleLeftDrawer"/>
                 <q-toolbar-title>
@@ -18,12 +18,20 @@
                     <q-avatar size="56px" class="q-mb-sm">
                         <img src="https://cdn.quasar.dev/img/boy-avatar.png">
                     </q-avatar>
-                    <div class="text-weight-bold">Razvan Stoenescu</div>
-                    <div>@rstoenescu</div>
+                    <div class="text-weight-bold">User 1</div>
+                    <div>@user</div>
                 </div>
             </q-img>
             <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
                 <q-list padding>
+                    <q-item clickable v-ripple="true">
+                        <q-item-section avatar>
+                            <q-icon name="drafts"/>
+                        </q-item-section>
+                        <q-item-section>
+                            Dashboard
+                        </q-item-section>
+                    </q-item>
                     <q-item active clickable v-ripple="true">
                         <q-item-section avatar>
                             <q-icon name="inbox"/>
@@ -37,7 +45,7 @@
                             <q-icon name="star"/>
                         </q-item-section>
                         <q-item-section>
-                            Star
+                            NNS
                         </q-item-section>
                     </q-item>
 
@@ -46,23 +54,18 @@
                             <q-icon name="send"/>
                         </q-item-section>
                         <q-item-section>
-                            Send
+                            Email Set
                         </q-item-section>
                     </q-item>
-                    <q-item clickable v-ripple="true">
-                        <q-item-section avatar>
-                            <q-icon name="drafts"/>
-                        </q-item-section>
-                        <q-item-section>
-                            Drafts
-                        </q-item-section>
-                    </q-item>
+
                 </q-list>
             </q-scroll-area>
         </q-drawer>
 
         <q-page-container>
-            <router-view/>
+            <div class="q-pa-md q-gutter-md">
+                <router-view/>
+            </div>
         </q-page-container>
 
     </q-layout>
@@ -80,10 +83,11 @@
 
 <style lang="scss">
     .home-container {
-        /*background-color: rgb(246, 246, 246);*/
         min-height: 100vh;
-        /*color: black;*/
-        /*width: 100%;*/
-        /*height: 100%;*/
+        .q-header {
+            background-color: #0000001a;
+            -webkit-backdrop-filter: blur(7px);
+            backdrop-filter: blur(7px);
+        }
     }
 </style>
