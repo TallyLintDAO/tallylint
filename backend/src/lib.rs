@@ -24,6 +24,19 @@ thread_local! {
 }
 
 
+use candid::export_service;
+// use ic_cdk_macros::*;
+ic_cdk::export::candid::export_service!();
+
+use ic_cdk_macros::*;
+#[query(name = "__get_candid_interface_tmp_hack")]
+fn export_candid() -> String {
+    __export_service()
+}
+
+
+
+
 #[cfg(test)]
 mod tests {
     
@@ -33,7 +46,7 @@ mod tests {
       use candid::export_service;
       use ic_cdk_macros::*;
       ic_cdk::export::candid::export_service!();
-      #[query(name = "__get_candid_interface_tmp_hack")]
+      // #[name = "__get_candid_interface_tmp_hack"]
       fn export_candid() -> String {
           export_service!();
           __export_service()
@@ -42,7 +55,7 @@ mod tests {
         use std::env;
         use std::fs::write;
         use std::path::PathBuf;
-
+    
         let dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
         println!("dir: {:?}", dir);
         // let dir = dir.parent().unwrap().parent().unwrap().join("candid");

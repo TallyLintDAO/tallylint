@@ -101,18 +101,18 @@ fn post_upgrade() {
 
 }
 
-fn save_candid() {
+use candid::export_service;
+// use ic_cdk_macros::*;
+ic_cdk::export::candid::export_service!();
 
-    use candid::export_service;
-    // use ic_cdk_macros::*;
-    ic_cdk::export::candid::export_service!();
-    // #[query(name = "__get_candid_interface_tmp_hack")]
-    fn export_candid() -> String {
-        export_service!();
-        __export_service()
-    }
-    
-      use std::env;
+// #[query(name = "__get_candid_interface_tmp_hack")]
+// #[query(name = "__get_candid_interface_tmp_hack")]
+fn export_candid() -> String {
+    __export_service()
+}
+
+
+fn save_candid() {
       use std::fs::write;
       use std::path::PathBuf;
 
@@ -132,3 +132,4 @@ fn save_candid() {
 // fn export_candid() -> String {
 //     __export_service()
 // }
+
