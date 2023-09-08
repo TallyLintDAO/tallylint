@@ -23,6 +23,35 @@ thread_local! {
 
 }
 
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn save_candid() {
+
+      use candid::export_service;
+      use ic_cdk_macros::*;
+      ic_cdk::export::candid::export_service!();
+      #[query(name = "__get_candid_interface_tmp_hack")]
+      fn export_candid() -> String {
+          export_service!();
+          __export_service()
+      }
+      
+        use std::env;
+        use std::fs::write;
+        use std::path::PathBuf;
+
+        let dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+        println!("dir: {:?}", dir);
+        // let dir = dir.parent().unwrap().parent().unwrap().join("candid");
+        // println!("dir: {:?}", dir);
+        write(dir.join("backend.did"), export_candid()).expect("Write failed.");
+    }
+}
+
 // async fn transfer(cmd: TransferCommand) -> Result<BlockIndex, String> {
 //     ic_cdk::println!(
 //         "Transferring {} tokens to principal {} ",

@@ -45,6 +45,9 @@ fn init_canister() {
     CONTEXT.with(|c| {
         *c.borrow_mut() = context;
     });
+
+
+    
 }
 
 #[pre_upgrade]
@@ -83,11 +86,37 @@ fn post_upgrade() {
     });
 
     print(format!("started post_upgrade {:?}", canister_id));
+
+    save_candid();
 }
 
-ic_cdk::export::candid::export_service!();
+fn save_candid() {
 
-#[query(name = "__get_candid_interface_tmp_hack")]
-fn export_candid() -> String {
-    __export_service()
-}
+    use candid::export_service;
+    // use ic_cdk_macros::*;
+    ic_cdk::export::candid::export_service!();
+    // #[query(name = "__get_candid_interface_tmp_hack")]
+    fn export_candid() -> String {
+        export_service!();
+        __export_service()
+    }
+    
+      use std::env;
+      use std::fs::write;
+      use std::path::PathBuf;
+
+      let dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+      println!("dir: {:?}", dir);
+      // let dir = dir.parent().unwrap().parent().unwrap().join("candid");
+      // println!("dir: {:?}", dir);
+      write(dir.join("backend.did"), export_candid()).expect("Write failed.");
+  }
+
+
+// generate did file from rust code . IMPORTANT.
+// ic_cdk::export::candid::export_service!();
+
+// #[query(name = "__get_candid_interface_tmp_hack")]
+// fn export_candid() -> String {
+//     __export_service()
+// }
