@@ -22,6 +22,9 @@ thread_local! {
   // static GOVERNANACE_CREATOR_REPUTATION : u64 = 100_000_000;
 
 }
+use ic_cdk::export_candid;
+export_candid!();
+
 
 // ic_cdk::export::candid::export_service!();
 

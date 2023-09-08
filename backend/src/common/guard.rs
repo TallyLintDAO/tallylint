@@ -1,4 +1,4 @@
-use crate::{user::error::UserError, CONTEXT};
+use crate::{ CONTEXT};
 
 pub fn has_user_guard() -> Result<(), String> {
     CONTEXT.with(|c| {
@@ -7,7 +7,7 @@ pub fn has_user_guard() -> Result<(), String> {
         ctx.user_service
             .get_user(caller)
             .map(|_| ())
-            .ok_or_else(|| UserError::UserNotFound.to_string())
+            .ok_or_else(|| String::from("UserNotFound") )
     })
 }
 

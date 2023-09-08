@@ -1,22 +1,20 @@
 use candid::Principal;
 use ic_cdk_macros::{update};
 
-use super::{domain::*, error::UserError};
-
+use super::{domain::*};
 
 
 use crate::CONTEXT;
 
 #[update]
-// fn register_user(cmd: UserRegisterCommand) -> Result<String, UserError> {
-fn register_user() -> Result<String, UserError> {
+fn register_user() -> Result<String, String> {
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
         let id = ctx.id;
         let caller = ctx.env.caller();
 
         if caller == Principal::anonymous() {
-            return Err(UserError::AnonymousNotAllowRegistering);
+            return Err(String::from("AnonymousNotAllowRegistering") );
         }
 
         let now = ctx.env.now();

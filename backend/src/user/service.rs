@@ -4,7 +4,7 @@ use candid::Principal;
 
 use super::{
     domain::{UserEditCommand, UserProfile, UserStatus},
-    error::UserError,
+
 };
 
 #[derive(Debug, Default)]
@@ -13,10 +13,10 @@ pub struct UserService {
 }
 
 impl UserService {
-    pub fn insert_user(&mut self, user: UserProfile) -> Result<Principal, UserError> {
+    pub fn insert_user(&mut self, user: UserProfile) -> Result<Principal, String> {
         let owner = user.owner;
         match self.users.get(&owner) {
-            Some(_) => Err(UserError::UserAlreadyExists),
+            Some(_) => Err(String::from(" UserAlreadyExists") ),
             None => {
                 self.users.insert(owner, user);
                 Ok(owner)
@@ -36,9 +36,9 @@ impl UserService {
         &mut self,
         cmd: UserEditCommand,
         principal: &Principal,
-    ) -> Result<bool, UserError> {
+    ) -> Result<bool, String> {
         match self.users.get_mut(principal) {
-            None => Err(UserError::UserNotFound),
+            None => Err(String::from("user not found")),
             Some(user) => cmd.build_profile(user),
         }
     }

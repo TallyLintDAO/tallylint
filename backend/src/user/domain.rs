@@ -1,8 +1,8 @@
 use candid::{CandidType, Deserialize, Principal};
 
-use super::error::UserError;
 
-pub const MAX_ACTIVE_USER_EXPERIENCE: u64 = 10;
+
+// pub const MAX_ACTIVE_USER_EXPERIENCE: u64 = 10;
 
 pub type UserId = u64;
 pub type Timestamp = u64;
@@ -132,17 +132,17 @@ pub struct UserWalletUpdateCommand {
 }
 
 impl UserEditCommand {
-    pub fn build_profile(self, profile: &mut UserProfile) -> Result<bool, UserError> {
+    pub fn build_profile(self, profile: &mut UserProfile) -> Result<bool, String> {
         if !UserProfile::valid_name(&self.name) {
-            return Err(UserError::UserNameTooLong);
+            return Err(String::from("Invalid name"));
         }
 
         if !UserProfile::valid_location(&self.location) {
-            return Err(UserError::UserLocationTooLong);
+            return Err(String::from("UserLocationTooLong"));
         }
 
         if !UserProfile::valid_biography(&self.biography) {
-            return Err(UserError::UserBiographyTooLong);
+            return Err(String::from("UserBiographyTooLong"));
         }
 
         profile.email = self.email;
