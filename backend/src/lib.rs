@@ -1,8 +1,8 @@
 use crate::context::DaoContext;
 
-use std::{cell::RefCell};
+use std::cell::RefCell;
 
-use candid::{Principal};
+use candid::Principal;
 
 pub mod actor;
 pub mod common;
@@ -23,46 +23,45 @@ thread_local! {
 
 }
 
+// ic_cdk::export::candid::export_service!();
 
-use candid::export_service;
+
 // use ic_cdk_macros::*;
-ic_cdk::export::candid::export_service!();
-
-use ic_cdk_macros::*;
-#[query(name = "__get_candid_interface_tmp_hack")]
-fn export_candid() -> String {
-    __export_service()
-}
+// #[query(name = "__get_candid_interface_tmp_hack")]
+// fn export_candid() -> String {
+//     __export_service()
+// }
 
 
-
-
-#[cfg(test)]
-mod tests {
+// #[cfg(test)]
+// mod tests {
     
-    #[test]
-    fn save_candid() {
+//     #[test]
+//     fn did() {
 
-      use candid::export_service;
-      use ic_cdk_macros::*;
-      ic_cdk::export::candid::export_service!();
-      // #[name = "__get_candid_interface_tmp_hack"]
-      fn export_candid() -> String {
-          export_service!();
-          __export_service()
-      }
+//       use candid::export_service;
       
-        use std::env;
-        use std::fs::write;
-        use std::path::PathBuf;
+//       ic_cdk::export::candid::export_service!();
+//       #[name = "__get_candid_interface_tmp_hack"]
+//       fn export_candid() -> String {
+//           export_service!();
+//           __export_service()
+//       }
+      
+//         use std::env;
+//         use std::fs::write;
+//         use std::path::PathBuf;
     
-        let dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
-        println!("dir: {:?}", dir);
-        // let dir = dir.parent().unwrap().parent().unwrap().join("candid");
-        // println!("dir: {:?}", dir);
-        write(dir.join("backend.did"), export_candid()).expect("Write failed.");
-    }
-}
+//         let dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+//         println!("dir: {:?}", dir);
+//         // let dir = dir.parent().unwrap().parent().unwrap().join("candid");
+//         // println!("dir: {:?}", dir);
+//         write(dir.join("backend.did"), export_candid()).expect("Write failed.");
+//         println!("write finish");
+//     }
+// }
+
+
 
 // async fn transfer(cmd: TransferCommand) -> Result<BlockIndex, String> {
 //     ic_cdk::println!(

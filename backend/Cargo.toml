@@ -12,16 +12,16 @@ crate-type = [
 
 
 [dependencies]
-candid = "0.8" # for abstraction from backend language . some kind of middle language . decoupling 
+candid = "0.9.6" # for abstraction from backend language . some kind of middle language . decoupling 
 # example : rust-backend -> did code  ; python-backend -> did code .
 
 # The core of Rust CDK :
-ic-cdk = "0.7"
-ic-cdk-timers = "0.1" # Feel free to remove this dependency if you don't need timers
+ic-cdk = "0.10.0"
+ic-cdk-timers = "0.4.0" # Feel free to remove this dependency if you don't need timers
 
 
 # ic-DB : called "stable memory" 
-ic-cdk-macros = "0.6.8"
+ic-cdk-macros = "0.7.1"
 ic-stable-structures = "0.5.6"
 
 
@@ -30,10 +30,11 @@ ic-stable-structures = "0.5.6"
 
 
 # from dep of dao-rights
-serde = "1.0"
+serde = "1.0.188"
 thiserror = "1.0"
 email_address = "0"
 
 
 #new
 rand = "0.5.5" 
+ic-kit = "0.4.8"

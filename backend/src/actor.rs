@@ -85,44 +85,44 @@ fn post_upgrade() {
         *state = state_stable;
     });
 
-    print(format!("started post_upgrade {:?}", canister_id));
+    print(format!("finished post_upgrade {:?}", canister_id));
 
     // save_candid();
-    use candid::export_service;
-    // use ic_cdk_macros::*;
-    ic_cdk::export::candid::export_service!();
-    // #[query(name = "__get_candid_interface_tmp_hack")]
-    fn export_candid() -> String {
-        export_service!();
-        __export_service()
-    }
-    // export_candid();
-    println!("Output of export_candid(): {}", export_candid());
+    // use candid::export_service;
+    // // use ic_cdk_macros::*;
+    // ic_cdk::export::candid::export_service!();
+    // // #[query(name = "__get_candid_interface_tmp_hack")]
+    // fn export_candid() -> String {
+    //     export_service!();
+    //     __export_service()
+    // }
+    // // export_candid();
+    // println!("Output of export_candid(): {}", export_candid());
 
 }
 
-use candid::export_service;
-// use ic_cdk_macros::*;
-ic_cdk::export::candid::export_service!();
+// use candid::export_service;
+// // use ic_cdk_macros::*;
+// ic_cdk::export::candid::export_service!();
 
-// #[query(name = "__get_candid_interface_tmp_hack")]
-// #[query(name = "__get_candid_interface_tmp_hack")]
-fn export_candid() -> String {
-    __export_service()
-}
+// // #[query(name = "__get_candid_interface_tmp_hack")]
+// // #[query(name = "__get_candid_interface_tmp_hack")]
+// fn export_candid() -> String {
+//     __export_service()
+// }
 
 
-fn save_candid() {
-      use std::fs::write;
-      use std::path::PathBuf;
+// fn save_candid() {
+//       use std::fs::write;
+//       use std::path::PathBuf;
 
-    //   let dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
-      let dir = PathBuf::from("/home/btwl/Desktop/ic/tax_lint/backend");
-      println!("dir: {:?}", dir);
-      // let dir = dir.parent().unwrap().parent().unwrap().join("candid");
-      // println!("dir: {:?}", dir);
-      write(dir.join("backend.did"), export_candid()).expect("Write failed.");
-  }
+//     //   let dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+//       let dir = PathBuf::from("/home/btwl/Desktop/ic/tax_lint/backend");
+//       println!("dir: {:?}", dir);
+//       // let dir = dir.parent().unwrap().parent().unwrap().join("candid");
+//       // println!("dir: {:?}", dir);
+//       write(dir.join("backend.did"), export_candid()).expect("Write failed.");
+//   }
 
 
 // generate did file from rust code . IMPORTANT.

@@ -62,3 +62,5 @@ fn register_user() -> Result<String, UserError> {
         }
     })
 }
+
+
