@@ -18,7 +18,7 @@ const routes: Array<RouteRecordRaw> = [
         component: App,
         children: [
             {path: '', component: Wallet},
-            {path: 'transactions', component: Transactions},
+            {path: 'transactions/:address', component: Transactions},
             {path: 'nns', component: NNS}],
     },
     ...errors,

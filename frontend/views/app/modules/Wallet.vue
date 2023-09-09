@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div class="wallet-container">
         <div class="buttons q-mb-md">
             <q-btn color="primary" @click="addWallet = true">Add Wallet</q-btn>
@@ -8,9 +8,24 @@
                 title="Wallets"
                 :rows="rows"
                 :columns="columns"
-                row-key="name"
-        />
-        <q-dialog v-model="addWallet" persistent>
+                row-key="address"
+        >
+            <template v-slot:item="props">
+                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <q-card @click="toDetail(props.row.address)" style="cursor: pointer">
+                        <q-list>
+                            <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')" :key="col.name">
+                                <q-item-section>
+                                    <q-item-label>{{ col.label }}</q-item-label>
+                                    <q-item-label caption>{{ col.value }}</q-item-label>
+                                </q-item-section>
+                            </q-item>
+                        </q-list>
+                    </q-card>
+                </div>
+            </template>
+        </q-table>
+        <q-dialog v-model="addWallet" transition-show="flip-down">
             <q-card style="min-width: 350px">
                 <q-card-section>
                     <div class="text-h6">Your Wallet</div>
@@ -50,6 +65,7 @@
 <script lang="ts" setup>
     import { ref, onMounted } from 'vue';
     import { QForm } from 'quasar';
+    import router from "@/router";
 
     const columns = [
         {
@@ -71,6 +87,12 @@
         name: "",
         transactions: 0,
     });
+    const walletPrototype = ({
+        address: "",
+        type: "NNS",
+        name: "",
+        transactions: 0,
+    });
     const walletForm = ref<QForm | null>(null);
 
     const rows = ref([
@@ -82,12 +104,17 @@
         }
     ])
 
+    const toDetail = (address: string) => {
+        router.push('/transactions/' + address);
+    }
+
     const onSubmit = () => {
         walletForm.value?.validate().then(success => {
             if (success) {
-                rows.value.push(wallet.value);
-                console.log("rows", rows.value)
-                walletForm.value?.resetValidation()
+                rows.value.push({...wallet.value});
+                wallet.value = {...walletPrototype};
+                addWallet.value = false;
+                // walletForm.value?.resetValidation()
             } else {
                 // 数据验证失败
                 // 用户至少输入了一个无效值
@@ -97,6 +124,5 @@
 
 </script>
 
-<style lang="scss" scoped>
-
+<style lang="scss">
 </style>

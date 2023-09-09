@@ -2,6 +2,15 @@ html,
 body {
   height: 100%;
 }
+
+/* 修改quasar组件样式 */
+.q-table__grid-item-value {
+  word-wrap: break-word;
+}
+.q-item__label{
+  word-wrap: break-word;
+}
+
 /* 页面适配 */
 .container {
   padding-left: 0;

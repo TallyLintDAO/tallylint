@@ -57,11 +57,12 @@
 <script lang="ts" setup>
     import { ref, onMounted } from 'vue';
     import { getICPTransactions, InferredTransaction } from "@/api/rosetta";
-    import { currencyCalculate, showUsername } from "@/utils/common";
+    import { showUsername } from "@/utils/common";
     import { exportFile } from "quasar";
-    import { getICPPrice } from "@/api/token";
+    import { useRoute } from "vue-router";
+    const route = useRoute();
 
-    const address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739";
+    const address = route.params.address;
     const walletList = ref<InferredTransaction[]>([]);
 
     onMounted(async () => {
@@ -69,6 +70,7 @@
     });
 
     const getWalletHistory = async () => {
+        //@ts-ignore TODO 传递进来的可能是单个地址，也可能是多个地址，需处理
         getICPTransactions(address).then(res => {
             console.log("getWalletHistory", res)
             if (res.total && res.total != 0) {

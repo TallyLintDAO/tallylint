@@ -148,7 +148,7 @@ export const formatIcpTransaccion = async (
             transaction.details.profit = 0;
         } else if (transaction.type === 'SEND') {
             // const factor = 10 ** radixNumber; //进位10的n次方，扩大倍数将其变成整数，再在计算完成后除以倍数换回小数点
-            //TODO 有点bug，先注释了，用简单粗暴的
+            //TODO 本意是计算精度更准确，但有点bug，先注释了，用简单粗暴的
             // transaction.details.profit =
             //     (transaction.details.value * factor
             //         - transaction.details.cost * factor) / factor;
