@@ -49,19 +49,18 @@
 
 <script lang="ts" setup>
     import { ref, onMounted } from 'vue';
-    import { WalletInfo } from "@/types/user";
+    import { QForm } from 'quasar';
 
     const columns = [
         {
             name: 'address',
             required: true,
             label: 'Address',
-            align: 'left',
             field: row => row.address,
         },
-        {name: 'type', align: 'center', label: 'Type', field: 'type', sortable: true},
-        {name: 'name', align: 'center', label: 'Name', field: 'name', sortable: true},
-        {name: 'transactions', label: 'Transactions', field: 'transactions', sortable: true},
+        {name: 'type', label: 'Type', field: 'type'},
+        {name: 'name', label: 'Name', field: 'name'},
+        {name: 'transactions', label: 'Transactions', field: 'transactions'},
     ]
     const types = ["NNS", "Plug", "Stoic", "AstorMe"]
     const addWallet = ref(false);
@@ -72,7 +71,7 @@
         name: "",
         transactions: 0,
     });
-    const walletForm = ref(null);
+    const walletForm = ref<QForm | null>(null);
 
     const rows = ref([
         {
@@ -83,14 +82,13 @@
         }
     ])
 
-    const onSubmit = () =>{
+    const onSubmit = () => {
         walletForm.value?.validate().then(success => {
             if (success) {
                 rows.value.push(wallet.value);
-                console.log("rows",rows.value)
-                walletForm.value.resetValidation()
-            }
-            else {
+                console.log("rows", rows.value)
+                walletForm.value?.resetValidation()
+            } else {
                 // 数据验证失败
                 // 用户至少输入了一个无效值
             }
