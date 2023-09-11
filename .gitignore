@@ -21,10 +21,13 @@ target/
 # exclusive track and  upload 
 # 1. .dfx/ic/canisters/
 # 2. .dfx/ic/canister_ids.json
-.dfx
-!.dfx/ic/canisters/backend/
+# .dfx
+
+
 
 
 # todo : only want to uplaod / download but never track history? how ?
 
 .env
+
+Cargo.lock
