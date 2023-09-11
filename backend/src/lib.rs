@@ -15,6 +15,7 @@ thread_local! {
 
 // dont remove this  UserRegisterCommand ref : IMPORTANT 
 use crate::user::domain::UserRegisterCommand;
+use crate::user::domain::UserProfile;
 use ic_cdk::export_candid;
 export_candid!();
 
