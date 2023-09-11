@@ -22,11 +22,11 @@ target/
 # 1. .dfx/ic/canisters/
 # 2. .dfx/ic/canister_ids.json
 # .dfx
-/.dfx/
-!.dfx/local/canisters/backend/backend.did
-!.dfx/local/canisters/backend/backend.did.d.ts  
-!.dfx/local/canisters/backend/backend.did.js
-!.dfx/local/canisters/backend/index.js
+.dfx
+!/.dfx/local/canisters/backend/backend.did
+!/.dfx/local/canisters/backend/backend.did.d.ts  
+!/.dfx/local/canisters/backend/backend.did.js
+!/.dfx/local/canisters/backend/index.js
 
 
 
