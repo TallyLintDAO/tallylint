@@ -16,7 +16,8 @@
     "useDefineForClassFields": true,
     "types": ["vite/client"],
     "paths": {
-      "@/*": ["frontend/*"]
+      "@/*": ["frontend/*"],
+      "canisters/backend": ["../services/.dfx/ic/canisters/backend"]
     },
     "baseUrl": ".",
     "importsNotUsedAsValues": "error",

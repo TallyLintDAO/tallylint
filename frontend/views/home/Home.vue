@@ -1,12 +1,13 @@
 <template>
     <div class="home-container">
         <Navigator/>
+        <Login/>
     </div>
 </template>
 
 <script lang="ts" setup>
     import Navigator from '@/components/navigator/Navigator.vue';
-
+    import Login from './modules/Login.vue'
 
 </script>
 

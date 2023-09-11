@@ -8,12 +8,12 @@ import errors from './modules/errors';
 
 const routes: Array<RouteRecordRaw> = [
     {
-        path: '/home',
+        path: '/',
         name: 'Home',
         component: Home,
     },
     {
-        path: '/',
+        path: '/app',
         name: 'App',
         component: App,
         children: [
