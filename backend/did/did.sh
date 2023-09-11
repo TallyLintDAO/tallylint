@@ -20,3 +20,7 @@ for canister in $(echo $CANISTERS | sed "s/,/ /g")
 do
   generate_did "$canister"
 done
+
+
+# cargo build --target wasm32-unknown-unknown --release --package "backend"      --features "ic-cdk/wasi"
+# wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm"  > backend.did  --allow-precompiled

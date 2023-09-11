@@ -22,6 +22,8 @@ thread_local! {
   // static GOVERNANACE_CREATOR_REPUTATION : u64 = 100_000_000;
 
 }
+
+// new auto did generate: in ic_cdk 0.10.0
 use ic_cdk::export_candid;
 export_candid!();
 
