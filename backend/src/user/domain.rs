@@ -1,9 +1,6 @@
 use candid::{CandidType, Deserialize, Principal};
 
 
-
-// pub const MAX_ACTIVE_USER_EXPERIENCE: u64 = 10;
-
 pub type UserId = u64;
 pub type Timestamp = u64;
 

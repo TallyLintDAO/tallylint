@@ -1,8 +1,0 @@
-type Result = variant { Ok : text; Err : text };
-service : {
-  get_caller : () -> (text) query;
-  greet : (text) -> (text) query;
-  next_id : () -> (nat64) query;
-  now : () -> (nat64) query;
-  register_user : () -> (Result);
-}
