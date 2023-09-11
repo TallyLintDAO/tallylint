@@ -52,19 +52,17 @@ export const getICPPriceHistory = async (): Promise<[number, number][]> => {
         };
 
         const response = await axios.get(url, {params});
-
         if (response.status === 200) {
             // 解析响应数据
-            const priceData: [number, number][] = response.data.prices;
             // priceData 包含时间戳和价格数据
-            // 这里可以根据需要对数据进行处理
-            // console.log("priceData", priceData)
+            const priceData: [number, number][] = response.data.prices;
             return priceData;
         } else {
             showMessageError('Can not connect CoinGecko api, please check if you have access to CoinGecko')
             throw new Error('Failed to fetch ICP price data');
         }
     } catch (error) {
+        showMessageError('Can not connect CoinGecko api, please check if you have access to CoinGecko')
         console.error('Error fetching ICP price data:', error);
         throw error;
     }

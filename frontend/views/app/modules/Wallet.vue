@@ -15,7 +15,7 @@
             </template>
             <template v-slot:item="props">
                 <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3">
-                    <q-card @click="toDetail(props.row.address)" style="cursor: pointer">
+                    <q-card @click="toDetail(props.row.address)" class="cursor-pointer">
                         <q-list>
                             <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')" :key="col.name">
                                 <q-item-section>

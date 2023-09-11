@@ -1,7 +1,7 @@
 <template>
-    <div class="wallet-container">
-        <div class="row items-start">
-            <div class="header">
+    <div class="transactions-container">
+        <div class="column ">
+            <div class="header q-gutter-md row q-mb-md">
                 <q-select v-model="model" :options="options" label="Cost Basis Method"/>
                 <q-btn flat color="primary" icon="file_download" label="Export CSV"
                        @click="exportToCSV"/>
@@ -11,9 +11,7 @@
                                 color="primary"
                 />
             </div>
-
             <div v-else style="width: 100%">
-
                 <q-list bordered separator>
                     <q-item v-for="transaction in walletList"
                             :key="transaction.hash"
@@ -118,4 +116,13 @@
 
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+    .transactions-container{
+        .header{
+            .q-select{
+                width: 150px;
+            }
+        }
+    }
+
+</style>
