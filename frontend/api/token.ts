@@ -1,6 +1,7 @@
 import axios from "axios";
 import { COINGECKO_URL } from "@/api/constants/ic";
 import { getCache, TTL } from "@/utils/cache";
+import { showMessageError } from "@/utils/message";
 
 export const getICPPrice = async (timestamp: number): Promise<string | undefined> => {
     //将小数点的时间戳转为整数时间戳
@@ -60,6 +61,7 @@ export const getICPPriceHistory = async (): Promise<[number, number][]> => {
             // console.log("priceData", priceData)
             return priceData;
         } else {
+            showMessageError('Can not connect CoinGecko api, please check if you have access to CoinGecko')
             throw new Error('Failed to fetch ICP price data');
         }
     } catch (error) {

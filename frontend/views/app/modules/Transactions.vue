@@ -1,12 +1,19 @@
 <template>
     <div class="wallet-container">
         <div class="row items-start">
-            <div v-if="walletList.length===0">
-                no data
-            </div>
-            <div v-else style="width: 100%">
+            <div class="header">
+                <q-select v-model="model" :options="options" label="Cost Basis Method"/>
                 <q-btn flat color="primary" icon="file_download" label="Export CSV"
                        @click="exportToCSV"/>
+            </div>
+            <div v-if="walletList.length===0">
+                <q-spinner-cube size="xl"
+                                color="primary"
+                />
+            </div>
+
+            <div v-else style="width: 100%">
+
                 <q-list bordered separator>
                     <q-item v-for="transaction in walletList"
                             :key="transaction.hash"
@@ -42,7 +49,7 @@
                                     }}
                                 </div>
                                 <div class="col">
-                                    <q-icon name="reorder"/>
+                                    <q-icon name="more_vert"/>
                                 </div>
                             </div>
                         </q-item-section>
@@ -60,10 +67,13 @@
     import { showUsername } from "@/utils/common";
     import { exportFile } from "quasar";
     import { useRoute } from "vue-router";
+
     const route = useRoute();
 
     const address = route.params.address;
     const walletList = ref<InferredTransaction[]>([]);
+    const options = ['FIFO'];
+    const model = ref('FIFO')
 
     onMounted(async () => {
         getWalletHistory();

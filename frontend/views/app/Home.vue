@@ -32,7 +32,7 @@
                             Dashboard
                         </q-item-section>
                     </q-item>
-                    <q-item active clickable v-ripple="true">
+                    <q-item to="/" active clickable v-ripple="true">
                         <q-item-section avatar>
                             <q-icon name="inbox"/>
                         </q-item-section>

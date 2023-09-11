@@ -10,6 +10,9 @@
                 :columns="columns"
                 row-key="address"
         >
+            <template v-slot:top-right>
+                <q-btn color="primary" @click="addWallet = true">Add Wallet</q-btn>
+            </template>
             <template v-slot:item="props">
                 <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3">
                     <q-card @click="toDetail(props.row.address)" style="cursor: pointer">

@@ -1,6 +1,7 @@
 import { LEDGER_CANISTER_ID, MILI_PER_SECOND, NET_ID, ROSETTA_URL } from "@/api/constants/ic";
 import { getICPPrice } from "@/api/token";
 import { currencyCalculate } from "@/utils/common";
+import { showMessageError } from "@/utils/message";
 
 const radixNumber = 4;//保留4位小数
 
@@ -54,8 +55,10 @@ export const getICPTransactions = async (
             Accept: '*/*',
         },
     });
-    if (!response.ok)
+    if (!response.ok) {
+        showMessageError('Can not connect ICP rosetta api')
         throw Error("error for rosetta api" + response.statusText);
+    }
     const {transactions, total_count} = await response.json();
     console.log("rosetta api:", transactions)
     const transactionsInfo: InferredTransaction[] = [];
