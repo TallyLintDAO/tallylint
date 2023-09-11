@@ -29,6 +29,11 @@ target/
 !/.dfx/local/canisters/backend/index.js
 
 
+!/.dfx/ic/canisters/backend/backend.did
+!/.dfx/ic/canisters/backend/backend.did.d.ts  
+!/.dfx/ic/canisters/backend/backend.did.js
+!/.dfx/ic/canisters/backend/index.js
+
 
 
 
