@@ -5,8 +5,8 @@ pub struct UserProfile {
     pub owner: Principal, // 用户 Principal
     pub name: String,
     pub created_at: u64,
-    // pub custom_wallet_info_array: Vec<CustomWalletInfo>,
-    pub custom_wallet_info: Option<CustomWalletInfo>,
+    pub custom_wallet_info_array: Vec<CustomWalletInfo>,
+    // pub custom_wallet_info: Option<CustomWalletInfo>,
 }
 
 impl UserProfile {
@@ -19,16 +19,12 @@ impl UserProfile {
             owner,
             name,
             created_at,
-            custom_wallet_info:None,
+            custom_wallet_info_array: Vec::new(),
         }
     }
 }
 
-#[derive(Debug, Clone, CandidType, Deserialize)]
-pub enum UserStatus {
-    Enable,
-    Disable,
-}
+
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct UserRegisterCommand {
@@ -59,12 +55,17 @@ pub struct UserWalletUpdateCommand {
 // use ic_cdk::api::time;
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct CustomWalletInfo {
-    // frontend para input
-    pub wallet_addr: Principal,
-    pub wallet_type: String,
-    pub wallet_name: String, 
+    pub front_end_wallet_info: FrontEndWalletInfo,
     // backend auto-gen
     pub wallet_id: String,
     pub wallet_register_time: u64,//ic_cdk::api::time();
+}
+
+#[derive(Debug, Clone, CandidType, Deserialize)]
+pub struct FrontEndWalletInfo {
+    // frontend para input
+    pub wallet_addr: String,
+    pub wallet_type: String,//NNS Plug  Stoic AstorMe  .. maybe add more
+    pub wallet_name: String, 
 }
 

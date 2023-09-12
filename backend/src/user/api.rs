@@ -47,13 +47,13 @@ fn auto_register_user() -> Result<UserProfile, String> {
             None => {
                 // let id = ctx.id;
                 let now = ctx.env.now();
-                let random_user_name = "".to_string() ;//+ &generate_random_string(6);
+                let empty_name = "".to_string(); //+ &generate_random_string(6);
                 let cmd = UserRegisterCommand {
                     // email: "".to_string(),
-                    name: random_user_name,
+                    name: empty_name,
                     // memo: "".to_string(),
                 };
-                let user = cmd.build_profile( caller, now);
+                let user = cmd.build_profile(caller, now);
                 match ctx.user_service.insert_user(user.clone()) {
                     Ok(_) => {
                         ctx.id += 1; // 注册成功，id + 1
@@ -66,7 +66,7 @@ fn auto_register_user() -> Result<UserProfile, String> {
     })
 }
 
-const MAX_WALLET_NAME_LENGTH: usize = 32;
+const MAX_WALLET_NAME_LENGTH: usize = 64;
 
 /**
 插入,和更新钱包.
@@ -75,34 +75,40 @@ const MAX_WALLET_NAME_LENGTH: usize = 32;
 */
 use crate::common::guard::user_owner_guard;
 #[update(guard = "user_owner_guard")]
-fn update_wallet(mut info: CustomWalletInfo) -> Result<bool, String> {
-    if info.wallet_name.len() > MAX_WALLET_NAME_LENGTH {
-        return Err(String::from("Wallet name exceeds maximum length 32"));
+fn add_wallet(front_end_wallet_info: FrontEndWalletInfo) -> Result<bool, String> {
+    if front_end_wallet_info.wallet_name.len() > MAX_WALLET_NAME_LENGTH {
+        return Err(String::from("Wallet name exceeds maximum length 64"));
     }
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
         let user = ctx.env.caller();
-        info.wallet_id = ctx.id.to_string() + "_wallet_" ;
-        ctx.id += 1;//+ &generate_random_string(6);
-        info.wallet_id=info.wallet_id+&ctx.id.to_string();
-        info.wallet_register_time=ic_cdk::api::time();
+        let mut custom_wallet_info = CustomWalletInfo {
+            front_end_wallet_info: front_end_wallet_info.clone(),
+            wallet_id: String::new(), // Set the desired value for wallet_id
+            wallet_register_time: 0,  // Set the desired value for wallet_register_time
+        };
+        custom_wallet_info.wallet_id = "wallet_".to_string()
+            + &custom_wallet_info
+                .front_end_wallet_info
+                .wallet_addr
+                .to_string();
+        custom_wallet_info.wallet_register_time = ic_cdk::api::time();
         ctx.user_service
-            .update_wallet(&user, info)
+            .add_wallet(&user, custom_wallet_info)
             .ok_or(String::from("UserNotFound"))
     })
 }
 
 #[update(guard = "user_owner_guard")]
-fn delete_wallet(wallet_addr:String) -> Result<bool, String> {
+fn delete_wallet(wallet_addr: String) -> Result<bool, String> {
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
         let user = ctx.env.caller();
         ctx.user_service
-            .delete_wallet(&user)
-            .ok_or(String::from("UserNotFound"))
+            .delete_wallet(&user, wallet_addr)
+            .ok_or(String::from("WalletNotFound"))
     })
 }
-
 
 // #[cfg(test)]
 // mod tests {
@@ -116,7 +122,7 @@ fn delete_wallet(wallet_addr:String) -> Result<bool, String> {
 //         let info = CustomWalletInfo {
 //             wallet_addr: Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap(),
 //             wallet_type: "Ledger".to_string(),
-//             wallet_name: "My Ledger Wallet".to_string(),  
+//             wallet_name: "My Ledger Wallet".to_string(),
 //             wallet_id: "123".to_string(),
 //             wallet_register_time: ic_cdk::api::time()
 //           };
