@@ -36,8 +36,10 @@
                 setCurrentIdentity(ii.identity, ii.principal);
                 // 保存 principal 到状态
                 userStore.setPrincipal(ii.principal).then(() => {
-                    // 每次成功获取到登录信息后就调用一次注册
-                    getUserInfoFromServices();
+                    //直接跳转到应用中，在应用里获取userInfo，加快速度。
+                    router.push({
+                        path: '/app',
+                    });
                 });
             })
             .catch((e) => {

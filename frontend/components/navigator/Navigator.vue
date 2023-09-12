@@ -1,14 +1,11 @@
 <template>
     <div class="navigator-container">
-        <nav class="navbar">
-            <div class="logo">
-                <img alt="logo" src="@/assets/dfinity.svg" @click="onHome"/>
+        <q-toolbar class="navbar">
+            <img alt="logo" src="@/assets/dfinity.svg" class="cursor-pointer" @click="onHome"/>
+            <q-toolbar-title>
                 TaxLint
-            </div>
-            <div class="nav-right">
-
-            </div>
-        </nav>
+            </q-toolbar-title>
+        </q-toolbar>
     </div>
 </template>
 <script lang="ts" setup>

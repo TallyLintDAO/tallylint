@@ -14,10 +14,10 @@ const routes: Array<RouteRecordRaw> = [
     },
     {
         path: '/app',
-        name: 'App',
+        // name: 'App',
         component: App,
         children: [
-            {path: '', component: Wallet},
+            {name: 'App',path: '', component: Wallet},
             {path: 'transactions/:address', component: Transactions},
             {path: 'nns', component: NNS}],
     },

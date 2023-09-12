@@ -13,7 +13,7 @@
         </q-header>
 
         <q-drawer v-model="leftDrawerOpen" side="left" show-if-above :breakpoint="430">
-            <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px">
+            <q-img class="absolute-top" src="@/assets/material.png" style="height: 150px">
                 <div class="absolute-bottom bg-transparent">
                     <q-avatar size="56px" class="q-mb-sm" :style="{ backgroundColor }">
                         {{ showAvatar }}

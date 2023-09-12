@@ -20,7 +20,6 @@ export function showAvatarName(username: string, principalId: string) {
 
 // 统一处理显示用户名的逻辑
 export function showUsername(username: string, principalId: string): string {
-    console.log("showUsername", username, principalId)
     const MAX_LENGTH = 15; // 显示的最长字符
     if (username) {
         if (username.length >= MAX_LENGTH) {
