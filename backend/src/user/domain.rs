@@ -57,15 +57,15 @@ pub struct UserWalletUpdateCommand {
 pub struct CustomWalletInfo {
     pub front_end_wallet_info: FrontEndWalletInfo,
     // backend auto-gen
-    pub wallet_id: String,
-    pub wallet_register_time: u64,//ic_cdk::api::time();
+    pub id: String,
+    pub register_time: u64,//ic_cdk::api::time();
 }
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct FrontEndWalletInfo {
     // frontend para input
-    pub wallet_addr: String,
-    pub wallet_type: String,//NNS Plug  Stoic AstorMe  .. maybe add more
-    pub wallet_name: String, 
+    pub addr: String,
+    pub w_type: String,//NNS Plug  Stoic AstorMe  .. maybe add more
+    pub name: String, 
 }
 

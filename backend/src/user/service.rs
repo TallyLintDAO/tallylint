@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, str::FromStr};
+use std::{collections::BTreeMap};
 
 use candid::Principal;
 
@@ -48,7 +48,7 @@ impl UserService {
         if let Some(profile)=self.get_profile(user){
             let custom_wallet_info_array = &profile.custom_wallet_info_array;
             for (index, custom_wallet_info) in custom_wallet_info_array.iter().enumerate() {
-                if custom_wallet_info.front_end_wallet_info.wallet_addr == wallet_addr {
+                if custom_wallet_info.front_end_wallet_info.addr == wallet_addr {
                     self
                     .users
                     .get_mut(user)

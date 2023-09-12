@@ -76,7 +76,7 @@ const MAX_WALLET_NAME_LENGTH: usize = 64;
 use crate::common::guard::user_owner_guard;
 #[update(guard = "user_owner_guard")]
 fn add_wallet(front_end_wallet_info: FrontEndWalletInfo) -> Result<bool, String> {
-    if front_end_wallet_info.wallet_name.len() > MAX_WALLET_NAME_LENGTH {
+    if front_end_wallet_info.name.len() > MAX_WALLET_NAME_LENGTH {
         return Err(String::from("Wallet name exceeds maximum length 64"));
     }
     CONTEXT.with(|c| {
@@ -84,15 +84,15 @@ fn add_wallet(front_end_wallet_info: FrontEndWalletInfo) -> Result<bool, String>
         let user = ctx.env.caller();
         let mut custom_wallet_info = CustomWalletInfo {
             front_end_wallet_info: front_end_wallet_info.clone(),
-            wallet_id: String::new(), // Set the desired value for wallet_id
-            wallet_register_time: 0,  // Set the desired value for wallet_register_time
+            id: String::new(), // Set the desired value for wallet_id
+            register_time: 0,  // Set the desired value for wallet_register_time
         };
-        custom_wallet_info.wallet_id = "wallet_".to_string()
+        custom_wallet_info.id = "wallet_".to_string()
             + &custom_wallet_info
                 .front_end_wallet_info
-                .wallet_addr
+                .addr
                 .to_string();
-        custom_wallet_info.wallet_register_time = ic_cdk::api::time();
+        custom_wallet_info.register_time = ic_cdk::api::time();
         ctx.user_service
             .add_wallet(&user, custom_wallet_info)
             .ok_or(String::from("UserNotFound"))
@@ -110,6 +110,14 @@ fn delete_wallet(wallet_addr: String) -> Result<bool, String> {
     })
 }
 
+#[update(guard = "user_owner_guard")]
+fn mock_login(principal: String)  {
+    CONTEXT.with(|c| {
+        let mut ctx = c.borrow_mut();
+        let user = Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap();
+        
+    })
+}
 // #[cfg(test)]
 // mod tests {
 //     use crate::user::domain::CustomWalletInfo;

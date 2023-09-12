@@ -1,24 +1,23 @@
 type CustomWalletInfo = record {
-  wallet_register_time : nat64;
-  wallet_addr : principal;
-  wallet_name : text;
-  wallet_type : text;
-  wallet_id : text;
+  id : text;
+  register_time : nat64;
+  front_end_wallet_info : FrontEndWalletInfo;
 };
-type Result = variant { Ok : UserProfile; Err : text };
-type Result_1 = variant { Ok : bool; Err : text };
+type FrontEndWalletInfo = record { addr : text; name : text; w_type : text };
+type Result = variant { Ok : bool; Err : text };
+type Result_1 = variant { Ok : UserProfile; Err : text };
 type UserProfile = record {
-  custom_wallet_info : opt CustomWalletInfo;
   owner : principal;
   name : text;
   created_at : nat64;
+  custom_wallet_info_array : vec CustomWalletInfo;
 };
 service : () -> {
-  auto_register_user : () -> (Result);
-  delete_wallet : (text) -> (Result_1);
+  add_wallet : (FrontEndWalletInfo) -> (Result);
+  auto_register_user : () -> (Result_1);
+  delete_wallet : (text) -> (Result);
   get_caller : () -> (text) query;
   greet : (text) -> (text) query;
   next_id : () -> (nat64) query;
   now : () -> (nat64) query;
-  update_wallet : (CustomWalletInfo) -> (Result_1);
 }

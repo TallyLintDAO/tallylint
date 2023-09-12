@@ -1,6 +1,7 @@
 use crate::context::DaoContext;
 use std::cell::RefCell;
 use candid::Principal;
+// export apis below each
 pub mod actor;
 pub mod common;
 pub mod context;
@@ -12,11 +13,9 @@ thread_local! {
   static GOVERNANACE_BTWL : Principal = Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap();
 }
 // new auto did generate: in ic_cdk 0.10.0
-// IMPORTANT :dont remove this  UserRegisterCommand ref 
-// cargp hint to remove these is shit. dont believe .
-use crate::user::domain::UserRegisterCommand;
-use crate::user::domain::{ UserProfile, CustomWalletInfo};
-
+// IMPORTANT :dont remove ref 
+// cargp hint to remove these is wrong. dont believe.
+use crate::user::domain::*;
 
 use ic_cdk::export_candid;
 export_candid!();
