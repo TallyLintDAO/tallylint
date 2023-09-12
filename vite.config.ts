@@ -242,7 +242,7 @@ function initAlias(canisterIds: {}, network: string, apiPositions: {}) {
                 path.join(__dirname, apiPositions[canister] + '/index.js'),
             );
         } else {
-            console.log(`canister ${canister} api position is missing.`);
+            console.error(`canister ${canister} api position is missing.`);
         }
     }
     return canistersAlias;

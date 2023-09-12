@@ -62,7 +62,7 @@
 <script lang="ts" setup>
     import { ref, onMounted } from 'vue';
     import { getICPTransactions, InferredTransaction } from "@/api/rosetta";
-    import { showUsername } from "@/utils/common";
+    import { showUsername } from "@/utils/avatars";
     import { exportFile } from "quasar";
     import { useRoute } from "vue-router";
 

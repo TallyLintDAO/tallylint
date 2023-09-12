@@ -108,7 +108,7 @@
     ])
 
     const toDetail = (address: string) => {
-        router.push('/transactions/' + address);
+        router.push('/app/transactions/' + address);
     }
 
     const onSubmit = () => {

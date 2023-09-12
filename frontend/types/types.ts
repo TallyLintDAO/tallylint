@@ -24,7 +24,6 @@ export type ApiResultByPage<T> = {
 export type ApiUserInfo = {
     id: bigint; //id
     owner: Principal | string; // 用户principal，唯一。从后端接受时是principal格式，再通过toString显示成字符串格式。
-    email: string;
     name: string;
     created_at: bigint;
 };

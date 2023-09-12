@@ -17,7 +17,7 @@
     "types": ["vite/client"],
     "paths": {
       "@/*": ["frontend/*"],
-      "canisters/backend": ["../services/.dfx/ic/canisters/backend"]
+      "canisters/backend": ["./.dfx/ic/canisters/backend"]
     },
     "baseUrl": ".",
     "importsNotUsedAsValues": "error",
