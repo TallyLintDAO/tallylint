@@ -6,48 +6,48 @@ pub type Timestamp = u64;
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct UserProfile {
-    pub id: UserId,
+    // pub id: UserId,
     pub owner: Principal, // 用户 Principal
-    pub email: String,
+    // pub email: String,
     pub name: String,
-    pub avatar_id: u64,
-    pub avatar_uri: String,
-    pub biography: String,
-    pub interests: Vec<String>,
-    pub location: String,
-    pub memo: String,
-    pub status: UserStatus,
+    // pub avatar_id: u64,
+    // pub avatar_uri: String,
+    // pub biography: String,
+    // pub interests: Vec<String>,
+    // pub location: String,
+    // pub memo: String,
+    // pub status: UserStatus,
     pub created_at: Timestamp,
     pub wallet_principal: Option<Principal>,
 }
 
 impl UserProfile {
     pub fn new(
-        id: UserId,
+        // id: UserId,
         owner: Principal,
-        email: String,
+        // email: String,
         name: String,
-        avatar_id: u64,
-        avatar_uri: String,
-        biography: String,
-        interests: Vec<String>,
-        location: String,
-        memo: String,
-        status: UserStatus,
+        // avatar_id: u64,
+        // avatar_uri: String,
+        // biography: String,
+        // interests: Vec<String>,
+        // location: String,
+        // memo: String,
+        // status: UserStatus,
         created_at: u64,
     ) -> Self {
         Self {
-            id,
+            // id,
             owner,
-            email,
+            // email,
             name,
-            avatar_id,
-            avatar_uri,
-            biography,
-            interests,
-            location,
-            memo,
-            status,
+            // avatar_id,
+            // avatar_uri,
+            // biography,
+            // interests,
+            // location,
+            // memo,
+            // status,
             created_at,
             wallet_principal: None,
         }
@@ -79,9 +79,9 @@ pub enum UserStatus {
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct UserRegisterCommand {
-    pub email: String,
+    // pub email: String,
     pub name: String,
-    pub memo: String,
+    // pub memo: String,
 }
 
 impl UserRegisterCommand {
@@ -93,17 +93,17 @@ impl UserRegisterCommand {
         created_at: u64,
     ) -> UserProfile {
         UserProfile::new(
-            id,
+            // id,
             owner,
-            self.email,
+            // self.email,
             self.name,
-            0,
-            "".to_string(),
-            "".to_string(),
-            vec![],
-            "".to_string(),
-            self.memo,
-            status,
+            // 0,
+            // "".to_string(),
+            // "".to_string(),
+            // vec![],
+            // "".to_string(),
+            // self.memo,
+            // status,
             created_at,
         )
     }
@@ -142,15 +142,15 @@ impl UserEditCommand {
             return Err(String::from("UserBiographyTooLong"));
         }
 
-        profile.email = self.email;
+        // profile.email = self.email;
         profile.name = self.name;
-        profile.avatar_id = self.avatar_id;
-        profile.avatar_uri = self.avatar_uri;
-        profile.biography = self.biography;
-        profile.interests = self.interests;
-        profile.memo = self.memo;
-        profile.location = self.location;
-        profile.status = self.status;
+        // profile.avatar_id = self.avatar_id;
+        // profile.avatar_uri = self.avatar_uri;
+        // profile.biography = self.biography;
+        // profile.interests = self.interests;
+        // profile.memo = self.memo;
+        // profile.location = self.location;
+        // profile.status = self.status;
 
         Ok(true)
     }
@@ -163,9 +163,9 @@ mod tests {
     #[test]
     fn empty_name_should_work() {
         let cmd = UserRegisterCommand {
-            email: "".to_string(),
+            // email: "".to_string(),
             name: "".to_string(),
-            memo: "".to_string(),
+            // memo: "".to_string(),
         };
         let id = 10001;
         let owner = Principal::anonymous();

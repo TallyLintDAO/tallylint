@@ -2,7 +2,7 @@ use candid::{CandidType, Deserialize, Principal};
 use std::collections::BTreeMap;
 use std::iter::FromIterator;
 
-use crate::env::{CanisterEnvironment, EmptyEnvironment, Environment};
+use crate::env::{CanisterEnvironment,  Environment};
 
 
 // pub mod user;
@@ -33,7 +33,7 @@ pub struct DaoContext {
 impl Default for DaoContext {
     fn default() -> Self {
         Self {
-            env: Box::new(EmptyEnvironment {}),
+            env: Box::new(CanisterEnvironment {}),
             id: 10001,
             user_service: UserService::default(),
         }

@@ -1,22 +1,12 @@
 type Result = variant { Ok : UserProfile; Err : text };
 type Result_1 = variant { Ok : text; Err : text };
 type UserProfile = record {
-  id : nat64;
-  status : UserStatus;
   owner : principal;
-  interests : vec text;
-  avatar_uri : text;
-  memo : text;
   name : text;
-  biography : text;
   wallet_principal : opt principal;
   created_at : nat64;
-  email : text;
-  avatar_id : nat64;
-  location : text;
 };
-type UserRegisterCommand = record { memo : text; name : text; email : text };
-type UserStatus = variant { Enable; Disable };
+type UserRegisterCommand = record { name : text };
 service : {
   auto_register_user : () -> (Result);
   get_caller : () -> (text) query;

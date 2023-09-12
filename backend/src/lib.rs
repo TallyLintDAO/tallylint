@@ -12,8 +12,7 @@ thread_local! {
   static GOVERNANACE_BTWL : Principal = Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap();
 }
 // new auto did generate: in ic_cdk 0.10.0
-
-// dont remove this  UserRegisterCommand ref : IMPORTANT 
+// IMPORTANT :dont remove this  UserRegisterCommand ref 
 use crate::user::domain::UserRegisterCommand;
 use crate::user::domain::UserProfile;
 use ic_cdk::export_candid;

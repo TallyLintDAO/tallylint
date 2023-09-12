@@ -38,3 +38,6 @@ email_address = "0"
 #new
 rand = "0.5.5" 
 ic-kit = "0.4.8"
+random-string = "1.0.0"
+js-sys = "0.3"
+wasm-bindgen = "0.2"

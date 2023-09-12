@@ -3,8 +3,7 @@ use std::collections::BTreeMap;
 use candid::Principal;
 
 use super::{
-    domain::{UserEditCommand, UserProfile, UserStatus},
-
+    domain::{UserEditCommand, UserProfile},
 };
 
 #[derive(Debug, Default)]
@@ -41,24 +40,6 @@ impl UserService {
             None => Err(String::from("user not found")),
             Some(user) => cmd.build_profile(user),
         }
-    }
-
-    pub fn enable_user(&mut self, principal: &Principal) -> Option<bool> {
-        self.users
-            .get_mut(principal)
-            .map(|profile| {
-                profile.status = UserStatus::Enable;
-            })
-            .map(|_| true)
-    }
-
-    pub fn disable_user(&mut self, principal: &Principal) -> Option<bool> {
-        self.users
-            .get_mut(principal)
-            .map(|profile| {
-                profile.status = UserStatus::Disable;
-            })
-            .map(|_| true)
     }
 
     pub fn update_wallet(&mut self, user: &Principal, wallet: Principal) -> Option<bool> {
