@@ -66,6 +66,13 @@ impl UserService {
         }
     }
 
+    pub fn  query_wallet_array(&mut self,user: &Principal)->Vec<CustomWalletInfo>{
+        if let Some(user_profile) = self.users.get(user) {
+            if let Some(wallet_array) = &user_profile.custom_wallet_info_array {
+                return wallet_array.clone();
+            }
+    }
+
     pub fn get_profile(&self, owner: &Principal) -> Option<&UserProfile> {
         self.users.get(owner)
     }

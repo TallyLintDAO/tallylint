@@ -1,5 +1,5 @@
 use candid::Principal;
-use ic_cdk_macros::update;
+use ic_cdk_macros::{update, query};
 // use random_string::generate;
 use super::domain::*;
 use crate::user::domain::UserRegisterCommand;
@@ -110,12 +110,24 @@ fn delete_wallet(wallet_addr: String) -> Result<bool, String> {
     })
 }
 
+#[query(guard = "user_owner_guard")]
+fn query_wallet_array() -> Result<Vec<CustomWalletInfo>, String> {
+    CONTEXT.with(|c| {
+        let mut ctx = c.borrow_mut();
+        let user = ctx.env.caller();
+        ctx.user_service
+            .query_wallet_array(&user)
+            .ok_or(String::from("WalletNotFound"))
+    })
+}
+
+
 #[update(guard = "user_owner_guard")]
 fn mock_login(principal: String)  {
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
         let user = Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap();
-        
+
     })
 }
 // #[cfg(test)]
