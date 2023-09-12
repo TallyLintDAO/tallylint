@@ -32,9 +32,7 @@ pub enum UserStatus {
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct UserRegisterCommand {
-    // pub email: String,
     pub name: String,
-    // pub memo: String,
 }
 
 impl UserRegisterCommand {

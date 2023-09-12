@@ -36,6 +36,8 @@ target/
 
 my_deploy.sh
 
+change_name.sh
+
 
 
 # todo : only want to uplaod / download but never track history? how ?

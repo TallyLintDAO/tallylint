@@ -45,9 +45,9 @@ fn auto_register_user() -> Result<UserProfile, String> {
         match ctx.user_service.get_user(&caller) {
             Some(u) => Ok(u),
             None => {
-                let id = ctx.id;
+                // let id = ctx.id;
                 let now = ctx.env.now();
-                let random_user_name = "user_test".to_string() ;//+ &generate_random_string(6);
+                let random_user_name = "".to_string() ;//+ &generate_random_string(6);
                 let cmd = UserRegisterCommand {
                     // email: "".to_string(),
                     name: random_user_name,
