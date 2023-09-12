@@ -1,4 +1,4 @@
-use crate::{ CONTEXT};
+use crate::CONTEXT;
 
 pub fn has_user_guard() -> Result<(), String> {
     CONTEXT.with(|c| {

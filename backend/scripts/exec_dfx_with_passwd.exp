@@ -1,0 +1,11 @@
+#!/usr/bin/expect
+
+set passphrase "$env(DFXPASS_BTWL0)"  
+
+spawn dfx deploy backend --network ic
+
+expect "Please enter the passphrase for your identity: "
+
+send "$passphrase\r" 
+
+expect eof

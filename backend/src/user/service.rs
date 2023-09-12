@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use candid::Principal;
 
 use super::{
-    domain::{UserEditCommand, UserProfile, CustomWalletInfo},
+    domain::{ UserProfile, CustomWalletInfo},
 };
 
 
@@ -37,26 +37,7 @@ impl UserService {
         self.users.get(principal).cloned()
     }
 
-    pub fn edit_user(
-        &mut self,
-        cmd: UserEditCommand,
-        principal: &Principal,
-    ) -> Result<bool, String> {
-        match self.users.get_mut(principal) {
-            None => Err(String::from("user not found")),
-            Some(user) => cmd.build_profile(user),
-        }
-    }
-
-    // pub fn update_wallet(&mut self, user: &Principal, wallet: Principal) -> Option<bool> {
-    //     self.users
-    //         .get_mut(user)
-    //         .map(|profile| {
-    //             profile.wallet_principal = Some(wallet);
-    //         })
-    //         .map(|_| true)
-    // }
-
+    // pub fn update_wallet(&mut self, user: &Principal, info:Vec<CustomWalletInfo>) -> Option<bool> {
     pub fn update_wallet(&mut self, user: &Principal, info:CustomWalletInfo) -> Option<bool> {
         self.users
             .get_mut(user)
@@ -66,12 +47,11 @@ impl UserService {
             .map(|_| true)
     }
 
-
     pub fn delete_wallet(&mut self, user: &Principal) -> Option<bool> {
         self.users
             .get_mut(user)
             .map(|profile| {
-                profile.custom_wallet_info = None;
+                profile.custom_wallet_info =  None;
             })
             .map(|_| true)
     }

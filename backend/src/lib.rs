@@ -15,7 +15,7 @@ thread_local! {
 // IMPORTANT :dont remove this  UserRegisterCommand ref 
 // cargp hint to remove these is shit. dont believe .
 use crate::user::domain::UserRegisterCommand;
-use crate::user::domain::{UserEditCommand, UserProfile, CustomWalletInfo};
+use crate::user::domain::{ UserProfile, CustomWalletInfo};
 
 
 use ic_cdk::export_candid;

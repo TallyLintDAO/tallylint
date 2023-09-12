@@ -1,24 +1,24 @@
 type CustomWalletInfo = record {
+  wallet_register_time : nat64;
   wallet_addr : principal;
   wallet_name : text;
   wallet_type : text;
+  wallet_id : text;
 };
 type Result = variant { Ok : UserProfile; Err : text };
-type Result_1 = variant { Ok : text; Err : text };
-type Result_2 = variant { Ok : bool; Err : text };
+type Result_1 = variant { Ok : bool; Err : text };
 type UserProfile = record {
   custom_wallet_info : opt CustomWalletInfo;
   owner : principal;
   name : text;
   created_at : nat64;
 };
-type UserRegisterCommand = record { name : text };
 service : () -> {
   auto_register_user : () -> (Result);
+  delete_wallet : (text) -> (Result_1);
   get_caller : () -> (text) query;
   greet : (text) -> (text) query;
   next_id : () -> (nat64) query;
   now : () -> (nat64) query;
-  register_user : (UserRegisterCommand) -> (Result_1);
-  update_wallet : (CustomWalletInfo) -> (Result_2);
+  update_wallet : (CustomWalletInfo) -> (Result_1);
 }

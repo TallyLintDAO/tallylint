@@ -25,10 +25,6 @@ ic-cdk-macros = "0.7.1"
 ic-stable-structures = "0.5.6"
 
 
-# openai_api_rust = "0.1.8"
-# chatgpt_rs = "1.2.0" # 这个包造成大量的编译错误,目前和ic-cdk有兼容问题,单独跑chagpt_rs可以跑通
-
-
 # from dep of dao-rights
 serde = "1.0.188"
 thiserror = "1.0.48"
@@ -36,8 +32,3 @@ email_address = "0"
 
 
 #new
-rand = "0.5.5" 
-ic-kit = "0.4.8"
-random-string = "1.0.0"
-js-sys = "0.3"
-wasm-bindgen = "0.2"
