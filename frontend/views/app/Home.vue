@@ -15,10 +15,10 @@
         <q-drawer v-model="leftDrawerOpen" side="left" show-if-above :breakpoint="430">
             <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px">
                 <div class="absolute-bottom bg-transparent">
-                    <q-avatar size="56px" class="q-mb-sm">
-                        <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+                    <q-avatar size="56px" class="q-mb-sm" :style="{ backgroundColor }">
+                        {{ showAvatar }}
                     </q-avatar>
-                    <div class="text-weight-bold">User 1</div>
+                    <div class="text-weight-bold">{{showUser}}</div>
                     <div>@user</div>
                 </div>
             </q-img>
@@ -72,12 +72,86 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref } from 'vue'
+    import { ref, onMounted, computed } from 'vue'
+    import { initAuth, signOut } from "@/api/auth";
+    import { clearCurrentIdentity, setCurrentIdentity } from "@/api/canister_pool";
+    import { getUserAutoRegister } from "@/api/user";
+    import { useUserStore } from "@/stores/user";
+    import { extractColorByName, showAvatarName, showUsername } from '@/utils/avatars';
+
+    const userStore = useUserStore();
 
     const leftDrawerOpen = ref(false)
+    // 与 II 认证相关的信息
+    const clientReady = ref(false);
+    const signedIn = ref(false); // 是否登录
+
+    const principal = computed(() => userStore.principal);
+    const username = ref();
+
+
+    onMounted(() => {
+        doInitAuth();
+    });
+
+    const doInitAuth = () => {
+        initAuth().then((ai) => {
+            console.log("doInitAuth", ai)
+            clientReady.value = true;
+            if (ai.info) {
+                setCurrentIdentity(ai.info.identity, ai.info.principal);
+                // 保存 principal 到用户信息状态
+                userStore.setPrincipal(ai.info.principal).then(() =>
+                    // 获取用户信息
+                    getUserInfoFromServices(),
+                );
+            }
+        });
+    };
+
+    //从后台获取用户信息，并且设置
+    const getUserInfoFromServices = () => {
+        getUserAutoRegister()
+            .then((info) => {
+                console.log('APP get user info', info);
+                if (info.Ok) {
+                    username.value = info.Ok.name;
+                } else if (info.Err) {
+                    console.error('no information for unregister user: ', info);
+                } else {
+                    throw new Error("info not ok & info not err");
+                }
+            })
+            .catch((e) => {
+                console.error('mounted get user info failed', e);
+                onLogOut();
+            });
+    };
+
+    const onLogOut = async () => {
+        console.log("onLogout")
+        const auth = await initAuth();
+        signedIn.value = false;
+        clearCurrentIdentity();
+        await signOut(auth.client);
+    };
+
     const toggleLeftDrawer = () => {
         leftDrawerOpen.value = !leftDrawerOpen.value
     }
+    const showAvatar = computed<string>(() => {
+        const m = showAvatarName(username.value, principal.value);
+        return m ? m : 'A';
+    });
+    // 根据名字，定义头像颜色
+    const backgroundColor = computed<string>(() => {
+        return extractColorByName(username.value);
+    });
+    // 根据名字，定义头像颜色
+    const showUser = computed<string>(() => {
+        return showUsername(username.value, principal.value);
+    });
+
 
 </script>
 
