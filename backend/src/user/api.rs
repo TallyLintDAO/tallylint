@@ -65,6 +65,38 @@ fn auto_register_user() -> Result<UserProfile, String> {
         }
     })
 }
+
+const MAX_WALLET_NAME_LENGTH: usize = 32;
+
+/**
+ 插入,和更新钱包.
+ 输入:钱包的Principle
+ 输出:更新是否成功
+ */
+use crate::common::guard::user_owner_guard;
+#[update(guard = "user_owner_guard")]
+fn update_wallet(info:CustomWalletInfo) -> Result<bool, String> {
+    if info.wallet_name.len() > MAX_WALLET_NAME_LENGTH {
+        return Err(String::from("Wallet name exceeds maximum length 32"));
+    }
+
+    CONTEXT.with(|c| {
+        let mut ctx = c.borrow_mut();
+        let user = ctx.env.caller();
+
+        ctx.user_service
+            .update_wallet(&user, info)
+            .ok_or(String::from("UserNotFound"))
+    })
+}
+
+
+
+
+
+
+
+
 use rand::Rng;
 
 fn generate_random_string(length: usize) -> String {
@@ -79,5 +111,6 @@ fn generate_random_string(length: usize) -> String {
         })
         .collect();
 
-    random_string
+    return random_string;
 }
+

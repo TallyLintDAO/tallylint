@@ -13,8 +13,11 @@ thread_local! {
 }
 // new auto did generate: in ic_cdk 0.10.0
 // IMPORTANT :dont remove this  UserRegisterCommand ref 
+// cargp hint to remove these is shit. dont believe .
 use crate::user::domain::UserRegisterCommand;
-use crate::user::domain::UserProfile;
+use crate::user::domain::{UserEditCommand, UserProfile, CustomWalletInfo};
+
+
 use ic_cdk::export_candid;
 export_candid!();
 

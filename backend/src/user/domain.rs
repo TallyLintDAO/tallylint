@@ -18,7 +18,7 @@ pub struct UserProfile {
     // pub memo: String,
     // pub status: UserStatus,
     pub created_at: Timestamp,
-    pub wallet_principal: Option<Principal>,
+    pub custom_wallet_info: Option<CustomWalletInfo>,
 }
 
 impl UserProfile {
@@ -49,7 +49,7 @@ impl UserProfile {
             // memo,
             // status,
             created_at,
-            wallet_principal: None,
+            custom_wallet_info: None,
         }
     }
 
@@ -155,6 +155,16 @@ impl UserEditCommand {
         Ok(true)
     }
 }
+
+
+#[derive(Debug, Clone, CandidType, Deserialize)]
+pub struct CustomWalletInfo {
+    pub wallet_addr: Principal,
+    pub wallet_type: String,
+    pub wallet_name: String,
+}
+
+
 
 #[cfg(test)]
 mod tests {
