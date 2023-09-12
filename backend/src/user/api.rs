@@ -1,33 +1,8 @@
 use candid::Principal;
 use ic_cdk_macros::{update, query};
-// use random_string::generate;
 use super::domain::*;
 use crate::user::domain::UserRegisterCommand;
 use crate::CONTEXT;
-// #[update]
-// fn register_user(cmd: UserRegisterCommand) -> Result<String, String> {
-//     CONTEXT.with(|c| {
-//         let mut ctx = c.borrow_mut();
-//         let id = ctx.id;
-//         let caller = ctx.env.caller();
-
-//         if caller == Principal::anonymous() {
-//             return Err(String::from(
-//                 "Require  principle , AnonymousNotAllowRegistering",
-//             ));
-//         }
-//         let now = ctx.env.now();
-//         let user = cmd.build_profile(id, caller, UserStatus::Enable, now);
-//         match ctx.user_service.insert_user(user) {
-//             Ok(p) => {
-//                 ctx.id += 1; // 注册成功，id + 1
-//                 Ok(p.to_string())
-//             }
-//             Err(e) => Err(e),
-//         }
-//     })
-// }
-// use crate::common::tool::generate_random_string;
 /**
 后端设置用户字段:
 principalID
@@ -122,32 +97,12 @@ fn query_wallet_array() -> Result<Vec<CustomWalletInfo>, String> {
 }
 
 
+// todo
 #[update(guard = "user_owner_guard")]
-fn mock_login(principal: String)  {
+fn mock_login(_principal: String)  {
     CONTEXT.with(|c| {
-        let mut ctx = c.borrow_mut();
-        let user = Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap();
+        let mut _ctx = c.borrow_mut();
+        let _user = Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap();
 
     })
 }
-// #[cfg(test)]
-// mod tests {
-//     use crate::user::domain::CustomWalletInfo;
-//     use candid::Principal;
-
-//     use super::update_wallet;
-
-//     #[test]
-//     fn test_wallet() {
-//         let info = CustomWalletInfo {
-//             wallet_addr: Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap(),
-//             wallet_type: "Ledger".to_string(),
-//             wallet_name: "My Ledger Wallet".to_string(),
-//             wallet_id: "123".to_string(),
-//             wallet_register_time: ic_cdk::api::time()
-//           };
-//         let res= update_wallet(info)  ;
-//         println!("{:?}",res);
-//         assert_eq!(0,1);
-//     }
-// }

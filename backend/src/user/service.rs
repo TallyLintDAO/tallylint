@@ -1,14 +1,14 @@
-use std::{collections::BTreeMap};
+use std::collections::BTreeMap;
 
 use candid::Principal;
 
 use super::domain::*;
 
-use ic_cdk::{caller, id, print};
+
 
 /**
 整个BTree功能类似于Redis的KV存储.
-然后持久化到IC-DB里面去
+然后持久化整个Map实体到IC-DB里面去
 */
 #[derive(Debug, Default)]
 pub struct UserService {
@@ -45,32 +45,30 @@ impl UserService {
     }
 
     pub fn delete_wallet(&mut self, user: &Principal, wallet_addr: String) -> Option<bool> {
-        if let Some(profile)=self.get_profile(user){
+        if let Some(profile) = self.get_profile(user) {
             let custom_wallet_info_array = &profile.custom_wallet_info_array;
             for (index, custom_wallet_info) in custom_wallet_info_array.iter().enumerate() {
                 if custom_wallet_info.front_end_wallet_info.addr == wallet_addr {
-                    self
-                    .users
-                    .get_mut(user)
-                    .map(|profile| {
-                        profile.custom_wallet_info_array.remove(index);
-                    })
-                    .map(|_| true);
+                    self.users
+                        .get_mut(user)
+                        .map(|profile| {
+                            profile.custom_wallet_info_array.remove(index);
+                        })
+                        .map(|_| true);
                     break;
                 }
             }
             return Some(true);
-        }
-        else {
+        } else {
             return Some(false);
         }
     }
 
-    pub fn  query_wallet_array(&mut self,user: &Principal)->Vec<CustomWalletInfo>{
+    pub fn query_wallet_array(&mut self, user: &Principal) -> Option<Vec<CustomWalletInfo>> {
         if let Some(user_profile) = self.users.get(user) {
-            if let Some(wallet_array) = &user_profile.custom_wallet_info_array {
-                return wallet_array.clone();
-            }
+            return Some(user_profile.custom_wallet_info_array.clone());
+        }
+        return Some(Vec::new()); 
     }
 
     pub fn get_profile(&self, owner: &Principal) -> Option<&UserProfile> {

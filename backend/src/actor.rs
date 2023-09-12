@@ -45,9 +45,12 @@ fn init_canister() {
     CONTEXT.with(|c| {
         *c.borrow_mut() = context;
     });
-
-
     
+    #[allow(unused_imports)]
+    use log::{info, warn};
+
+    // info!("Website opened by {}", request.remote_addr().unwrap());
+
 }
 
 #[pre_upgrade]

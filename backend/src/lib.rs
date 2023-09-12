@@ -15,6 +15,7 @@ thread_local! {
 // new auto did generate: in ic_cdk 0.10.0
 // IMPORTANT :dont remove ref 
 // cargp hint to remove these is wrong. dont believe.
+#[allow(unused_imports)]
 use crate::user::domain::*;
 
 use ic_cdk::export_candid;

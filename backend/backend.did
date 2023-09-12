@@ -6,6 +6,7 @@ type CustomWalletInfo = record {
 type FrontEndWalletInfo = record { addr : text; name : text; w_type : text };
 type Result = variant { Ok : bool; Err : text };
 type Result_1 = variant { Ok : UserProfile; Err : text };
+type Result_2 = variant { Ok : vec CustomWalletInfo; Err : text };
 type UserProfile = record {
   owner : principal;
   name : text;
@@ -18,6 +19,8 @@ service : () -> {
   delete_wallet : (text) -> (Result);
   get_caller : () -> (text) query;
   greet : (text) -> (text) query;
+  mock_login : (text) -> ();
   next_id : () -> (nat64) query;
   now : () -> (nat64) query;
+  query_wallet_array : () -> (Result_2) query;
 }
