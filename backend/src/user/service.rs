@@ -33,11 +33,15 @@ impl UserService {
         self.users.get(principal).cloned()
     }
 
-    pub fn add_wallet(&mut self, u_principal: &Principal, info: CustomWalletInfo) -> Option<String> {
-        //check map.get(K) null pointer: 
+    pub fn add_wallet(
+        &mut self,
+        u_principal: &Principal,
+        info: CustomWalletInfo,
+    ) -> Option<String> {
+        //check map.get(K) null pointer:
         // let user = match self.users.get_mut(u_principal) {
         //     Some(user) => user,         // u is a mutable reference to the user
-        //     None => return Some("user not exist".to_string()), 
+        //     None => return Some("user not exist".to_string()),
         // };
         // let wallet_addr=info.front_end_wallet_info.addr;
         // if user.custom_wallet_info_array.contains(&info){
@@ -79,5 +83,9 @@ impl UserService {
 
     pub fn get_profile(&self, owner: &Principal) -> Option<&UserProfile> {
         self.users.get(owner)
+    }
+
+    pub fn user_quantity(&self) -> u32 {
+        return self.users.len().try_into().unwrap_or_default();
     }
 }

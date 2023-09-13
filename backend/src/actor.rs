@@ -31,7 +31,7 @@ fn now() -> u64 {
 
 #[init]
 fn init() {
-    println!(" deploy`s init calling");
+    ic_cdk::println!(" deploy`s init calling");
     ic_cdk::setup();
 
     let context = DaoContext {
@@ -79,8 +79,7 @@ fn init() {
 #[pre_upgrade]
 fn pre_upgrade() {
     let canister_id = id();
-    print(format!("starting pre_upgrade {:?}", canister_id));
-
+    ic_cdk::println!("starting pre_upgrade zzz {:?}", canister_id);
     CONTEXT.with(|c| {
         let context = c.borrow();
         let id = context.id;
@@ -92,8 +91,10 @@ fn pre_upgrade() {
         storage::stable_save((db,)).expect("failed to save state data");
 
         // IMPORTANT erase db in running canister.(ic or local)
+        // in bash, maybe this need to do :  
+        // dfx deploy backend --network ic  -m reinstall //this IMPORTANT . can really empty db! -m reinstall !
         // let _empty_db = CanisterDB::default();
-        // storage::stable_save((_empty_db,)).expect("failed to save state data");
+        // storage::stable_save((_empty_db,)).expect("failed to save state data");//dont know why . this line of cmd will not empty db.
         print(format!("started pre_upgrade {:?}", canister_id));
     });
 }

@@ -19,9 +19,10 @@ service : () -> {
   delete_wallet : (text) -> (Result);
   get_caller : () -> (text) query;
   greet : (text) -> (text) query;
-  list_all_user : () -> (vec UserProfile) query;
-  mock_login : (text) -> ();
+  list_all_user : () -> (vec UserProfile);
   next_id : () -> (nat64) query;
   now : () -> (nat64) query;
-  query_wallet_array : () -> (Result_2) query;
+  query_wallet_array : () -> (Result_2);
+  test_print : () -> (nat32) query;
+  user_quantity : () -> (nat32) query;
 }

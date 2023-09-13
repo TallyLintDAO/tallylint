@@ -19,5 +19,9 @@ thread_local! {
 use crate::user::domain::*;
 
 use ic_cdk::export_candid;
+
 export_candid!();
+
+
+
 

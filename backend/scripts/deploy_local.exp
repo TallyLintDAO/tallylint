@@ -15,8 +15,8 @@
 
 
 set passphrase "$env(DFXPASS_BTWL0)" 
-puts "Spawned command: dfx deploy backend --network ic"
-spawn dfx deploy backend --network ic
+puts "=================================\nSpawned command: dfx deploy backend"
+spawn dfx deploy backend 
 expect "Please enter the passphrase for your identity: "
 send "$passphrase\r" 
 expect eof
