@@ -1,7 +1,7 @@
 <template>
     <div class="nns-container">
         <div class="q-pa-md row items-start q-gutter-md">
-            <span>NNS Proposal</span>
+            <span>NNS Neuron</span>
             <br />
             <q-card v-for="item in proposalList" :key="Number(item.id)">
                 <q-card-section>
@@ -33,7 +33,7 @@ const proposalList = ref<
 >([]);
 
 onMounted(() => {
-    getNNSProposal();
+    // getNNSProposal();
 });
 
 const getNNSProposal = () => {

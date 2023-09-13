@@ -24,40 +24,21 @@
             </q-img>
             <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
                 <q-list padding>
-                    <q-item clickable v-ripple="true">
+                    <q-item
+                            v-for="(item, index) in menuItems"
+                            :key="index"
+                            clickable
+                            v-ripple="true"
+                            :to="item.route"
+                            :active="item.route === $route.path"
+                    >
                         <q-item-section avatar>
-                            <q-icon name="drafts"/>
+                            <q-icon :name="item.icon"/>
                         </q-item-section>
                         <q-item-section>
-                            Dashboard
+                            {{ item.label }}
                         </q-item-section>
                     </q-item>
-                    <q-item to="/" active clickable v-ripple="true">
-                        <q-item-section avatar>
-                            <q-icon name="inbox"/>
-                        </q-item-section>
-                        <q-item-section>
-                            Wallet
-                        </q-item-section>
-                    </q-item>
-                    <q-item clickable v-ripple="true">
-                        <q-item-section avatar>
-                            <q-icon name="star"/>
-                        </q-item-section>
-                        <q-item-section>
-                            NNS
-                        </q-item-section>
-                    </q-item>
-
-                    <q-item clickable v-ripple="true">
-                        <q-item-section avatar>
-                            <q-icon name="send"/>
-                        </q-item-section>
-                        <q-item-section>
-                            Email Set
-                        </q-item-section>
-                    </q-item>
-
                 </q-list>
             </q-scroll-area>
         </q-drawer>
@@ -81,6 +62,12 @@
 
     const userStore = useUserStore();
 
+    const menuItems = [
+        { icon: 'drafts', label: 'Dashboard', route: '' },
+        { icon: 'inbox', label: 'Wallet', route: '/app' },
+        { icon: 'star', label: 'NNS', route: '/app/nns' },
+        { icon: 'send', label: 'Email Set', route: '' }
+    ]
     const leftDrawerOpen = ref(false)
     // 与 II 认证相关的信息
     const clientReady = ref(false);

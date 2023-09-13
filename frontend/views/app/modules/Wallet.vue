@@ -16,19 +16,22 @@
             <template v-slot:item="props">
                 <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3">
                     <q-card @click="toDetail(props.row.address)" class="cursor-pointer">
-                        <q-list>
-                            <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')" :key="col.name">
-                                <q-item-section>
-                                    <q-item-label>{{ col.label }}</q-item-label>
-                                    <q-item-label caption>{{ col.value }}</q-item-label>
-                                </q-item-section>
-                            </q-item>
-                        </q-list>
+                        <q-card-section>
+                            <div class="text-h6">{{props.row.name}}</div>
+                            <q-list>
+                                <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')" :key="col.name">
+                                    <q-item-section>
+                                        <q-item-label>{{ col.label }}</q-item-label>
+                                        <q-item-label caption>{{ col.value }}</q-item-label>
+                                    </q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-card-section>
                     </q-card>
                 </div>
             </template>
         </q-table>
-        <q-dialog v-model="addWallet" transition-show="flip-down">
+        <q-dialog v-model="addWallet">
             <q-card style="min-width: 350px">
                 <q-card-section>
                     <div class="text-h6">Your Wallet</div>
