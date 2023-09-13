@@ -20,18 +20,22 @@
                             <q-item-label caption>
                                 {{ new Date(Number(transaction.timestamp)).toLocaleString() }}
                             </q-item-label>
-                            <div class="row">
+                            <div class="row items-center">
                                 <div class="col">
+                                    <q-icon v-if="transaction.type==='SEND'" class="text-red-5" size="md" name="arrow_upward"/>
+                                    <q-icon v-if="transaction.type==='RECEIVE'" class="text-green-6" size="md" name="arrow_downward"/>
                                     {{ transaction.type }}
                                 </div>
                                 <div class="col">
                                     {{ transaction.details.currency.symbol }}
                                     {{ transaction.details.amount }}
                                     <br/>
-                                    {{'$'+ transaction.details.cost +' cost basis'}}
+                                    <span v-if="transaction.type==='SEND'">
+                                        {{'$'+ transaction.details.cost +' cost basis'}}
+                                    </span>
                                 </div>
                                 <div class="col">
-                                    <q-icon name="arrow_right_alt"/>
+                                    <q-icon size="md" name="arrow_forward"/>
                                 </div>
                                 <div class="col">
                                     {{ showUsername("",transaction.details.to || "") }}
@@ -40,14 +44,27 @@
                                         <q-icon name="open_in_new"/>
                                     </a>
                                     <br/>
+                                    <span>
                                     {{ '≈ $' +
                                     transaction.details.value +
-                                    ' · $ ' +
-                                    transaction.details.profit + ' profit'
-                                    }}
+                                    ' · ' }}
+                                         <q-tooltip>
+                                            This is the market price of the sent coin by CoinGecko
+                                             <br/>
+                                             ${{transaction.details.price}} / ICP
+                                         </q-tooltip>
+                                    </span>
+                                    <b :class="{
+                                    'text-green-6': transaction.details.profit > 0,
+                                    'text-red-5': transaction.details.profit < 0}">
+                                        {{
+                                        ' $ ' +
+                                        transaction.details.profit + ' profit'
+                                        }}
+                                    </b>
                                 </div>
                                 <div class="col">
-                                    <q-icon name="more_vert"/>
+                                    <q-icon size="sm" name="more_vert"/>
                                 </div>
                             </div>
                         </q-item-section>
@@ -117,9 +134,9 @@
 </script>
 
 <style lang="scss">
-    .transactions-container{
-        .header{
-            .q-select{
+    .transactions-container {
+        .header {
+            .q-select {
                 width: 150px;
             }
         }
