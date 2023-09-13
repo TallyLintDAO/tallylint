@@ -46,19 +46,19 @@
                                     <br/>
                                     <span>
                                     {{ '≈ $' +
-                                    transaction.details.value +
-                                    ' · ' }}
+                                    transaction.details.value}}
                                          <q-tooltip>
                                             This is the market price of the sent coin by CoinGecko
                                              <br/>
                                              ${{transaction.details.price}} / ICP
                                          </q-tooltip>
                                     </span>
-                                    <b :class="{
-                                    'text-green-6': transaction.details.profit > 0,
-                                    'text-red-5': transaction.details.profit < 0}">
+                                    <b v-if="transaction.type==='SEND'"
+                                       :class="{
+                                        'text-green-6': transaction.details.profit > 0,
+                                        'text-red-5': transaction.details.profit < 0}">
                                         {{
-                                        ' $ ' +
+                                        ' · $ ' +
                                         transaction.details.profit + ' profit'
                                         }}
                                     </b>
