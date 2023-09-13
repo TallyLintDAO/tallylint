@@ -1,8 +1,10 @@
-use candid::Principal;
-use ic_cdk_macros::{update, query};
+
+
 use super::domain::*;
 use crate::user::domain::UserRegisterCommand;
 use crate::CONTEXT;
+use candid::Principal;
+use ic_cdk_macros::{query, update};
 /**
 后端设置用户字段:
 principalID
@@ -48,9 +50,10 @@ const MAX_WALLET_NAME_LENGTH: usize = 64;
 输入:钱包的Principle
 输出:更新是否成功
 */
+// test ok
 use crate::common::guard::user_owner_guard;
 #[update(guard = "user_owner_guard")]
-fn add_wallet(front_end_wallet_info: FrontEndWalletInfo) -> Result<bool, String> {
+fn add_wallet(front_end_wallet_info: FrontEndWalletInfo) -> Result<bool, String>  {
     if front_end_wallet_info.name.len() > MAX_WALLET_NAME_LENGTH {
         return Err(String::from("Wallet name exceeds maximum length 64"));
     }
@@ -59,20 +62,22 @@ fn add_wallet(front_end_wallet_info: FrontEndWalletInfo) -> Result<bool, String>
         let user = ctx.env.caller();
         let mut custom_wallet_info = CustomWalletInfo {
             front_end_wallet_info: front_end_wallet_info.clone(),
-            id: String::new(), // Set the desired value for wallet_id
-            register_time: 0,  // Set the desired value for wallet_register_time
+            id: "id".to_string() +&front_end_wallet_info.addr.to_string(),
+            register_time: ic_cdk::api::time()
+            ,  
         };
-        custom_wallet_info.id = "wallet_".to_string()
-            + &custom_wallet_info
-                .front_end_wallet_info
-                .addr
-                .to_string();
+        custom_wallet_info.id =
+            "wallet_".to_string() + &custom_wallet_info.front_end_wallet_info.addr.to_string();
         custom_wallet_info.register_time = ic_cdk::api::time();
-        ctx.user_service
+        let _msg =ctx.user_service
             .add_wallet(&user, custom_wallet_info)
-            .ok_or(String::from("UserNotFound"))
+            .ok_or("cant add".to_string());
+        Ok(true)
     })
+
 }
+
+
 
 #[update(guard = "user_owner_guard")]
 fn delete_wallet(wallet_addr: String) -> Result<bool, String> {
@@ -85,6 +90,7 @@ fn delete_wallet(wallet_addr: String) -> Result<bool, String> {
     })
 }
 
+// test ok
 #[query(guard = "user_owner_guard")]
 fn query_wallet_array() -> Result<Vec<CustomWalletInfo>, String> {
     CONTEXT.with(|c| {
@@ -96,13 +102,13 @@ fn query_wallet_array() -> Result<Vec<CustomWalletInfo>, String> {
     })
 }
 
-
-// todo
-#[update(guard = "user_owner_guard")]
-fn mock_login(_principal: String)  {
+use crate::user::domain::UserProfile;
+#[query(guard = "user_owner_guard")]
+fn list_all_user() -> Vec<UserProfile> {
     CONTEXT.with(|c| {
-        let mut _ctx = c.borrow_mut();
-        let _user = Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap();
-
+        let context = c.borrow();
+        let users = Vec::from_iter(context.user_service.users.values().cloned());
+        return users;
     })
 }
+

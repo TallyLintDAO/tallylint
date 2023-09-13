@@ -2,24 +2,30 @@ use candid::{CandidType, Deserialize, Principal};
 use std::collections::BTreeMap;
 use std::iter::FromIterator;
 
-use crate::env::{CanisterEnvironment,  Environment};
+use crate::env::{CanisterEnvironment, Environment};
 
-
-// pub mod user;
 use crate::user::domain::UserProfile;
 use crate::user::UserService;
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
-pub struct DaoDataStorage {
+pub struct CanisterDB {
     pub id: u64,
     pub users: Vec<UserProfile>,
 }
+impl Default for CanisterDB {
+    fn default() -> Self {
+        Self {
+            id: 0, // Set the desired ID value
+            users: Vec::new(),
+        }
+    }
+}
 
-impl From<DaoContext> for DaoDataStorage {
+
+impl From<DaoContext> for CanisterDB {
     fn from(context: DaoContext) -> Self {
         let id = context.id;
         let users = Vec::from_iter(context.user_service.users.values().cloned());
-
         Self { id, users }
     }
 }
@@ -40,11 +46,10 @@ impl Default for DaoContext {
     }
 }
 
-impl From<DaoDataStorage> for DaoContext {
-    fn from(payload: DaoDataStorage) -> Self {
+impl From<CanisterDB> for DaoContext {
+    fn from(payload: CanisterDB) -> Self {
         let users: BTreeMap<Principal, UserProfile> =
             payload.users.into_iter().map(|u| (u.owner, u)).collect();
-
         Self {
             env: Box::new(CanisterEnvironment {}),
             id: payload.id,
@@ -52,6 +57,3 @@ impl From<DaoDataStorage> for DaoContext {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {}

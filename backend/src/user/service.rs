@@ -4,8 +4,6 @@ use candid::Principal;
 
 use super::domain::*;
 
-
-
 /**
 整个BTree功能类似于Redis的KV存储.
 然后持久化整个Map实体到IC-DB里面去
@@ -35,13 +33,21 @@ impl UserService {
         self.users.get(principal).cloned()
     }
 
-    pub fn add_wallet(&mut self, user: &Principal, info: CustomWalletInfo) -> Option<bool> {
-        self.users
-            .get_mut(user)
-            .map(|profile| {
-                profile.custom_wallet_info_array.push(info);
-            })
-            .map(|_| true)
+    pub fn add_wallet(&mut self, u_principal: &Principal, info: CustomWalletInfo) -> Option<String> {
+        //check map.get(K) null pointer: 
+        // let user = match self.users.get_mut(u_principal) {
+        //     Some(user) => user,         // u is a mutable reference to the user
+        //     None => return Some("user not exist".to_string()), 
+        // };
+        // let wallet_addr=info.front_end_wallet_info.addr;
+        // if user.custom_wallet_info_array.contains(&info){
+        //     return Some("wallet dupicated".to_string()); // Duplicate wallet address found, return false
+        // }
+        self.users.get_mut(u_principal).map(|profile| {
+            profile.custom_wallet_info_array.push(info);
+            return "success";
+        });
+        return Some("add fail of map push".to_string());
     }
 
     pub fn delete_wallet(&mut self, user: &Principal, wallet_addr: String) -> Option<bool> {
@@ -55,10 +61,10 @@ impl UserService {
                             profile.custom_wallet_info_array.remove(index);
                         })
                         .map(|_| true);
-                    break;
+                    return Some(true);
                 }
             }
-            return Some(true);
+            return Some(false);
         } else {
             return Some(false);
         }
@@ -68,7 +74,7 @@ impl UserService {
         if let Some(user_profile) = self.users.get(user) {
             return Some(user_profile.custom_wallet_info_array.clone());
         }
-        return Some(Vec::new()); 
+        return Some(Vec::new());
     }
 
     pub fn get_profile(&self, owner: &Principal) -> Option<&UserProfile> {

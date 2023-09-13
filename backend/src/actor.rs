@@ -4,7 +4,7 @@ use ic_cdk::storage;
 use ic_cdk::{caller, id, print};
 use ic_cdk_macros::*;
 
-use crate::context::{DaoContext, DaoDataStorage};
+use crate::context::{CanisterDB, DaoContext};
 
 use crate::env::CanisterEnvironment;
 use crate::{CONTEXT, GOVERNANACE_BTWL, GOVERNANACE_ZHOU};
@@ -30,7 +30,8 @@ fn now() -> u64 {
 }
 
 #[init]
-fn init_canister() {
+fn init() {
+    println!(" deploy`s init calling");
     ic_cdk::setup();
 
     let context = DaoContext {
@@ -42,17 +43,39 @@ fn init_canister() {
     let _creator1 = GOVERNANACE_BTWL.with(|g| *g);
     let _creator2 = GOVERNANACE_ZHOU.with(|g| *g);
 
+    // with is a function can receive a function as para.
+    // and | | synyax here means a function with no name.
     CONTEXT.with(|c| {
         *c.borrow_mut() = context;
+
+        // debug part
+        let context = c.borrow();
+        let id = context.id;
+        let users = Vec::from_iter(context.user_service.users.values().cloned());
+        let db: CanisterDB = CanisterDB { id, users };
+        println!("{:#?}", db);
     });
-    
-    #[allow(unused_imports)]
-    use log::{info, warn};
+    // borrow means temporary need control role of that data.
+    // mut means need change the data with in .
 
-    // info!("Website opened by {}", request.remote_addr().unwrap());
-
+    println!("finish  deploy`s init");
 }
 
+/**
+ * 1. each time upgrade(cmd : dfx deploy ),
+ * will *erase* all ic-DB (canister stable memory)
+ * so we can:
+ *      1.manully erase all,
+ *      2.or , restore from a in memory data.(such as a hashmap)
+ *
+ *  
+ * 2. transational upgrade:
+ * if pre_upgrade, upgrade ,post_upgrade
+ * any step go wrong.
+ * will revert to last version.
+ *
+ *
+ */
 #[pre_upgrade]
 fn pre_upgrade() {
     let canister_id = id();
@@ -61,14 +84,16 @@ fn pre_upgrade() {
     CONTEXT.with(|c| {
         let context = c.borrow();
         let id = context.id;
-        // get users list from vilotile memory. just computer memory. hash structure
+        // get users list from vilotile storage (computer memory)
         let users = Vec::from_iter(context.user_service.users.values().cloned());
+        let db: CanisterDB = CanisterDB { id, users };
+        // println!("{:#?}", db);
+        // IMPORTANT save all userdata into IC-DB
+        storage::stable_save((db,)).expect("failed to save state data");
 
-        let payload: DaoDataStorage = DaoDataStorage { id, users };
-
-        // save all userdata into IC-DB IMPORTANT
-        storage::stable_save((payload,)).expect("failed to save state data");
-
+        // IMPORTANT erase db in running canister.(ic or local)
+        // let _empty_db = CanisterDB::default();
+        // storage::stable_save((_empty_db,)).expect("failed to save state data");
         print(format!("started pre_upgrade {:?}", canister_id));
     });
 }
@@ -78,15 +103,13 @@ fn post_upgrade() {
     let canister_id = id();
     print(format!("starting post_upgrade {:?}", canister_id));
 
-// bug here can find restore file.only if no DB data at all. of course cant restore.
-// IMPORTANT
-    let (payload,): (DaoDataStorage,) = storage::stable_restore().expect("failed to restore users");
-    let state_stable = DaoContext::from(payload);
+    // bug here can find restore file.only if no DB data at all. of course cant restore.
+    // IMPORTANT
+    let (db,): (CanisterDB,) = storage::stable_restore().expect("failed to restore users");
+    let state_stable = DaoContext::from(db);
     CONTEXT.with(|s| {
         let mut state = s.borrow_mut();
         *state = state_stable;
     });
     print(format!("finished post_upgrade {:?}", canister_id));
 }
-
-
