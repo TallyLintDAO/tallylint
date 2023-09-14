@@ -1,10 +1,26 @@
 <template>
     <div class="container login-container q-mt-lg">
-        <h5>Please login to access our app</h5>
-        <q-btn color="primary" class="login-button" @click="onLogin"
-               :loading="loading" no-caps>
-            Launch app
-        </q-btn>
+        <div class="description">
+            <h4 style="margin-bottom: 0">Welcome to TaxLint🧾</h4>
+            <span class="text-body1">TaxLint is designed to help users of ICPs to count and manage their tax
+                information more easily. With TaxLint, users will be able to record,
+                track and calculate tax information related to their transactions and assets in the IC ecosystem.</span>
+            <br/>
+            <span class="text-body1">In TaxLint, which is 100% on-chain, users get a decentralised,
+                private and secure tax experience.</span>
+        </div>
+        <h5>Alpha Warning: there may be issues.</h5>
+        <h5>Please join our discord channel to give us more suggestions!</h5>
+        <h5 style="margin: 0">Login to access our app</h5>
+        <div class="q-gutter-sm">
+            <q-btn color="primary" class="login-button" @click="onLogin"
+                   :loading="loading" no-caps>
+                Launch app
+            </q-btn>
+            <a href="https://discord.gg/2q72rBYB5C" target="_Blank">
+                <q-icon class="cursor-pointer" size="md" name="discord"/>
+            </a>
+        </div>
     </div>
 </template>
 
@@ -72,5 +88,8 @@
 
 <style lang="scss" scoped>
     .login-container {
+        .description {
+            max-width: 800px;
+        }
     }
 </style>
