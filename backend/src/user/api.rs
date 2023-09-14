@@ -1,5 +1,4 @@
 use super::domain::*;
-use crate::user::domain::UserRegisterCommand;
 use crate::CONTEXT;
 use candid::Principal;
 use ic_cdk_macros::{query, update};
@@ -10,7 +9,7 @@ principalID
 创建账号的时间
  */
 #[update]
-fn auto_register_user() -> Result<UserProfile, String> {
+fn auto_register_user() -> Result<UserInfo, String> {
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
         let caller = ctx.env.caller();
@@ -18,23 +17,20 @@ fn auto_register_user() -> Result<UserProfile, String> {
             return Err(String::from("AnonymousNotAllowRegistering"));
         }
         match ctx.user_service.get_user(&caller) {
-            Some(u) => Ok(u),
+            Some(_) =>Err("user already exsit".to_string()) ,
             None => {
-                // let id = ctx.id;
-                let now = ctx.env.now();
-                let empty_name = "".to_string(); //+ &generate_random_string(6);
-                let cmd = UserRegisterCommand {
-                    // email: "".to_string(),
-                    name: empty_name,
-                    // memo: "".to_string(),
+                let user_profile = UserProfile {
+                    name: "".to_string(),
+                    owner: caller,
+                    create_time:ctx.env.now(),
+                    full_wallet_info_array: Vec::new(),
                 };
-                let user = cmd.build_profile(caller, now);
-                match ctx.user_service.insert_user(user.clone()) {
-                    Ok(_) => {
+                match ctx.user_service.insert_user(user_profile.clone()) {
+                    Ok(user_profile) => {
                         ctx.id += 1; // 注册成功，id + 1
-                        Ok(user)
+                        Ok(crate::user::domain::construct_user_info(user_profile))
                     }
-                    Err(e) => Err(e),
+                    Err(error) => Err(error),
                 }
             }
         }
@@ -45,7 +41,6 @@ const MAX_WALLET_NAME_LENGTH: usize = 64;
 #[allow(dead_code)]
 // #[query]
 fn test_print() -> u32 {
-
     ic_cdk::println!("test_print");
     return 0;
 }
@@ -78,7 +73,7 @@ fn user_quantity() -> u32 {
 use crate::common::guard::user_owner_guard;
 #[update(guard = "user_owner_guard")]
 // #[update]
-fn add_wallet(front_end_wallet_info: FrontEndWalletInfo) -> Result<bool, String> {
+fn add_wallet(front_end_wallet_info: WalletInfo) -> Result<bool, String> {
     if front_end_wallet_info.name.len() > MAX_WALLET_NAME_LENGTH {
         return Err(String::from("Wallet name exceeds maximum length 64"));
     }
@@ -87,16 +82,16 @@ fn add_wallet(front_end_wallet_info: FrontEndWalletInfo) -> Result<bool, String>
         let user = ctx.env.caller();
         let principal_str = user.to_text().to_string();
         ic_cdk::println!("{:?}", principal_str);
-        let mut custom_wallet_info = CustomWalletInfo {
-            front_end_wallet_info: front_end_wallet_info.clone(),
-            id: "id".to_string() + &front_end_wallet_info.addr.to_string(),
-            register_time: ic_cdk::api::time(),
+        let mut full_wallet_info = FullWalletInfo {
+            wallet_info: front_end_wallet_info.clone(),
+            id: "id".to_string() + &front_end_wallet_info.address.to_string(),
+            create_time: ic_cdk::api::time(),
         };
-        custom_wallet_info.id =
-            "wallet_".to_string() + &custom_wallet_info.front_end_wallet_info.addr.to_string();
+        full_wallet_info.id =
+            "wallet_".to_string() + &full_wallet_info.wallet_info.address.to_string();
         let _msg = ctx
             .user_service
-            .add_wallet(&user, custom_wallet_info)
+            .add_wallet(&user, full_wallet_info)
             .ok_or("cant add".to_string());
         return Ok(true);
     })
@@ -117,7 +112,7 @@ fn delete_wallet(wallet_addr: String) -> Result<bool, String> {
 // test ok
 // #[update(guard = "user_owner_guard")]
 #[update]
-fn query_wallet_array() -> Result<Vec<CustomWalletInfo>, String> {
+fn query_wallet_array() -> Result<Vec<FullWalletInfo>, String> {
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
         let user = ctx.env.caller();

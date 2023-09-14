@@ -14,13 +14,13 @@ pub struct UserService {
 }
 
 impl UserService {
-    pub fn insert_user(&mut self, user: UserProfile) -> Result<Principal, String> {
+    pub fn insert_user(&mut self, user: UserProfile) -> Result<UserProfile, String> {
         let owner = user.owner;
         match self.users.get(&owner) {
             Some(_) => Err(String::from(" UserAlreadyExists")),
             None => {
-                self.users.insert(owner, user);
-                Ok(owner)
+                self.users.insert(owner, user.clone());
+                Ok(user)
             }
         }
     }
@@ -33,11 +33,7 @@ impl UserService {
         self.users.get(principal).cloned()
     }
 
-    pub fn add_wallet(
-        &mut self,
-        u_principal: &Principal,
-        info: CustomWalletInfo,
-    ) -> Option<String> {
+    pub fn add_wallet(&mut self, u_principal: &Principal, info: FullWalletInfo) -> Option<String> {
         //check map.get(K) null pointer:
         // let user = match self.users.get_mut(u_principal) {
         //     Some(user) => user,         // u is a mutable reference to the user
@@ -48,7 +44,7 @@ impl UserService {
         //     return Some("wallet dupicated".to_string()); // Duplicate wallet address found, return false
         // }
         self.users.get_mut(u_principal).map(|profile| {
-            profile.custom_wallet_info_array.push(info);
+            profile.full_wallet_info_array.push(info);
             return "success";
         });
         return Some("add fail of map push".to_string());
@@ -56,13 +52,13 @@ impl UserService {
 
     pub fn delete_wallet(&mut self, user: &Principal, wallet_addr: String) -> Option<bool> {
         if let Some(profile) = self.get_profile(user) {
-            let custom_wallet_info_array = &profile.custom_wallet_info_array;
+            let custom_wallet_info_array = &profile.full_wallet_info_array;
             for (index, custom_wallet_info) in custom_wallet_info_array.iter().enumerate() {
-                if custom_wallet_info.front_end_wallet_info.addr == wallet_addr {
+                if custom_wallet_info.wallet_info.address == wallet_addr {
                     self.users
                         .get_mut(user)
                         .map(|profile| {
-                            profile.custom_wallet_info_array.remove(index);
+                            profile.full_wallet_info_array.remove(index);
                         })
                         .map(|_| true);
                     return Some(true);
@@ -74,9 +70,9 @@ impl UserService {
         }
     }
 
-    pub fn query_wallet_array(&mut self, user: &Principal) -> Option<Vec<CustomWalletInfo>> {
+    pub fn query_wallet_array(&mut self, user: &Principal) -> Option<Vec<FullWalletInfo>> {
         if let Some(user_profile) = self.users.get(user) {
-            return Some(user_profile.custom_wallet_info_array.clone());
+            return Some(user_profile.full_wallet_info_array.clone());
         }
         return Some(Vec::new());
     }
@@ -90,7 +86,6 @@ impl UserService {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -98,15 +93,17 @@ mod tests {
     #[test]
     fn test_is_owner() {
         // Create a sample user with the caller as the owner
-        let caller = Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap();
-        let owner =  Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap();
+        let caller =
+            Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae")
+                .unwrap();
+        let owner =
+            Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae")
+                .unwrap();
         let users = BTreeMap::new();
         let user_service = UserService { users };
-        
+
         assert!(user_service.is_owner(&caller));
         // Test when the caller is the owner
         assert_eq!(caller, owner);
-
-        
     }
 }

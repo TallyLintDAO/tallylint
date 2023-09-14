@@ -26,7 +26,7 @@ cargo build --target wasm32-unknown-unknown --release --package "backend"  --fea
 
 dfx canister call --network ic backend auto_register_user
 
-dfx canister call --network ic backend add_wallet '(record { addr = "01awd916dwa335wda2042"; name = "AmydaLu"; w_type = "asdaw" })'
+dfx canister call --network ic backend add_wallet '(record { address = "01awd916dwa335wda2042"; name = "AmydaLu"; from = "asdaw" })'
 dfx canister call --network ic backend add_wallet '(record { addr = "addr111"; name = "astrome001"; w_type = "astrome" })'
 dfx canister call --network ic backend add_wallet '(record { addr = "adr333"; name = "astrome001"; w_type = "astrome" })'
 dfx canister call --network ic backend delete_wallet "01awd916dwa335wda2042"

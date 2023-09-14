@@ -1,28 +1,33 @@
 export const idlFactory = ({ IDL }) => {
-  const FrontEndWalletInfo = IDL.Record({
-    'addr' : IDL.Text,
+  const WalletInfo = IDL.Record({
+    'from' : IDL.Text,
     'name' : IDL.Text,
-    'w_type' : IDL.Text,
+    'address' : IDL.Text,
   });
   const Result = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : IDL.Text });
-  const CustomWalletInfo = IDL.Record({
+  const UserInfo = IDL.Record({
+    'owner' : IDL.Principal,
+    'name' : IDL.Text,
+    'create_time' : IDL.Nat64,
+  });
+  const Result_1 = IDL.Variant({ 'Ok' : UserInfo, 'Err' : IDL.Text });
+  const FullWalletInfo = IDL.Record({
     'id' : IDL.Text,
-    'register_time' : IDL.Nat64,
-    'front_end_wallet_info' : FrontEndWalletInfo,
+    'create_time' : IDL.Nat64,
+    'wallet_info' : WalletInfo,
   });
   const UserProfile = IDL.Record({
     'owner' : IDL.Principal,
     'name' : IDL.Text,
-    'created_at' : IDL.Nat64,
-    'custom_wallet_info_array' : IDL.Vec(CustomWalletInfo),
+    'create_time' : IDL.Nat64,
+    'full_wallet_info_array' : IDL.Vec(FullWalletInfo),
   });
-  const Result_1 = IDL.Variant({ 'Ok' : UserProfile, 'Err' : IDL.Text });
   const Result_2 = IDL.Variant({
-    'Ok' : IDL.Vec(CustomWalletInfo),
+    'Ok' : IDL.Vec(FullWalletInfo),
     'Err' : IDL.Text,
   });
   return IDL.Service({
-    'add_wallet' : IDL.Func([FrontEndWalletInfo], [Result], []),
+    'add_wallet' : IDL.Func([WalletInfo], [Result], []),
     'auto_register_user' : IDL.Func([], [Result_1], []),
     'delete_wallet' : IDL.Func([IDL.Text], [Result], []),
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),

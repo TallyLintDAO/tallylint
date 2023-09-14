@@ -4,43 +4,58 @@ use candid::{CandidType, Deserialize, Principal};
 pub struct UserProfile {
     pub owner: Principal, // 用户 Principal
     pub name: String,
-    pub created_at: u64,
-    pub custom_wallet_info_array: Vec<CustomWalletInfo>,
-    // pub custom_wallet_info: Option<CustomWalletInfo>,
-}
-// use ic_cdk::api::time;
-#[derive(Debug, Clone, CandidType, Deserialize)]
-pub struct CustomWalletInfo {
-    pub front_end_wallet_info: FrontEndWalletInfo,
-    // backend auto-gen
-    pub id: String,
-    pub register_time: u64, //ic_cdk::api::time();
+    pub create_time: u64,
+    pub full_wallet_info_array: Vec<FullWalletInfo>, //CustomizedWalletInfo
+                                                     // pub custom_wallet_info: Option<CustomWalletInfo>,
 }
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
-pub struct FrontEndWalletInfo {
-    // frontend para input
-    pub addr: String,
-    pub w_type: String, //NNS Plug  Stoic AstorMe  .. maybe add more
+pub struct UserInfo {
+    pub owner: Principal, // 用户 Principal
     pub name: String,
+    pub create_time: u64,
 }
 
-impl PartialEq for CustomWalletInfo {
-    fn eq(&self, other: &Self) -> bool {
-        // Compare only the addr field of the front_end_wallet_info field
-        self.front_end_wallet_info.addr == other.front_end_wallet_info.addr
+pub fn construct_user_info(user_profile: UserProfile) -> UserInfo {
+    UserInfo {
+        owner: user_profile.owner,
+        name: user_profile.name,
+        create_time: user_profile.create_time,
     }
 }
 
+// use ic_cdk::api::time;
+#[derive(Debug, Clone, CandidType, Deserialize)]
+pub struct FullWalletInfo {
+    // get from frontend input
+    pub wallet_info: WalletInfo,
+    // backend auto-gen
+    pub id: String,
+    pub create_time: u64, //ic_cdk::api::time();
+}
 
+#[derive(Debug, Clone, CandidType, Deserialize)]
+pub struct WalletInfo {
+    // frontend para input
+    pub address: String,
+    pub from: String, //from which wallet_type: such as  NNS Plug  Stoic AstorMe  .. maybe add more
+    pub name: String,
+}
+
+impl PartialEq for FullWalletInfo {
+    fn eq(&self, other: &Self) -> bool {
+        // Compare only the addr field of the front_end_wallet_info field
+        self.wallet_info.address == other.wallet_info.address
+    }
+}
 
 impl UserProfile {
     pub fn new(owner: Principal, name: String, created_at: u64) -> Self {
         Self {
             owner,
             name,
-            created_at,
-            custom_wallet_info_array: Vec::new(),
+            create_time: created_at,
+            full_wallet_info_array: Vec::new(),
         }
     }
 }
@@ -54,11 +69,7 @@ pub struct UserWalletUpdateCommand {
     pub user: Principal,
     pub wallet: Principal,
 }
-impl UserRegisterCommand {
-    pub fn build_profile(self, owner: Principal, created_at: u64) -> UserProfile {
-        UserProfile::new(owner, self.name, created_at)
-    }
-}
+
 
 #[cfg(test)]
 mod tests {
@@ -73,25 +84,25 @@ mod tests {
                 )
                 .unwrap(),
                 name: "Alice".to_string(),
-                created_at: 1234567890,
-                custom_wallet_info_array: vec![
-                    CustomWalletInfo {
-                        front_end_wallet_info: FrontEndWalletInfo {
-                            addr: "0x1234567890abcdef".to_string(),
-                            w_type: "NNS Plug".to_string(),
+                create_time: 1234567890,
+                full_wallet_info_array: vec![
+                    FullWalletInfo {
+                        wallet_info: WalletInfo {
+                            address: "0x1234567890abcdef".to_string(),
+                            from: "NNS Plug".to_string(),
                             name: "Alice's Wallet".to_string(),
                         },
                         id: "1234567890".to_string(),
-                        register_time: 1234567890,
+                        create_time: 1234567890,
                     },
-                    CustomWalletInfo {
-                        front_end_wallet_info: FrontEndWalletInfo {
-                            addr: "0x0987654321fedcba".to_string(),
-                            w_type: "Stoic AstorMe".to_string(),
+                    FullWalletInfo {
+                        wallet_info: WalletInfo {
+                            address: "0x0987654321fedcba".to_string(),
+                            from: "Stoic AstorMe".to_string(),
                             name: "Alice's Second Wallet".to_string(),
                         },
                         id: "0987654321".to_string(),
-                        register_time: 1234567890,
+                        create_time: 1234567890,
                     },
                 ],
             },
@@ -101,25 +112,25 @@ mod tests {
                 )
                 .unwrap(),
                 name: "Bob".to_string(),
-                created_at: 1234567890,
-                custom_wallet_info_array: vec![
-                    CustomWalletInfo {
-                        front_end_wallet_info: FrontEndWalletInfo {
-                            addr: "0x1357902468acefdb".to_string(),
-                            w_type: "NNS Plug".to_string(),
+                create_time: 1234567890,
+                full_wallet_info_array: vec![
+                    FullWalletInfo {
+                        wallet_info: WalletInfo {
+                            address: "0x1357902468acefdb".to_string(),
+                            from: "NNS Plug".to_string(),
                             name: "Bob's Wallet".to_string(),
                         },
                         id: "1357902468".to_string(),
-                        register_time: 1234567890,
+                        create_time: 1234567890,
                     },
-                    CustomWalletInfo {
-                        front_end_wallet_info: FrontEndWalletInfo {
-                            addr: "0x2468135790bdfeca".to_string(),
-                            w_type: "Stoic AstorMe".to_string(),
+                    FullWalletInfo {
+                        wallet_info: WalletInfo {
+                            address: "0x2468135790bdfeca".to_string(),
+                            from: "Stoic AstorMe".to_string(),
                             name: "Bob's Second Wallet".to_string(),
                         },
                         id: "2468135790".to_string(),
-                        register_time: 1234567890,
+                        create_time: 1234567890,
                     },
                 ],
             },
