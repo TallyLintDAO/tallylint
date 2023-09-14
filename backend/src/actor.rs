@@ -8,22 +8,22 @@ use crate::context::{CanisterDB, DaoContext};
 
 use crate::env::CanisterEnvironment;
 use crate::{CONTEXT, GOVERNANACE_BTWL, GOVERNANACE_ZHOU};
-
+#[allow(dead_code)]
 // #[query]
 fn next_id() -> u64 {
     CONTEXT.with(|s| s.borrow().id)
 }
-
+#[allow(dead_code)]
 // #[ic_cdk_macros::query]
 fn greet(name: String) -> String {
     format!("Hello, {}!", name)
 }
-
+#[allow(dead_code)]
 // #[query]
 fn get_caller() -> String {
     caller().to_string()
 }
-
+#[allow(dead_code)]
 // #[query]
 fn now() -> u64 {
     CONTEXT.with(|c| c.borrow().env.now())
