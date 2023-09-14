@@ -42,6 +42,3 @@ dfx canister call --network ic backend add_wallet '(record { addr = "test_dup001
  dfx canister call --network ic backend auto_register_user
 
 
-
-"b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae"
-"b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae"

@@ -17,13 +17,7 @@ service : () -> {
   add_wallet : (FrontEndWalletInfo) -> (Result);
   auto_register_user : () -> (Result_1);
   delete_wallet : (text) -> (Result);
-  get_caller : () -> (text) query;
-  get_caller_principal : () -> (text) query;
-  greet : (text) -> (text) query;
   list_all_user : () -> (vec UserProfile);
-  next_id : () -> (nat64) query;
-  now : () -> (nat64) query;
   query_wallet_array : () -> (Result_2);
-  test_print : () -> (nat32) query;
   user_quantity : () -> (nat32) query;
 }

@@ -1,27 +1,33 @@
 export const idlFactory = ({ IDL }) => {
+  const FrontEndWalletInfo = IDL.Record({
+    'addr' : IDL.Text,
+    'name' : IDL.Text,
+    'w_type' : IDL.Text,
+  });
+  const Result = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : IDL.Text });
   const CustomWalletInfo = IDL.Record({
-    'wallet_register_time' : IDL.Nat64,
-    'wallet_addr' : IDL.Principal,
-    'wallet_name' : IDL.Text,
-    'wallet_type' : IDL.Text,
-    'wallet_id' : IDL.Text,
+    'id' : IDL.Text,
+    'register_time' : IDL.Nat64,
+    'front_end_wallet_info' : FrontEndWalletInfo,
   });
   const UserProfile = IDL.Record({
-    'custom_wallet_info' : IDL.Opt(CustomWalletInfo),
     'owner' : IDL.Principal,
     'name' : IDL.Text,
     'created_at' : IDL.Nat64,
+    'custom_wallet_info_array' : IDL.Vec(CustomWalletInfo),
   });
-  const Result = IDL.Variant({ 'Ok' : UserProfile, 'Err' : IDL.Text });
-  const Result_1 = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : IDL.Text });
+  const Result_1 = IDL.Variant({ 'Ok' : UserProfile, 'Err' : IDL.Text });
+  const Result_2 = IDL.Variant({
+    'Ok' : IDL.Vec(CustomWalletInfo),
+    'Err' : IDL.Text,
+  });
   return IDL.Service({
-    'auto_register_user' : IDL.Func([], [Result], []),
-    'delete_wallet' : IDL.Func([IDL.Text], [Result_1], []),
-    'get_caller' : IDL.Func([], [IDL.Text], ['query']),
-    'greet' : IDL.Func([IDL.Text], [IDL.Text], ['query']),
-    'next_id' : IDL.Func([], [IDL.Nat64], ['query']),
-    'now' : IDL.Func([], [IDL.Nat64], ['query']),
-    'update_wallet' : IDL.Func([CustomWalletInfo], [Result_1], []),
+    'add_wallet' : IDL.Func([FrontEndWalletInfo], [Result], []),
+    'auto_register_user' : IDL.Func([], [Result_1], []),
+    'delete_wallet' : IDL.Func([IDL.Text], [Result], []),
+    'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
+    'query_wallet_array' : IDL.Func([], [Result_2], []),
+    'user_quantity' : IDL.Func([], [IDL.Nat32], ['query']),
   });
 };
 export const init = ({ IDL }) => { return []; };

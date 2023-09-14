@@ -2,28 +2,32 @@ import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
 export interface CustomWalletInfo {
-  'wallet_register_time' : bigint,
-  'wallet_addr' : Principal,
-  'wallet_name' : string,
-  'wallet_type' : string,
-  'wallet_id' : string,
+  'id' : string,
+  'register_time' : bigint,
+  'front_end_wallet_info' : FrontEndWalletInfo,
 }
-export type Result = { 'Ok' : UserProfile } |
+export interface FrontEndWalletInfo {
+  'addr' : string,
+  'name' : string,
+  'w_type' : string,
+}
+export type Result = { 'Ok' : boolean } |
   { 'Err' : string };
-export type Result_1 = { 'Ok' : boolean } |
+export type Result_1 = { 'Ok' : UserProfile } |
+  { 'Err' : string };
+export type Result_2 = { 'Ok' : Array<CustomWalletInfo> } |
   { 'Err' : string };
 export interface UserProfile {
-  'custom_wallet_info' : [] | [CustomWalletInfo],
   'owner' : Principal,
   'name' : string,
   'created_at' : bigint,
+  'custom_wallet_info_array' : Array<CustomWalletInfo>,
 }
 export interface _SERVICE {
-  'auto_register_user' : ActorMethod<[], Result>,
-  'delete_wallet' : ActorMethod<[string], Result_1>,
-  'get_caller' : ActorMethod<[], string>,
-  'greet' : ActorMethod<[string], string>,
-  'next_id' : ActorMethod<[], bigint>,
-  'now' : ActorMethod<[], bigint>,
-  'update_wallet' : ActorMethod<[CustomWalletInfo], Result_1>,
+  'add_wallet' : ActorMethod<[FrontEndWalletInfo], Result>,
+  'auto_register_user' : ActorMethod<[], Result_1>,
+  'delete_wallet' : ActorMethod<[string], Result>,
+  'list_all_user' : ActorMethod<[], Array<UserProfile>>,
+  'query_wallet_array' : ActorMethod<[], Result_2>,
+  'user_quantity' : ActorMethod<[], number>,
 }

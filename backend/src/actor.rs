@@ -9,22 +9,22 @@ use crate::context::{CanisterDB, DaoContext};
 use crate::env::CanisterEnvironment;
 use crate::{CONTEXT, GOVERNANACE_BTWL, GOVERNANACE_ZHOU};
 
-#[query]
+// #[query]
 fn next_id() -> u64 {
     CONTEXT.with(|s| s.borrow().id)
 }
 
-#[ic_cdk_macros::query]
+// #[ic_cdk_macros::query]
 fn greet(name: String) -> String {
     format!("Hello, {}!", name)
 }
 
-#[query]
+// #[query]
 fn get_caller() -> String {
     caller().to_string()
 }
 
-#[query]
+// #[query]
 fn now() -> u64 {
     CONTEXT.with(|c| c.borrow().env.now())
 }

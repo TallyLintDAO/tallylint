@@ -43,14 +43,14 @@ fn auto_register_user() -> Result<UserProfile, String> {
 
 const MAX_WALLET_NAME_LENGTH: usize = 64;
 
-#[query]
-fn test_print() -> u32{
+// #[query]
+fn test_print() -> u32 {
     use ic_cdk::println;
     ic_cdk::println!("test_print");
     return 0;
 }
 
-#[query]
+// #[query]
 pub fn get_caller_principal() -> String {
     CONTEXT.with(|c| {
         let ctx = c.borrow();
@@ -59,13 +59,12 @@ pub fn get_caller_principal() -> String {
     })
 }
 
-
 #[query]
 fn user_quantity() -> u32 {
     CONTEXT.with(|c| {
         let ctx = c.borrow_mut();
         let num = ctx.user_service.user_quantity();
-        let _test=1;
+        let _test = 1;
         return num;
     })
 }
@@ -87,8 +86,8 @@ fn add_wallet(front_end_wallet_info: FrontEndWalletInfo) -> Result<bool, String>
         let mut ctx = c.borrow_mut();
         let user = ctx.env.caller();
         use ic_cdk::println;
-        let principal_str=user.to_text().to_string();
-        ic_cdk::println!("{:?}",principal_str);
+        let principal_str = user.to_text().to_string();
+        ic_cdk::println!("{:?}", principal_str);
         let mut custom_wallet_info = CustomWalletInfo {
             front_end_wallet_info: front_end_wallet_info.clone(),
             id: "id".to_string() + &front_end_wallet_info.addr.to_string(),
@@ -100,7 +99,7 @@ fn add_wallet(front_end_wallet_info: FrontEndWalletInfo) -> Result<bool, String>
             .user_service
             .add_wallet(&user, custom_wallet_info)
             .ok_or("cant add".to_string());
-        return Ok(true); 
+        return Ok(true);
     })
 }
 
