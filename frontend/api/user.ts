@@ -15,3 +15,18 @@ export async function getUserAutoRegister(): Promise<ApiResult<ApiUserInfo>> {
         isLocal: true, // 需要本地存储
     });
 }
+
+// 增加用户的钱包地址
+export async function addUserWallet(address, name, type): Promise<ApiResult<boolean>> {
+    return getBackend().add_wallet({
+        addr: address,
+        name: name,
+        w_type: type
+    })
+}
+
+// 获得当前用户登记的钱包信息
+export async function getUserWallet(): Promise<ApiResult<any>> {
+    return getBackend().query_wallet_array();
+}
+

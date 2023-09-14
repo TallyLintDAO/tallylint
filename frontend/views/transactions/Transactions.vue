@@ -90,7 +90,7 @@
     const options = ['FIFO'];
     const model = ref('FIFO')
 
-    onMounted(async () => {
+    onMounted(() => {
         getWalletHistory();
     });
 
