@@ -42,14 +42,14 @@ fn auto_register_user() -> Result<UserProfile, String> {
 }
 
 const MAX_WALLET_NAME_LENGTH: usize = 64;
-
+#[allow(dead_code)]
 // #[query]
 fn test_print() -> u32 {
-    use ic_cdk::println;
+
     ic_cdk::println!("test_print");
     return 0;
 }
-
+#[allow(dead_code)]
 // #[query]
 pub fn get_caller_principal() -> String {
     CONTEXT.with(|c| {
@@ -85,7 +85,6 @@ fn add_wallet(front_end_wallet_info: FrontEndWalletInfo) -> Result<bool, String>
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
         let user = ctx.env.caller();
-        use ic_cdk::println;
         let principal_str = user.to_text().to_string();
         ic_cdk::println!("{:?}", principal_str);
         let mut custom_wallet_info = CustomWalletInfo {
