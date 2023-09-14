@@ -28,6 +28,3 @@ git add -f ./.dfx/ic/canisters/backend/index.js
 # git add -f ./.dfx/local/canisters/backend/index.js
 
 dfx canister status --network ic --wallet vwfus-yaaaa-aaaag-qcj2a-cai backend
-
-
-

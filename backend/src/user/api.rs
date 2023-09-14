@@ -51,11 +51,21 @@ fn test_print() -> u32{
 }
 
 #[query]
+pub fn get_caller_principal() -> String {
+    CONTEXT.with(|c| {
+        let ctx = c.borrow();
+        let caller = &ctx.env.caller();
+        return caller.to_text().to_string();
+    })
+}
+
+
+#[query]
 fn user_quantity() -> u32 {
     CONTEXT.with(|c| {
         let ctx = c.borrow_mut();
         let num = ctx.user_service.user_quantity();
-        let test=1;
+        let _test=1;
         return num;
     })
 }
@@ -67,8 +77,8 @@ fn user_quantity() -> u32 {
 */
 // test ok
 use crate::common::guard::user_owner_guard;
-// #[update(guard = "user_owner_guard")]
-#[update]
+#[update(guard = "user_owner_guard")]
+// #[update]
 fn add_wallet(front_end_wallet_info: FrontEndWalletInfo) -> Result<bool, String> {
     if front_end_wallet_info.name.len() > MAX_WALLET_NAME_LENGTH {
         return Err(String::from("Wallet name exceeds maximum length 64"));
@@ -76,6 +86,9 @@ fn add_wallet(front_end_wallet_info: FrontEndWalletInfo) -> Result<bool, String>
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
         let user = ctx.env.caller();
+        use ic_cdk::println;
+        let principal_str=user.to_text().to_string();
+        ic_cdk::println!("{:?}",principal_str);
         let mut custom_wallet_info = CustomWalletInfo {
             front_end_wallet_info: front_end_wallet_info.clone(),
             id: "id".to_string() + &front_end_wallet_info.addr.to_string(),
@@ -83,12 +96,11 @@ fn add_wallet(front_end_wallet_info: FrontEndWalletInfo) -> Result<bool, String>
         };
         custom_wallet_info.id =
             "wallet_".to_string() + &custom_wallet_info.front_end_wallet_info.addr.to_string();
-        custom_wallet_info.register_time = ic_cdk::api::time();
         let _msg = ctx
             .user_service
             .add_wallet(&user, custom_wallet_info)
             .ok_or("cant add".to_string());
-        Ok(true)
+        return Ok(true); 
     })
 }
 

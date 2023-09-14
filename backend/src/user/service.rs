@@ -89,3 +89,24 @@ impl UserService {
         return self.users.len().try_into().unwrap_or_default();
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_is_owner() {
+        // Create a sample user with the caller as the owner
+        let caller = Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap();
+        let owner =  Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap();
+        let users = BTreeMap::new();
+        let user_service = UserService { users };
+        
+        assert!(user_service.is_owner(&caller));
+        // Test when the caller is the owner
+        assert_eq!(caller, owner);
+
+        
+    }
+}
