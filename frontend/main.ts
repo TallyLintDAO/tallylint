@@ -15,7 +15,7 @@ const app = createApp(App);
 const pinia = createPinia();
 
 app.use(router).use(pinia).use(Quasar, {
-    plugins: {Notify}, // import Quasar plugins and add here
+    plugins: { Notify }, // import Quasar plugins and add here
 });
 
 app.mount('#app');

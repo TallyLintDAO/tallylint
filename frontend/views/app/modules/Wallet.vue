@@ -59,7 +59,7 @@
                         />
                         <div class="q-gutter-sm justify-end flex">
                             <q-btn flat label="Cancel" v-close-popup="true"/>
-                            <q-btn label="Submit" type="submit" color="primary"/>
+                            <q-btn :loading="loading" label="Submit" type="submit" color="primary"/>
                         </div>
                     </q-form>
                 </q-card-section>
@@ -72,6 +72,7 @@
     import { ref, onMounted } from 'vue';
     import { QForm } from 'quasar';
     import router from "@/router";
+    import { addUserWallet, getUserWallet } from "@/api/user";
 
     const columns = [
         {
@@ -80,22 +81,23 @@
             label: 'Address',
             field: row => row.address,
         },
-        {name: 'type', label: 'Type', field: 'type'},
+        {name: 'from', label: 'Type', field: 'from'},
         {name: 'name', label: 'Name', field: 'name'},
         {name: 'transactions', label: 'Transactions', field: 'transactions'},
     ]
-    const types = ["NNS", "Plug", "Stoic", "AstorMe"]
+    const froms = ["NNS", "Plug", "Stoic", "AstorMe"]
     const addWallet = ref(false);
+    const loading = ref(false);
 
     const wallet = ref({
         address: "",
-        type: "NNS",
+        from: "NNS",
         name: "",
         transactions: 0,
     });
     const walletPrototype = ({
         address: "",
-        type: "NNS",
+        from: "NNS",
         name: "",
         transactions: 0,
     });
@@ -104,28 +106,45 @@
     const rows = ref([
         {
             address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
-            type: "NNS",
+            from: "NNS",
             name: "wallet1",
             transactions: 70,
         }
     ])
 
+    onMounted(() => {
+        getWallets();
+    });
+
     const toDetail = (address: string) => {
         router.push('/app/transactions/' + address);
     }
 
-    const onSubmit = () => {
-        walletForm.value?.validate().then(success => {
-            if (success) {
-                rows.value.push({...wallet.value});
-                wallet.value = {...walletPrototype};
-                addWallet.value = false;
-                // walletForm.value?.resetValidation()
-            } else {
-                // 数据验证失败
-                // 用户至少输入了一个无效值
-            }
+    const getWallets = () => {
+        getUserWallet().then((res)=>{
+            console.log("getUserWallet",res)
         })
+    }
+
+    const onSubmit = async () => {
+        loading.value = true;
+        const validationSuccess = await walletForm.value?.validate();
+        if (validationSuccess) {
+            const { address,name , from } = wallet.value;
+            const res = await addUserWallet(address, name, from);
+            console.log("wallet res",res)
+            if(res.Ok){
+                rows.value.push({ ...wallet.value });
+                wallet.value = { ...walletPrototype };
+                addWallet.value = false;
+            }
+            // reset方法好像没效果，待测试。
+            // walletForm.value?.resetValidation()
+        } else {
+            // 数据验证失败
+            // 用户至少输入了一个无效值
+        }
+        loading.value = false;
     }
 
 </script>

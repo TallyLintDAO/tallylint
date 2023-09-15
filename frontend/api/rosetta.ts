@@ -61,6 +61,7 @@ export const getICPTransactions = async (
     }
     const {transactions, total_count} = await response.json();
     console.log("rosetta api:", transactions)
+    purchaseQueue.length = 0; //计算前重置购买队列数组，防止出现问题。
     const transactionsInfo: InferredTransaction[] = [];
     //由于是时间最新的排前，所以要倒序数组，以实现先入先出的税务计算方式
     transactions.reverse();
