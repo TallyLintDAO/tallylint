@@ -23,9 +23,10 @@
                             :class="props.selected ? 'bg-grey-2' : ''">
                         <q-card-section>
                             <q-card-section>
-                                <q-checkbox dense v-model="selected" :val="props.row.address" :label="props.row.name"/>
+                                <q-checkbox dense v-model="selected" :val="props.row.address">
+                                    <div class="text-h6">{{props.row.name}}</div>
+                                </q-checkbox>
                             </q-card-section>
-                            <div class="text-h6">{{props.row.name}}</div>
                             <q-list>
                                 <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')" :key="col.name">
                                     <q-item-section>
@@ -89,7 +90,7 @@
             label: 'Address',
             field: row => row.address,
         },
-        {name: 'from', label: 'Type', field: 'from'},
+        {name: 'from', label: 'From', field: 'from'},
         {name: 'name', label: 'Name', field: 'name'},
         {name: 'transactions', label: 'Transactions', field: 'transactions'},
     ]
