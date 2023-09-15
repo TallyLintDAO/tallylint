@@ -48,7 +48,7 @@
                                 lazy-rules
                                 :rules="[ val => val && val.length > 0 || 'Please type something']"
                         />
-                        <q-select filled v-model="wallet.type" :options="types" label="Wallet Type"/>
+                        <q-select filled v-model="wallet.from" :options="froms" label="Wallet From"/>
                         <q-input
                                 filled
                                 v-model="wallet.name"
@@ -131,13 +131,13 @@
         const validationSuccess = await walletForm.value?.validate();
         if (validationSuccess) {
             const { address,name , from } = wallet.value;
-            const res = await addUserWallet(address, name, from);
-            console.log("wallet res",res)
-            if(res.Ok){
+            // const res = await addUserWallet(address, name, from);
+            // console.log("wallet res",res)
+            // if(res.Ok){
                 rows.value.push({ ...wallet.value });
                 wallet.value = { ...walletPrototype };
                 addWallet.value = false;
-            }
+            // }
             // reset方法好像没效果，待测试。
             // walletForm.value?.resetValidation()
         } else {
