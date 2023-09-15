@@ -8,15 +8,23 @@
                 title="Wallets"
                 :rows="rows"
                 :columns="columns"
+                v-model:selected="selected"
                 row-key="address"
         >
-            <template v-slot:top-right>
-                <q-btn color="primary" @click="addWallet = true">Add Wallet</q-btn>
+            <template v-slot:top-right >
+                <div class="q-gutter-md">
+                    <q-btn color="primary" @click="addWallet = true">Add Wallet</q-btn>
+                    <q-btn color="red" disable >Remove Wallet</q-btn>
+                </div>
             </template>
             <template v-slot:item="props">
-                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3">
-                    <q-card @click="toDetail(props.row.address)" class="cursor-pointer">
+                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition">
+                    <q-card @click="toDetail(props.row.address)" class="cursor-pointer"
+                            :class="props.selected ? 'bg-grey-2' : ''">
                         <q-card-section>
+                            <q-card-section>
+                                <q-checkbox dense v-model="selected" :val="props.row.address" :label="props.row.name"/>
+                            </q-card-section>
                             <div class="text-h6">{{props.row.name}}</div>
                             <q-list>
                                 <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')" :key="col.name">
@@ -48,7 +56,7 @@
                                 lazy-rules
                                 :rules="[ val => val && val.length > 0 || 'Please type something']"
                         />
-                        <q-select filled v-model="wallet.from" :options="froms" label="Wallet From"/>
+                        <q-select filled v-model="wallet.from" :options="froms" label="From"/>
                         <q-input
                                 filled
                                 v-model="wallet.name"
@@ -88,6 +96,7 @@
     const froms = ["NNS", "Plug", "Stoic", "AstorMe"]
     const addWallet = ref(false);
     const loading = ref(false);
+    const selected = ref([]);
 
     const wallet = ref({
         address: "",
@@ -121,8 +130,8 @@
     }
 
     const getWallets = () => {
-        getUserWallet().then((res)=>{
-            console.log("getUserWallet",res)
+        getUserWallet().then((res) => {
+            console.log("getUserWallet", res)
         })
     }
 
@@ -130,12 +139,12 @@
         loading.value = true;
         const validationSuccess = await walletForm.value?.validate();
         if (validationSuccess) {
-            const { address,name , from } = wallet.value;
+            // const {address, name, from} = wallet.value;
             // const res = await addUserWallet(address, name, from);
-            // console.log("wallet res",res)
-            // if(res.Ok){
-                rows.value.push({ ...wallet.value });
-                wallet.value = { ...walletPrototype };
+            // console.log("wallet res", res)
+            // if (res.Ok) {
+                rows.value.push({...wallet.value});
+                wallet.value = {...walletPrototype};
                 addWallet.value = false;
             // }
             // reset方法好像没效果，待测试。
@@ -150,4 +159,7 @@
 </script>
 
 <style lang="scss">
+    .grid-style-transition {
+        transition: transform .28s, background-color .28s
+    }
 </style>

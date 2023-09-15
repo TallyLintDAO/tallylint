@@ -56,7 +56,8 @@ export const getICPTransactions = async (
         },
     });
     if (!response.ok) {
-        showMessageError('Can not connect ICP rosetta api')
+        showMessageError('Unable to get information from ICP Rosetta Api, ' +
+            'please check that the wallet address and network are correct.')
         throw Error("error for rosetta api" + response.statusText);
     }
     const {transactions, total_count} = await response.json();
