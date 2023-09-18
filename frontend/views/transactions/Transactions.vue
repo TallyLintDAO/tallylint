@@ -96,7 +96,7 @@
 
     const getWalletHistory = async () => {
         //@ts-ignore TODO 传递进来的可能是单个地址，也可能是多个地址，需处理
-        getICPTransactions(address).then(res => {
+        getICPTransactions(address, true).then(res => {
             console.log("getWalletHistory", res)
             if (res.total && res.total != 0) {
                 walletList.value = res.transactions;

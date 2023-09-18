@@ -40,7 +40,8 @@ export interface GetTransactionsResponse {
 }
 
 export const getICPTransactions = async (
-    accountId: string
+    accountId: string,
+    isFormat: boolean
 ): Promise<GetTransactionsResponse> => {
     const response = await fetch(`${ROSETTA_URL}/search/transactions`, {
         method: 'POST',
@@ -64,15 +65,18 @@ export const getICPTransactions = async (
     console.log("rosetta api:", transactions)
     purchaseQueue.length = 0; //计算前重置购买队列数组，防止出现问题。
     const transactionsInfo: InferredTransaction[] = [];
-    //由于是时间最新的排前，所以要倒序数组，以实现先入先出的税务计算方式
-    transactions.reverse();
-    for (const {transaction} of transactions) {
-        const formattedTransaction = await formatIcpTransaccion(accountId, transaction);
-        transactionsInfo.push(formattedTransaction);
+    //是否需要处理，不需要则不处理
+    if (isFormat) {
+        //由于是时间最新的排前，所以要倒序数组，以实现先入先出的税务计算方式
+        transactions.reverse();
+        for (const {transaction} of transactions) {
+            const formattedTransaction = await formatIcpTransaccion(accountId, transaction);
+            transactionsInfo.push(formattedTransaction);
+        }
+        //将数组恢复正常。
+        transactionsInfo.reverse();
+        console.log("transactionsInfo", transactionsInfo)
     }
-    //将数组恢复正常。
-    transactionsInfo.reverse();
-    console.log("transactionsInfo", transactionsInfo)
     return {
         total: total_count,
         transactions: transactionsInfo,

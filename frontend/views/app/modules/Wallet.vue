@@ -1,34 +1,46 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div class="wallet-container">
-        <div class="buttons q-mb-md">
-            <q-btn color="primary" @click="addWallet = true">Add Wallet</q-btn>
+        <div class="buttons q-mb-md q-gutter-md">
+            <q-btn color="primary" @click="addWalletVisible = true">Add Wallet</q-btn>
+            <q-btn color="red" disable>Remove Wallet</q-btn>
         </div>
         <q-table
                 grid
                 title="Wallets"
                 :rows="rows"
                 :columns="columns"
+                selection="multiple"
                 v-model:selected="selected"
+                :filter="filter"
                 row-key="address"
         >
-            <template v-slot:top-right >
-                <div class="q-gutter-md">
-                    <q-btn color="primary" @click="addWallet = true">Add Wallet</q-btn>
-                    <q-btn color="red" disable >Remove Wallet</q-btn>
-                </div>
+            <template v-slot:top-right>
+                <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+                    <template v-slot:append>
+                        <q-icon name="search"/>
+                    </template>
+                </q-input>
             </template>
             <template v-slot:item="props">
-                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition">
+                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
+                     :style="props.selected ? 'transform: scale(0.95);' : ''"
+                     @mouseenter="mouseIn = true" @mouseleave="mouseIn = false">
                     <q-card @click="toDetail(props.row.address)" class="cursor-pointer"
                             :class="props.selected ? 'bg-grey-2' : ''">
                         <q-card-section>
                             <q-card-section>
-                                <q-checkbox dense v-model="selected" :val="props.row.address">
-                                    <div class="text-h6">{{props.row.name}}</div>
-                                </q-checkbox>
+                                <div>
+                                    <div v-show="!mouseIn" class="flex q-gutter-xs">
+                                        <img class="head-icon"  src="@/assets/dfinity.svg" alt="NNS Icon"/>
+                                        <div class="text-h6">{{props.row.name}}</div>
+                                    </div>
+                                    <q-checkbox v-show="mouseIn" dense v-model="props.selected" :val="props.row.address">
+                                        <div class="text-h6">{{props.row.name}}</div>
+                                    </q-checkbox>
+                                </div>
                             </q-card-section>
                             <q-list>
-                                <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')" :key="col.name">
+                                <q-item v-for="col in props.cols" :key="col.name">
                                     <q-item-section>
                                         <q-item-label>{{ col.label }}</q-item-label>
                                         <q-item-label caption>{{ col.value }}</q-item-label>
@@ -40,7 +52,7 @@
                 </div>
             </template>
         </q-table>
-        <q-dialog v-model="addWallet">
+        <q-dialog v-model="addWalletVisible">
             <q-card style="min-width: 350px">
                 <q-card-section>
                     <div class="text-h6">Your Wallet</div>
@@ -82,6 +94,7 @@
     import { QForm } from 'quasar';
     import router from "@/router";
     import { addUserWallet, getUserWallet } from "@/api/user";
+    import { getICPTransactions } from "@/api/rosetta";
 
     const columns = [
         {
@@ -95,9 +108,11 @@
         {name: 'transactions', label: 'Transactions', field: 'transactions'},
     ]
     const froms = ["NNS", "Plug", "Stoic", "AstorMe"]
-    const addWallet = ref(false);
+    const addWalletVisible = ref(false);
     const loading = ref(false);
-    const selected = ref([]);
+    const mouseIn = ref(false); //鼠标移入监听
+    const filter = ref(''); //搜索框
+    const selected = ref([]); //当前选中的对象们
 
     const wallet = ref({
         address: "",
@@ -115,10 +130,11 @@
 
     const rows = ref([
         {
-            address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+            // address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+            address: "9376e418870c3638d82f824211ec9e19e915f07f49e075834f56f3fcd3a8a05d",
             from: "NNS",
             name: "wallet1",
-            transactions: 70,
+            transactions: 125,
         }
     ])
 
@@ -133,6 +149,10 @@
     const getWallets = () => {
         getUserWallet().then((res) => {
             console.log("getUserWallet", res)
+            //查询每个钱包的交易总数。
+            getICPTransactions(res.Ok.address, false).then(res => {
+                //...
+            })
         })
     }
 
@@ -144,9 +164,9 @@
             // const res = await addUserWallet(address, name, from);
             // console.log("wallet res", res)
             // if (res.Ok) {
-                rows.value.push({...wallet.value});
-                wallet.value = {...walletPrototype};
-                addWallet.value = false;
+            rows.value.push({...wallet.value});
+            wallet.value = {...walletPrototype};
+            addWalletVisible.value = false;
             // }
             // reset方法好像没效果，待测试。
             // walletForm.value?.resetValidation()
@@ -160,7 +180,13 @@
 </script>
 
 <style lang="scss">
-    .grid-style-transition {
-        transition: transform .28s, background-color .28s
+    .wallet-container {
+        .grid-style-transition {
+            transition: transform .28s, background-color .28s
+        }
+        .head-icon {
+            width: 32px!important;
+        }
     }
+
 </style>
