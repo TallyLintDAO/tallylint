@@ -20,23 +20,7 @@ pub fn user_owner_guard() -> Result<(), String> {
             Ok(())
         } else {
             let error_message = format!("Highly maybe not register yet! Caller: {:?} is not the owner", caller.to_string());
-            // println!("{}", error_message);
             Err(error_message)
         }
     })
 }
-
-// pub fn post_owner_guard() -> Result<(), String> {
-//     CONTEXT.with(|c| {
-//         let ctx = c.borrow();
-//         let caller = ctx.env.caller();
-//          if ctx
-//             .post_service
-//             .is_owner(caller) {
-//                 Ok(())
-//         } else {
-//             Err("caller is not owner".to_string())
-//         }
-
-//     })
-// }

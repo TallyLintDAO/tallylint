@@ -7,11 +7,12 @@ cargo build --target wasm32-unknown-unknown --release --package "backend"  --fea
 # TDD idea , Test Driven Development . a kind of OKR . great! to confident with our code !
 # TODO. make the whole CRUD into a auto things !!!
 # both work to local or ic need test !!!!!!
- dfx canister call backend add_wallet '(record { addr = "01awd916dwa335wda2042"; name = "AmydaLu"; w_type = "asdaw" })'
- dfx canister call backend add_wallet '(record { addr = "addr111"; name = "astrome001"; w_type = "astrome" })'
- dfx canister call backend add_wallet '(record { addr = "adr333"; name = "astrome001"; w_type = "astrome" })'
- dfx canister call backend delete_wallet "01awd916dwa335wda2042"
- dfx canister call backend query_wallet_array
+dfx canister call  backend auto_register_user
+
+ dfx canister call backend add_wallet '(record { address = "aaaaaaaaaaaaa"; name = "AmydaLu"; from = "asdaw" })'
+ dfx canister call backend add_wallet '(record { address = "ccccccccccccc"; name = "AmydaLu"; from = "asdaw" })'
+ dfx canister call backend delete_wallet "ccccccccccccc"
+ dfx canister call backend query_all_wallets --query
  dfx canister call backend get_caller_principal
  dfx canister call backend test_print
  dfx canister call backend list_all_user

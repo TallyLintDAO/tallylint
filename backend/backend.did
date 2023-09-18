@@ -1,24 +1,25 @@
-type FullWalletInfo = record {
-  id : text;
-  create_time : nat64;
-  wallet_info : WalletInfo;
-};
 type Result = variant { Ok : bool; Err : text };
-type Result_1 = variant { Ok : UserInfo; Err : text };
-type Result_2 = variant { Ok : vec FullWalletInfo; Err : text };
-type UserInfo = record { owner : principal; name : text; create_time : nat64 };
+type Result_1 = variant { Ok : UserProfile; Err : text };
+type Result_2 = variant { Ok : vec WalletProfile; Err : text };
 type UserProfile = record {
   owner : principal;
   name : text;
   create_time : nat64;
-  full_wallet_info_array : vec FullWalletInfo;
 };
-type WalletInfo = record { from : text; name : text; address : text };
+type WalletAddCommand = record { from : text; name : text; address : text };
+type WalletProfile = record {
+  id : nat64;
+  from : text;
+  name : text;
+  create_time : nat64;
+  address : text;
+  holder : principal;
+};
 service : () -> {
-  add_wallet : (WalletInfo) -> (Result);
+  add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_1);
-  delete_wallet : (text) -> (Result);
+  delete_wallet : (nat64) -> (Result);
   list_all_user : () -> (vec UserProfile);
-  query_wallet_array : () -> (Result_2);
-  user_quantity : () -> (nat32) query;
+  query_all_wallets : () -> (Result_2) query;
+  user_quantity : () -> (nat32);
 }

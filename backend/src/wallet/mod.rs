@@ -4,4 +4,4 @@ pub(crate) mod domain;
 
 pub(crate) mod service;
 
-pub(crate) use service::UserService;
+pub(crate) use service::WalletService;
