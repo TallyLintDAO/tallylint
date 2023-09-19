@@ -35,7 +35,7 @@
                                         <q-menu>
                                             <q-list style="min-width: 100px">
                                                 <q-item clickable v-close-popup="true">
-                                                    <q-item-section @click="deleteWallet(props.row)">
+                                                    <q-item-section @click="deleteWallet(props.row.id)">
                                                         Delete
                                                     </q-item-section>
                                                 </q-item>
@@ -103,7 +103,7 @@
     import { ref, onMounted } from 'vue';
     import { QForm } from 'quasar';
     import router from "@/router";
-    import { addUserWallet, getUserWallet } from "@/api/user";
+    import { addUserWallet, deleteUserWallet, getUserWallet } from "@/api/user";
     import { getICPTransactions } from "@/api/rosetta";
 
     const columns = [
@@ -156,16 +156,26 @@
     }
 
     const getWallets = () => {
-        getUserWallet().then((res) => {
+        getUserWallet().then(async (res) => {
             console.log("getUserWallet", res)
             if (res.Ok) {
                 rows.value = res.Ok;
+                for (const row of rows.value) {
+                    try {
+                        console.log("row",row)
+                        // const res = await getICPTransactions(row.address, false)
+                        // // 将查询得到的transactions绑定回原数组中的transactions
+                        // row.transactions = res.total;
+                        getICPTransactions(row.address, false).then((res)=>{
+                            // 将查询得到的transactions绑定回原数组中的transactions
+                            row.transactions = res.total;
+                        })
+                    } catch (error) {
+                        // 处理错误情况
+                        console.error(`查询地址 ${row.address} 的交易时出错:`, error);
+                    }
+                }
             }
-
-            //查询每个钱包的交易总数。
-            // getICPTransactions(res.Ok.address, false).then(res => {
-            //     //...
-            // })
         })
     }
 
@@ -180,6 +190,7 @@
                 rows.value.push({...wallet.value});
                 wallet.value = {...walletPrototype};
                 addWalletVisible.value = false;
+                getWallets();
             }
             // reset方法好像没效果，待测试。
             // walletForm.value?.resetValidation()
@@ -191,7 +202,11 @@
     }
 
     const deleteWallet = (walletId: bigint) => {
-
+        deleteUserWallet(walletId).then((res)=>{
+            if(res.Ok){
+                getWallets();
+            }
+        })
     }
 
 </script>

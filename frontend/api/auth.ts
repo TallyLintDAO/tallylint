@@ -43,7 +43,7 @@ export async function initAuth(): Promise<AuthInfo> {
     // 链接对象已经准备好
     // 取得当前登录信息
     const isAuthenticated = await client.isAuthenticated();
-    // console.log("isAuthenticated",isAuthenticated)
+    // console.log("isAuthenticated", isAuthenticated)
     if (isAuthenticated) {
         // 如果已经登录，取得信息
         const identity = client.getIdentity();
@@ -77,7 +77,7 @@ export async function signIn(client: AuthClient): Promise<IdentityInfo> {
                 resolve(new IdentityInfo(identity, principal));
             },
             onError: (err) => {
-                console.error("auth II have a error ",err);
+                console.error("auth II have a error ", err);
                 reject(err);
             },
             // Maximum authorization expiration is 8 days
@@ -86,16 +86,16 @@ export async function signIn(client: AuthClient): Promise<IdentityInfo> {
     });
     // 持续打印II身份有效时间。
     // const authClient = await AuthClient.create()
-    //     // if (await authClient.isAuthenticated()) {
-    //     //     let identity = authClient.getIdentity();
-    //     //     const nextExpiration = identity.getDelegation().delegations
-    //     //         .map(d => d.delegation.expiration)
-    //     //         .reduce((current, next) => next < current ? next : current);
-    //     //     setInterval(function() {
-    //     //         const expirationDuration  = nextExpiration - BigInt(Date.now()) * BigInt(1000_000);
-    //     //         console.log("ii time",expirationDuration)
-    //     //     }, 1000);
-    //     // } ;
+    // if (await authClient.isAuthenticated()) {
+    //     let identity = authClient.getIdentity();
+    //     const nextExpiration = identity.getDelegation().delegations
+    //         .map(d => d.delegation.expiration)
+    //         .reduce((current, next) => next < current ? next : current);
+    //     setInterval(function () {
+    //         const expirationDuration = nextExpiration - BigInt(Date.now()) * BigInt(1000_000);
+    //         console.log("ii time", expirationDuration)
+    //     }, 1000);
+    // }
 
     // console.log('got identity by sign in', result.identity);
     console.log('got principal by sign in', result.principal);

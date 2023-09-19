@@ -32,6 +32,6 @@ export async function getUserWallet(): Promise<ApiResult<any>> {
 }
 
 // 删除用户钱包
-export async function deleteUserWallet(walletId: number): Promise<ApiResult<any>> {
+export async function deleteUserWallet(walletId: bigint): Promise<ApiResult<any>> {
     return getBackend().delete_wallet(walletId);
 }

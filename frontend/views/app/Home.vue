@@ -9,6 +9,7 @@
                     </q-avatar>
                     IC TaxLint
                 </q-toolbar-title>
+                <q-btn color="primary" label="Logout" @click="onLogOut()"/>
             </q-toolbar>
         </q-header>
 
@@ -59,14 +60,17 @@
     import { getUserAutoRegister } from "@/api/user";
     import { useUserStore } from "@/stores/user";
     import { extractColorByName, showAvatarName, showUsername } from '@/utils/avatars';
+    import { goHome } from "@/router/routers";
+    import { useRouter } from "vue-router";
 
     const userStore = useUserStore();
+    const router = useRouter();
 
     const menuItems = [
-        { icon: 'drafts', label: 'Dashboard', route: '' },
-        { icon: 'inbox', label: 'Wallet', route: '/app' },
-        { icon: 'star', label: 'NNS', route: '/app/nns' },
-        { icon: 'send', label: 'Email Set', route: '' }
+        {icon: 'drafts', label: 'Dashboard', route: ''},
+        {icon: 'inbox', label: 'Wallet', route: '/app'},
+        {icon: 'star', label: 'NNS', route: '/app/nns'},
+        {icon: 'send', label: 'Email Set', route: ''}
     ]
     const leftDrawerOpen = ref(false)
     // 与 II 认证相关的信息
@@ -83,7 +87,6 @@
 
     const doInitAuth = () => {
         initAuth().then((ai) => {
-            console.log("doInitAuth", ai)
             clientReady.value = true;
             if (ai.info) {
                 setCurrentIdentity(ai.info.identity, ai.info.principal);
@@ -102,7 +105,6 @@
             .then((info) => {
                 console.log('APP get user info', info);
                 if (info.Ok) {
-                    console.log('APP get user info', info.Ok.owner.toString());
                     username.value = info.Ok.name;
                 } else if (info.Err) {
                     console.error('no information for unregister user: ', info);
@@ -122,6 +124,7 @@
         signedIn.value = false;
         clearCurrentIdentity();
         await signOut(auth.client);
+        goHome(router);
     };
 
     const toggleLeftDrawer = () => {
@@ -139,7 +142,6 @@
     const showUser = computed<string>(() => {
         return showUsername(username.value, principal.value);
     });
-
 
 </script>
 
