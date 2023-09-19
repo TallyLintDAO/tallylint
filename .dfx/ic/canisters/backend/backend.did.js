@@ -19,16 +19,12 @@ export const idlFactory = ({ IDL }) => {
     'address' : IDL.Text,
     'holder' : IDL.Principal,
   });
-  const Result_2 = IDL.Variant({
-    'Ok' : IDL.Vec(WalletProfile),
-    'Err' : IDL.Text,
-  });
   return IDL.Service({
     'add_wallet' : IDL.Func([WalletAddCommand], [Result], []),
     'auto_register_user' : IDL.Func([], [Result_1], []),
     'delete_wallet' : IDL.Func([IDL.Nat64], [Result], []),
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
-    'query_all_wallets' : IDL.Func([], [Result_2], ['query']),
+    'query_all_wallets' : IDL.Func([], [IDL.Vec(WalletProfile)], ['query']),
     'user_quantity' : IDL.Func([], [IDL.Nat32], []),
   });
 };

@@ -32,21 +32,22 @@ impl WalletService {
         }
     }
 
-    pub fn query_wallet_array(&mut self, user: Principal) -> Option<Vec<WalletProfile>> {
+    pub fn query_wallet_array(&mut self, user: Principal) -> Vec<WalletProfile> {
         let profiles: Vec<&WalletProfile> = self
             .wallets
             .values()
             .filter(|profile| &profile.holder == &user)
             .collect();
         if profiles.is_empty() {
-            None
+            return Vec::new();
         } else {
+            // convert Vec<&xx> to Vec<xx>
             let cloned_profiles: Vec<WalletProfile> = profiles
                 .iter()
                 .cloned()
                 .map(|profile| (*profile).clone())
                 .collect();
-            Some(cloned_profiles)
+            return  cloned_profiles;
         }
     }
 
