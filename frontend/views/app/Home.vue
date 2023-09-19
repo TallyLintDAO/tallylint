@@ -102,6 +102,7 @@
             .then((info) => {
                 console.log('APP get user info', info);
                 if (info.Ok) {
+                    console.log('APP get user info', info.Ok.owner.toString());
                     username.value = info.Ok.name;
                 } else if (info.Err) {
                     console.error('no information for unregister user: ', info);

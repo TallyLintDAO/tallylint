@@ -2,7 +2,7 @@
     <div class="wallet-container">
         <div class="buttons q-mb-md q-gutter-md">
             <q-btn color="primary" @click="addWalletVisible = true">Add Wallet</q-btn>
-            <q-btn color="red" disable>Remove Wallet</q-btn>
+            <q-btn color="red">Remove Wallet</q-btn>
         </div>
         <q-table
                 grid
@@ -22,21 +22,27 @@
                 </q-input>
             </template>
             <template v-slot:item="props">
-                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
-                     :style="props.selected ? 'transform: scale(0.95);' : ''"
-                     @mouseenter="mouseIn = true" @mouseleave="mouseIn = false">
-                    <q-card @click="toDetail(props.row.address)" class="cursor-pointer"
-                            :class="props.selected ? 'bg-grey-2' : ''">
+                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition">
+                    <!--<q-card @click="toDetail(props.row.address)" class="cursor-pointer">-->
+                    <q-card>
                         <q-card-section>
                             <q-card-section>
-                                <div>
-                                    <div v-show="!mouseIn" class="flex q-gutter-xs">
-                                        <img class="head-icon"  src="@/assets/dfinity.svg" alt="NNS Icon"/>
+                                <div class="row justify-between items-center">
+                                    <div class="flex q-gutter-xs">
+                                        <img class="head-icon" src="@/assets/dfinity.svg" alt="NNS Icon"/>
                                         <div class="text-h6">{{props.row.name}}</div>
                                     </div>
-                                    <q-checkbox v-show="mouseIn" dense v-model="props.selected" :val="props.row.address">
-                                        <div class="text-h6">{{props.row.name}}</div>
-                                    </q-checkbox>
+                                    <q-btn flat icon="more_vert">
+                                        <q-menu>
+                                            <q-list style="min-width: 100px">
+                                                <q-item clickable v-close-popup="true">
+                                                    <q-item-section @click="deleteWallet(props.row)">
+                                                        Delete
+                                                    </q-item-section>
+                                                </q-item>
+                                            </q-list>
+                                        </q-menu>
+                                    </q-btn>
                                 </div>
                             </q-card-section>
                             <q-list>
@@ -110,7 +116,6 @@
     const froms = ["NNS", "Plug", "Stoic", "AstorMe"]
     const addWalletVisible = ref(false);
     const loading = ref(false);
-    const mouseIn = ref(false); //鼠标移入监听
     const filter = ref(''); //搜索框
     const selected = ref([]); //当前选中的对象们
 
@@ -149,10 +154,14 @@
     const getWallets = () => {
         getUserWallet().then((res) => {
             console.log("getUserWallet", res)
+            if (res.Ok) {
+                rows.value = res.Ok;
+            }
+
             //查询每个钱包的交易总数。
-            getICPTransactions(res.Ok.address, false).then(res => {
-                //...
-            })
+            // getICPTransactions(res.Ok.address, false).then(res => {
+            //     //...
+            // })
         })
     }
 
@@ -160,14 +169,14 @@
         loading.value = true;
         const validationSuccess = await walletForm.value?.validate();
         if (validationSuccess) {
-            // const {address, name, from} = wallet.value;
-            // const res = await addUserWallet(address, name, from);
-            // console.log("wallet res", res)
-            // if (res.Ok) {
-            rows.value.push({...wallet.value});
-            wallet.value = {...walletPrototype};
-            addWalletVisible.value = false;
-            // }
+            const {address, name, from} = wallet.value;
+            const res = await addUserWallet(address, name, from);
+            console.log("wallet res", res)
+            if (res.Ok) {
+                rows.value.push({...wallet.value});
+                wallet.value = {...walletPrototype};
+                addWalletVisible.value = false;
+            }
             // reset方法好像没效果，待测试。
             // walletForm.value?.resetValidation()
         } else {
@@ -175,6 +184,10 @@
             // 用户至少输入了一个无效值
         }
         loading.value = false;
+    }
+
+    const deleteWallet = (walletId: bigint) => {
+
     }
 
 </script>
@@ -185,7 +198,7 @@
             transition: transform .28s, background-color .28s
         }
         .head-icon {
-            width: 32px!important;
+            width: 32px !important;
         }
     }
 
