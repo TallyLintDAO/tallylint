@@ -15,7 +15,6 @@ pub fn user_owner_guard() -> Result<(), String> {
     CONTEXT.with(|c| {
         let ctx = c.borrow();
         let caller = &ctx.env.caller();
-        println!("Caller: {:?}", caller); // Print the caller
         if ctx.user_service.is_owner(caller) {
             Ok(())
         } else {

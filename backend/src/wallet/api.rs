@@ -36,13 +36,13 @@ fn add_wallet(wallet_add_command: WalletAddCommand) -> Result<bool, String> {
 }
 
 #[query(guard = "user_owner_guard")]
-fn query_all_wallets() -> Vec<WalletProfile> {
+fn query_all_wallets() -> Result<Vec<WalletProfile>,Vec<WalletProfile>> {
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
         let user = ctx.env.caller();
         let wallets= ctx.wallet_service
             .query_wallet_array(user);
-        return  wallets;
+        return Ok(wallets);
     })
 }
 
