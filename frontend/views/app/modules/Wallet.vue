@@ -2,7 +2,6 @@
     <div class="wallet-container">
         <div class="buttons q-mb-md q-gutter-md">
             <q-btn color="primary" @click="addWalletVisible = true">Add Wallet</q-btn>
-            <q-btn color="red">Remove Wallet</q-btn>
         </div>
         <q-table
                 grid
@@ -49,7 +48,12 @@
                                 <q-item v-for="col in props.cols" :key="col.name">
                                     <q-item-section>
                                         <q-item-label>{{ col.label }}</q-item-label>
-                                        <q-item-label caption>{{ col.value }}</q-item-label>
+                                        <q-item-label v-if="col.name==='address'" caption>
+                                            <router-link :to="'/app/transactions/' + col.value">
+                                                {{ col.value }}
+                                            </router-link>
+                                        </q-item-label>
+                                        <q-item-label v-else caption>{{ col.value }}</q-item-label>
                                     </q-item-section>
                                 </q-item>
                             </q-list>

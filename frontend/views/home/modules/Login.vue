@@ -12,7 +12,7 @@
         <h5>Alpha Warning: there may be issues.</h5>
         <h5>Please join our discord channel to give us more suggestions!</h5>
         <h5 style="margin: 0">Login to access our app</h5>
-        <div class="q-gutter-sm">
+        <div class="q-gutter-sm row items-center">
             <q-btn color="primary" class="login-button" @click="onLogin"
                    :loading="loading" no-caps>
                 Launch app
