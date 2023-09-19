@@ -5,8 +5,6 @@ export type Result = { 'Ok' : boolean } |
   { 'Err' : string };
 export type Result_1 = { 'Ok' : UserProfile } |
   { 'Err' : string };
-export type Result_2 = { 'Ok' : Array<WalletProfile> } |
-  { 'Err' : string };
 export interface UserProfile {
   'owner' : Principal,
   'name' : string,
@@ -30,6 +28,6 @@ export interface _SERVICE {
   'auto_register_user' : ActorMethod<[], Result_1>,
   'delete_wallet' : ActorMethod<[bigint], Result>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
-  'query_all_wallets' : ActorMethod<[], Result_2>,
+  'query_all_wallets' : ActorMethod<[], Array<WalletProfile>>,
   'user_quantity' : ActorMethod<[], number>,
 }
