@@ -1,38 +1,35 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
-export interface FullWalletInfo {
-  'id' : string,
-  'create_time' : bigint,
-  'wallet_info' : WalletInfo,
-}
 export type Result = { 'Ok' : boolean } |
   { 'Err' : string };
-export type Result_1 = { 'Ok' : UserInfo } |
+export type Result_1 = { 'Ok' : UserProfile } |
   { 'Err' : string };
-export type Result_2 = { 'Ok' : Array<FullWalletInfo> } |
+export type Result_2 = { 'Ok' : Array<WalletProfile> } |
   { 'Err' : string };
-export interface UserInfo {
-  'owner' : Principal,
-  'name' : string,
-  'create_time' : bigint,
-}
 export interface UserProfile {
   'owner' : Principal,
   'name' : string,
   'create_time' : bigint,
-  'full_wallet_info_array' : Array<FullWalletInfo>,
 }
-export interface WalletInfo {
+export interface WalletAddCommand {
   'from' : string,
   'name' : string,
   'address' : string,
 }
+export interface WalletProfile {
+  'id' : bigint,
+  'from' : string,
+  'name' : string,
+  'create_time' : bigint,
+  'address' : string,
+  'holder' : Principal,
+}
 export interface _SERVICE {
-  'add_wallet' : ActorMethod<[WalletInfo], Result>,
+  'add_wallet' : ActorMethod<[WalletAddCommand], Result>,
   'auto_register_user' : ActorMethod<[], Result_1>,
-  'delete_wallet' : ActorMethod<[string], Result>,
+  'delete_wallet' : ActorMethod<[bigint], Result>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
-  'query_wallet_array' : ActorMethod<[], Result_2>,
+  'query_all_wallets' : ActorMethod<[], Result_2>,
   'user_quantity' : ActorMethod<[], number>,
 }
