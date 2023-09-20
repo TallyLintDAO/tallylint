@@ -30,7 +30,7 @@ fn add_wallet(wallet_add_command: WalletAddCommand) -> Result<bool, String> {
                     ctx.id += 1;
                     Ok(true)
                 }
-                None=>Err("Can not add wallet".to_string())
+                None=>Err("Can not add wallet,address duplicated".to_string())
             }
     })
 }

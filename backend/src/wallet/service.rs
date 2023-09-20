@@ -17,18 +17,26 @@ pub struct WalletService {
 }
 
 impl WalletService {
-    pub fn add_wallet(&mut self,  profile: WalletProfile) -> Option<String> {
-            let id = profile.id;  
-            match self.wallets.insert(id, profile){
-                Some(_) => Some("add success".to_string()),  // Wallet found and removed successfully
-                None => Some("add fail".to_string()),  
-            }
+    pub fn add_wallet(&mut self, profile: WalletProfile) -> Option<String> {
+        if self
+            .wallets
+            .values()
+            .any(|wallet| wallet.address == profile.address)
+        {
+            return None;
+            //  Some("add fail: wallet address already exists".to_string());
+        }
+        let id = profile.id;
+        match self.wallets.insert(id, profile) {
+            Some(_) => Some("add success".to_string()), // Wallet found and removed successfully
+            None => Some("add fail".to_string()),
+        }
     }
 
     pub fn delete_wallet(&mut self, id: u64) -> Option<bool> {
         match self.wallets.remove(&id) {
-            Some(_) => Some(true),  // Wallet found and removed successfully
-            None => Some(false),    // Wallet not found
+            Some(_) => Some(true), // Wallet found and removed successfully
+            None => Some(false),   // Wallet not found
         }
     }
 
@@ -47,10 +55,9 @@ impl WalletService {
                 .cloned()
                 .map(|profile| (*profile).clone())
                 .collect();
-            return  cloned_profiles;
+            return cloned_profiles;
         }
     }
-
 
     pub fn new() -> Self {
         WalletService {
