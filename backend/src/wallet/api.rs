@@ -25,7 +25,7 @@ fn add_wallet(wallet_add_command: WalletAddCommand) -> Result<bool, String> {
                 create_time: now,
             };
         match ctx.wallet_service
-            .add_wallet(profile){
+            .add_wallet(profile,caller){
                 Some(_)=>{
                     ctx.id += 1;
                     Ok(true)

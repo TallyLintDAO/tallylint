@@ -17,14 +17,13 @@ pub struct WalletService {
 }
 
 impl WalletService {
-    pub fn add_wallet(&mut self, profile: WalletProfile) -> Option<String> {
-        if self
-            .wallets
-            .values()
+    pub fn add_wallet(&mut self, profile: WalletProfile, user: Principal) -> Option<String> {
+        let user_wallets = self.query_wallet_array(user);
+        if user_wallets
+            .iter()
             .any(|wallet| wallet.address == profile.address)
         {
-            return None;
-            //  Some("add fail: wallet address already exists".to_string());
+            return None;//add fail: wallet address already exists
         }
         let id = profile.id;
         match self.wallets.insert(id, profile) {
