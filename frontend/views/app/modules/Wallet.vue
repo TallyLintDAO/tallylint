@@ -1,8 +1,5 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div class="wallet-container">
-        <div class="buttons q-mb-md q-gutter-md">
-            <q-btn color="primary" @click="addWalletVisible = true">Add Wallet</q-btn>
-        </div>
         <q-table
                 grid
                 title="Wallets"
@@ -13,7 +10,9 @@
                 :filter="filter"
                 row-key="address"
         >
-            <template v-slot:top-right>
+            <template v-slot:top>
+                <q-btn color="primary" @click="addWalletVisible = true">Add Wallet</q-btn>
+                <q-space/>
                 <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
                     <template v-slot:append>
                         <q-icon name="search"/>
@@ -22,7 +21,6 @@
             </template>
             <template v-slot:item="props">
                 <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition">
-                    <!--<q-card @click="toDetail(props.row.address)" class="cursor-pointer">-->
                     <q-card>
                         <q-card-section>
                             <q-card-section>
@@ -77,7 +75,9 @@
                                 label="Wallet address *"
                                 hint="The correct address allows us to read the"
                                 lazy-rules
-                                :rules="[ val => val && val.length > 0 || 'Please type something']"
+                                :rules="[ val => val && val.length > 0 || 'Please type something',
+                                val => val && !rows.some(item => item.address === val)
+                                || 'Can not add wallet, address duplicated']"
                         />
                         <q-select filled v-model="wallet.from" :options="froms" label="From"/>
                         <q-input
@@ -105,6 +105,8 @@
     import router from "@/router";
     import { addUserWallet, deleteUserWallet, getUserWallet } from "@/api/user";
     import { getICPTransactions } from "@/api/rosetta";
+    import { showResultError } from "@/utils/message";
+    import { confirmDialog } from "@/utils/confirm";
 
     const columns = [
         {
@@ -162,11 +164,8 @@
                 rows.value = res.Ok;
                 for (const row of rows.value) {
                     try {
-                        console.log("row",row)
-                        // const res = await getICPTransactions(row.address, false)
-                        // // 将查询得到的transactions绑定回原数组中的transactions
-                        // row.transactions = res.total;
-                        getICPTransactions(row.address, false).then((res)=>{
+                        console.log("row", row)
+                        getICPTransactions(row.address, false).then((res) => {
                             // 将查询得到的transactions绑定回原数组中的transactions
                             row.transactions = res.total;
                         })
@@ -184,16 +183,16 @@
         const validationSuccess = await walletForm.value?.validate();
         if (validationSuccess) {
             const {address, name, from} = wallet.value;
-            const res = await addUserWallet(address, name, from);
+            const res = await addUserWallet(address.trim(), name.trim(), from);
             console.log("wallet res", res)
             if (res.Ok) {
                 rows.value.push({...wallet.value});
                 wallet.value = {...walletPrototype};
                 addWalletVisible.value = false;
                 getWallets();
+            } else {
+                showResultError(res);
             }
-            // reset方法好像没效果，待测试。
-            // walletForm.value?.resetValidation()
         } else {
             // 数据验证失败
             // 用户至少输入了一个无效值
@@ -202,11 +201,19 @@
     }
 
     const deleteWallet = (walletId: bigint) => {
-        deleteUserWallet(walletId).then((res)=>{
-            if(res.Ok){
-                getWallets();
+        confirmDialog({
+            title: "Delete Wallet",
+            message: "Are you sure delete this wallet?",
+            okMethod: () => {
+                console.log("delete")
+                deleteUserWallet(walletId).then((res) => {
+                    if (res.Ok) {
+                        getWallets();
+                    }
+                })
             }
-        })
+        });
+
     }
 
 </script>

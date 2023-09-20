@@ -7,23 +7,24 @@
                        @click="exportToCSV"/>
             </div>
             <div v-if="walletList.length===0">
-                <q-spinner-cube size="xl"
-                                color="primary"
-                />
+                <q-spinner-cube size="xl" color="primary"/>
             </div>
-            <div v-else style="width: 100%">
+            <div v-else>
                 <q-list bordered separator>
-                    <q-item v-for="transaction in walletList"
-                            :key="transaction.hash"
-                            clickable v-ripple="true">
-                        <q-item-section>
-                            <q-item-label caption>
-                                {{ new Date(Number(transaction.timestamp)).toLocaleString() }}
-                            </q-item-label>
-                            <div class="row items-center">
+                    <template v-for="(transactions, date) in groupedTransactions" :key="date">
+                        <q-item>
+                            <q-item-section>
+                                <q-item-label caption>{{ date }}</q-item-label>
+                            </q-item-section>
+                        </q-item>
+                        <q-item v-for="transaction in transactions" :key="transaction.hash" clickable v-ripple="true">
+                            <!-- transaction log -->
+                            <div class="row items-center" style="width: 100%">
                                 <div class="col">
-                                    <q-icon v-if="transaction.type==='SEND'" class="text-red-5" size="md" name="arrow_upward"/>
-                                    <q-icon v-if="transaction.type==='RECEIVE'" class="text-green-6" size="md" name="arrow_downward"/>
+                                    <q-icon v-if="transaction.type==='SEND'" class="text-red-5" size="md"
+                                            name="arrow_upward"/>
+                                    <q-icon v-if="transaction.type==='RECEIVE'" class="text-green-6" size="md"
+                                            name="arrow_downward"/>
                                     {{ transaction.type }}
                                 </div>
                                 <div class="col">
@@ -67,8 +68,8 @@
                                     <q-icon size="sm" name="more_vert"/>
                                 </div>
                             </div>
-                        </q-item-section>
-                    </q-item>
+                        </q-item>
+                    </template>
                 </q-list>
             </div>
 
@@ -77,7 +78,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref, onMounted } from 'vue';
+    import { ref, onMounted, computed } from 'vue';
     import { getICPTransactions, InferredTransaction } from "@/api/rosetta";
     import { showUsername } from "@/utils/avatars";
     import { exportFile } from "quasar";
@@ -89,6 +90,19 @@
     const walletList = ref<InferredTransaction[]>([]);
     const options = ['FIFO'];
     const model = ref('FIFO')
+
+    const groupedTransactions = computed<{ [key: string]: InferredTransaction[] }>(() => {
+        const groups = {};
+        walletList.value.forEach((transaction) => {
+            const date = new Date(Number(transaction.timestamp)).toLocaleDateString();
+            if (!groups[date]) {
+                groups[date] = [];
+            }
+            groups[date].push(transaction);
+        });
+        console.log("groups", groups)
+        return groups;
+    });
 
     onMounted(() => {
         getWalletHistory();

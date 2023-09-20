@@ -43,6 +43,7 @@ export const getICPTransactions = async (
     accountId: string,
     isFormat: boolean
 ): Promise<GetTransactionsResponse> => {
+    //... 需要添加一个同地址缓存方法，以免调用过于频繁
     const response = await fetch(`${ROSETTA_URL}/search/transactions`, {
         method: 'POST',
         body: JSON.stringify({
