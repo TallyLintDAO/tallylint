@@ -16,6 +16,7 @@ dfx canister call  backend auto_register_user
  dfx canister call backend add_wallet '(record { address = "c1"; name = "AmydaLu"; from = "asdaw" })'
  dfx canister call backend add_wallet '(record { address = "c3"; name = "AmydaLu"; from = "asdaw" })'
  dfx canister call backend add_wallet '(record { address = "c2"; name = "AmydaLu"; from = "asdaw" })'
+ dfx canister call backend add_wallet '(record { address = "c5"; name = "AmydaLu"; from = "asdaw" })'
  dfx canister call backend delete_wallet 100002
  dfx canister call backend query_all_wallets --query
  dfx canister call backend get_caller_principal
