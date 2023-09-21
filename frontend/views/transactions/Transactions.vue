@@ -14,10 +14,11 @@
                     <template v-for="(transactions, date) in groupedTransactions" :key="date">
                         <q-item>
                             <q-item-section>
-                                <q-item-label caption>{{ date }}</q-item-label>
+                                <q-item-label class="text-h6" header>{{ date }}</q-item-label>
                             </q-item-section>
                         </q-item>
-                        <q-item v-for="transaction in transactions" :key="transaction.hash" clickable v-ripple="true">
+                        <q-item v-for="transaction in transactions" :key="transaction.hash" clickable v-ripple="true"
+                                style="padding: 20px;">
                             <!-- transaction log -->
                             <div class="row items-center" style="width: 100%">
                                 <div class="col">
@@ -26,6 +27,8 @@
                                     <q-icon v-if="transaction.type==='RECEIVE'" class="text-green-6" size="md"
                                             name="arrow_downward"/>
                                     {{ transaction.type }}
+                                    <br/>
+                                    {{ new Date(transaction.timestamp).toLocaleTimeString('en-US', { hour12: false }) }}
                                 </div>
                                 <div class="col">
                                     {{ transaction.details.currency.symbol }}
@@ -100,7 +103,6 @@
             }
             groups[date].push(transaction);
         });
-        console.log("groups", groups)
         return groups;
     });
 

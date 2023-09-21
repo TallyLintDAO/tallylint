@@ -13,7 +13,7 @@ export async function getUserAutoRegister(): Promise<ApiResult<ApiUserInfo>> {
         key: 'USER_INFO_' + getCurrentPrincipal().toUpperCase(),
         execute: () => getBackend().auto_register_user(),
         ttl: userTTL,
-        isLocal: false, // 需要本地存储
+        isLocal: true, // 需要本地存储
     });
 }
 

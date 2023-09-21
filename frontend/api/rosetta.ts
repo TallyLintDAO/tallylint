@@ -7,7 +7,7 @@ const radixNumber = 4;//保留4位小数
 
 export interface InferredTransaction {
     hash: string;
-    timestamp: bigint;
+    timestamp: number;
     type: string;
     details: {
         status: string;
