@@ -1,26 +1,35 @@
 <template>
     <div class="container login-container q-mt-lg">
-        <div class="description">
-            <h4 style="margin-bottom: 0">Welcome to TaxLint🧾</h4>
-            <span class="text-body1">TaxLint is designed to help users of ICPs to count and manage their tax
-                information more easily. With TaxLint, users will be able to record,
+        <div class="description row">
+            <div class="col">
+                <h4 style="margin-bottom: 0">Welcome to TaxLint🧾</h4>
+                <span class="text-body1">TaxLint is designed to help users of ICPs to count and manage their tax
+                information more easily.With TaxLint, users will be able to record,
                 track and calculate tax information related to their transactions and assets in the IC ecosystem.</span>
-            <br/>
-            <span class="text-body1">In TaxLint, which is 100% on-chain, users get a decentralised,
+                <br/>
+                <span class="text-body1">In TaxLint, which is 100% on-chain, users get a decentralised,
                 private and secure tax experience.</span>
+            </div>
+            <div class="col">
+                <q-img src="@/assets/images/profit.png"></q-img>
+            </div>
         </div>
-        <h5>Alpha Warning: there may be issues.</h5>
-        <h5>Please join our discord channel to give us more suggestions!</h5>
         <h5 style="margin: 0">Login to access our app</h5>
         <div class="q-gutter-sm row items-center">
             <q-btn color="primary" class="login-button" @click="onLogin"
                    :loading="loading" no-caps>
                 Launch app
             </q-btn>
+        </div>
+        <div class="q-mt-sm">
             <a href="https://discord.gg/2q72rBYB5C" target="_Blank">
                 <q-icon class="cursor-pointer" size="md" name="discord"/>
             </a>
+            <q-chip icon="bookmark">give us more suggestions!</q-chip>
         </div>
+        <q-banner inline-actions class="text-white bg-red q-mt-md">
+            Alpha Warning: there may be issues.
+        </q-banner>
     </div>
 </template>
 
@@ -89,7 +98,7 @@
 <style lang="scss" scoped>
     .login-container {
         .description {
-            max-width: 800px;
+            /*max-width: 800px;*/
         }
     }
 </style>
