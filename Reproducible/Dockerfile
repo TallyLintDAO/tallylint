@@ -1,6 +1,11 @@
+# many network need proxy . host run docker cmd need proxy .
+# inside the docker container need proxy. 
+# need to set for this two env. 
+# or. use US azure server 
+
 ####    1.set up env:
-# Use ubuntu 2204 lts as the base image
-FROM ubuntu:2204 
+# Use ubuntu 2204 lts as the base image ,jammy is ubuntu 2204 lts 
+FROM ubuntu:jammy
 # Install node and npm
 RUN apt-get update && apt-get install -y nodejs npm
 
@@ -40,7 +45,13 @@ RUN diff ./Reproducible/ic_module_hashes.txt ./local_module_hashes.txt
 
 
 #### 3.build the image and run 
-# docker build -t taxlint:v1 .
+# docker build -t taxlint:v1 . \
+# --build-arg "HTTP_PROXY=http://192.168.235.1:25526/" \
+#     --build-arg "HTTPS_PROXY=http://192.168.235.1:25526/" \
+# need proxy sometimes: 
+# docker build --build-arg http_proxy="http://127.0.0.53:25526" --build-arg https_proxy="http://127.0.0.53:25526" -t taxlint:v1 .
+# docker build --build-arg http_proxy="http://127.0.0.1:25526" --build-arg https_proxy="http://127.0.0.1:25526" -t taxlint:v1 .
+# docker build --build-arg http_proxy="http://192.168.235.1:25526" --build-arg https_proxy="http://192.168.235.1:25526" -t taxlint:v1 .
 # docker run -it taxlint:v1
 
 #### 4.push image to docker-hub
