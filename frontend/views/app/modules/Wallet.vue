@@ -150,15 +150,16 @@
     ])
 
     onMounted(() => {
-        getWallets();
+        getWallets(false);
     });
 
     const toDetail = (address: string) => {
         router.push('/app/transactions/' + address);
     }
 
-    const getWallets = () => {
-        getUserWallet().then(async (res) => {
+    const getWallets = (isRefresh: boolean) => {
+        //执行add，delete操作后刷新缓存，其他查询操作则不需要刷新缓存。
+        getUserWallet(isRefresh).then(async (res) => {
             console.log("getUserWallet", res)
             if (res.Ok) {
                 rows.value = res.Ok;
@@ -189,7 +190,7 @@
                 rows.value.push({...wallet.value});
                 wallet.value = {...walletPrototype};
                 addWalletVisible.value = false;
-                getWallets();
+                getWallets(true);
             } else {
                 showResultError(res);
             }
@@ -208,7 +209,7 @@
                 console.log("delete")
                 deleteUserWallet(walletId).then((res) => {
                     if (res.Ok) {
-                        getWallets();
+                        getWallets(true);
                     }
                 })
             }

@@ -27,9 +27,9 @@
             </a>
             <q-chip icon="bookmark">give us more suggestions!</q-chip>
         </div>
-        <q-banner inline-actions class="text-white bg-red q-mt-md">
-            Alpha Warning: there may be issues.
-        </q-banner>
+        <!--<q-banner inline-actions class="text-white bg-red q-mt-md">-->
+            <!--Alpha Warning: there may be issues.-->
+        <!--</q-banner>-->
     </div>
 </template>
 

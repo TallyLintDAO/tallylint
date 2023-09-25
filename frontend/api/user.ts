@@ -6,6 +6,7 @@ import type { ApiResult, ApiUserInfo } from "@/types/types";
 
 //TODO demo阶段用户字段修改频繁，暂时用短缓存时间。
 const userTTL = TTL.minute1; //用户自身信息缓存时长。
+const walletTTL = TTL.day1; //用户自身信息缓存时长。
 
 // （后端自动注册）并登录，如果有注册，就获取当前登录用户信息，如果没注册，就注册完了再获取信息
 export async function getUserAutoRegister(): Promise<ApiResult<ApiUserInfo>> {
@@ -27,8 +28,14 @@ export async function addUserWallet(address, name, from): Promise<ApiResult<bool
 }
 
 // 获得当前用户登记的钱包信息
-export async function getUserWallet(): Promise<ApiResult<any>> {
-    return getBackend().query_all_wallets();
+export async function getUserWallet(refresh: boolean): Promise<ApiResult<any>> {
+    return await getCache({
+        key: 'USER_WALLET',
+        execute: () => getBackend().query_all_wallets(),
+        ttl: walletTTL,
+        // isLocal: true, //TODO 是否需要本地存储还需考虑，理论上来说内存存储就足够了
+        refresh: refresh
+    });
 }
 
 // 删除用户钱包

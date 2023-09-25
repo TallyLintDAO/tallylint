@@ -64,7 +64,7 @@ export const getICPTransactions = async (
     }
     const {transactions, total_count} = await response.json();
     console.log("rosetta api:", transactions)
-    purchaseQueue.length = 0; //计算前重置购买队列数组，防止出现问题。
+    purchaseQueue.length = 0; //计算前先重置购买队列数组，防止出现问题。
     const transactionsInfo: InferredTransaction[] = [];
     //是否需要处理，不需要则不处理
     if (isFormat) {

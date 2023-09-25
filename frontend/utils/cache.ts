@@ -29,8 +29,8 @@ export async function getCache(info: {
     execute: () => Promise<any>;
     ttl?: number;
     isLocal?: boolean;
-    timeout?: number; // 超时限制，如果网络请求时间实在太长，就提示错误吧
-    cache?: boolean; // 是否读取旧缓存，而是加载新的数据，再将新的数据缓存，如果设置 cache 是 false，那么表明不使用缓存
+    timeout?: number; // 超时限制，如果网络请求时间实在太长，就提示错误
+    refresh?: boolean; // 是否刷新旧缓存，如果 refresh 是 true，那么表明不使用缓存而是加载新的数据，再将新的数据缓存
     notice?: (_fromCaching: boolean) => void; // 万一上级需要判断是否从缓存中读取，因此需要额外通知数据
     update?: boolean; // 是否需要异步跟新
     updatedCallback?: (_data: any) => void; // 异步更新成功是否需要回调
@@ -38,8 +38,8 @@ export async function getCache(info: {
     // 给key增加前缀，以防被覆盖
     const key = 'CACHE_' + info.key;
     let data;
-    if (info.cache == false) {
-        data = null; // 如果主动设置了 cache 是 false，那么表明不使用缓存
+    if (info.refresh == true) {
+        data = null; // 如果主动设置了 refresh 是 true，那么表明不使用缓存
     } else {
         data = getExpiredData(key, info.isLocal || false);
     }
