@@ -4,6 +4,7 @@ import App from '@/views/app/Home.vue';
 import NNS from '@/views/app/modules/NNS.vue';
 import Transactions from '@/views/transactions/Transactions.vue';
 import Wallet from '@/views/app/modules/Wallet.vue';
+import DashBoard from '@/views/app/modules/Dashboard.vue';
 import errors from './modules/errors';
 import { initAuth } from "@/api/auth";
 import { setCurrentIdentity } from "@/api/canister_pool";
@@ -34,7 +35,8 @@ const routes: Array<RouteRecordRaw> = [
             }
         },
         children: [
-            {name: 'App', path: '', component: Wallet},
+            {name: 'App', path: '', component: DashBoard},
+            {path: 'wallet', component: Wallet},
             {path: 'transactions/:address', component: Transactions},
             {path: 'nns', component: NNS}],
     },

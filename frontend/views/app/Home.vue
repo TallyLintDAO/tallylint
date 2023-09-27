@@ -67,8 +67,8 @@
     const router = useRouter();
 
     const menuItems = [
-        {icon: 'drafts', label: 'Dashboard', route: ''},
-        {icon: 'inbox', label: 'Wallet', route: '/app'},
+        {icon: 'drafts', label: 'Dashboard', route: '/app'},
+        {icon: 'inbox', label: 'Wallet', route: '/app/wallet'},
         {icon: 'star', label: 'NNS', route: '/app/nns'},
         {icon: 'send', label: 'Email Set', route: ''}
     ]

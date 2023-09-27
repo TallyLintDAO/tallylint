@@ -3,6 +3,7 @@ import { Principal } from "@dfinity/principal/lib/cjs";
 import { getCache, TTL } from '@/utils/cache';
 import { getCurrentPrincipal, getBackend } from './canister_pool';
 import type { ApiResult, ApiUserInfo } from "@/types/types";
+import type { WalletInfo } from "@/types/user";
 
 //TODO demo阶段用户字段修改频繁，暂时用短缓存时间。
 const userTTL = TTL.minute1; //用户自身信息缓存时长。
@@ -28,7 +29,7 @@ export async function addUserWallet(address, name, from): Promise<ApiResult<bool
 }
 
 // 获得当前用户登记的钱包信息
-export async function getUserWallet(refresh: boolean): Promise<ApiResult<any>> {
+export async function getUserWallet(refresh: boolean): Promise<ApiResult<WalletInfo[]>> {
     return await getCache({
         key: 'USER_WALLET',
         execute: () => getBackend().query_all_wallets(),
@@ -39,6 +40,6 @@ export async function getUserWallet(refresh: boolean): Promise<ApiResult<any>> {
 }
 
 // 删除用户钱包
-export async function deleteUserWallet(walletId: bigint): Promise<ApiResult<any>> {
+export async function deleteUserWallet(walletId: bigint): Promise<ApiResult<boolean>> {
     return getBackend().delete_wallet(walletId);
 }
