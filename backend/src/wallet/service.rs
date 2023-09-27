@@ -8,6 +8,7 @@ use super::domain::*;
 整个BTree功能类似于Redis的KV存储.
 然后持久化整个Map实体到IC-DB里面去
 */
+#[allow(unused_imports)]
 use crate::CONTEXT;
 
 type WalletId = u64;
@@ -58,6 +59,7 @@ impl WalletService {
         }
     }
 
+    #[allow(dead_code)]
     pub fn new() -> Self {
         WalletService {
             wallets: BTreeMap::new(),

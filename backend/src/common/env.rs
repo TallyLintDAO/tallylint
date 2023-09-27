@@ -1,4 +1,6 @@
+#[allow(unused_imports)]
 use candid::{CandidType, Principal};
+#[allow(unused_imports)]
 use serde::Deserialize;
 
 pub trait Environment {

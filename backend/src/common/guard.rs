@@ -1,5 +1,6 @@
 use crate::CONTEXT;
 
+#[allow(dead_code)]
 pub fn has_user_guard() -> Result<(), String> {
     CONTEXT.with(|c| {
         let ctx = c.borrow();

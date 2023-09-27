@@ -39,6 +39,7 @@ impl Default for CanisterContext {
 
 use std::num::ParseIntError;
 
+#[allow(dead_code)]
 fn integer_part(value: &str) -> Result<u64, ParseIntError> {
     let dot_pos = value.find(".").unwrap_or(value.len());
     value[..dot_pos].parse()

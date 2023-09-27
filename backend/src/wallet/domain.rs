@@ -14,6 +14,7 @@ pub struct WalletProfile {
 }
 
 impl WalletProfile {
+    #[allow(dead_code)]
     pub fn new(
         id: u64,
         holder: Principal,

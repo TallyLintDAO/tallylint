@@ -15,6 +15,7 @@ pub struct UserInfo {
 }
 
 impl UserProfile {
+    #[allow(dead_code)]
     pub fn new(owner: Principal, name: String, created_at: u64) -> Self {
         Self {
             owner,

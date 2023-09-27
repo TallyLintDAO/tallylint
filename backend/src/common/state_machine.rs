@@ -3,7 +3,7 @@ use ic_cdk_macros::*;
 
 use super::context::{CanisterContext, CanisterDB};
 use super::env::CanisterEnvironment;
-use crate::{CONTEXT, GOVERNANACE_BTWL, GOVERNANACE_ZHOU};
+use crate::{CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
 
 #[init]
 fn init() {
@@ -12,18 +12,18 @@ fn init() {
         env: Box::new(CanisterEnvironment {}),
         ..CanisterContext::default()
     };
-    let now = context.env.now();
-    let creator1 = GOVERNANACE_BTWL.with(|g| *g);
-    let creator2 = GOVERNANACE_ZHOU.with(|g| *g);
+    let _now = context.env.now();
+    let _creator1 = GOVERNANCE_BTWL.with(|g| *g);
+    let _creator2 = GOVERNANCE_ZHOU.with(|g| *g);
 }
 
 /**
  * 1. each time upgrade(cmd : dfx deploy ),
  * will *erase* all ic-DB (canister stable memory)
  * so we can:
- *      1.manully erase all,
+ *      1.manually erase all,
  *      2.or , restore from a in memory data.(such as a hashmap)
- * 2. transational upgrade:
+ * 2. transactional upgrade:
  * if pre_upgrade, upgrade ,post_upgrade
  * any step go wrong.
  * will revert to last version.
@@ -31,7 +31,7 @@ fn init() {
 #[pre_upgrade]
 fn pre_upgrade() {
     // with is a function can receive a function as para.
-    // and | | synyax here means a function with no name.
+    // and | | syntax here means a function with no name.
     CONTEXT.with(|c| {
         let context = c.borrow();
         let id = context.id;
@@ -47,7 +47,7 @@ fn pre_upgrade() {
 #[post_upgrade]
 fn post_upgrade() {
     // IMPORTANT
-    // () means retrive multiple db.
+    // () means retrieve multiple db.
     let (payload,): (CanisterDB,) = storage::stable_restore().expect("failed to restore users");
     let stable_state = CanisterContext::from(payload);
     CONTEXT.with(|s| {

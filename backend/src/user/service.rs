@@ -1,7 +1,8 @@
 use std::collections::BTreeMap;
-
+#[allow(unused_imports)]
 use candid::{CandidType, Principal};
 
+#[allow(unused_imports)]
 use serde::Deserialize;
 
 use super::domain::*;
@@ -31,6 +32,7 @@ impl UserService {
         self.users.get(principal).cloned()
     }
 
+    #[allow(dead_code)]
     pub fn get_profile(&self, owner: &Principal) -> Option<&UserProfile> {
         self.users.get(owner)
     }
@@ -38,7 +40,7 @@ impl UserService {
     pub fn user_quantity(&self) -> u32 {
         return self.users.len().try_into().unwrap_or_default();
     }
-
+    #[allow(dead_code)]
     pub fn new() -> Self {
         UserService {
             users: BTreeMap::new(),
