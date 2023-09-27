@@ -14,9 +14,23 @@ pub struct WalletProfile {
 }
 
 impl WalletProfile {
-    pub fn new(id: u64, holder: Principal, address: String, from: String, name: String, create_time: u64) -> Self { Self { id, holder, address, from, name, create_time } }
-
-    
+    pub fn new(
+        id: u64,
+        holder: Principal,
+        address: String,
+        from: String,
+        name: String,
+        create_time: u64,
+    ) -> Self {
+        Self {
+            id,
+            holder,
+            address,
+            from,
+            name,
+            create_time,
+        }
+    }
 }
 
 #[derive(Debug, Clone, CandidType, Deserialize)]

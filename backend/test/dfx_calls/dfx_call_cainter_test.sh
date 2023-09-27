@@ -1,16 +1,13 @@
-
-
-
-cargo build --target wasm32-unknown-unknown --release --package "backend"  --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm"  > ./backend/backend.did  --allow-precompiled 
+cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did
 
 dfx identity use btwl0
-dfx deploy backend --network ic 
+dfx deploy backend --network ic
 
 # IMPORTANT
 # TDD idea , Test Driven Development . a kind of OKR . great! to confident with our code !
 # TODO. make the whole CRUD into a auto things !!!
 # both work to local or ic need test !!!!!!
-dfx canister call  backend auto_register_user
+dfx canister call backend auto_register_user
 
 dfx canister call backend add_wallet '(record { address = "a1"; name = "AmydaLu"; from = "asdaw" })'
 dfx canister call backend add_wallet '(record { address = "c1"; name = "AmydaLu"; from = "asdaw" })'
@@ -40,5 +37,3 @@ dfx canister call --network ic backend test_print
 dfx canister call --network ic backend list_all_user
 dfx canister call --network ic backend user_quantity
 dfx canister call --network ic backend auto_register_user
-
-

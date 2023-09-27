@@ -1,11 +1,10 @@
 use std::collections::BTreeMap;
 
-use candid::{Principal, CandidType};
+use candid::{CandidType, Principal};
 
 use serde::Deserialize;
 
 use super::domain::*;
-
 
 #[derive(Debug, Default)]
 pub struct UserService {
@@ -40,7 +39,6 @@ impl UserService {
         return self.users.len().try_into().unwrap_or_default();
     }
 
- 
     pub fn new() -> Self {
         UserService {
             users: BTreeMap::new(),

@@ -1,4 +1,3 @@
-
 use crate::CONTEXT;
 use candid::Principal;
 use ic_cdk_macros::update;

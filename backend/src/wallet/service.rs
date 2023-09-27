@@ -23,7 +23,7 @@ impl WalletService {
             .iter()
             .any(|wallet| wallet.address == profile.address)
         {
-            return None;//add fail: wallet address already exists
+            return None; //add fail: wallet address already exists
         }
         let id = profile.id;
         match self.wallets.insert(id, profile) {

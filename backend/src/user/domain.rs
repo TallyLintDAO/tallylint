@@ -21,6 +21,5 @@ impl UserProfile {
             name,
             create_time: created_at,
         }
-    }  
+    }
 }
-

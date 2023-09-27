@@ -1,5 +1,5 @@
-use std::cell::RefCell;
 use candid::Principal;
+use std::cell::RefCell;
 // export apis below each
 pub mod user;
 pub mod wallet;
@@ -14,7 +14,7 @@ thread_local! {
 
 // new auto did generate: in ic_cdk 0.10.0
 // IMPORTANT :dont remove ref
-// cargp hint to remove these is wrong. dont believe.
+// cargo hint to remove these is wrong. dont believe.
 #[allow(unused_imports)]
 use crate::user::domain::*;
 #[allow(unused_imports)]

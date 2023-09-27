@@ -1,9 +1,9 @@
 use ic_cdk::storage;
 use ic_cdk_macros::*;
 
-use crate::{CONTEXT, GOVERNANACE_BTWL, GOVERNANACE_ZHOU};
-use super::env::CanisterEnvironment;
 use super::context::{CanisterContext, CanisterDB};
+use super::env::CanisterEnvironment;
+use crate::{CONTEXT, GOVERNANACE_BTWL, GOVERNANACE_ZHOU};
 
 #[init]
 fn init() {
@@ -15,7 +15,6 @@ fn init() {
     let now = context.env.now();
     let creator1 = GOVERNANACE_BTWL.with(|g| *g);
     let creator2 = GOVERNANACE_ZHOU.with(|g| *g);
-
 }
 
 /**
@@ -38,14 +37,10 @@ fn pre_upgrade() {
         let id = context.id;
         let users = Vec::from_iter(context.user_service.users.values().cloned());
         let wallets = Vec::from_iter(context.wallet_service.wallets.values().cloned());
-        let payload: CanisterDB = CanisterDB {
-            id,
-            users,
-            wallets,
-        };
+        let payload: CanisterDB = CanisterDB { id, users, wallets };
         storage::stable_save((payload,)).expect("failed to save state data");
         // IMPORTANT erase db in running canister.(ic or local)
-        // dfx deploy backend --network ic  -m reinstall 
+        // dfx deploy backend --network ic  -m reinstall
     });
 }
 

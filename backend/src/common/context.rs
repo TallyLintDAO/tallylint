@@ -44,17 +44,12 @@ fn integer_part(value: &str) -> Result<u64, ParseIntError> {
     value[..dot_pos].parse()
 }
 
-
 impl From<CanisterDB> for CanisterContext {
     fn from(payload: CanisterDB) -> Self {
         let users: BTreeMap<Principal, UserProfile> =
-            payload.users.into_iter().map(|u| 
-                (u.owner, u)
-            ).collect();
+            payload.users.into_iter().map(|u| (u.owner, u)).collect();
         let wallets: BTreeMap<WalletId, WalletProfile> =
-            payload.wallets.into_iter().map(|p| 
-                (p.id, p)
-            ).collect();
+            payload.wallets.into_iter().map(|p| (p.id, p)).collect();
         Self {
             env: Box::new(CanisterEnvironment {}),
             id: payload.id,

@@ -18,7 +18,10 @@ pub fn user_owner_guard() -> Result<(), String> {
         if ctx.user_service.is_owner(caller) {
             Ok(())
         } else {
-            let error_message = format!("Highly maybe not register yet! Caller: {:?} is not the owner", caller.to_string());
+            let error_message = format!(
+                "Highly maybe not register yet! Caller: {:?} is not the owner",
+                caller.to_string()
+            );
             Err(error_message)
         }
     })
