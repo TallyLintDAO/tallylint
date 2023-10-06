@@ -1,4 +1,4 @@
-## Tax Lint : Your pesonal cryptocurrency tax helper
+## Tax Lint : Your personal cryptocurrency tax helper
 Try it here:  🧭
 https://vresg-vyaaa-aaaag-qcj2q-cai.icp0.io/
 
