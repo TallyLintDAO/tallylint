@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# reproducipuble build the project and generate codes-hash.
+
 apt-get update && apt-get install -y nodejs npm
 apt install curl
 npm install -g n && n 18.17.1 && npm install -g npm@9.6.7

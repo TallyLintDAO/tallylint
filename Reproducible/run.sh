@@ -1,7 +1,9 @@
 #!/bin/bash
+
+# steps to build the image 
+
 # new machine of ubuntu 2204 lts have google connectivity
 # such as a azure us server. or proxy . both docker-host and docker-container.
-# steps to build the image 
 su root
 apt update 
 apt install docker.io 
