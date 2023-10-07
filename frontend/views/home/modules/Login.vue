@@ -90,15 +90,12 @@
                 }
             })
             .catch((e) => {
-                console.error('mounted get user info failed', e);
+                console.error('mounted get user info failed: ', e);
             });
     };
 </script>
 
 <style lang="scss" scoped>
     .login-container {
-        .description {
-            /*max-width: 800px;*/
-        }
     }
 </style>

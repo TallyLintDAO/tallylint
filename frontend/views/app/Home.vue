@@ -113,7 +113,7 @@
                 }
             })
             .catch((e) => {
-                console.error('mounted get user info failed', e);
+                console.error('mounted get user info failed: ', e);
                 onLogOut();
             });
     };

@@ -1,15 +1,9 @@
 <template>
   <div class="nns-container">
-    <div class="q-pa-md row items-start q-gutter-md">
+    <div class="q-pa-md q-gutter-md">
       <span>NNS Neuron</span>
       <br />
-      <q-card v-for="item in proposalList" :key="Number(item.id)">
-        <q-card-section>
-          <p>ID: {{ item.id }}</p>
-          <p>Status: {{ item.status }}</p>
-          <!--<p>Proposal: {{ item.proposal.title }}</p>-->
-        </q-card-section>
-      </q-card>
+      <q-input v-model="hotkey" label="Hotkey" />
     </div>
   </div>
 </template>
@@ -26,6 +20,7 @@ import {
   Topic,
 } from "@dfinity/nns"
 
+const hotkey = ref()
 const proposalList = ref<
   Array<{
     id: Option<bigint>

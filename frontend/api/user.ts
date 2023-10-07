@@ -35,7 +35,7 @@ export async function getUserWallet(refresh: boolean): Promise<ApiResult<WalletI
         execute: () => getBackend().query_all_wallets(),
         ttl: walletTTL,
         // isLocal: true, //TODO 是否需要本地存储还需考虑，理论上来说内存存储就足够了
-        refresh: refresh
+        refresh: refresh //是否刷新缓存，用于执行增删改操作后的刷新。
     });
 }
 

@@ -167,15 +167,6 @@ const walletPrototype = {
 }
 const walletForm = ref<QForm | null>(null)
 
-// const rows = ref([
-//   {
-//     // address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
-//     address: "9376e418870c3638d82f824211ec9e19e915f07f49e075834f56f3fcd3a8a05d",
-//     from: "NNS",
-//     name: "wallet1",
-//     transactions: 125,
-//   },
-// ])
 const rows = ref<WalletInfo[]>([])
 
 onMounted(() => {
