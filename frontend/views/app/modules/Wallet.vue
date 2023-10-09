@@ -127,14 +127,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue"
-import type { QForm } from "quasar"
-import router from "@/router"
-import { addUserWallet, deleteUserWallet, getUserWallet } from "@/api/user"
 import { getICPTransactions } from "@/api/rosetta"
-import { showResultError } from "@/utils/message"
-import { confirmDialog } from "@/utils/confirm"
+import { addUserWallet, deleteUserWallet, getUserWallet } from "@/api/user"
+import router from "@/router"
 import type { WalletInfo } from "@/types/user"
+import { confirmDialog } from "@/utils/confirm"
+import { showResultError } from "@/utils/message"
+import type { QForm } from "quasar"
+import { onMounted, ref } from "vue"
 
 const columns = [
   {
