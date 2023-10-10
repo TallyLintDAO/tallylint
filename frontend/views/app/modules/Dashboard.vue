@@ -2,25 +2,52 @@
   <div class="dashboard-container">
     DashBoard
     <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
-    <div ref="echartsContainer" style="width: 600px; height: 400px"></div>
-    <q-card class="my-card" flat bordered>
-      <q-item>
-        <q-item-section>
-          <q-item-label caption> BREAKDOWN </q-item-label>
-          <q-list>
-            <q-item clickable v-ripple>
-              <q-item-section>Received</q-item-section>
-            </q-item>
-            <q-item clickable v-ripple>
-              <q-item-section>Sent</q-item-section>
-            </q-item>
-            <q-item clickable v-ripple>
-              <q-item-section>Realized gains</q-item-section>
-            </q-item>
-          </q-list>
-        </q-item-section>
-      </q-item>
-    </q-card>
+    <div class="row q-gutter-md">
+      <div class="col-7" ref="echartsContainer" style="height: 400px"></div>
+      <div class="col-4">
+        <div class="q-pa-md" style="max-width: 300px">
+          <q-input filled v-model="date" mask="date" :rules="['date']">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy
+                  ref="qDateProxy"
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date v-model="date">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+        </div>
+        <q-card flat bordered>
+          <q-item>
+            <q-item-section>
+              <q-item-label caption> BREAKDOWN </q-item-label>
+              <q-list>
+                <q-item clickable v-ripple="true">
+                  <q-item-section>Received</q-item-section>
+                  <q-item-section side>0</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple="true">
+                  <q-item-section>Sent</q-item-section>
+                  <q-item-section side>0</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple="true">
+                  <q-item-section>Realized gains</q-item-section>
+                  <q-item-section side>0</q-item-section>
+                </q-item>
+              </q-list>
+            </q-item-section>
+          </q-item>
+        </q-card>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -32,6 +59,7 @@ import * as echarts from "echarts"
 import { onMounted, ref } from "vue"
 
 const echartsContainer = ref<null>(null)
+const date = ref("2023/01/01")
 
 onMounted(() => {
   initECharts()
