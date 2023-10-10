@@ -17,7 +17,7 @@
                 >
                   <q-date v-model="date">
                     <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
+                      <q-btn v-close-popup="true" label="Close" color="primary" flat />
                     </div>
                   </q-date>
                 </q-popup-proxy>
