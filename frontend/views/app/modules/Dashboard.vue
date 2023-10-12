@@ -17,7 +17,12 @@
                 >
                   <q-date v-model="date">
                     <div class="row items-center justify-end">
-                      <q-btn v-close-popup="true" label="Close" color="primary" flat />
+                      <q-btn
+                        v-close-popup="true"
+                        label="Close"
+                        color="primary"
+                        flat
+                      />
                     </div>
                   </q-date>
                 </q-popup-proxy>
@@ -54,6 +59,7 @@
 <script lang="ts" setup>
 import { getWalletHistory } from "@/api/rosetta"
 import { getUserWallet } from "@/api/user"
+import type { WalletHistory } from "@/types/user"
 import { showMessageError } from "@/utils/message"
 import * as echarts from "echarts"
 import { onMounted, ref } from "vue"
@@ -69,18 +75,27 @@ onMounted(() => {
 const getWallet = async () => {
   const res = await getUserWallet(false)
   if (res.Ok && res.Ok[0]) {
-    const walletAdress = res.Ok[0].address
-    const walletHistory = await getWalletHistory(walletAdress)
-    console.log("history", walletHistory)
-    const timestamps = walletHistory.history.map((record) =>
+    let totalHistory: Array<WalletHistory> = []
+    for (const walletInfo of res.Ok) {
+      //将用户的每个钱包地址下的交易记录查出来，并总和到一起
+      const walletHistory = await getWalletHistory(walletInfo.address)
+      totalHistory = totalHistory.concat(walletHistory.history)
+    }
+    // 按时间戳排序交易记录数组
+    totalHistory.sort((a, b) => a.timestamp - b.timestamp)
+    console.log("totalHistory", totalHistory)
+    const timestamps = totalHistory.map((record) =>
       new Date(Number(record.timestamp)).toLocaleString(),
     )
-    const balances = walletHistory.history.map((record) => record.walletValue)
+    const balances = totalHistory.map((record) => record.walletValue)
     // 基于准备好的dom，初始化echarts实例
     var chart = echarts.init(echartsContainer.value)
     chart.hideLoading()
     // 绘制图表
     chart.setOption({
+      title: {
+        text: `Total History (${res.Ok.length} wallets)`,
+      },
       series: [
         {
           name: "Value",
@@ -115,7 +130,6 @@ const getWallet = async () => {
 // 初始化 ECharts 实例
 const initECharts = () => {
   const chart = echarts.init(echartsContainer.value)
-
   // 配置图表选项
   const option = {
     tooltip: {
@@ -126,7 +140,7 @@ const initECharts = () => {
     },
     title: {
       left: "center",
-      text: "Total Value",
+      text: "Total History (0 wallets)",
     },
     toolbox: {
       feature: {

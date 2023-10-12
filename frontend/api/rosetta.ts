@@ -5,6 +5,7 @@ import {
   ROSETTA_URL,
 } from "@/api/constants/ic"
 import { getICPPrice } from "@/api/token"
+import type { WalletHistory } from "@/types/user"
 import { currencyCalculate } from "@/utils/common"
 import { showMessageError } from "@/utils/message"
 
@@ -70,7 +71,7 @@ export const getICPTransactions = async (
     throw Error("error for rosetta api" + response.statusText)
   }
   const { transactions, total_count } = await response.json()
-  console.log("rosetta api:", transactions)
+  // console.log("rosetta api:", transactions)
   purchaseQueue.length = 0 //计算前先重置购买队列数组，防止出现问题。
   const transactionsInfo: InferredTransaction[] = []
   //是否需要处理，不需要则不处理
@@ -86,7 +87,6 @@ export const getICPTransactions = async (
     }
     //将数组恢复正常。
     transactionsInfo.reverse()
-    console.log("transactionsInfo", transactionsInfo)
   }
   return {
     total: total_count,
@@ -235,14 +235,7 @@ const calculateCost = (transaction: InferredTransaction): number => {
 const initialWalletHistory = {
   accountAddress: "", // 用户账户ID
   amount: 0, // 初始余额为0
-  history: [] as Array<{
-    price: number;
-    amount: number;
-    walletAmount: number;
-    timestamp: number;
-    walletValue: number;
-    type: string;
-  }>, // 交易历史记录
+  history: [] as Array<WalletHistory>, // 交易历史记录
 }
 
 //根据交易历史，手动生成钱包历史
@@ -267,7 +260,9 @@ export const getWalletHistory = async (accountAddress: string) => {
       walletHistory.amount += amount
     }
     // 计算交易金额
-    const walletValue = parseFloat((price * walletHistory.amount).toFixed(radixNumber))
+    const walletValue = parseFloat(
+      (price * walletHistory.amount).toFixed(radixNumber),
+    )
     // 创建交易历史记录对象
     const transactionRecord = {
       price,
