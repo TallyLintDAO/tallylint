@@ -33,6 +33,8 @@ fn auto_register_user() -> Result<UserProfile, String> {
     })
 }
 
+
+
 use crate::common::guard::user_owner_guard;
 use crate::user::domain::UserProfile;
 #[update(guard = "user_owner_guard")]
@@ -63,3 +65,5 @@ pub fn get_caller_principal() -> String {
         return caller.to_text().to_string();
     })
 }
+
+

@@ -18,6 +18,7 @@ type WalletProfile = record {
 service : () -> {
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_1);
+  create_and_install : () -> (text);
   delete_wallet : (nat64) -> (Result);
   list_all_user : () -> (vec UserProfile);
   query_all_wallets : () -> (Result_2) query;
