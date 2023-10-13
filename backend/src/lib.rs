@@ -3,6 +3,7 @@ use std::cell::RefCell;
 // export apis below each
 pub mod user;
 pub mod wallet;
+pub mod canister_api;
 
 mod common;
 use crate::common::context::CanisterContext;
@@ -14,7 +15,7 @@ thread_local! {
 
 // new auto did generate: in ic_cdk 0.10.0
 // IMPORTANT :dont remove ref
-// cargo hint to remove these is wrong. dont believe.
+// cargo hint to remove these is wrong. but must use below.
 #[allow(unused_imports)]
 use crate::user::domain::*;
 #[allow(unused_imports)]

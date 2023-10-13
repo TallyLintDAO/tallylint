@@ -1,11 +1,13 @@
-use std::collections::BTreeMap;
 #[allow(unused_imports)]
 use candid::{CandidType, Principal};
+use std::collections::BTreeMap;
+
 
 #[allow(unused_imports)]
 use serde::Deserialize;
 
 use super::domain::*;
+
 
 #[derive(Debug, Default)]
 pub struct UserService {
@@ -46,4 +48,8 @@ impl UserService {
             users: BTreeMap::new(),
         }
     }
+
+   
+
+  
 }
