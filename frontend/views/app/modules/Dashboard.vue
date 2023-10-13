@@ -37,15 +37,15 @@
               <q-list>
                 <q-item clickable v-ripple="true">
                   <q-item-section>Received</q-item-section>
-                  <q-item-section side>0</q-item-section>
+                  <q-item-section side>$ {{ received }}</q-item-section>
                 </q-item>
                 <q-item clickable v-ripple="true">
                   <q-item-section>Sent</q-item-section>
-                  <q-item-section side>0</q-item-section>
+                  <q-item-section side>$ {{ sent }}</q-item-section>
                 </q-item>
                 <q-item clickable v-ripple="true">
-                  <q-item-section>Realized gains</q-item-section>
-                  <q-item-section side>0</q-item-section>
+                  <q-item-section>Gains</q-item-section>
+                  <q-item-section side>$ {{ gains }}</q-item-section>
                 </q-item>
               </q-list>
             </q-item-section>
@@ -66,6 +66,10 @@ import { onMounted, ref } from "vue"
 
 const echartsContainer = ref<null>(null)
 const date = ref("2023/01/01")
+const totalHistory = ref<WalletHistory[]>([])
+const received = ref(0)
+const sent = ref(0)
+const gains = ref(0)
 
 onMounted(() => {
   initECharts()
@@ -75,19 +79,21 @@ onMounted(() => {
 const getWallet = async () => {
   const res = await getUserWallet(false)
   if (res.Ok && res.Ok[0]) {
-    let totalHistory: Array<WalletHistory> = []
+    // let totalHistory: Array<WalletHistory> = []
     for (const walletInfo of res.Ok) {
+      //TODO 有bug，多个钱包的资产总值没有计算。
       //将用户的每个钱包地址下的交易记录查出来，并总和到一起
       const walletHistory = await getWalletHistory(walletInfo.address)
-      totalHistory = totalHistory.concat(walletHistory.history)
+      totalHistory.value = totalHistory.value.concat(walletHistory.history)
     }
     // 按时间戳排序交易记录数组
-    totalHistory.sort((a, b) => a.timestamp - b.timestamp)
-    console.log("totalHistory", totalHistory)
-    const timestamps = totalHistory.map((record) =>
+    totalHistory.value.sort((a, b) => a.timestamp - b.timestamp)
+    console.log("totalHistory", totalHistory.value)
+    const timestamps = totalHistory.value.map((record) =>
       new Date(Number(record.timestamp)).toLocaleString(),
     )
-    const balances = totalHistory.map((record) => record.walletValue)
+    const balances = totalHistory.value.map((record) => record.walletValue)
+    getDetail()
     // 基于准备好的dom，初始化echarts实例
     var chart = echarts.init(echartsContainer.value)
     chart.hideLoading()
@@ -125,6 +131,22 @@ const getWallet = async () => {
     })
   } else {
     showMessageError("please add wallet for dashboard")
+  }
+}
+const getDetail = () => {
+  if (totalHistory.value) {
+    totalHistory.value.forEach((transaction) => {
+      if (transaction.type === "RECEIVE") {
+        received.value += transaction.amount * transaction.price
+      } else if (transaction.type === "SEND") {
+        sent.value += transaction.amount * transaction.price
+      }
+    })
+    //保留小数点
+    received.value = Number(received.value.toFixed(2))
+    sent.value = Number(sent.value.toFixed(2))
+    //gain暂且使用这种简单的方式计算
+    gains.value = Number((received.value - sent.value).toFixed(2))
   }
 }
 // 初始化 ECharts 实例
