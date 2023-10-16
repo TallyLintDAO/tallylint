@@ -4,6 +4,7 @@ use std::cell::RefCell;
 pub mod user;
 pub mod wallet;
 pub mod canister_api;
+pub mod nns;
 
 mod common;
 use crate::common::context::CanisterContext;
@@ -20,5 +21,16 @@ thread_local! {
 use crate::user::domain::*;
 #[allow(unused_imports)]
 use crate::wallet::domain::*;
+// #[allow(unused_imports)]
+// use crate::canister_api::domain::*;
+#[allow(unused_imports)]
+use crate::nns::api::*;
+#[allow(unused_imports)]
+use ic_cdk::api::call::CallResult;
+#[allow(unused_imports)]
+use ic_cdk::api::management_canister::{
+  main::{create_canister, install_code, update_settings, canister_info, canister_status, CanisterInfoRequest, CanisterInfoResponse, CanisterStatusResponse},
+  provisional::{CanisterSettings, CanisterIdRecord},
+};
 use ic_cdk::export_candid;
 export_candid!();

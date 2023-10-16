@@ -3,6 +3,7 @@ backend: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=v7g7o-oiaaa-aaaag-q
 
 ## add cycles to can:
 dfx canister --network ic --wallet vwfus-yaaaa-aaaag-qcj2a-cai deposit-cycles 5000000000000 assets
+5 000 000 000 000 5TC
 
 ## generate rust backend canister did file :
 https://internetcomputer.org/docs/current/developer-docs/backend/rust/candid

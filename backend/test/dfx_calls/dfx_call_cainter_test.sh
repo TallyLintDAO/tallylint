@@ -1,11 +1,14 @@
 cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did
 
+# local backend deploy workflow: assume  local ic replica started 
+cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did && dfx deploy backend
+
 dfx identity use btwl0
 dfx deploy backend --network ic
 
 # IMPORTANT
 # TDD idea , Test Driven Development . a kind of OKR .  to confident with  code !
-# TODO. make the whole CRUD into a auto things .
+# TODO. make the whole CRUD into a auto things . auto-test
 # both work to local or ic need test .
 dfx canister call backend auto_register_user
 
@@ -21,6 +24,11 @@ dfx canister call backend test_print
 dfx canister call backend list_all_user
 dfx canister call backend user_quantity
 dfx canister call backend auto_register_user
+dfx canister call backend create_and_install
+dfx canister call backend whoami
+dfx canister call backend  get_canister_info "c2lt4-zmaaa-aaaaa-qaaiq-cai"
+dfx canister call backend  get_canister_status "c2lt4-zmaaa-aaaaa-qaaiq-cai"
+dfx canister call backend  get_neuron_info "9758293084897065223"
 
 dfx canister call --network ic backend auto_register_user
 

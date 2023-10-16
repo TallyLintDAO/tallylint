@@ -6,23 +6,22 @@ use ic_cdk::api::management_canister::{
 
 pub fn new_canister_args() -> CreateCanisterArgument {
     let caller = ic_cdk::caller();
-    // Specify the settings of the new canister
+    let mut callers = Vec::new();
+    callers.push(caller);
     let canister_setting = CanisterSettings {
-        controllers: Some(vec![caller.clone()]), // Set the caller as the controller
-        // todo is this default ?
+        controllers: Some(callers), // Set the caller as the controller
         compute_allocation: Some(Nat::from(0)), // Use default compute allocation
         memory_allocation: Some(Nat::from(0)),  // default
         freezing_threshold: Some(Nat::from(2592000)), // Use default freezing threshold
     };
-    // Create a struct for the create_canister argument
     let args = CreateCanisterArgument {
         settings: Some(canister_setting),
     };
     return args;
 }
-pub fn install_config(canister_id: Principal) -> InstallCodeArgument {
-    // let wasm: WasmModule = get_wasm_module(); // Create a new empty vector of u8 and assign it to wasm
-    let wasm: WasmModule = Vec::new(); // create an empty value of type WasmModule
+pub fn new_install_info(canister_id: Principal) -> InstallCodeArgument {
+    let mut wasm: WasmModule = get_wasm_module(); // Create a new empty vector of u8 and assign it to wasm
+    wasm = Vec::new(); // create an empty value of type WasmModule
     let mut arg: Vec<u8> = Vec::new(); // Create a new empty vector of u8
     arg.extend_from_slice(b"canister_init"); // Add the bytes of the string "canister_init" to the end of the vector
 
@@ -42,9 +41,8 @@ fn get_wasm_module() -> Vec<u8> {
     // 1. save the current .wasm file into db.
     // 2. get the wasm from db and treat as a vec<u8> bytes.
     // why the code is running on the ic -chain can read local file ?? wasm ? and ic blockchain application ?
-    let wasm: &[u8] = std::include_bytes!("../../../.dfx/local/canisters/backend/backend.wasm");
-       
-    return wasm.to_vec(); // the return its too large !
+    let bytes: &[u8] = std::include_bytes!("../../../.dfx/local/canisters/backend/backend.wasm");
+    let mut wasm = bytes.to_vec();
+    // wasm.clear(); // the return is too large !    //why ?
+    return wasm;
 }
-
-    
