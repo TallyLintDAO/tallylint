@@ -12,3 +12,6 @@ https://internetcomputer.org/docs/current/developer-docs/backend/rust/candid
 ```
 find . -name "*.rs" -print | xargs wc -l
 ```
+
+## check canister cycles balance:
+

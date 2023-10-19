@@ -30,6 +30,7 @@ dfx canister call backend  get_canister_info "c2lt4-zmaaa-aaaaa-qaaiq-cai"
 dfx canister call backend  get_canister_status "c2lt4-zmaaa-aaaaa-qaaiq-cai"
 dfx canister call backend  get_neuron_info "9758293084897065223"
 
+
 dfx canister call --network ic backend auto_register_user
 
 dfx canister call --network ic backend add_wallet '(record { address = "01awd916dwa335wda2042"; name = "AmydaLu"; from = "asdaw" })'
@@ -45,3 +46,4 @@ dfx canister call --network ic backend test_print
 dfx canister call --network ic backend list_all_user
 dfx canister call --network ic backend user_quantity
 dfx canister call --network ic backend auto_register_user
+dfx canister call --network ic backend  get_neuron_info "9758293084897065223"

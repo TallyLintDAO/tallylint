@@ -1,0 +1,108 @@
+type BallotInfo = record { vote : int32; proposal_id : opt NeuronId };
+type CanisterChange = record {
+  timestamp_nanos : nat64;
+  canister_version : nat64;
+  origin : CanisterChangeOrigin;
+  details : CanisterChangeDetails;
+};
+type CanisterChangeDetails = variant {
+  creation : CreationRecord;
+  code_deployment : CodeDeploymentRecord;
+  controllers_change : CreationRecord;
+  code_uninstall;
+};
+type CanisterChangeOrigin = variant {
+  from_user : FromUserRecord;
+  from_canister : FromCanisterRecord;
+};
+type CanisterInfoResponse = record {
+  controllers : vec principal;
+  module_hash : opt vec nat8;
+  recent_changes : vec CanisterChange;
+  total_num_changes : nat64;
+};
+type CanisterInstallMode = variant { reinstall; upgrade; install };
+type CanisterStatusResponse = record {
+  status : CanisterStatusType;
+  memory_size : nat;
+  cycles : nat;
+  settings : DefiniteCanisterSettings;
+  idle_cycles_burned_per_day : nat;
+  module_hash : opt vec nat8;
+};
+type CanisterStatusType = variant { stopped; stopping; running };
+type CodeDeploymentRecord = record {
+  mode : CanisterInstallMode;
+  module_hash : vec nat8;
+};
+type CreationRecord = record { controllers : vec principal };
+type CustomResult1 = variant { Ok : NeuronInfo; Err : GovernanceError };
+type DefiniteCanisterSettings = record {
+  freezing_threshold : nat;
+  controllers : vec principal;
+  memory_allocation : nat;
+  compute_allocation : nat;
+};
+type FromCanisterRecord = record {
+  canister_version : opt nat64;
+  canister_id : principal;
+};
+type FromUserRecord = record { user_id : principal };
+type GovernanceError = record { error_message : text; error_type : int32 };
+type KnownNeuronData = record { name : text; description : opt text };
+type NeuronId = record { id : vec nat8 };
+type NeuronInfo = record {
+  dissolve_delay_seconds : nat64;
+  recent_ballots : vec BallotInfo;
+  created_timestamp_seconds : nat64;
+  state : int32;
+  stake_e8s : nat64;
+  joined_community_fund_timestamp_seconds : opt nat64;
+  retrieved_at_timestamp_seconds : nat64;
+  known_neuron_data : opt KnownNeuronData;
+  voting_power : nat64;
+  age_seconds : nat64;
+};
+type RejectionCode = variant {
+  NoError;
+  CanisterError;
+  SysTransient;
+  DestinationInvalid;
+  Unknown;
+  SysFatal;
+  CanisterReject;
+};
+type Result = variant { Ok : bool; Err : text };
+type Result_1 = variant { Ok : UserProfile; Err : text };
+type Result_2 = variant {
+  Ok : record { CustomResult1 };
+  Err : record { RejectionCode; text };
+};
+type Result_3 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
+type UserProfile = record {
+  owner : principal;
+  name : text;
+  create_time : nat64;
+};
+type WalletAddCommand = record { from : text; name : text; address : text };
+type WalletProfile = record {
+  id : nat64;
+  from : text;
+  name : text;
+  create_time : nat64;
+  address : text;
+  holder : principal;
+};
+service : {
+  add_wallet : (WalletAddCommand) -> (Result);
+  auto_register_user : () -> (Result_1);
+  create_and_install : () -> (text);
+  delete_wallet : (nat64) -> (Result);
+  get_canister_info : (text) -> (CanisterInfoResponse);
+  get_canister_status : (text) -> (CanisterStatusResponse);
+  get_neuron_info : (nat64) -> (Result_2);
+  list_all_user : () -> (vec UserProfile);
+  query_all_wallets : () -> (Result_3) query;
+  user_quantity : () -> (nat32);
+  whoami : () -> (principal) query;
+}
