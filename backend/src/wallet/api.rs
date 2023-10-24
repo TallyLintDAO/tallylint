@@ -53,3 +53,9 @@ fn delete_wallet(id: u64) -> Result<bool, String> {
             .ok_or(String::from("WalletNotFound"))
     })
 }
+
+#[query(guard = "user_owner_guard")]
+fn wallet_history(){
+    // todo
+    // ret type: wallet_history
+}

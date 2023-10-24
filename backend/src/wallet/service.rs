@@ -59,6 +59,10 @@ impl WalletService {
         }
     }
 
+    pub fn wallet_history(&mut self, user: Principal) -> Vec<WalletProfile> {
+        // todo
+    }
+
     #[allow(dead_code)]
     pub fn new() -> Self {
         WalletService {
