@@ -28,7 +28,9 @@
           <q-avatar size="56px" class="q-mb-sm" :style="{ backgroundColor }">
             {{ showAvatar }}
           </q-avatar>
-          <div class="text-weight-bold">{{ showUser }}</div>
+          <div class="text-weight-bold">
+            {{ showUser }}<q-icon name="content_copy" class="cursor-pointer" />
+          </div>
           <div>@user</div>
         </div>
       </q-img>
