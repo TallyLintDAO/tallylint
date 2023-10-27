@@ -18,9 +18,19 @@
         row-key="address"
       >
         <template v-slot:top>
-          <q-btn color="primary" @click="addNNSVisible = true"
-            >Add NNS Address</q-btn
-          >
+          <div class="q-gutter-sm">
+            <q-btn color="primary" @click="addNNSVisible = true"
+              >Add NNS Address</q-btn
+            >
+            <q-btn
+              flat
+              color="primary"
+              label="Help"
+              icon="lightbulb_outline"
+              @click="goHelp()"
+            />
+          </div>
+
           <q-space />
           <q-input
             borderless
@@ -53,9 +63,9 @@
                     <q-btn flat icon="more_vert">
                       <q-menu>
                         <q-list style="min-width: 100px">
-                          <q-item clickable v-close-popup="true">
+                          <!-- <q-item clickable v-close-popup="true">
                             <q-item-section> Delete </q-item-section>
-                          </q-item>
+                          </q-item> -->
                         </q-list>
                       </q-menu>
                     </q-btn>
@@ -148,6 +158,7 @@
 
 <script lang="ts" setup>
 import { initAuth } from "@/api/auth"
+import { DOCS_URL, NNS_HELP } from "@/api/constants/docs"
 import { HttpAgent } from "@dfinity/agent"
 import { GovernanceCanister } from "@dfinity/nns"
 import { Principal } from "@dfinity/principal"
@@ -181,7 +192,6 @@ const getNNS = async () => {
   const ai = await initAuth()
   if (ai.info) {
     const identity = ai.info.identity
-    console.log("getNNS ii", identity.getPrincipal().toString())
     const agent = new HttpAgent({ identity })
     console.log("agent", agent)
     const neuron = GovernanceCanister.create({
@@ -192,19 +202,23 @@ const getNNS = async () => {
       console.log("getListNeurons", res)
       if (res.length > 0) {
         for (const neuron of res) {
-          console.log("neuron", neuron)
-          console.log("neuron", neuron.fullNeuron?.accountIdentifier)
-          //@ts-ignore
-          const { id,accountIdentifier,maturityE8sEquivalent,stakedMaturityE8sEquivalent } = neuron.fullNeuron
-          const neuronData = {
-            id: id,
-            address: accountIdentifier,
-            //1e8是10的八次方，除以1e8得到原数
-            maturity: Number(maturityE8sEquivalent) / 1e8,
-            stakedMaturity: Number(stakedMaturityE8sEquivalent) / 1e8,
+          if (neuron.fullNeuron) {
+            const {
+              id,
+              accountIdentifier,
+              maturityE8sEquivalent,
+              stakedMaturityE8sEquivalent,
+            } = neuron.fullNeuron
+            const neuronData = {
+              id: id,
+              address: accountIdentifier,
+              //1e8是10的八次方，除以1e8得到原数
+              maturity: Number(maturityE8sEquivalent) / 1e8,
+              stakedMaturity: Number(stakedMaturityE8sEquivalent) / 1e8,
+            }
+            console.log("neuronData", neuronData)
+            rows.value.push(neuronData)
           }
-          console.log("neuronData", neuronData)
-          rows.value.push(neuronData)
         }
       }
     })
@@ -222,6 +236,10 @@ const getSNS = async () => {
   const [metadata, token] = await meta({})
 
   console.log("Summary data:", metadata, token)
+}
+const goHelp = () => {
+  // DOCS NNS Help
+  window.open(DOCS_URL + NNS_HELP)
 }
 </script>
 

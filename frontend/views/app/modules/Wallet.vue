@@ -185,7 +185,7 @@ const getWallets = (isRefresh: boolean) => {
       rows.value = res.Ok
       for (const row of rows.value) {
         try {
-          console.log("row", row)
+          row.transactions = 0
           getICPTransactions(row.address, false).then((res) => {
             // 将查询得到的transactions绑定回原数组中的transactions
             row.transactions = res.total
