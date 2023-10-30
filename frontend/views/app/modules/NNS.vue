@@ -22,13 +22,19 @@
             <q-btn color="primary" @click="addNNSVisible = true"
               >Add NNS Address</q-btn
             >
-            <q-btn
-              flat
-              color="primary"
-              label="Help"
-              icon="lightbulb_outline"
-              @click="goHelp()"
-            />
+            <el-tooltip class="box-item" effect="dark" placement="top-start">
+              <template #content>
+                <q-icon name="content_copy" class="cursor-pointer q-ml-sm" />
+                Some text as content of Tooltip</template
+              >
+              <q-btn
+                flat
+                color="primary"
+                label="Help"
+                icon="lightbulb_outline"
+                @click="goHelp()"
+              />
+            </el-tooltip>
           </div>
 
           <q-space />
@@ -163,6 +169,7 @@ import { HttpAgent } from "@dfinity/agent"
 import { GovernanceCanister } from "@dfinity/nns"
 import { Principal } from "@dfinity/principal"
 import { SnsWrapper, initSnsWrapper } from "@dfinity/sns"
+import { ElTooltip } from "element-plus"
 import { onMounted, ref } from "vue"
 
 const help = ref(false)
@@ -238,7 +245,7 @@ const getSNS = async () => {
   console.log("Summary data:", metadata, token)
 }
 const goHelp = () => {
-  // DOCS NNS Help
+  // To DOCS: NNS Help
   window.open(DOCS_URL + NNS_HELP)
 }
 </script>
