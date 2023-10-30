@@ -29,7 +29,12 @@
             {{ showAvatar }}
           </q-avatar>
           <div class="text-weight-bold">
-            {{ showUser }}<q-icon name="content_copy" class="cursor-pointer" />
+            {{ showUser }}
+            <q-icon
+              name="content_copy"
+              class="cursor-pointer q-ml-sm"
+              @click="copyPid()"
+            />
           </div>
           <div>@user</div>
         </div>
@@ -70,17 +75,19 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed } from "vue"
 import { initAuth, signOut } from "@/api/auth"
 import { clearCurrentIdentity, setCurrentIdentity } from "@/api/canister_pool"
 import { getUserAutoRegister } from "@/api/user"
+import { goHome } from "@/router/routers"
 import { useUserStore } from "@/stores/user"
 import {
   extractColorByName,
   showAvatarName,
   showUsername,
 } from "@/utils/avatars"
-import { goHome } from "@/router/routers"
+import { showMessageError, showMessageSuccess } from "@/utils/message"
+import { copyToClipboard } from "quasar"
+import { computed, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
 const userStore = useUserStore()
@@ -134,6 +141,16 @@ const getUserInfoFromServices = () => {
     .catch((e) => {
       console.error("mounted get user info failed: ", e)
       onLogOut()
+    })
+}
+
+const copyPid = () => {
+  copyToClipboard(principal.value)
+    .then(() => {
+      showMessageSuccess(`copy ${principal.value} success`)
+    })
+    .catch(() => {
+      showMessageError("copy failed")
     })
 }
 
