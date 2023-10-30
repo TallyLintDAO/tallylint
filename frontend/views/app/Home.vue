@@ -32,7 +32,7 @@
             {{ showUser }}
             <q-icon
               name="content_copy"
-              class="cursor-pointer q-ml-sm"
+              class="cursor-pointer"
               @click="copyPid()"
             />
           </div>
@@ -46,7 +46,7 @@
           border-right: 1px solid #ddd;
         "
       >
-        <q-list padding>
+        <q-list>
           <q-item
             v-for="(item, index) in menuItems"
             :key="index"
@@ -63,6 +63,11 @@
             </q-item-section>
           </q-item>
         </q-list>
+        <div class="bottom-icon q-pa-md">
+          <a href="https://discord.gg/2q72rBYB5C" target="_Blank">
+            <q-icon class="cursor-pointer" size="md" name="discord" />
+          </a>
+        </div>
       </q-scroll-area>
     </q-drawer>
 
@@ -187,6 +192,11 @@ const showUser = computed<string>(() => {
     background-color: #0000001a;
     -webkit-backdrop-filter: blur(7px);
     backdrop-filter: blur(7px);
+  }
+  .bottom-icon {
+    position: absolute;
+    bottom: 0;
+    color: grey !important;
   }
 }
 </style>
