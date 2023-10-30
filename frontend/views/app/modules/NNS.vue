@@ -1,13 +1,6 @@
 <template>
   <div class="nns-container">
     <div class="q-pa-md q-gutter-md">
-      <q-btn label="Help" color="primary" @click="help = true" />
-      <br />
-      <span
-        >Please enter the principal() of the current account of the neuron to be
-        calculated into the neuron hotkey in nns.ic0.app
-      </span>
-      <br />
       <q-table
         grid
         title="NNS"
@@ -22,11 +15,15 @@
             <q-btn color="primary" @click="addNNSVisible = true"
               >Add NNS Address</q-btn
             >
-            <el-tooltip class="box-item" effect="dark" placement="top-start">
+            <el-tooltip effect="dark" placement="top-start">
               <template #content>
-                <q-icon name="content_copy" class="cursor-pointer q-ml-sm" />
-                Some text as content of Tooltip</template
-              >
+                Your Principal ID is {{ principal }}
+                <q-icon
+                  name="content_copy"
+                  class="cursor-pointer"
+                  @click="copyPid()"
+                />
+              </template>
               <q-btn
                 flat
                 color="primary"
@@ -99,83 +96,25 @@
       </q-table>
     </div>
   </div>
-  <q-dialog v-model="help">
-    <q-card>
-      <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">Close icon</div>
-        <q-space />
-        <q-btn icon="close" flat round dense v-close-popup="true" />
-      </q-card-section>
-
-      <q-card-section>
-        <q-stepper v-model="step" ref="stepper" color="primary" animated>
-          <q-step
-            :name="1"
-            title="Select campaign settings"
-            icon="settings"
-            :done="step > 1"
-          >
-            Please enter the principal() of the current account of the neuron to
-            be calculated into the neuron hotkey in nns.ic0.app
-          </q-step>
-
-          <q-step
-            :name="2"
-            title="Create an ad group"
-            caption="Optional"
-            icon="create_new_folder"
-            :done="step > 2"
-          >
-            An ad group contains one or more ads which target a shared set of
-            keywords.
-          </q-step>
-
-          <q-step :name="3" title="Ad template" icon="assignment">
-            This step won't show up because it is disabled.
-          </q-step>
-
-          <q-step :name="4" title="Create an ad" icon="add_comment">
-            Try out different ad text to see what brings in the most customers,
-            and learn how to enhance your ads using features like ad extensions.
-            If you run into any problems with your ads, find out how to tell if
-            they're running and how to resolve approval issues.
-          </q-step>
-
-          <template v-slot:navigation>
-            <q-stepper-navigation>
-              <q-btn
-                color="primary"
-                :label="step === 4 ? 'Finish' : 'Continue'"
-              />
-              <q-btn
-                v-if="step > 1"
-                flat
-                color="primary"
-                label="Back"
-                class="q-ml-sm"
-              />
-            </q-stepper-navigation>
-          </template>
-        </q-stepper>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
 </template>
 
 <script lang="ts" setup>
 import { initAuth } from "@/api/auth"
 import { DOCS_URL, NNS_HELP } from "@/api/constants/docs"
+import { useUserStore } from "@/stores/user"
+import { showMessageError, showMessageSuccess } from "@/utils/message"
 import { HttpAgent } from "@dfinity/agent"
 import { GovernanceCanister } from "@dfinity/nns"
 import { Principal } from "@dfinity/principal"
 import { SnsWrapper, initSnsWrapper } from "@dfinity/sns"
-import { ElTooltip } from "element-plus"
+import { copyToClipboard } from "quasar"
 import { onMounted, ref } from "vue"
 
-const help = ref(false)
+const userStore = useUserStore()
+
 const addNNSVisible = ref(false)
 const filter = ref("") //搜索框
-const step = ref(1)
+const principal = ref(useUserStore().principal) //搜索框
 const columns = [
   {
     name: "address",
@@ -247,6 +186,15 @@ const getSNS = async () => {
 const goHelp = () => {
   // To DOCS: NNS Help
   window.open(DOCS_URL + NNS_HELP)
+}
+const copyPid = () => {
+  copyToClipboard(principal.value)
+    .then(() => {
+      showMessageSuccess(`copy ${principal.value} success`)
+    })
+    .catch(() => {
+      showMessageError("copy failed")
+    })
 }
 </script>
 
