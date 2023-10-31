@@ -40,7 +40,7 @@ fn pre_upgrade() {
         let payload: CanisterDB = CanisterDB { id, users, wallets };
         storage::stable_save((payload,)).expect("failed to save state data");
         // IMPORTANT erase db in running canister.(ic or local)
-        // dfx deploy backend --network ic  -m reinstall
+        // dfx deploy backend  -m reinstall
     });
 }
 

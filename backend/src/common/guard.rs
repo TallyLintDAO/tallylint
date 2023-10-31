@@ -20,7 +20,8 @@ pub fn user_owner_guard() -> Result<(), String> {
             Ok(())
         } else {
             let error_message = format!(
-                "Highly maybe not register yet! Caller: {:?} is not the owner",
+                "Highly maybe not register yet! Caller: {:?} is not the owner,\n
+                and 2vxsx-fae is anoymous user ",
                 caller.to_string()
             );
             Err(error_message)

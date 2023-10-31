@@ -1,3 +1,4 @@
+#![cfg_attr(debug_assertions, allow(dead_code, unused_imports, unused_variables, unused_mut))]
 use candid::Principal;
 use candid::{self, CandidType, Decode, Deserialize, Encode};
 use ic_cdk::api::call::CallResult;
@@ -8,8 +9,8 @@ use serde::Serialize;
 independent query neuron info .
 */
 #[update]
-pub async fn get_neuron_info(neuronId: u64) -> CallResult<(CustomResult1,)> {
-    return _get_neuron_info( neuronId).await;
+pub async fn get_neuron_info(neuron_id: u64) -> CallResult<(CustomResult1,)> {
+    return _get_neuron_info( neuron_id).await;
 }
 pub async fn _get_neuron_info( arg0: u64) -> CallResult<(CustomResult1,)> {
     // maybe get_neuron_info only can call inside ic .not exposed api.

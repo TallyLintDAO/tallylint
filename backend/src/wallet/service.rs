@@ -33,6 +33,24 @@ impl WalletService {
         }
     }
 
+    pub fn update_wallet(&mut self, profile: WalletProfile, user: Principal) -> Option<String> {
+        let user_wallets = self.query_wallet_array(user);
+        let mut id=0;
+        if let Some(wallet)=user_wallets
+            .iter()
+            .find(|wallet| wallet.address == profile.address){   
+                id=wallet.id;  
+                match self.wallets.insert(id, profile){
+                    Some(_) => Some("update success".to_string()),
+                    None => None,
+                } 
+        }
+        else {
+            return None;
+        }
+      
+    }
+
     pub fn delete_wallet(&mut self, id: u64) -> Option<bool> {
         match self.wallets.remove(&id) {
             Some(_) => Some(true), // Wallet found and removed successfully
@@ -40,7 +58,12 @@ impl WalletService {
         }
     }
 
-    pub fn query_wallet_array(&mut self, user: Principal) -> Vec<WalletProfile> {
+    pub fn query_a_wallet(&self, id: WalletId)->Option<WalletProfile>{
+        let wallet= self.wallets.get(&id);
+        return wallet.cloned();
+    }
+
+    pub fn query_wallet_array(&self, user: Principal) -> Vec<WalletProfile> {
         let profiles: Vec<&WalletProfile> = self
             .wallets
             .values()
@@ -59,9 +82,11 @@ impl WalletService {
         }
     }
 
-    pub fn wallet_history(&mut self, user: Principal) -> Vec<WalletProfile> {
-        // todo
-    }
+ 
+
+    // pub fn wallet_history(&mut self, user: Principal) -> Vec<WalletProfile> {
+    //     // todo
+    // }
 
     #[allow(dead_code)]
     pub fn new() -> Self {

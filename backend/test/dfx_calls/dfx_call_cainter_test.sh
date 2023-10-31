@@ -2,6 +2,7 @@ cargo build --target wasm32-unknown-unknown --release --package "backend" --feat
 
 # local backend deploy workflow: assume  local ic replica started 
 cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did && dfx deploy backend
+#todo: maybe use cmake can auto this process.
 
 dfx identity use btwl0
 dfx deploy backend --network ic
@@ -17,6 +18,12 @@ dfx canister call backend add_wallet '(record { address = "c1"; name = "AmydaLu"
 dfx canister call backend add_wallet '(record { address = "c3"; name = "AmydaLu"; from = "asdaw" })'
 dfx canister call backend add_wallet '(record { address = "c2"; name = "AmydaLu"; from = "asdaw" })'
 dfx canister call backend add_wallet '(record { address = "c5"; name = "AmydaLu"; from = "asdaw" })'
+dfx canister call backend update_wallet '(record { address = "c5"; name = "AmydaLu"; from = "asdaw";transactions=8; last_sync_time=8; last_transaction_time=9;})'
+dfx canister call backend update_wallet '(record { address = "c7"; name = "AmydaLu"; from = "asdaw";transactions=8; last_sync_time=8; last_transaction_time=9;})'
+# update a non exist wallet test :
+dfx canister call backend update_wallet '(record { address = "c9"; name = "AmydaLu"; from = "asdaw";transactions=8; last_sync_time=8; last_transaction_time=9;})'
+dfx canister call backend add_wallet '(record { address = "c9"; name = "AmydaLu"; from = "asdaw" })'
+
 dfx canister call backend delete_wallet 100002
 dfx canister call backend query_all_wallets --query
 dfx canister call backend get_caller_principal
@@ -29,6 +36,10 @@ dfx canister call backend whoami
 dfx canister call backend  get_canister_info "c2lt4-zmaaa-aaaaa-qaaiq-cai"
 dfx canister call backend  get_canister_status "c2lt4-zmaaa-aaaaa-qaaiq-cai"
 dfx canister call backend  get_neuron_info "9758293084897065223"
+dfx canister call backend  delete_wallet "9758293084897065223"
+dfx canister call backend  query_a_wallet "10002"
+dfx canister call backend  query_a_wallet "10006"
+dfx canister call backend query_all_wallets --query
 
 
 dfx canister call --network ic backend auto_register_user

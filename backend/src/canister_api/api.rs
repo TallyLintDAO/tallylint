@@ -1,3 +1,5 @@
+// 下列代码可实现debug阶段(cargo run或cargo build)没有告警，但是生成发布文件(cargo build --release)的时候继续告警，
+#![cfg_attr(debug_assertions, allow(dead_code, unused_imports, unused_variables, unused_mut))]
 use candid::{Principal, CandidType};
 use ic_cdk::api::management_canister::{
     main::{create_canister, install_code, update_settings, canister_info, canister_status, CanisterInfoRequest, CanisterInfoResponse, CanisterStatusResponse},
@@ -18,6 +20,7 @@ pub async fn create_and_install() -> String {
         return String::from("create canister error") + &_info;
     }
     //  CallResult<(CanisterIdRecord,)> : Result----unwrap  ()----tuple .0 to get the first tuple.
+    #[warn(unused_mut)]
     let mut new_canister_principal = create_res.unwrap().0.canister_id;
     // new_canister_principal=ic_cdk::caller();
     let result = install_code(new_install_info(new_canister_principal)).await;
