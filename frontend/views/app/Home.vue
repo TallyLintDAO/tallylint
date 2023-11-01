@@ -196,7 +196,9 @@ const showUser = computed<string>(() => {
   .bottom-icon {
     position: absolute;
     bottom: 0;
-    color: grey !important;
+    a {
+      color: grey !important;
+    }
   }
 }
 </style>

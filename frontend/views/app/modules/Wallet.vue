@@ -47,6 +47,11 @@
                     <q-menu>
                       <q-list style="min-width: 100px">
                         <q-item clickable v-close-popup="true">
+                          <q-item-section @click="editWallet(props.row.id)">
+                            Edit
+                          </q-item-section>
+                        </q-item>
+                        <q-item clickable v-close-popup="true">
                           <q-item-section @click="deleteWallet(props.row.id)">
                             Delete
                           </q-item-section>
@@ -128,10 +133,15 @@
 
 <script lang="ts" setup>
 import { getICPTransactions } from "@/api/rosetta"
-import { addUserWallet, deleteUserWallet, getUserWallet } from "@/api/user"
+import {
+  addUserWallet,
+  deleteUserWallet,
+  editUserWallet,
+  getUserWallet,
+} from "@/api/user"
 import router from "@/router"
 import type { WalletInfo } from "@/types/user"
-import { confirmDialog } from "@/utils/confirm"
+import { confirmDialog, inputDialog } from "@/utils/dialog"
 import { showResultError } from "@/utils/message"
 import type { QForm } from "quasar"
 import { onMounted, ref } from "vue"
@@ -221,11 +231,27 @@ const onSubmit = async () => {
   loading.value = false
 }
 
+const editWallet = (walletId: bigint) => {
+  inputDialog({
+    title: "Edit Wallet",
+    message: "Your wallet name: ",
+    okMethod: (username) => {
+      console.log("data", username)
+      editUserWallet(walletId, username).then((res) => {
+        if (res.Ok) {
+          getWallets(true)
+        }
+      })
+    },
+  })
+}
+
 const deleteWallet = (walletId: bigint) => {
   confirmDialog({
     title: "Delete Wallet",
-    message: "Are you sure delete this wallet?",
-    okMethod: () => {
+    message:
+      "Are you sure delete this wallet? Delete wallet will clear this wallet history info",
+    okMethod: (data) => {
       console.log("delete")
       deleteUserWallet(walletId).then((res) => {
         if (res.Ok) {
