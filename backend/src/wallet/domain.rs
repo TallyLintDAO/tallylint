@@ -2,7 +2,7 @@ pub(crate) use candid::{CandidType, Deserialize, Principal};
 
 use crate::common::context::TimeStamp;
 
-use super::service::{WalletAddress, WalletId};
+use super::service::{WalletAddress, WalletId, RecordId};
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct WalletProfile {
@@ -35,7 +35,7 @@ pub struct WalletUpdateCommand {
     // pub address: String,
     // pub from: String, //from which wallet_type: such as  NNS Plug  Stoic AstorMe  .. maybe add more
     pub name: String,
-    pub id: WalletId,
+    pub id: WalletId,//when update , specify id .
     // pub transactions:u64,
     // pub last_sync_time:u64,
     // pub last_transaction_time:u64,
@@ -43,7 +43,7 @@ pub struct WalletUpdateCommand {
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct RecordProfile {
-    pub id:u64,
+    pub id:RecordId,
     // Primary key
     pub address: WalletAddress,
     //Transaction record

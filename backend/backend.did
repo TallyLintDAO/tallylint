@@ -63,6 +63,17 @@ type NeuronInfo = record {
   voting_power : nat64;
   age_seconds : nat64;
 };
+type RecordProfile = record {
+  id : nat64;
+  tag : text;
+  time : nat64;
+  t_type : text;
+  comment : text;
+  address : text;
+  manual : bool;
+  price : float64;
+  amount : nat32;
+};
 type RejectionCode = variant {
   NoError;
   CanisterError;
@@ -99,6 +110,7 @@ type WalletProfile = record {
 };
 type WalletUpdateCommand = record { id : nat64; name : text };
 service : () -> {
+  add_transaction_record : (RecordProfile) -> (Result);
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_1);
   create_and_install : () -> (text);

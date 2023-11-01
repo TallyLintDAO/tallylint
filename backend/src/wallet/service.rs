@@ -4,16 +4,16 @@ use candid::Principal;
 
 use super::domain::*;
 
+use crate::common::context::TimeStamp;
 /**
 整个BTree功能类似于Redis的KV存储.
 然后持久化整个Map实体到IC-DB里面去
 */
 #[allow(unused_imports)]
 use crate::CONTEXT;
-use crate::common::context::TimeStamp;
-
 
 pub type WalletId = u64;
+pub type RecordId = u64;
 pub type WalletAddress = String;
 #[derive(Debug, Default)]
 pub struct WalletService {
@@ -21,14 +21,14 @@ pub struct WalletService {
 }
 #[derive(Debug, Default)]
 pub struct WalletRecordService {
-    pub records: BTreeMap<WalletAddress, Vec<TransactionRecord>>,
+    pub records: BTreeMap<RecordId, RecordProfile>,
 }
 
 #[derive(Debug, Default)]
 pub struct TransactionRecord {
     // Primary Key
-    pub record_id:u64,
-    
+    pub record_id: u64,
+
     pub price: f64,
     pub amount: u32,
     // todo , considering:
@@ -39,8 +39,6 @@ pub struct TransactionRecord {
     pub manual: bool,
     pub comment: String,
 }
-
-
 
 impl WalletService {
     pub fn add_wallet(&mut self, profile: WalletProfile, user: Principal) -> Option<String> {
@@ -60,20 +58,19 @@ impl WalletService {
 
     pub fn update_wallet(&mut self, profile: WalletProfile, user: Principal) -> Option<String> {
         let user_wallets = self.query_wallet_array(user);
-        let mut id=0;
-        if let Some(wallet)=user_wallets
+        let mut id = 0;
+        if let Some(wallet) = user_wallets
             .iter()
-            .find(|wallet| wallet.address == profile.address){   
-                id=wallet.id;  
-                match self.wallets.insert(id, profile){
-                    Some(_) => Some("update success".to_string()),
-                    None => None,
-                } 
-        }
-        else {
+            .find(|wallet| wallet.address == profile.address)
+        {
+            id = wallet.id;
+            match self.wallets.insert(id, profile) {
+                Some(_) => Some("update success".to_string()),
+                None => None,
+            }
+        } else {
             return None;
         }
-      
     }
 
     pub fn delete_wallet(&mut self, id: u64) -> Option<bool> {
@@ -83,11 +80,10 @@ impl WalletService {
         }
     }
 
-    pub fn query_a_wallet(&self, id: WalletId)->Option<WalletProfile>{
-        let wallet= self.wallets.get(&id);
+    pub fn query_a_wallet(&self, id: WalletId) -> Option<WalletProfile> {
+        let wallet = self.wallets.get(&id);
         return wallet.cloned();
     }
-  
 
     pub fn query_wallet_array(&self, user: Principal) -> Vec<WalletProfile> {
         let profiles: Vec<&WalletProfile> = self
@@ -108,19 +104,18 @@ impl WalletService {
         }
     }
 
- 
-
     #[allow(dead_code)]
     pub fn new() -> Self {
         WalletService {
             wallets: BTreeMap::new(),
         }
     }
-    
-    pub fn add_transaction_record(&self, id: WalletId)->Option<bool>{
-        let wallet= self.wallets.get(&id);
-        return wallet.cloned();
+
+    // todo
+    pub fn add_transaction_record(&self, profile:RecordProfile) -> Option<bool> {
+        // let wallet= self.wallets.get(&id);
+        // return wallet.cloned();
+
+        return Some(true);
     }
-
-
 }
