@@ -10,12 +10,37 @@ use super::domain::*;
 */
 #[allow(unused_imports)]
 use crate::CONTEXT;
+use crate::common::context::TimeStamp;
 
-type WalletId = u64;
+
+pub type WalletId = u64;
+pub type WalletAddress = String;
 #[derive(Debug, Default)]
 pub struct WalletService {
     pub wallets: BTreeMap<WalletId, WalletProfile>,
 }
+#[derive(Debug, Default)]
+pub struct WalletRecordService {
+    pub records: BTreeMap<WalletAddress, Vec<TransactionRecord>>,
+}
+
+#[derive(Debug, Default)]
+pub struct TransactionRecord {
+    // Primary Key
+    pub record_id:u64,
+    
+    pub price: f64,
+    pub amount: u32,
+    // todo , considering:
+    // pub wallet_amount:u32,
+    pub time: TimeStamp, //transaction_time
+    pub t_type: String,  //transaction_type
+    pub tag: String,
+    pub manual: bool,
+    pub comment: String,
+}
+
+
 
 impl WalletService {
     pub fn add_wallet(&mut self, profile: WalletProfile, user: Principal) -> Option<String> {
@@ -62,6 +87,7 @@ impl WalletService {
         let wallet= self.wallets.get(&id);
         return wallet.cloned();
     }
+  
 
     pub fn query_wallet_array(&self, user: Principal) -> Vec<WalletProfile> {
         let profiles: Vec<&WalletProfile> = self
@@ -84,14 +110,17 @@ impl WalletService {
 
  
 
-    // pub fn wallet_history(&mut self, user: Principal) -> Vec<WalletProfile> {
-    //     // todo
-    // }
-
     #[allow(dead_code)]
     pub fn new() -> Self {
         WalletService {
             wallets: BTreeMap::new(),
         }
     }
+    
+    pub fn add_transaction_record(&self, id: WalletId)->Option<bool>{
+        let wallet= self.wallets.get(&id);
+        return wallet.cloned();
+    }
+
+
 }

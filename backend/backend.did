@@ -97,14 +97,7 @@ type WalletProfile = record {
   holder : principal;
   transactions : nat64;
 };
-type WalletUpdateCommand = record {
-  last_transaction_time : nat64;
-  last_sync_time : nat64;
-  from : text;
-  name : text;
-  address : text;
-  transactions : nat64;
-};
+type WalletUpdateCommand = record { id : nat64; name : text };
 service : () -> {
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_1);

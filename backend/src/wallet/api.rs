@@ -46,18 +46,18 @@ fn update_wallet(wallet_update_command: WalletUpdateCommand) -> Result<bool, Str
         let mut ctx = c.borrow_mut();
         let caller = ctx.env.caller();
         let now = ctx.env.now();
-        let id = ctx.id;
-        let profile = WalletProfile {
-            holder: caller,
-            address: wallet_update_command.address,
-            from: wallet_update_command.from,
-            name: wallet_update_command.name,
-            id: id,
-            create_time: now,
-            transactions: wallet_update_command.transactions,
-            last_sync_time: wallet_update_command.last_sync_time,
-            last_transaction_time: wallet_update_command.last_transaction_time,
-        };
+        let id: u64 = wallet_update_command.id;
+        let mut profile = query_a_wallet(id).unwrap();
+        // holder: caller,
+        // profile.address=wallet_update_command.address;
+        // profile.from=wallet_update_command.from;
+        profile.name = wallet_update_command.name;
+        // id: id,
+        // profile.create_time=now;
+        // todo
+        // transactions: now,
+        // last_sync_time: now,
+        // last_transaction_time: now,
         match ctx.wallet_service.update_wallet(profile, caller) {
             Some(_) => Ok(true),
             None => Err("Can not update wallet".to_string()),
@@ -69,9 +69,9 @@ fn update_wallet(wallet_update_command: WalletUpdateCommand) -> Result<bool, Str
 fn query_a_wallet(id: u64) -> Result<WalletProfile, String> {
     CONTEXT.with(|c| {
         let ctx = c.borrow_mut();
-        let wallet = match ctx.wallet_service.query_a_wallet(id){
-            Some(wallet)=>wallet,
-            None=>{
+        let wallet = match ctx.wallet_service.query_a_wallet(id) {
+            Some(wallet) => wallet,
+            None => {
                 return Err("wallet not exsit".to_string());
             }
         };
@@ -98,6 +98,17 @@ fn delete_wallet(id: u64) -> Result<bool, String> {
             .ok_or(String::from("Wallet Not Found"))
     })
 }
+
+#[update(guard = "user_owner_guard")]
+fn add_transaction_record(add_transaction_record_cmd: RecordProfile) -> Result<bool, String> {
+    CONTEXT.with(|c| {
+        let mut ctx = c.borrow_mut();
+        ctx.wallet_service
+            .add_transaction_record(add_transaction_record_cmd)
+            .ok_or(String::from("Wallet Not Found"))
+    })
+}
+
 // todo
 // #[query(guard = "user_owner_guard")]
 // fn wallet_history() {
