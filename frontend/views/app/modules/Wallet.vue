@@ -236,7 +236,7 @@ const editWallet = (walletId: bigint) => {
     title: "Edit Wallet",
     message: "Your wallet name: ",
     okMethod: (username) => {
-      console.log("data", username)
+      console.log("data", username, walletId)
       editUserWallet(walletId, username).then((res) => {
         if (res.Ok) {
           getWallets(true)
