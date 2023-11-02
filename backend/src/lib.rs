@@ -38,5 +38,5 @@ use ic_cdk::api::management_canister::{
   provisional::{CanisterSettings, CanisterIdRecord},
 };
 
-use ic_cdk::export_candid;
-export_candid!();
+// use ic_cdk::export_candid;
+ic_cdk::export_candid!();

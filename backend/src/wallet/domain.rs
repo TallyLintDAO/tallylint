@@ -2,7 +2,7 @@ pub(crate) use candid::{CandidType, Deserialize, Principal};
 
 use crate::common::context::TimeStamp;
 
-use super::service::{WalletAddress, WalletId, RecordId};
+use super::service::{RecordId, WalletAddress, WalletId};
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct WalletProfile {
@@ -35,15 +35,15 @@ pub struct WalletUpdateCommand {
     // pub address: String,
     // pub from: String, //from which wallet_type: such as  NNS Plug  Stoic AstorMe  .. maybe add more
     pub name: String,
-    pub id: WalletId,//when update , specify id .
-    // pub transactions:u64,
-    // pub last_sync_time:u64,
-    // pub last_transaction_time:u64,
+    pub id: WalletId, //when update , specify id .
+                      // pub transactions:u64,
+                      // pub last_sync_time:u64,
+                      // pub last_transaction_time:u64,
 }
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct RecordProfile {
-    pub id:RecordId,
+    pub id: RecordId,
     // Primary key
     pub address: WalletAddress,
     //Transaction record
@@ -64,12 +64,10 @@ pub struct RecordProfile {
 pub struct HistoryQueryCommand {
     // Primary key
     pub address: WalletAddress, //make this optional. if not provide. then query all.
-    pub from:TimeStamp,
-    pub to :TimeStamp,
-    pub t_type: String,  //transaction_type SEND or RECEIVE or BOTH 
+    pub from: TimeStamp,
+    pub to: TimeStamp,
+    pub t_type: String, //transaction_type SEND or RECEIVE or BOTH
     pub tag: String,
-//    todo sort method:
-    pub sort_method: String,//by date-asc or date-desc or profit-asc profit-desc
+    //    todo sort method:
+    pub sort_method: String, //by date-asc or date-desc or profit-asc profit-desc
 }
-
-
