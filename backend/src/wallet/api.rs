@@ -1,6 +1,10 @@
+use std::collections::HashMap;
+
 use ic_cdk_macros::{query, update};
+use ic_stable_structures::BTreeMap;
 
 use super::domain::*;
+use super::service::WalletAddress;
 use crate::common::guard::user_owner_guard;
 use crate::CONTEXT;
 
@@ -100,13 +104,21 @@ fn delete_wallet(id: u64) -> Result<bool, String> {
 }
 
 #[update(guard = "user_owner_guard")]
-fn add_transaction_record(add_transaction_record_cmd: RecordProfile) -> Result<bool, String> {
+fn add_transaction_record(profile: RecordProfile) -> Result<bool, String> {
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
         ctx.wallet_service
-            .add_transaction_record(add_transaction_record_cmd)
+            .add_transaction_record(profile)
             .ok_or(String::from("Wallet Not Found"))
     })
+}
+
+// todo
+#[query(guard = "user_owner_guard")]
+fn wallet_hitory(
+    cmd: HistoryQueryCommand,
+) -> Result<HashMap<WalletAddress, Vec<RecordProfile>>, String> {
+    return Err("no data".to_string());
 }
 
 // todo

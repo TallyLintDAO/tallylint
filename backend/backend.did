@@ -49,6 +49,14 @@ type FromCanisterRecord = record {
 };
 type FromUserRecord = record { user_id : principal };
 type GovernanceError = record { error_message : text; error_type : int32 };
+type HistoryQueryCommand = record {
+  to : nat64;
+  tag : text;
+  from : nat64;
+  t_type : text;
+  sort_method : text;
+  address : text;
+};
 type KnownNeuronData = record { name : text; description : opt text };
 type NeuronId = record { id : vec nat8 };
 type NeuronInfo = record {
@@ -91,6 +99,10 @@ type Result_2 = variant {
 };
 type Result_3 = variant { Ok : WalletProfile; Err : text };
 type Result_4 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
+type Result_5 = variant {
+  Ok : vec record { text; vec RecordProfile };
+  Err : text;
+};
 type UserProfile = record {
   owner : principal;
   name : text;
@@ -123,5 +135,6 @@ service : () -> {
   query_all_wallets : () -> (Result_4) query;
   update_wallet : (WalletUpdateCommand) -> (Result);
   user_quantity : () -> (nat32);
+  wallet_hitory : (HistoryQueryCommand) -> (Result_5) query;
   whoami : () -> (principal) query;
 }

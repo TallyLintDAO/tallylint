@@ -1,8 +1,18 @@
-cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did
 
-# local backend deploy workflow: assume  local ic replica started 
-cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did && dfx deploy backend
-#todo: maybe use cmake can auto this process.
+#! local deploy steps:
+dfx start --background
+cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did
+dfx deploy backend 
+
+#! Continious Deploy on Main net :
+# step1: gen did
+cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did 
+# step2:
+dfx deploy backend --network ic 
+# or  dfx deploy backend --network ic  -m reinstall  #this will empty the ic-DB 
+# step3 : run ./change_name.sh
+# step4: git push did file to front dev. 
+#todo: maybe use makefile or bash can auto this process.
 
 dfx identity use btwl0
 dfx deploy backend --network ic
@@ -23,6 +33,9 @@ dfx canister call backend update_wallet '(record { address = "c7"; name = "Amyda
 # update a non exist wallet test :
 dfx canister call backend update_wallet '(record { address = "c9"; name = "AmydaLu"; from = "asdaw";transactions=8; last_sync_time=8; last_transaction_time=9;})'
 dfx canister call backend add_wallet '(record { address = "c9"; name = "AmydaLu"; from = "asdaw" })'
+dfx canister call backend add_transaction_record '(record { address = "c9"; name = "AmydaLu"; from = "asdaw" })'
+
+
 
 dfx canister call backend delete_wallet 100002
 dfx canister call backend query_all_wallets --query

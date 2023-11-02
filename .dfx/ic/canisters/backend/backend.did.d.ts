@@ -56,6 +56,14 @@ export interface GovernanceError {
   'error_message' : string,
   'error_type' : number,
 }
+export interface HistoryQueryCommand {
+  'to' : bigint,
+  'tag' : string,
+  'from' : bigint,
+  't_type' : string,
+  'sort_method' : string,
+  'address' : string,
+}
 export interface KnownNeuronData {
   'name' : string,
   'description' : [] | [string],
@@ -72,6 +80,17 @@ export interface NeuronInfo {
   'known_neuron_data' : [] | [KnownNeuronData],
   'voting_power' : bigint,
   'age_seconds' : bigint,
+}
+export interface RecordProfile {
+  'id' : bigint,
+  'tag' : string,
+  'time' : bigint,
+  't_type' : string,
+  'comment' : string,
+  'address' : string,
+  'manual' : boolean,
+  'price' : number,
+  'amount' : number,
 }
 export type RejectionCode = { 'NoError' : null } |
   { 'CanisterError' : null } |
@@ -90,6 +109,8 @@ export type Result_3 = { 'Ok' : WalletProfile } |
   { 'Err' : string };
 export type Result_4 = { 'Ok' : Array<WalletProfile> } |
   { 'Err' : Array<WalletProfile> };
+export type Result_5 = { 'Ok' : Array<[string, Array<RecordProfile>]> } |
+  { 'Err' : string };
 export interface UserProfile {
   'owner' : Principal,
   'name' : string,
@@ -111,15 +132,9 @@ export interface WalletProfile {
   'holder' : Principal,
   'transactions' : bigint,
 }
-export interface WalletUpdateCommand {
-  'last_transaction_time' : bigint,
-  'last_sync_time' : bigint,
-  'from' : string,
-  'name' : string,
-  'address' : string,
-  'transactions' : bigint,
-}
+export interface WalletUpdateCommand { 'id' : bigint, 'name' : string }
 export interface _SERVICE {
+  'add_transaction_record' : ActorMethod<[RecordProfile], Result>,
   'add_wallet' : ActorMethod<[WalletAddCommand], Result>,
   'auto_register_user' : ActorMethod<[], Result_1>,
   'create_and_install' : ActorMethod<[], string>,
@@ -132,5 +147,6 @@ export interface _SERVICE {
   'query_all_wallets' : ActorMethod<[], Result_4>,
   'update_wallet' : ActorMethod<[WalletUpdateCommand], Result>,
   'user_quantity' : ActorMethod<[], number>,
+  'wallet_hitory' : ActorMethod<[HistoryQueryCommand], Result_5>,
   'whoami' : ActorMethod<[], Principal>,
 }

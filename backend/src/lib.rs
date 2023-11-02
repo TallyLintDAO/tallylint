@@ -21,6 +21,11 @@ thread_local! {
 use crate::user::domain::*;
 #[allow(unused_imports)]
 use crate::wallet::domain::*;
+#[allow(unused_imports)]
+use crate::wallet::service::WalletAddress;
+#[allow(unused_imports)]
+use std::collections::HashMap;
+
 // #[allow(unused_imports)]
 // use crate::canister_api::domain::*;
 #[allow(unused_imports)]
@@ -32,5 +37,6 @@ use ic_cdk::api::management_canister::{
   main::{create_canister, install_code, update_settings, canister_info, canister_status, CanisterInfoRequest, CanisterInfoResponse, CanisterStatusResponse},
   provisional::{CanisterSettings, CanisterIdRecord},
 };
+
 use ic_cdk::export_candid;
 export_candid!();

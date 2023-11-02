@@ -49,6 +49,14 @@ type FromCanisterRecord = record {
 };
 type FromUserRecord = record { user_id : principal };
 type GovernanceError = record { error_message : text; error_type : int32 };
+type HistoryQueryCommand = record {
+  to : nat64;
+  tag : text;
+  from : nat64;
+  t_type : text;
+  sort_method : text;
+  address : text;
+};
 type KnownNeuronData = record { name : text; description : opt text };
 type NeuronId = record { id : vec nat8 };
 type NeuronInfo = record {
@@ -62,6 +70,17 @@ type NeuronInfo = record {
   known_neuron_data : opt KnownNeuronData;
   voting_power : nat64;
   age_seconds : nat64;
+};
+type RecordProfile = record {
+  id : nat64;
+  tag : text;
+  time : nat64;
+  t_type : text;
+  comment : text;
+  address : text;
+  manual : bool;
+  price : float64;
+  amount : nat32;
 };
 type RejectionCode = variant {
   NoError;
@@ -80,6 +99,10 @@ type Result_2 = variant {
 };
 type Result_3 = variant { Ok : WalletProfile; Err : text };
 type Result_4 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
+type Result_5 = variant {
+  Ok : vec record { text; vec RecordProfile };
+  Err : text;
+};
 type UserProfile = record {
   owner : principal;
   name : text;
@@ -97,15 +120,9 @@ type WalletProfile = record {
   holder : principal;
   transactions : nat64;
 };
-type WalletUpdateCommand = record {
-  last_transaction_time : nat64;
-  last_sync_time : nat64;
-  from : text;
-  name : text;
-  address : text;
-  transactions : nat64;
-};
+type WalletUpdateCommand = record { id : nat64; name : text };
 service : {
+  add_transaction_record : (RecordProfile) -> (Result);
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_1);
   create_and_install : () -> (text);
@@ -118,5 +135,6 @@ service : {
   query_all_wallets : () -> (Result_4) query;
   update_wallet : (WalletUpdateCommand) -> (Result);
   user_quantity : () -> (nat32);
+  wallet_hitory : (HistoryQueryCommand) -> (Result_5) query;
   whoami : () -> (principal) query;
 }

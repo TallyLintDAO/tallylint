@@ -60,3 +60,16 @@ pub struct RecordProfile {
     // todo: Warning（用户是否标记某些记录为missing cost, missing rates）这条字段先只做出来，不用,
     // 解释：比如missing rates是标记某个交易历史找不到对应的价格记录，例如某个NFT的交易价格查不到，就会被自动标记为missing rates
 }
+#[derive(Debug, Clone, CandidType, Deserialize)]
+pub struct HistoryQueryCommand {
+    // Primary key
+    pub address: WalletAddress, //make this optional. if not provide. then query all.
+    pub from:TimeStamp,
+    pub to :TimeStamp,
+    pub t_type: String,  //transaction_type SEND or RECEIVE or BOTH 
+    pub tag: String,
+//    todo sort method:
+    pub sort_method: String,//by date-asc or date-desc or profit-asc profit-desc
+}
+
+
