@@ -166,7 +166,7 @@ export const idlFactory = ({ IDL }) => {
     'query_all_wallets' : IDL.Func([], [Result_4], ['query']),
     'update_wallet' : IDL.Func([WalletUpdateCommand], [Result], []),
     'user_quantity' : IDL.Func([], [IDL.Nat32], []),
-    'wallet_hitory' : IDL.Func([HistoryQueryCommand], [Result_5], ['query']),
+    'wallet_history' : IDL.Func([HistoryQueryCommand], [Result_5], ['query']),
     'whoami' : IDL.Func([], [IDL.Principal], ['query']),
   });
 };

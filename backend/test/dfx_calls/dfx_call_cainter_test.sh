@@ -1,3 +1,19 @@
+## backend ic address    
+backend: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=v7g7o-oiaaa-aaaag-qcj3q-cai
+
+## add cycles to can:
+dfx canister --network ic --wallet vwfus-yaaaa-aaaag-qcj2a-cai deposit-cycles 5000000000000 assets
+5 000 000 000 000 5TC
+
+## generate rust backend canister did file :
+https://internetcomputer.org/docs/current/developer-docs/backend/rust/candid
+
+
+
+## check canister cycles balance:
+ dfx canister status backend --network ic 
+
+
 
 #! local deploy steps:
 dfx start --background
@@ -10,7 +26,8 @@ cargo build --target wasm32-unknown-unknown --release --package "backend" --feat
 # step2:
 dfx deploy backend --network ic 
 # or  dfx deploy backend --network ic  -m reinstall  #this will empty the ic-DB 
-# step3 : run ./change_name.sh
+# step3 : run  at project root 
+./change_name.sh
 # step4: git push did file to front dev. 
 #todo: maybe use makefile or bash can auto this process.
 

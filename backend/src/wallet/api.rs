@@ -115,7 +115,7 @@ fn add_transaction_record(profile: RecordProfile) -> Result<bool, String> {
 
 // todo
 #[query(guard = "user_owner_guard")]
-fn wallet_hitory(
+fn wallet_history(
     cmd: HistoryQueryCommand,
 ) -> Result<HashMap<WalletAddress, Vec<RecordProfile>>, String> {
     return Err("no data".to_string());

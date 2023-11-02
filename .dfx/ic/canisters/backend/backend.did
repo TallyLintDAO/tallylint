@@ -135,6 +135,6 @@ service : {
   query_all_wallets : () -> (Result_4) query;
   update_wallet : (WalletUpdateCommand) -> (Result);
   user_quantity : () -> (nat32);
-  wallet_hitory : (HistoryQueryCommand) -> (Result_5) query;
+  wallet_history : (HistoryQueryCommand) -> (Result_5) query;
   whoami : () -> (principal) query;
 }

@@ -147,6 +147,6 @@ export interface _SERVICE {
   'query_all_wallets' : ActorMethod<[], Result_4>,
   'update_wallet' : ActorMethod<[WalletUpdateCommand], Result>,
   'user_quantity' : ActorMethod<[], number>,
-  'wallet_hitory' : ActorMethod<[HistoryQueryCommand], Result_5>,
+  'wallet_history' : ActorMethod<[HistoryQueryCommand], Result_5>,
   'whoami' : ActorMethod<[], Principal>,
 }
