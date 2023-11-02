@@ -1,24 +1,27 @@
 use std::collections::BTreeMap;
 
-use candid::Principal;
+use candid::{CandidType, Principal};
 
 use super::domain::*;
 
 use crate::common::context::TimeStamp;
-/**
-整个BTree功能类似于Redis的KV存储.
-然后持久化整个Map实体到IC-DB里面去
-*/
+
 #[allow(unused_imports)]
 use crate::CONTEXT;
 
 pub type WalletId = u64;
 pub type RecordId = u64;
 pub type WalletAddress = String;
+
+/**
+整个BTree功能类似于Redis的KV存储.
+然后持久化整个Map实体到IC-DB里面去
+*/
 #[derive(Debug, Default)]
 pub struct WalletService {
     pub wallets: BTreeMap<WalletId, WalletProfile>,
 }
+
 #[derive(Debug, Default)]
 pub struct WalletRecordService {
     pub records: BTreeMap<RecordId, RecordProfile>,
@@ -110,12 +113,23 @@ impl WalletService {
             wallets: BTreeMap::new(),
         }
     }
+}
 
+impl WalletRecordService {
     // todo
-    pub fn add_transaction_record(&self, profile:RecordProfile) -> Option<bool> {
-        // let wallet= self.wallets.get(&id);
-        // return wallet.cloned();
-
-        return Some(true);
+    pub fn add_transaction_record(&mut self, profile: RecordProfile) -> Result<bool, String> {
+        let id = profile.id;
+        if self.records.contains_key(&id) {
+            return Err("transaction record already exsit".to_string());
+        }
+        
+        self.records.insert(profile.id, profile);
+        
+        if self.records.contains_key(&id) {
+            return Ok(true);
+        }else {
+            return Err("Insert fail. may heap overflow".to_string());
+        }
+         
     }
 }

@@ -4,7 +4,7 @@ use ic_cdk_macros::{query, update};
 use ic_stable_structures::BTreeMap;
 
 use super::domain::*;
-use super::service::WalletAddress;
+use super::service::{RecordId, WalletAddress};
 use crate::common::guard::user_owner_guard;
 use crate::CONTEXT;
 
@@ -51,7 +51,7 @@ fn update_wallet(wallet_update_command: WalletUpdateCommand) -> Result<bool, Str
         let caller = ctx.env.caller();
         let now = ctx.env.now();
         let id: u64 = wallet_update_command.id;
-        let mut profile = query_a_wallet(id).unwrap();
+        let mut profile = ctx.wallet_service.query_a_wallet(id).unwrap().clone();
         // holder: caller,
         // profile.address=wallet_update_command.address;
         // profile.from=wallet_update_command.from;
@@ -74,12 +74,12 @@ fn query_a_wallet(id: u64) -> Result<WalletProfile, String> {
     CONTEXT.with(|c| {
         let ctx = c.borrow_mut();
         let wallet = match ctx.wallet_service.query_a_wallet(id) {
-            Some(wallet) => wallet,
+            Some(wallet) => wallet.clone(),
             None => {
                 return Err("wallet not exsit".to_string());
             }
         };
-        return Ok(wallet);
+        return Ok(wallet.clone());
     })
 }
 
@@ -107,10 +107,18 @@ fn delete_wallet(id: u64) -> Result<bool, String> {
 fn add_transaction_record(profile: RecordProfile) -> Result<bool, String> {
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
-        ctx.wallet_service
-            .add_transaction_record(profile)
-            .ok_or(String::from("Wallet Not Found"))
+        let ret = ctx.wallet_record_service.add_transaction_record(profile);
+        match ret {
+            Ok(_)=>{Ok(true)}
+            Err(msg)=>{Err(msg)}
+        }
     })
+}
+
+// todo
+#[update(guard = "user_owner_guard")]
+fn delete_transaction_record(id: RecordId) -> Result<bool, String> {
+    return Err("edit fail".to_string());
 }
 
 // todo
@@ -122,15 +130,18 @@ fn wallet_history(
 }
 
 // todo
-// #[query(guard = "user_owner_guard")]
-// fn wallet_history() {
-//     // ret type: wallet_history
-// }
+#[update(guard = "user_owner_guard")]
+fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
+    return Err("edit fail".to_string());
+}
 
 // todo
-// #[update(guard = "user_owner_guard")]
-// fn sync_wallet_records() -> Result<bool, String> {
-//     CONTEXT.with(|c| {
-
-//     })
-// }
+/**
+ * 方法完成后，需要检查关联更新：钱包的交易记录总数，上次同步时间，上次交易发生的时间
+描述:户点击同步钱包按钮,调用nns或者交易所等api.获得历史交易记录并存储到后端.
+(前端已有一部分计算代码),可以选择全部搬移到后端或者前端直接把现有计算好的利润发送给后端
+ */
+#[update(guard = "user_owner_guard")]
+fn sync_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
+    return Err("sync fail".to_string());
+}

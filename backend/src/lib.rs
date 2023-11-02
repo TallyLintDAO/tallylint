@@ -37,6 +37,6 @@ use ic_cdk::api::management_canister::{
   main::{create_canister, install_code, update_settings, canister_info, canister_status, CanisterInfoRequest, CanisterInfoResponse, CanisterStatusResponse},
   provisional::{CanisterSettings, CanisterIdRecord},
 };
-
+use crate::wallet::service::RecordId;
 // use ic_cdk::export_candid;
 ic_cdk::export_candid!();

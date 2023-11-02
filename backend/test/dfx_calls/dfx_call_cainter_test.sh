@@ -74,6 +74,7 @@ dfx canister call backend  get_canister_status "c2lt4-zmaaa-aaaaa-qaaiq-cai"
 dfx canister call backend  get_neuron_info "9758293084897065223"
 dfx canister call backend  delete_wallet "9758293084897065223"
 dfx canister call backend  query_a_wallet "10002"
+dfx canister call backend  update_wallet '(record { id = 10002; name = "cczz";})'
 dfx canister call backend  query_a_wallet "10006"
 dfx canister call backend query_all_wallets --query
 
@@ -94,3 +95,11 @@ dfx canister call --network ic backend list_all_user
 dfx canister call --network ic backend user_quantity
 dfx canister call --network ic backend auto_register_user
 dfx canister call --network ic backend  get_neuron_info "9758293084897065223"
+
+
+
+
+
+
+command palette
+

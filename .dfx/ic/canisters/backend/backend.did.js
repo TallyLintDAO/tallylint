@@ -22,6 +22,16 @@ export const idlFactory = ({ IDL }) => {
     'create_time' : IDL.Nat64,
   });
   const Result_1 = IDL.Variant({ 'Ok' : UserProfile, 'Err' : IDL.Text });
+  const EditHistoryCommand = IDL.Record({
+    'id' : IDL.Nat64,
+    'tag' : IDL.Text,
+    'time' : IDL.Nat64,
+    't_type' : IDL.Text,
+    'comment' : IDL.Text,
+    'manual' : IDL.Bool,
+    'price' : IDL.Float64,
+    'amount' : IDL.Nat32,
+  });
   const FromUserRecord = IDL.Record({ 'user_id' : IDL.Principal });
   const FromCanisterRecord = IDL.Record({
     'canister_version' : IDL.Opt(IDL.Nat64),
@@ -157,13 +167,16 @@ export const idlFactory = ({ IDL }) => {
     'add_wallet' : IDL.Func([WalletAddCommand], [Result], []),
     'auto_register_user' : IDL.Func([], [Result_1], []),
     'create_and_install' : IDL.Func([], [IDL.Text], []),
+    'delete_transaction_record' : IDL.Func([IDL.Nat64], [Result], []),
     'delete_wallet' : IDL.Func([IDL.Nat64], [Result], []),
+    'edit_transaction_record' : IDL.Func([EditHistoryCommand], [Result], []),
     'get_canister_info' : IDL.Func([IDL.Text], [CanisterInfoResponse], []),
     'get_canister_status' : IDL.Func([IDL.Text], [CanisterStatusResponse], []),
     'get_neuron_info' : IDL.Func([IDL.Nat64], [Result_2], []),
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
     'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_3], ['query']),
     'query_all_wallets' : IDL.Func([], [Result_4], ['query']),
+    'sync_transaction_record' : IDL.Func([EditHistoryCommand], [Result], []),
     'update_wallet' : IDL.Func([WalletUpdateCommand], [Result], []),
     'user_quantity' : IDL.Func([], [IDL.Nat32], []),
     'wallet_history' : IDL.Func([HistoryQueryCommand], [Result_5], ['query']),

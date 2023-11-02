@@ -71,3 +71,17 @@ pub struct HistoryQueryCommand {
     //    todo sort method:
     pub sort_method: String, //by date-asc or date-desc or profit-asc profit-desc
 }
+#[derive(Debug, Clone, CandidType, Deserialize)]
+pub struct EditHistoryCommand {
+    pub id: RecordId,
+    //Transaction record
+    pub price: f64,
+    pub amount: u32,
+    // todo , considering:
+    // pub wallet_amount:u32,
+    pub time: TimeStamp, //transaction_time
+    pub t_type: String,  //transaction_type
+    pub tag: String,
+    pub manual: bool,
+    pub comment: String,
+}

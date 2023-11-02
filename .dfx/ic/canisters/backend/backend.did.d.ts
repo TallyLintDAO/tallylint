@@ -47,6 +47,16 @@ export interface DefiniteCanisterSettings {
   'memory_allocation' : bigint,
   'compute_allocation' : bigint,
 }
+export interface EditHistoryCommand {
+  'id' : bigint,
+  'tag' : string,
+  'time' : bigint,
+  't_type' : string,
+  'comment' : string,
+  'manual' : boolean,
+  'price' : number,
+  'amount' : number,
+}
 export interface FromCanisterRecord {
   'canister_version' : [] | [bigint],
   'canister_id' : Principal,
@@ -138,13 +148,16 @@ export interface _SERVICE {
   'add_wallet' : ActorMethod<[WalletAddCommand], Result>,
   'auto_register_user' : ActorMethod<[], Result_1>,
   'create_and_install' : ActorMethod<[], string>,
+  'delete_transaction_record' : ActorMethod<[bigint], Result>,
   'delete_wallet' : ActorMethod<[bigint], Result>,
+  'edit_transaction_record' : ActorMethod<[EditHistoryCommand], Result>,
   'get_canister_info' : ActorMethod<[string], CanisterInfoResponse>,
   'get_canister_status' : ActorMethod<[string], CanisterStatusResponse>,
   'get_neuron_info' : ActorMethod<[bigint], Result_2>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
   'query_a_wallet' : ActorMethod<[bigint], Result_3>,
   'query_all_wallets' : ActorMethod<[], Result_4>,
+  'sync_transaction_record' : ActorMethod<[EditHistoryCommand], Result>,
   'update_wallet' : ActorMethod<[WalletUpdateCommand], Result>,
   'user_quantity' : ActorMethod<[], number>,
   'wallet_history' : ActorMethod<[HistoryQueryCommand], Result_5>,
