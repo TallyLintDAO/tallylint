@@ -1,6 +1,6 @@
 use crate::CONTEXT;
 use candid::Principal;
-use ic_cdk_macros::update;
+use ic_cdk_macros::{update, query};
 /**
  * IMPORTANT INFO
 自动登录和自动注册.api名称定了.注释描述一下在这里.
@@ -33,8 +33,6 @@ fn auto_register_user() -> Result<UserProfile, String> {
     })
 }
 
-
-
 use crate::common::guard::user_owner_guard;
 use crate::user::domain::UserProfile;
 #[update(guard = "user_owner_guard")]
@@ -56,6 +54,32 @@ fn user_quantity() -> u32 {
     })
 }
 
+#[query(guard = "user_owner_guard")]
+fn get_ledger_id(p: Principal) -> u32 {
+    let id:u32=0;
+    return id;
+}
+
+//   The replica returned a replica error: Replica Error: reject code CanisterError, reject message IC0504: Canister v7g7o-oiaaa-aaaag-qcj3q-cai violated contract: "ic0_call_new" cannot be executed in non replicated query mode, error code Some("IC0504")
+#[update(guard = "user_owner_guard")]
+async fn get_balance() -> u64 {
+    let balance=check_callers_balance().await.e8s();
+    return balance;
+}
+
+use ic_cdk::api::{caller, call::call};
+use ic_ledger_types::{AccountIdentifier, AccountBalanceArgs, Tokens, DEFAULT_SUBACCOUNT, MAINNET_LEDGER_CANISTER_ID, account_balance};
+
+async fn check_callers_balance() -> Tokens {
+  account_balance(
+    MAINNET_LEDGER_CANISTER_ID,
+    AccountBalanceArgs {
+      account: AccountIdentifier::new(&caller(), &DEFAULT_SUBACCOUNT)
+    }
+  ).await.expect("call to ledger failed")
+}
+
+
 #[allow(dead_code)]
 // #[query]
 pub fn get_caller_principal() -> String {
@@ -65,5 +89,3 @@ pub fn get_caller_principal() -> String {
         return caller.to_text().to_string();
     })
 }
-
-

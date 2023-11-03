@@ -1,4 +1,6 @@
+use std::borrow::BorrowMut;
 use std::collections::HashMap;
+use std::task::Context;
 
 use ic_cdk_macros::{query, update};
 use ic_stable_structures::BTreeMap;
@@ -109,30 +111,39 @@ fn add_transaction_record(profile: RecordProfile) -> Result<bool, String> {
         let mut ctx = c.borrow_mut();
         let ret = ctx.wallet_record_service.add_transaction_record(profile);
         match ret {
-            Ok(_)=>{Ok(true)}
-            Err(msg)=>{Err(msg)}
+            Ok(_) => Ok(true),
+            Err(msg) => Err(msg),
         }
     })
 }
 
-// todo
 #[update(guard = "user_owner_guard")]
 fn delete_transaction_record(id: RecordId) -> Result<bool, String> {
-    return Err("edit fail".to_string());
+    CONTEXT.with(|c| {
+        let mut ctx = c.borrow_mut();
+        let ret = ctx.wallet_record_service.delete_transaction_record(id);
+        match ret {
+            Ok(_) => Ok(true),
+            Err(msg) => Err(msg),
+        }
+    })
 }
 
-// todo
-#[query(guard = "user_owner_guard")]
-fn wallet_history(
-    cmd: HistoryQueryCommand,
-) -> Result<HashMap<WalletAddress, Vec<RecordProfile>>, String> {
-    return Err("no data".to_string());
-}
-
-// todo
 #[update(guard = "user_owner_guard")]
 fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
-    return Err("edit fail".to_string());
+    CONTEXT.with(|c| {
+        let mut ctx =  c.borrow_mut();
+        let service=ctx.wallet_record_service.borrow_mut();
+
+        let addr=service
+                .get_addr_from_id(cmd.id);
+        let ret = service
+            .add_transaction_record(convert_edit_command_to_record_profile(cmd,addr));
+        match ret {
+            Ok(_) => Ok(true),
+            Err(msg) => Err(msg),
+        }
+    })
 }
 
 // todo
@@ -144,4 +155,29 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
 #[update(guard = "user_owner_guard")]
 fn sync_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
     return Err("sync fail".to_string());
+}
+
+// todo get all wallets of records info 
+#[query(guard = "user_owner_guard")]
+fn wallet_history(
+    cmd: HistoryQueryCommand,
+) -> Result<HashMap<WalletAddress, Vec<RecordProfile>>, String> {
+    return Err("no data".to_string());
+}
+
+fn convert_edit_command_to_record_profile(
+    cmd: EditHistoryCommand,
+    addr: WalletAddress,
+) -> RecordProfile {
+    RecordProfile {
+        id: cmd.id,
+        address: addr,
+        price: cmd.price,
+        amount: cmd.amount,
+        time: cmd.time,
+        t_type: cmd.t_type,
+        tag: cmd.tag,
+        manual: cmd.manual,
+        comment: cmd.comment,
+    }
 }

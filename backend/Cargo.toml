@@ -42,3 +42,6 @@ serde_bytes = "0.11.12"
 
 # candid-extractor="0.1.2"
 # only need to use in terminal 
+
+# use for plug 
+ic-ledger-types = "0.8.0"

@@ -14,9 +14,24 @@
 # the ./ file location still problem!
 
 
+cargo build --release --target wasm32-unknown-unknown --package backend && candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/backend.did
+# maybe almost the same stuff. just abstraction or simplfied 0.10.0 cmd.
+# step2:
+dfx deploy backend --network ic 
+# or  dfx deploy backend --network ic  -m reinstall  #this will empty the ic-DB 
+# step3 : run  at project root 
+./change_name.sh
+# step4: git push did file to front dev. 
+./backend/scripts/sync_remote.sh "did uploading"
+
 set passphrase "$env(DFXPASS_BTWL0)" 
-puts "=================================\nSpawned command: dfx deploy backend"
+
+spawn cargo build --release --target wasm32-unknown-unknown --package backend && candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/backend.did
+
 spawn dfx deploy backend 
 expect "Please enter the passphrase for your identity: "
 send "$passphrase\r" 
+
+
+
 expect eof

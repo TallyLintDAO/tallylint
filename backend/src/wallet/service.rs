@@ -122,14 +122,29 @@ impl WalletRecordService {
         if self.records.contains_key(&id) {
             return Err("transaction record already exsit".to_string());
         }
-        
+
         self.records.insert(profile.id, profile);
-        
+
         if self.records.contains_key(&id) {
             return Ok(true);
-        }else {
+        } else {
             return Err("Insert fail. may heap overflow".to_string());
         }
-         
+    }
+    pub fn delete_transaction_record(&mut self, id: RecordId) -> Result<bool, String> {
+        if !self.records.contains_key(&id) {
+            return Err("transaction record not exsit".to_string());
+        }
+
+        self.records.remove(&id);
+
+        if !self.records.contains_key(&id) {
+            return Ok(true);
+        } else {
+            return Err("remove fail. still exsit".to_string());
+        }
+    }
+    pub fn get_addr_from_id(& self,id: RecordId) -> WalletAddress {
+        self.records.get(&id).unwrap().address.clone()
     }
 }

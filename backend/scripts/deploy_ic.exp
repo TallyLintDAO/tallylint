@@ -12,7 +12,7 @@
 #     exec ./gen_did.sh
 # }
 # the ./ file location still problem!
-
+spawn sh ./get_proj_base_dir
 
 set passphrase "$env(DFXPASS_BTWL0)" 
 puts "Spawned command: dfx deploy backend --network ic"

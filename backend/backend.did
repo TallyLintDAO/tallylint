@@ -139,8 +139,10 @@ service : () -> {
   delete_transaction_record : (nat64) -> (Result);
   delete_wallet : (nat64) -> (Result);
   edit_transaction_record : (EditHistoryCommand) -> (Result);
+  get_balance : () -> (nat64);
   get_canister_info : (text) -> (CanisterInfoResponse);
   get_canister_status : (text) -> (CanisterStatusResponse);
+  get_ledger_id : (principal) -> (nat32) query;
   get_neuron_info : (nat64) -> (Result_2);
   list_all_user : () -> (vec UserProfile);
   query_a_wallet : (nat64) -> (Result_3) query;

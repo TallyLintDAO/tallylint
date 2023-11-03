@@ -22,19 +22,18 @@ dfx deploy backend
 
 #! Continious Deploy on Main net :
 # step1: gen did
-cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did 
+# cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did 
 # above work for ic-cdk 0.10.0
 # 0.11.3 use this :
 cargo build --release --target wasm32-unknown-unknown --package backend && candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/backend.did
 # maybe almost the same stuff. just abstraction or simplfied 0.10.0 cmd.
-
-
 # step2:
 dfx deploy backend --network ic 
 # or  dfx deploy backend --network ic  -m reinstall  #this will empty the ic-DB 
 # step3 : run  at project root 
 ./change_name.sh
 # step4: git push did file to front dev. 
+./backend/scripts/sync_remote.sh "did uploading"
 #todo: maybe use makefile or bash can auto this process.
 
 dfx identity use btwl0
@@ -80,6 +79,7 @@ dfx canister call backend query_all_wallets --query
 
 
 dfx canister call --network ic backend auto_register_user
+dfx canister call --network ic backend get_balance
 
 dfx canister call --network ic backend add_wallet '(record { address = "01awd916dwa335wda2042"; name = "AmydaLu"; from = "asdaw" })'
 dfx canister call --network ic backend add_wallet '(record { address = "addr111"; name = "astrome001"; from = "astrome" })'
