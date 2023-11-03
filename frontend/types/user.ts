@@ -17,6 +17,8 @@ export interface WalletInfo {
   from: string //'NNS' | 'Plug' | 'Stoic' | 'AstorMe'
   name: string
   transactions: number
+  last_transaction_time: number
+  last_sync_time: number
 }
 export interface WalletHistory {
   price: number

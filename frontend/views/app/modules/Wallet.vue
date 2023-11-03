@@ -139,10 +139,11 @@ import {
   editUserWallet,
   getUserWallet,
 } from "@/api/user"
-import router from "@/router"
 import type { WalletInfo } from "@/types/user"
 import { confirmDialog, inputDialog } from "@/utils/dialog"
 import { showResultError } from "@/utils/message"
+import { AccountIdentifier } from "@dfinity/ledger-icp"
+import { Principal } from "@dfinity/principal"
 import type { QForm } from "quasar"
 import { onMounted, ref } from "vue"
 
@@ -168,12 +169,16 @@ const wallet = ref({
   from: "NNS",
   name: "",
   transactions: 0,
+  last_transaction_time: 0,
+  last_sync_time: 0,
 })
 const walletPrototype = {
   address: "",
   from: "NNS",
   name: "",
   transactions: 0,
+  last_transaction_time: 0,
+  last_sync_time: 0,
 }
 const walletForm = ref<QForm | null>(null)
 
@@ -181,10 +186,16 @@ const rows = ref<WalletInfo[]>([])
 
 onMounted(() => {
   getWallets(false)
+  p2A()
 })
 
-const toDetail = (address: string) => {
-  router.push("/app/transactions/" + address)
+const p2A = () => {
+  const principal = Principal.from(
+    "rintb-5nazg-thqf4-rnq2c-6geuh-ufcjx-fsfm7-qinyq-ma2gb-5rgny-7ae",
+  )
+  console.log(principal.toString())
+  const identity = AccountIdentifier.fromPrincipal({ principal })
+  console.log("identity", identity.toHex())
 }
 
 const getWallets = (isRefresh: boolean) => {

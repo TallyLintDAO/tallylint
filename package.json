@@ -14,6 +14,7 @@
     "@dfinity/candid": "^0.19.3",
     "@dfinity/identity": "^0.19.3",
     "@dfinity/ledger": "^1.0.0",
+    "@dfinity/ledger-icp": "^1.0.0",
     "@dfinity/nns": "^2.0.0",
     "@dfinity/nns-proto": "^1.0.0",
     "@dfinity/principal": "^0.19.3",
