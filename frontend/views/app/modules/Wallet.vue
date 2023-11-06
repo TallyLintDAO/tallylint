@@ -88,16 +88,24 @@
           <q-form @submit="onSubmit" ref="walletForm" class="q-gutter-md">
             <q-input
               filled
-              v-model="wallet.address"
-              label="Wallet address *"
-              hint="The correct address allows us to read the"
+              v-model="address"
+              label="Wallet Address *"
+              hint="Input Principal ID or Account ID"
               lazy-rules
               :rules="[
-                (val) => (val && val.length > 0) || 'Please type something',
+                (val) =>
+                  (val && val.length > 0) ||
+                  'Please type Principal ID or Account ID',
                 (val) =>
                   (val && !rows.some((item) => item.address === val)) ||
                   'Can not add wallet, address duplicated',
               ]"
+            />
+            <q-input
+              filled
+              v-if="addressIsPrincipal"
+              label="Wallet Account ID"
+              v-model="wallet.address"
             />
             <q-select
               filled
@@ -108,7 +116,7 @@
             <q-input
               filled
               v-model="wallet.name"
-              label="Wallet name *"
+              label="Wallet Name *"
               hint="Identify your wallet quickly"
               lazy-rules
               :rules="[
@@ -140,12 +148,11 @@ import {
   getUserWallet,
 } from "@/api/user"
 import type { WalletInfo } from "@/types/user"
+import { isPrincipal, p2a } from "@/utils/common"
 import { confirmDialog, inputDialog } from "@/utils/dialog"
 import { showResultError } from "@/utils/message"
-import { AccountIdentifier } from "@dfinity/ledger-icp"
-import { Principal } from "@dfinity/principal"
 import type { QForm } from "quasar"
-import { onMounted, ref } from "vue"
+import { onMounted, ref, watch } from "vue"
 
 const columns = [
   {
@@ -161,8 +168,10 @@ const columns = [
 const froms = ["NNS", "Plug", "Stoic", "AstorMe"]
 const addWalletVisible = ref(false)
 const loading = ref(false)
-const filter = ref("") //搜索框
-const selected = ref([]) //当前选中的对象们
+const filter = ref("") // 搜索框
+const selected = ref([]) // 当前选中的对象们
+const address = ref("") // 当前用户输入的地址，可能是principal ID，也可能是account ID
+const addressIsPrincipal = ref(false) // 是否是principal，关系到某些字段的显示
 
 const wallet = ref({
   address: "",
@@ -186,16 +195,21 @@ const rows = ref<WalletInfo[]>([])
 
 onMounted(() => {
   getWallets(false)
-  p2A()
+})
+// 识别用户输入的地址属于principal ID还是account ID
+watch(address, () => {
+  identifyAddress()
 })
 
-const p2A = () => {
-  const principal = Principal.from(
-    "rintb-5nazg-thqf4-rnq2c-6geuh-ufcjx-fsfm7-qinyq-ma2gb-5rgny-7ae",
-  )
-  console.log(principal.toString())
-  const identity = AccountIdentifier.fromPrincipal({ principal })
-  console.log("identity", identity.toHex())
+// 识别用户输入的地址属于principal ID还是account ID
+const identifyAddress = () => {
+  addressIsPrincipal.value = isPrincipal(address.value)
+  if (addressIsPrincipal.value) {
+    wallet.value.address = p2a(address.value)
+  } else {
+    wallet.value.address = address.value
+  }
+  console.log("walletaddress", wallet.value.address)
 }
 
 const getWallets = (isRefresh: boolean) => {
