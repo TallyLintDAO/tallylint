@@ -76,6 +76,9 @@ dfx canister call backend  query_a_wallet "10002"
 dfx canister call backend  update_wallet '(record { id = 10002; name = "cczz";})'
 dfx canister call backend  query_a_wallet "10006"
 dfx canister call backend query_all_wallets --query
+dfx canister call backend delete_transaction_record "10006"
+dfx canister call backend add_transaction_record '(record {id=10006; tag="tg1"; time=12356; t_type="SEND"; comment="c1"; address="add1"; manual=true; price=10.0; amount=1})' 
+
 
 
 dfx canister call --network ic backend auto_register_user

@@ -105,13 +105,30 @@ fn delete_wallet(id: u64) -> Result<bool, String> {
     })
 }
 
+// todo use: AddRecordCommand . front end dont need to input id . id gen by backend.
 #[update(guard = "user_owner_guard")]
-fn add_transaction_record(profile: RecordProfile) -> Result<bool, String> {
+fn add_transaction_record(cmd: AddRecordCommand) -> Result<bool, String> {
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
-        let ret = ctx.wallet_record_service.add_transaction_record(profile);
+        let id = ctx.id;
+        let mut p = RecordProfile {
+            id: id,
+            address: cmd.address,
+            price: cmd.price,
+            amount: cmd.amount,
+            time: cmd.time,
+            t_type: cmd.t_type,
+            tag: cmd.tag,
+            manual: cmd.manual,
+            comment: cmd.comment,
+        };
+        p.id = id;
+        let ret = ctx.wallet_record_service.add_transaction_record(p);
         match ret {
-            Ok(_) => Ok(true),
+            Ok(_) => {
+                ctx.id += 1;
+                return Ok(true);
+            }
             Err(msg) => Err(msg),
         }
     })
@@ -132,13 +149,11 @@ fn delete_transaction_record(id: RecordId) -> Result<bool, String> {
 #[update(guard = "user_owner_guard")]
 fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
     CONTEXT.with(|c| {
-        let mut ctx =  c.borrow_mut();
-        let service=ctx.wallet_record_service.borrow_mut();
+        let mut ctx = c.borrow_mut();
+        let service = ctx.wallet_record_service.borrow_mut();
 
-        let addr=service
-                .get_addr_from_id(cmd.id);
-        let ret = service
-            .add_transaction_record(convert_edit_command_to_record_profile(cmd,addr));
+        let addr = service.get_addr_from_id(cmd.id);
+        let ret = service.add_transaction_record(convert_edit_command_to_record_profile(cmd, addr));
         match ret {
             Ok(_) => Ok(true),
             Err(msg) => Err(msg),
@@ -157,7 +172,7 @@ fn sync_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
     return Err("sync fail".to_string());
 }
 
-// todo get all wallets of records info 
+// todo get all wallets of records info
 #[query(guard = "user_owner_guard")]
 fn wallet_history(
     cmd: HistoryQueryCommand,

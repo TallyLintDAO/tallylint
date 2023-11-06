@@ -73,8 +73,23 @@ pub struct HistoryQueryCommand {
 }
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct EditHistoryCommand {
-    pub id: RecordId,
+    pub id: RecordId, //delete id here . dont need.
     //Transaction record
+    pub price: f64,
+    pub amount: u32,
+    // todo , considering:
+    // pub wallet_amount:u32,
+    pub time: TimeStamp, //transaction_time
+    pub t_type: String,  //transaction_type
+    pub tag: String,
+    pub manual: bool,
+    pub comment: String,
+}
+#[derive(Debug, Clone, CandidType, Deserialize)]
+pub struct AddRecordCommand {
+    // pub id: RecordId,//delete id here . dont need.
+    //Transaction record
+    pub address: WalletAddress,
     pub price: f64,
     pub amount: u32,
     // todo , considering:
