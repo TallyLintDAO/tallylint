@@ -1,6 +1,16 @@
 import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 
+export interface AddRecordCommand {
+  'tag' : string,
+  'time' : bigint,
+  't_type' : string,
+  'comment' : string,
+  'address' : string,
+  'manual' : boolean,
+  'price' : number,
+  'amount' : number,
+}
 export interface BallotInfo { 'vote' : number, 'proposal_id' : [] | [NeuronId] }
 export interface CanisterChange {
   'timestamp_nanos' : bigint,
@@ -100,6 +110,7 @@ export interface RecordProfile {
   'address' : string,
   'manual' : boolean,
   'price' : number,
+  'opt_principal' : [] | [Principal],
   'amount' : number,
 }
 export type RejectionCode = { 'NoError' : null } |
@@ -109,17 +120,19 @@ export type RejectionCode = { 'NoError' : null } |
   { 'Unknown' : null } |
   { 'SysFatal' : null } |
   { 'CanisterReject' : null };
-export type Result = { 'Ok' : boolean } |
+export type Result = { 'Ok' : bigint } |
   { 'Err' : string };
-export type Result_1 = { 'Ok' : UserProfile } |
+export type Result_1 = { 'Ok' : boolean } |
   { 'Err' : string };
-export type Result_2 = { 'Ok' : [CustomResult1] } |
+export type Result_2 = { 'Ok' : UserProfile } |
+  { 'Err' : string };
+export type Result_3 = { 'Ok' : [CustomResult1] } |
   { 'Err' : [RejectionCode, string] };
-export type Result_3 = { 'Ok' : WalletProfile } |
+export type Result_4 = { 'Ok' : WalletProfile } |
   { 'Err' : string };
-export type Result_4 = { 'Ok' : Array<WalletProfile> } |
+export type Result_5 = { 'Ok' : Array<WalletProfile> } |
   { 'Err' : Array<WalletProfile> };
-export type Result_5 = { 'Ok' : Array<[string, Array<RecordProfile>]> } |
+export type Result_6 = { 'Ok' : Array<[string, Array<RecordProfile>]> } |
   { 'Err' : string };
 export interface UserProfile {
   'owner' : Principal,
@@ -130,6 +143,7 @@ export interface WalletAddCommand {
   'from' : string,
   'name' : string,
   'address' : string,
+  'opt_principle' : [] | [Principal],
 }
 export interface WalletProfile {
   'id' : bigint,
@@ -144,24 +158,24 @@ export interface WalletProfile {
 }
 export interface WalletUpdateCommand { 'id' : bigint, 'name' : string }
 export interface _SERVICE {
-  'add_transaction_record' : ActorMethod<[RecordProfile], Result>,
-  'add_wallet' : ActorMethod<[WalletAddCommand], Result>,
-  'auto_register_user' : ActorMethod<[], Result_1>,
+  'add_transaction_record' : ActorMethod<[AddRecordCommand], Result>,
+  'add_wallet' : ActorMethod<[WalletAddCommand], Result_1>,
+  'auto_register_user' : ActorMethod<[], Result_2>,
   'create_and_install' : ActorMethod<[], string>,
   'delete_transaction_record' : ActorMethod<[bigint], Result>,
-  'delete_wallet' : ActorMethod<[bigint], Result>,
-  'edit_transaction_record' : ActorMethod<[EditHistoryCommand], Result>,
+  'delete_wallet' : ActorMethod<[bigint], Result_1>,
+  'edit_transaction_record' : ActorMethod<[EditHistoryCommand], Result_1>,
   'get_balance' : ActorMethod<[], bigint>,
   'get_canister_info' : ActorMethod<[string], CanisterInfoResponse>,
   'get_canister_status' : ActorMethod<[string], CanisterStatusResponse>,
   'get_ledger_id' : ActorMethod<[Principal], number>,
-  'get_neuron_info' : ActorMethod<[bigint], Result_2>,
+  'get_neuron_info' : ActorMethod<[bigint], Result_3>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
-  'query_a_wallet' : ActorMethod<[bigint], Result_3>,
-  'query_all_wallets' : ActorMethod<[], Result_4>,
-  'sync_transaction_record' : ActorMethod<[EditHistoryCommand], Result>,
-  'update_wallet' : ActorMethod<[WalletUpdateCommand], Result>,
+  'query_a_wallet' : ActorMethod<[bigint], Result_4>,
+  'query_all_wallets' : ActorMethod<[], Result_5>,
+  'sync_transaction_record' : ActorMethod<[EditHistoryCommand], Result_1>,
+  'update_wallet' : ActorMethod<[WalletUpdateCommand], Result_1>,
   'user_quantity' : ActorMethod<[], number>,
-  'wallet_history' : ActorMethod<[HistoryQueryCommand], Result_5>,
+  'wallet_history' : ActorMethod<[HistoryQueryCommand], Result_6>,
   'whoami' : ActorMethod<[], Principal>,
 }

@@ -1,6 +1,5 @@
 export const idlFactory = ({ IDL }) => {
-  const RecordProfile = IDL.Record({
-    'id' : IDL.Nat64,
+  const AddRecordCommand = IDL.Record({
     'tag' : IDL.Text,
     'time' : IDL.Nat64,
     't_type' : IDL.Text,
@@ -10,18 +9,20 @@ export const idlFactory = ({ IDL }) => {
     'price' : IDL.Float64,
     'amount' : IDL.Nat32,
   });
-  const Result = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : IDL.Text });
+  const Result = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : IDL.Text });
   const WalletAddCommand = IDL.Record({
     'from' : IDL.Text,
     'name' : IDL.Text,
     'address' : IDL.Text,
+    'opt_principle' : IDL.Opt(IDL.Principal),
   });
+  const Result_1 = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : IDL.Text });
   const UserProfile = IDL.Record({
     'owner' : IDL.Principal,
     'name' : IDL.Text,
     'create_time' : IDL.Nat64,
   });
-  const Result_1 = IDL.Variant({ 'Ok' : UserProfile, 'Err' : IDL.Text });
+  const Result_2 = IDL.Variant({ 'Ok' : UserProfile, 'Err' : IDL.Text });
   const EditHistoryCommand = IDL.Record({
     'id' : IDL.Nat64,
     'tag' : IDL.Text,
@@ -126,7 +127,7 @@ export const idlFactory = ({ IDL }) => {
     'SysFatal' : IDL.Null,
     'CanisterReject' : IDL.Null,
   });
-  const Result_2 = IDL.Variant({
+  const Result_3 = IDL.Variant({
     'Ok' : IDL.Tuple(CustomResult1),
     'Err' : IDL.Tuple(RejectionCode, IDL.Text),
   });
@@ -141,8 +142,8 @@ export const idlFactory = ({ IDL }) => {
     'holder' : IDL.Principal,
     'transactions' : IDL.Nat64,
   });
-  const Result_3 = IDL.Variant({ 'Ok' : WalletProfile, 'Err' : IDL.Text });
-  const Result_4 = IDL.Variant({
+  const Result_4 = IDL.Variant({ 'Ok' : WalletProfile, 'Err' : IDL.Text });
+  const Result_5 = IDL.Variant({
     'Ok' : IDL.Vec(WalletProfile),
     'Err' : IDL.Vec(WalletProfile),
   });
@@ -158,30 +159,42 @@ export const idlFactory = ({ IDL }) => {
     'sort_method' : IDL.Text,
     'address' : IDL.Text,
   });
-  const Result_5 = IDL.Variant({
+  const RecordProfile = IDL.Record({
+    'id' : IDL.Nat64,
+    'tag' : IDL.Text,
+    'time' : IDL.Nat64,
+    't_type' : IDL.Text,
+    'comment' : IDL.Text,
+    'address' : IDL.Text,
+    'manual' : IDL.Bool,
+    'price' : IDL.Float64,
+    'opt_principal' : IDL.Opt(IDL.Principal),
+    'amount' : IDL.Nat32,
+  });
+  const Result_6 = IDL.Variant({
     'Ok' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(RecordProfile))),
     'Err' : IDL.Text,
   });
   return IDL.Service({
-    'add_transaction_record' : IDL.Func([RecordProfile], [Result], []),
-    'add_wallet' : IDL.Func([WalletAddCommand], [Result], []),
-    'auto_register_user' : IDL.Func([], [Result_1], []),
+    'add_transaction_record' : IDL.Func([AddRecordCommand], [Result], []),
+    'add_wallet' : IDL.Func([WalletAddCommand], [Result_1], []),
+    'auto_register_user' : IDL.Func([], [Result_2], []),
     'create_and_install' : IDL.Func([], [IDL.Text], []),
     'delete_transaction_record' : IDL.Func([IDL.Nat64], [Result], []),
-    'delete_wallet' : IDL.Func([IDL.Nat64], [Result], []),
-    'edit_transaction_record' : IDL.Func([EditHistoryCommand], [Result], []),
+    'delete_wallet' : IDL.Func([IDL.Nat64], [Result_1], []),
+    'edit_transaction_record' : IDL.Func([EditHistoryCommand], [Result_1], []),
     'get_balance' : IDL.Func([], [IDL.Nat64], []),
     'get_canister_info' : IDL.Func([IDL.Text], [CanisterInfoResponse], []),
     'get_canister_status' : IDL.Func([IDL.Text], [CanisterStatusResponse], []),
     'get_ledger_id' : IDL.Func([IDL.Principal], [IDL.Nat32], ['query']),
-    'get_neuron_info' : IDL.Func([IDL.Nat64], [Result_2], []),
+    'get_neuron_info' : IDL.Func([IDL.Nat64], [Result_3], []),
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
-    'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_3], ['query']),
-    'query_all_wallets' : IDL.Func([], [Result_4], ['query']),
-    'sync_transaction_record' : IDL.Func([EditHistoryCommand], [Result], []),
-    'update_wallet' : IDL.Func([WalletUpdateCommand], [Result], []),
+    'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_4], ['query']),
+    'query_all_wallets' : IDL.Func([], [Result_5], ['query']),
+    'sync_transaction_record' : IDL.Func([EditHistoryCommand], [Result_1], []),
+    'update_wallet' : IDL.Func([WalletUpdateCommand], [Result_1], []),
     'user_quantity' : IDL.Func([], [IDL.Nat32], []),
-    'wallet_history' : IDL.Func([HistoryQueryCommand], [Result_5], ['query']),
+    'wallet_history' : IDL.Func([HistoryQueryCommand], [Result_6], ['query']),
     'whoami' : IDL.Func([], [IDL.Principal], ['query']),
   });
 };

@@ -1,3 +1,13 @@
+type AddRecordCommand = record {
+  tag : text;
+  time : nat64;
+  t_type : text;
+  comment : text;
+  address : text;
+  manual : bool;
+  price : float64;
+  amount : nat32;
+};
 type BallotInfo = record { vote : int32; proposal_id : opt NeuronId };
 type CanisterChange = record {
   timestamp_nanos : nat64;
@@ -90,6 +100,7 @@ type RecordProfile = record {
   address : text;
   manual : bool;
   price : float64;
+  opt_principal : opt principal;
   amount : nat32;
 };
 type RejectionCode = variant {
@@ -101,15 +112,16 @@ type RejectionCode = variant {
   SysFatal;
   CanisterReject;
 };
-type Result = variant { Ok : bool; Err : text };
-type Result_1 = variant { Ok : UserProfile; Err : text };
-type Result_2 = variant {
+type Result = variant { Ok : nat64; Err : text };
+type Result_1 = variant { Ok : bool; Err : text };
+type Result_2 = variant { Ok : UserProfile; Err : text };
+type Result_3 = variant {
   Ok : record { CustomResult1 };
   Err : record { RejectionCode; text };
 };
-type Result_3 = variant { Ok : WalletProfile; Err : text };
-type Result_4 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
-type Result_5 = variant {
+type Result_4 = variant { Ok : WalletProfile; Err : text };
+type Result_5 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
+type Result_6 = variant {
   Ok : vec record { text; vec RecordProfile };
   Err : text;
 };
@@ -118,7 +130,12 @@ type UserProfile = record {
   name : text;
   create_time : nat64;
 };
-type WalletAddCommand = record { from : text; name : text; address : text };
+type WalletAddCommand = record {
+  from : text;
+  name : text;
+  address : text;
+  opt_principle : opt principal;
+};
 type WalletProfile = record {
   id : nat64;
   last_transaction_time : nat64;
@@ -132,24 +149,24 @@ type WalletProfile = record {
 };
 type WalletUpdateCommand = record { id : nat64; name : text };
 service : () -> {
-  add_transaction_record : (RecordProfile) -> (Result);
-  add_wallet : (WalletAddCommand) -> (Result);
-  auto_register_user : () -> (Result_1);
+  add_transaction_record : (AddRecordCommand) -> (Result);
+  add_wallet : (WalletAddCommand) -> (Result_1);
+  auto_register_user : () -> (Result_2);
   create_and_install : () -> (text);
   delete_transaction_record : (nat64) -> (Result);
-  delete_wallet : (nat64) -> (Result);
-  edit_transaction_record : (EditHistoryCommand) -> (Result);
+  delete_wallet : (nat64) -> (Result_1);
+  edit_transaction_record : (EditHistoryCommand) -> (Result_1);
   get_balance : () -> (nat64);
   get_canister_info : (text) -> (CanisterInfoResponse);
   get_canister_status : (text) -> (CanisterStatusResponse);
   get_ledger_id : (principal) -> (nat32) query;
-  get_neuron_info : (nat64) -> (Result_2);
+  get_neuron_info : (nat64) -> (Result_3);
   list_all_user : () -> (vec UserProfile);
-  query_a_wallet : (nat64) -> (Result_3) query;
-  query_all_wallets : () -> (Result_4) query;
-  sync_transaction_record : (EditHistoryCommand) -> (Result);
-  update_wallet : (WalletUpdateCommand) -> (Result);
+  query_a_wallet : (nat64) -> (Result_4) query;
+  query_all_wallets : () -> (Result_5) query;
+  sync_transaction_record : (EditHistoryCommand) -> (Result_1);
+  update_wallet : (WalletUpdateCommand) -> (Result_1);
   user_quantity : () -> (nat32);
-  wallet_history : (HistoryQueryCommand) -> (Result_5) query;
+  wallet_history : (HistoryQueryCommand) -> (Result_6) query;
   whoami : () -> (principal) query;
 }

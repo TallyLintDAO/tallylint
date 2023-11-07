@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::task::Context;
 
 use ic_cdk_macros::{query, update};
+use ic_ledger_types::AccountIdentifier;
 use ic_stable_structures::BTreeMap;
 
 use super::domain::*;
@@ -43,6 +44,7 @@ fn add_wallet(wallet_add_command: WalletAddCommand) -> Result<bool, String> {
     })
 }
 
+// todo records things todo .
 #[update(guard = "user_owner_guard")]
 fn update_wallet(wallet_update_command: WalletUpdateCommand) -> Result<bool, String> {
     CONTEXT.with(|c| {
@@ -107,11 +109,11 @@ fn delete_wallet(id: u64) -> Result<bool, String> {
 
 // todo use: AddRecordCommand . front end dont need to input id . id gen by backend.
 #[update(guard = "user_owner_guard")]
-fn add_transaction_record(cmd: AddRecordCommand) -> Result<bool, String> {
+fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
         let id = ctx.id;
-        let mut p = RecordProfile {
+        let mut profile = RecordProfile {
             id: id,
             address: cmd.address,
             price: cmd.price,
@@ -121,13 +123,16 @@ fn add_transaction_record(cmd: AddRecordCommand) -> Result<bool, String> {
             tag: cmd.tag,
             manual: cmd.manual,
             comment: cmd.comment,
+            opt_principal: None,
         };
-        p.id = id;
-        let ret = ctx.wallet_record_service.add_transaction_record(p);
+        profile.id = id;
+        let ret = ctx
+            .wallet_record_service
+            .add_transaction_record(profile.clone());
         match ret {
             Ok(_) => {
                 ctx.id += 1;
-                return Ok(true);
+                return Ok(profile.id);
             }
             Err(msg) => Err(msg),
         }
@@ -135,12 +140,12 @@ fn add_transaction_record(cmd: AddRecordCommand) -> Result<bool, String> {
 }
 
 #[update(guard = "user_owner_guard")]
-fn delete_transaction_record(id: RecordId) -> Result<bool, String> {
+fn delete_transaction_record(id: RecordId) -> Result<RecordId, String> {
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
         let ret = ctx.wallet_record_service.delete_transaction_record(id);
         match ret {
-            Ok(_) => Ok(true),
+            Ok(_) => Ok(id),
             Err(msg) => Err(msg),
         }
     })
@@ -194,5 +199,16 @@ fn convert_edit_command_to_record_profile(
         tag: cmd.tag,
         manual: cmd.manual,
         comment: cmd.comment,
+        opt_principal: None,
     }
+}
+
+fn get_account_id(hex_str:String)->AccountIdentifier{
+    let account=AccountIdentifier::from_hex(&hex_str);
+    if account.is_ok(){
+        return account.unwrap();
+    }
+    // err handle:
+    let empty_account_identifier = AccountIdentifier::from_hex("0000000000000000000000000000000000000000000000000000000000000000").unwrap();
+    return  empty_account_identifier;
 }
