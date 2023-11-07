@@ -26,7 +26,7 @@ pub struct WalletProfile {
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct WalletAddCommand {
     pub address: String,
-    pub opt_principle: Option<Principal>,//Plug use , need to convert to opt_account_id_hex for use.
+    pub principal_id: Option<Principal>, //Plug use , need to convert to opt_account_id_hex for use.
     pub from: String, //from which wallet_type: such as  NNS Plug  Stoic AstorMe  .. maybe add more
     pub name: String,
 }
@@ -42,7 +42,6 @@ pub struct WalletUpdateCommand {
                       // pub last_transaction_time:u64,
 }
 
-
 /**
  * Class Record main storage:
  */
@@ -50,8 +49,8 @@ pub struct WalletUpdateCommand {
 pub struct RecordProfile {
     pub id: RecordId,
     // Primary key
-    pub opt_principal: Option<Principal>,//Plug use , need to convert to opt_account_id_hex for use.
-    pub address: WalletAddress,// same as account_id_hex
+    pub principal_id: Option<Principal>, //Plug use , need to convert to opt_account_id_hex for use.
+    pub address: WalletAddress,          // same as account_id_hex
     //Transaction record
     pub price: f64,
     pub amount: u32,
@@ -66,7 +65,6 @@ pub struct RecordProfile {
     // todo: Warning（用户是否标记某些记录为missing cost, missing rates）这条字段先只做出来，不用,
     // 解释：比如missing rates是标记某个交易历史找不到对应的价格记录，例如某个NFT的交易价格查不到，就会被自动标记为missing rates
 }
-
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct HistoryQueryCommand {
@@ -98,7 +96,7 @@ pub struct AddRecordCommand {
     // pub id: RecordId,//delete id here . dont need.
     //Transaction record
     pub address: WalletAddress,
-    pub opt_principal: Option<Principal>,//Plug use , need to convert to opt_account_id_hex for use.
+    pub opt_principal: Option<Principal>, //Plug use , need to convert to opt_account_id_hex for use.
     pub price: f64,
     pub amount: u32,
     // todo , considering:

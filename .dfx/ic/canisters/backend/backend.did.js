@@ -15,7 +15,7 @@ export const idlFactory = ({ IDL }) => {
     'from' : IDL.Text,
     'name' : IDL.Text,
     'address' : IDL.Text,
-    'opt_principle' : IDL.Opt(IDL.Principal),
+    'principal_id' : IDL.Opt(IDL.Principal),
   });
   const Result_1 = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : IDL.Text });
   const UserProfile = IDL.Record({
@@ -168,8 +168,8 @@ export const idlFactory = ({ IDL }) => {
     'comment' : IDL.Text,
     'address' : IDL.Text,
     'manual' : IDL.Bool,
+    'principal_id' : IDL.Opt(IDL.Principal),
     'price' : IDL.Float64,
-    'opt_principal' : IDL.Opt(IDL.Principal),
     'amount' : IDL.Nat32,
   });
   const Result_6 = IDL.Variant({

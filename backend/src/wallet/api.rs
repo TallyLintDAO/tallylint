@@ -123,7 +123,7 @@ fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
             tag: cmd.tag,
             manual: cmd.manual,
             comment: cmd.comment,
-            opt_principal: cmd.opt_principal,
+            principal_id: cmd.opt_principal,
         };
         profile.id = id;
         let ret = ctx
@@ -199,16 +199,19 @@ fn convert_edit_command_to_record_profile(
         tag: cmd.tag,
         manual: cmd.manual,
         comment: cmd.comment,
-        opt_principal: None,
+        principal_id: None,
     }
 }
 
-fn get_account_id(hex_str:String)->AccountIdentifier{
-    let account=AccountIdentifier::from_hex(&hex_str);
-    if account.is_ok(){
+fn get_account_id(hex_str: String) -> AccountIdentifier {
+    let account = AccountIdentifier::from_hex(&hex_str);
+    if account.is_ok() {
         return account.unwrap();
     }
     // err handle:
-    let empty_account_identifier = AccountIdentifier::from_hex("0000000000000000000000000000000000000000000000000000000000000000").unwrap();
-    return  empty_account_identifier;
+    let empty_account_identifier = AccountIdentifier::from_hex(
+        "0000000000000000000000000000000000000000000000000000000000000000",
+    )
+    .unwrap();
+    return empty_account_identifier;
 }

@@ -110,8 +110,8 @@ export interface RecordProfile {
   'comment' : string,
   'address' : string,
   'manual' : boolean,
+  'principal_id' : [] | [Principal],
   'price' : number,
-  'opt_principal' : [] | [Principal],
   'amount' : number,
 }
 export type RejectionCode = { 'NoError' : null } |
@@ -144,7 +144,7 @@ export interface WalletAddCommand {
   'from' : string,
   'name' : string,
   'address' : string,
-  'opt_principle' : [] | [Principal],
+  'principal_id' : [] | [Principal],
 }
 export interface WalletProfile {
   'id' : bigint,

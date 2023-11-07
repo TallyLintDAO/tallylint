@@ -100,8 +100,8 @@ type RecordProfile = record {
   comment : text;
   address : text;
   manual : bool;
+  principal_id : opt principal;
   price : float64;
-  opt_principal : opt principal;
   amount : nat32;
 };
 type RejectionCode = variant {
@@ -135,7 +135,7 @@ type WalletAddCommand = record {
   from : text;
   name : text;
   address : text;
-  opt_principle : opt principal;
+  principal_id : opt principal;
 };
 type WalletProfile = record {
   id : nat64;
