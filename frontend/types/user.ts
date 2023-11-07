@@ -14,12 +14,14 @@ export interface UserInfoElement {
 
 export interface WalletInfo {
   address: string
+  principal_id?: string[] //opt
   from: string //'NNS' | 'Plug' | 'Stoic' | 'AstorMe'
   name: string
   transactions: number
   last_transaction_time: number
   last_sync_time: number
 }
+
 export interface WalletHistory {
   price: number
   amount: number

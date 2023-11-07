@@ -175,6 +175,7 @@ const addressIsPrincipal = ref(false) // 是否是principal，关系到某些字
 
 const wallet = ref({
   address: "",
+  principal: [] as string[], // 无值就用[]，而不是[""]，不然opt类型会报错
   from: "NNS",
   name: "",
   transactions: 0,
@@ -183,6 +184,7 @@ const wallet = ref({
 })
 const walletPrototype = {
   address: "",
+  principal: [] as string[],
   from: "NNS",
   name: "",
   transactions: 0,
@@ -206,6 +208,7 @@ const identifyAddress = () => {
   addressIsPrincipal.value = isPrincipal(address.value)
   if (addressIsPrincipal.value) {
     wallet.value.address = p2a(address.value)
+    wallet.value.principal.push(address.value)
   } else {
     wallet.value.address = address.value
   }
@@ -238,8 +241,14 @@ const onSubmit = async () => {
   loading.value = true
   const validationSuccess = await walletForm.value?.validate()
   if (validationSuccess) {
-    const { address, name, from } = wallet.value
-    const res = await addUserWallet(address.trim(), name.trim(), from)
+    const { address, name, from, principal } = wallet.value
+    console.log("wallet param", wallet.value)
+    const res = await addUserWallet(
+      address.trim(),
+      name.trim(),
+      from,
+      principal,
+    )
     console.log("wallet res", res)
     if (res.Ok) {
       rows.value.push({ ...wallet.value })

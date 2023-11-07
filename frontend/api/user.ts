@@ -1,6 +1,6 @@
 import type { ApiResult, ApiUserInfo } from "@/types/types"
 import type { WalletInfo } from "@/types/user"
-import { getCache, TTL } from "@/utils/cache"
+import { TTL, getCache } from "@/utils/cache"
 import { getBackend, getCurrentPrincipal } from "./canister_pool"
 
 //TODO demo阶段用户字段修改频繁，暂时用短缓存时间。
@@ -19,14 +19,16 @@ export async function getUserAutoRegister(): Promise<ApiResult<ApiUserInfo>> {
 
 // 增加用户的钱包地址
 export async function addUserWallet(
-  address,
-  name,
-  from,
+  address: string,
+  name: string,
+  from: string,
+  principal?: string[],
 ): Promise<ApiResult<boolean>> {
   return getBackend().add_wallet({
     address: address,
     name: name,
     from: from,
+    principal_id: principal,
   })
 }
 
