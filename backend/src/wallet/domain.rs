@@ -26,7 +26,7 @@ pub struct WalletProfile {
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct WalletAddCommand {
     pub address: String,
-    pub principal_id: Option<Principal>, //Plug use , need to convert to opt_account_id_hex for use.
+    pub principal_id: Option<String>, //Plug use , need to convert to opt_account_id_hex for use.
     pub from: String, //from which wallet_type: such as  NNS Plug  Stoic AstorMe  .. maybe add more
     pub name: String,
 }
@@ -49,7 +49,7 @@ pub struct WalletUpdateCommand {
 pub struct RecordProfile {
     pub id: RecordId,
     // Primary key
-    pub principal_id: Option<Principal>, //Plug use , need to convert to opt_account_id_hex for use.
+    pub principal_id: Option<String>, //Plug use , need to convert to opt_account_id_hex for use.
     pub address: WalletAddress,          // same as account_id_hex
     //Transaction record
     pub price: f64,
@@ -69,9 +69,9 @@ pub struct RecordProfile {
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct HistoryQueryCommand {
     // Primary key
-    pub address: WalletAddress, //make this optional. if not provide. then query all.
-    pub from: TimeStamp,
-    pub to: TimeStamp,
+    pub address: Option<WalletAddress>, //make this optional. if not provide. then query all.
+    pub from_time: TimeStamp,
+    pub to_time: TimeStamp,
     pub t_type: String, //transaction_type SEND or RECEIVE or BOTH
     pub tag: String,
     //    todo sort method:
@@ -96,7 +96,7 @@ pub struct AddRecordCommand {
     // pub id: RecordId,//delete id here . dont need.
     //Transaction record
     pub address: WalletAddress,
-    pub opt_principal: Option<Principal>, //Plug use , need to convert to opt_account_id_hex for use.
+    pub principal_id: Option<String>, //Plug use , need to convert to opt_account_id_hex for use.
     pub price: f64,
     pub amount: u32,
     // todo , considering:

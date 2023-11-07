@@ -14,10 +14,15 @@ use crate::CONTEXT;
 const MAX_WALLET_NAME_LENGTH: usize = 64;
 
 #[update(guard = "user_owner_guard")]
-fn add_wallet(wallet_add_command: WalletAddCommand) -> Result<bool, String> {
+fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
     CONTEXT.with(|c| {
-        if wallet_add_command.name.len() > MAX_WALLET_NAME_LENGTH {
+        if cmd.name.len() > MAX_WALLET_NAME_LENGTH {
             return Err(String::from("Wallet name exceeds maximum length 64"));
+        }
+        if cmd.principal_id.is_some() {
+            if cmd.principal_id.unwrap().len() > MAX_WALLET_NAME_LENGTH {
+                return Err(String::from("principal_id exceeds maximum length 64"));
+            }
         }
         let mut ctx = c.borrow_mut();
         let caller = ctx.env.caller();
@@ -25,9 +30,9 @@ fn add_wallet(wallet_add_command: WalletAddCommand) -> Result<bool, String> {
         let id = ctx.id;
         let profile = WalletProfile {
             holder: caller,
-            address: wallet_add_command.address,
-            from: wallet_add_command.from,
-            name: wallet_add_command.name,
+            address: cmd.address,
+            from: cmd.from,
+            name: cmd.name,
             id: id,
             create_time: now,
             transactions: 0,
@@ -123,7 +128,7 @@ fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
             tag: cmd.tag,
             manual: cmd.manual,
             comment: cmd.comment,
-            principal_id: cmd.opt_principal,
+            principal_id: cmd.principal_id,
         };
         profile.id = id;
         let ret = ctx
@@ -182,7 +187,17 @@ fn sync_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
 fn wallet_history(
     cmd: HistoryQueryCommand,
 ) -> Result<HashMap<WalletAddress, Vec<RecordProfile>>, String> {
-    return Err("no data".to_string());
+    CONTEXT.with(|c| {
+        let mut ctx = c.borrow_mut();
+        let service = ctx.wallet_record_service.borrow_mut();
+        let history: Result<HashMap<WalletAddress, Vec<RecordProfile>>, String> =
+            service.wallet_history(cmd);
+        match history {
+            Ok(data) => Ok(data),
+            Err(msg) => Err(msg),
+        }
+    })
+    // return Err("no data".to_string());
 }
 
 fn convert_edit_command_to_record_profile(

@@ -5,8 +5,8 @@ type AddRecordCommand = record {
   comment : text;
   address : text;
   manual : bool;
+  principal_id : opt text;
   price : float64;
-  opt_principal : opt principal;
   amount : nat32;
 };
 type BallotInfo = record { vote : int32; proposal_id : opt NeuronId };
@@ -71,12 +71,12 @@ type FromCanisterRecord = record {
 type FromUserRecord = record { user_id : principal };
 type GovernanceError = record { error_message : text; error_type : int32 };
 type HistoryQueryCommand = record {
-  to : nat64;
   tag : text;
-  from : nat64;
+  from_time : nat64;
+  to_time : nat64;
   t_type : text;
   sort_method : text;
-  address : text;
+  address : opt text;
 };
 type KnownNeuronData = record { name : text; description : opt text };
 type NeuronId = record { id : vec nat8 };
@@ -100,7 +100,7 @@ type RecordProfile = record {
   comment : text;
   address : text;
   manual : bool;
-  principal_id : opt principal;
+  principal_id : opt text;
   price : float64;
   amount : nat32;
 };
@@ -135,7 +135,7 @@ type WalletAddCommand = record {
   from : text;
   name : text;
   address : text;
-  principal_id : opt principal;
+  principal_id : opt text;
 };
 type WalletProfile = record {
   id : nat64;

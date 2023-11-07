@@ -6,8 +6,8 @@ export const idlFactory = ({ IDL }) => {
     'comment' : IDL.Text,
     'address' : IDL.Text,
     'manual' : IDL.Bool,
+    'principal_id' : IDL.Opt(IDL.Text),
     'price' : IDL.Float64,
-    'opt_principal' : IDL.Opt(IDL.Principal),
     'amount' : IDL.Nat32,
   });
   const Result = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : IDL.Text });
@@ -15,7 +15,7 @@ export const idlFactory = ({ IDL }) => {
     'from' : IDL.Text,
     'name' : IDL.Text,
     'address' : IDL.Text,
-    'principal_id' : IDL.Opt(IDL.Principal),
+    'principal_id' : IDL.Opt(IDL.Text),
   });
   const Result_1 = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : IDL.Text });
   const UserProfile = IDL.Record({
@@ -153,12 +153,12 @@ export const idlFactory = ({ IDL }) => {
     'name' : IDL.Text,
   });
   const HistoryQueryCommand = IDL.Record({
-    'to' : IDL.Nat64,
     'tag' : IDL.Text,
-    'from' : IDL.Nat64,
+    'from_time' : IDL.Nat64,
+    'to_time' : IDL.Nat64,
     't_type' : IDL.Text,
     'sort_method' : IDL.Text,
-    'address' : IDL.Text,
+    'address' : IDL.Opt(IDL.Text),
   });
   const RecordProfile = IDL.Record({
     'id' : IDL.Nat64,
@@ -168,7 +168,7 @@ export const idlFactory = ({ IDL }) => {
     'comment' : IDL.Text,
     'address' : IDL.Text,
     'manual' : IDL.Bool,
-    'principal_id' : IDL.Opt(IDL.Principal),
+    'principal_id' : IDL.Opt(IDL.Text),
     'price' : IDL.Float64,
     'amount' : IDL.Nat32,
   });

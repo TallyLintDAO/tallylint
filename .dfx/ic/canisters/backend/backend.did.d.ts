@@ -8,8 +8,8 @@ export interface AddRecordCommand {
   'comment' : string,
   'address' : string,
   'manual' : boolean,
+  'principal_id' : [] | [string],
   'price' : number,
-  'opt_principal' : [] | [Principal],
   'amount' : number,
 }
 export interface BallotInfo { 'vote' : number, 'proposal_id' : [] | [NeuronId] }
@@ -78,12 +78,12 @@ export interface GovernanceError {
   'error_type' : number,
 }
 export interface HistoryQueryCommand {
-  'to' : bigint,
   'tag' : string,
-  'from' : bigint,
+  'from_time' : bigint,
+  'to_time' : bigint,
   't_type' : string,
   'sort_method' : string,
-  'address' : string,
+  'address' : [] | [string],
 }
 export interface KnownNeuronData {
   'name' : string,
@@ -110,7 +110,7 @@ export interface RecordProfile {
   'comment' : string,
   'address' : string,
   'manual' : boolean,
-  'principal_id' : [] | [Principal],
+  'principal_id' : [] | [string],
   'price' : number,
   'amount' : number,
 }
@@ -144,7 +144,7 @@ export interface WalletAddCommand {
   'from' : string,
   'name' : string,
   'address' : string,
-  'principal_id' : [] | [Principal],
+  'principal_id' : [] | [string],
 }
 export interface WalletProfile {
   'id' : bigint,
