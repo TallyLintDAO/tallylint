@@ -98,6 +98,7 @@ pub struct AddRecordCommand {
     // pub id: RecordId,//delete id here . dont need.
     //Transaction record
     pub address: WalletAddress,
+    pub opt_principal: Option<Principal>,//Plug use , need to convert to opt_account_id_hex for use.
     pub price: f64,
     pub amount: u32,
     // todo , considering:

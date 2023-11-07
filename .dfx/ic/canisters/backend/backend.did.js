@@ -7,6 +7,7 @@ export const idlFactory = ({ IDL }) => {
     'address' : IDL.Text,
     'manual' : IDL.Bool,
     'price' : IDL.Float64,
+    'opt_principal' : IDL.Opt(IDL.Principal),
     'amount' : IDL.Nat32,
   });
   const Result = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : IDL.Text });

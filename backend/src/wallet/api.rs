@@ -123,7 +123,7 @@ fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
             tag: cmd.tag,
             manual: cmd.manual,
             comment: cmd.comment,
-            opt_principal: None,
+            opt_principal: cmd.opt_principal,
         };
         profile.id = id;
         let ret = ctx

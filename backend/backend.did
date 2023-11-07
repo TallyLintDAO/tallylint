@@ -6,6 +6,7 @@ type AddRecordCommand = record {
   address : text;
   manual : bool;
   price : float64;
+  opt_principal : opt principal;
   amount : nat32;
 };
 type BallotInfo = record { vote : int32; proposal_id : opt NeuronId };

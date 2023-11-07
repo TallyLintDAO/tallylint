@@ -9,6 +9,7 @@ export interface AddRecordCommand {
   'address' : string,
   'manual' : boolean,
   'price' : number,
+  'opt_principal' : [] | [Principal],
   'amount' : number,
 }
 export interface BallotInfo { 'vote' : number, 'proposal_id' : [] | [NeuronId] }
