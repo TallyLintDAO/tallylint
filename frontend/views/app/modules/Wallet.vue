@@ -62,6 +62,15 @@
                 </div>
               </q-card-section>
               <q-list>
+                <!-- principal只有有值才显示 -->
+                <q-item v-if="props.row.principal_id.length > 0">
+                  <q-item-section>
+                    <q-item-label> Principal </q-item-label>
+                    <q-item-label caption>
+                      {{ props.row.principal_id[0] }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
                 <q-item v-for="col in props.cols" :key="col.name">
                   <q-item-section>
                     <q-item-label>{{ col.label }}</q-item-label>
@@ -90,12 +99,14 @@
               filled
               v-model="address"
               label="Wallet Address *"
-              hint="Input Principal ID or Account ID"
+              hint="Enter Principal ID or Account ID"
               lazy-rules
               :rules="[
                 (val) =>
-                  (val && val.length > 0) ||
-                  'Please type Principal ID or Account ID',
+                  (val &&
+                    val.length > 0 &&
+                    (val.length === 63 || val.length === 64)) ||
+                  'Please enter Principal ID or Account ID',
                 (val) =>
                   (val && !rows.some((item) => item.address === val)) ||
                   'Can not add wallet, address duplicated',
@@ -150,7 +161,7 @@ import {
 import type { WalletInfo } from "@/types/user"
 import { isPrincipal, p2a } from "@/utils/common"
 import { confirmDialog, inputDialog } from "@/utils/dialog"
-import { showResultError } from "@/utils/message"
+import { showMessageSuccess, showResultError } from "@/utils/message"
 import type { QForm } from "quasar"
 import { onMounted, ref, watch } from "vue"
 
@@ -175,7 +186,7 @@ const addressIsPrincipal = ref(false) // 是否是principal，关系到某些字
 
 const wallet = ref({
   address: "",
-  principal: [] as string[], // 无值就用[]，而不是[""]，不然opt类型会报错
+  principal_id: [] as string[], // 无值就用[]，而不是[""]，不然opt类型会报错
   from: "NNS",
   name: "",
   transactions: 0,
@@ -184,7 +195,7 @@ const wallet = ref({
 })
 const walletPrototype = {
   address: "",
-  principal: [] as string[],
+  principal_id: [] as string[],
   from: "NNS",
   name: "",
   transactions: 0,
@@ -208,7 +219,7 @@ const identifyAddress = () => {
   addressIsPrincipal.value = isPrincipal(address.value)
   if (addressIsPrincipal.value) {
     wallet.value.address = p2a(address.value)
-    wallet.value.principal.push(address.value)
+    wallet.value.principal_id.push(address.value)
   } else {
     wallet.value.address = address.value
   }
@@ -241,15 +252,13 @@ const onSubmit = async () => {
   loading.value = true
   const validationSuccess = await walletForm.value?.validate()
   if (validationSuccess) {
-    const { address, name, from, principal } = wallet.value
-    console.log("wallet param", wallet.value)
+    const { address, name, from, principal_id } = wallet.value
     const res = await addUserWallet(
       address.trim(),
       name.trim(),
       from,
-      principal,
+      principal_id,
     )
-    console.log("wallet res", res)
     if (res.Ok) {
       rows.value.push({ ...wallet.value })
       wallet.value = { ...walletPrototype }
@@ -268,7 +277,7 @@ const onSubmit = async () => {
 const editWallet = (walletId: bigint) => {
   inputDialog({
     title: "Edit Wallet",
-    message: "Your wallet name: ",
+    message: "Your new wallet name: ",
     okMethod: (username) => {
       console.log("data", username, walletId)
       editUserWallet(walletId, username).then((res) => {
@@ -286,10 +295,10 @@ const deleteWallet = (walletId: bigint) => {
     message:
       "Are you sure delete this wallet? Delete wallet will clear this wallet history info",
     okMethod: (data) => {
-      console.log("delete")
       deleteUserWallet(walletId).then((res) => {
         if (res.Ok) {
           getWallets(true)
+          showMessageSuccess("delete wallet success")
         }
       })
     },
@@ -304,6 +313,9 @@ const deleteWallet = (walletId: bigint) => {
   }
   .head-icon {
     width: 32px !important;
+  }
+  .text-caption {
+    font-size: 0.9rem;
   }
 }
 </style>
