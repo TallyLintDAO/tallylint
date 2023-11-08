@@ -61,20 +61,20 @@ fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
 
 // todo records things todo .
 #[update(guard = "user_owner_guard")]
-fn update_wallet(wallet_update_command: WalletUpdateCommand) -> Result<bool, String> {
+fn update_wallet(cmd: WalletUpdateCommand) -> Result<bool, String> {
     CONTEXT.with(|c| {
-        if wallet_update_command.name.len() > MAX_WALLET_NAME_LENGTH {
+        if cmd.name.len() > MAX_WALLET_NAME_LENGTH {
             return Err(String::from("Wallet name exceeds maximum length 64"));
         }
         let mut ctx = c.borrow_mut();
         let caller = ctx.env.caller();
         let now = ctx.env.now();
-        let id: u64 = wallet_update_command.id;
+        let id: u64 = cmd.id;
         let mut profile = ctx.wallet_service.query_a_wallet(id).unwrap().clone();
         // holder: caller,
         // profile.address=wallet_update_command.address;
         // profile.from=wallet_update_command.from;
-        profile.name = wallet_update_command.name;
+        profile.name = cmd.name;
         // id: id,
         // profile.create_time=now;
         // todo

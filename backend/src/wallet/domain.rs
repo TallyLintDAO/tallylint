@@ -36,7 +36,7 @@ pub struct WalletAddCommand {
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct WalletUpdateCommand {
     // pub address: String,
-    // pub from: String, //from which wallet_type: such as  NNS Plug  Stoic AstorMe  .. maybe add more
+    pub from: String, //from which wallet_type: such as  NNS Plug  Stoic AstorMe  .. maybe add more
     pub name: String,
     pub id: WalletId, //when update , specify id .
                       // pub transactions:u64,

@@ -151,6 +151,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const WalletUpdateCommand = IDL.Record({
     'id' : IDL.Nat64,
+    'from' : IDL.Text,
     'name' : IDL.Text,
   });
   const HistoryQueryCommand = IDL.Record({

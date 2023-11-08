@@ -158,7 +158,11 @@ export interface WalletProfile {
   'holder' : Principal,
   'transactions' : bigint,
 }
-export interface WalletUpdateCommand { 'id' : bigint, 'name' : string }
+export interface WalletUpdateCommand {
+  'id' : bigint,
+  'from' : string,
+  'name' : string,
+}
 export interface _SERVICE {
   'add_transaction_record' : ActorMethod<[AddRecordCommand], Result>,
   'add_wallet' : ActorMethod<[WalletAddCommand], Result_1>,

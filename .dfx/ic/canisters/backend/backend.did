@@ -149,7 +149,7 @@ type WalletProfile = record {
   holder : principal;
   transactions : nat64;
 };
-type WalletUpdateCommand = record { id : nat64; name : text };
+type WalletUpdateCommand = record { id : nat64; from : text; name : text };
 service : {
   add_transaction_record : (AddRecordCommand) -> (Result);
   add_wallet : (WalletAddCommand) -> (Result_1);
