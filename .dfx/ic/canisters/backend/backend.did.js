@@ -140,6 +140,7 @@ export const idlFactory = ({ IDL }) => {
     'name' : IDL.Text,
     'create_time' : IDL.Nat64,
     'address' : IDL.Text,
+    'principal_id' : IDL.Opt(IDL.Text),
     'holder' : IDL.Principal,
     'transactions' : IDL.Nat64,
   });

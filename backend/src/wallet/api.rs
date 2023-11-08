@@ -12,23 +12,29 @@ use crate::common::guard::user_owner_guard;
 use crate::CONTEXT;
 
 const MAX_WALLET_NAME_LENGTH: usize = 64;
+const ACCOUNT_ID_LENGTH: usize = 64;
+const PRINCIPAL_ID_LENGTH: usize = 63;
 
 #[update(guard = "user_owner_guard")]
 fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
     CONTEXT.with(|c| {
+        let if_principal: Option<&String>=cmd.principal_id.as_ref();
         if cmd.name.len() > MAX_WALLET_NAME_LENGTH {
             return Err(String::from("Wallet name exceeds maximum length 64"));
         }
-        if cmd.principal_id.is_some() {
-            if cmd.principal_id.unwrap().len() > MAX_WALLET_NAME_LENGTH {
-                return Err(String::from("principal_id exceeds maximum length 64"));
+        if if_principal.is_some() {
+            if if_principal.unwrap().len() != PRINCIPAL_ID_LENGTH {
+                return Err(String::from("principal_id length need to be 63"));
             }
+        }
+        if cmd.address.len() != ACCOUNT_ID_LENGTH {
+            return Err(String::from("acccount_id length need to be 64"));
         }
         let mut ctx = c.borrow_mut();
         let caller = ctx.env.caller();
         let now = ctx.env.now();
         let id = ctx.id;
-        let profile = WalletProfile {
+        let mut profile = WalletProfile {
             holder: caller,
             address: cmd.address,
             from: cmd.from,
@@ -38,7 +44,11 @@ fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
             transactions: 0,
             last_sync_time: 0,
             last_transaction_time: 0,
+            principal_id: None,
         };
+        if if_principal.is_some() {
+            profile.principal_id= if_principal.cloned();
+        }
         match ctx.wallet_service.add_wallet(profile, caller) {
             Some(_) => {
                 ctx.id += 1;

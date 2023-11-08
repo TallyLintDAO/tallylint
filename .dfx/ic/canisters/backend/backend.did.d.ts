@@ -154,6 +154,7 @@ export interface WalletProfile {
   'name' : string,
   'create_time' : bigint,
   'address' : string,
+  'principal_id' : [] | [string],
   'holder' : Principal,
   'transactions' : bigint,
 }

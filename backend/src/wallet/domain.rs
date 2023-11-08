@@ -15,6 +15,8 @@ pub struct WalletProfile {
     pub from: String, //from which wallet_type: such as  NNS Plug  Stoic AstorMe  .. maybe add more
     pub name: String,
 
+    pub principal_id: Option<String>, //Plug use , need to convert to opt_account_id_hex(address) for use.
+
     // backend auto-gen
     pub create_time: u64, //ic_cdk::api::time();
 

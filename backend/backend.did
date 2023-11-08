@@ -145,6 +145,7 @@ type WalletProfile = record {
   name : text;
   create_time : nat64;
   address : text;
+  principal_id : opt text;
   holder : principal;
   transactions : nat64;
 };
