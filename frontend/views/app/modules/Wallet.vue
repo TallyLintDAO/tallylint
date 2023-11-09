@@ -11,9 +11,7 @@
       row-key="address"
     >
       <template v-slot:top>
-        <q-btn color="primary" @click="addWalletVisible = true"
-          >Add Wallet</q-btn
-        >
+        <q-btn color="primary" @click="openDialog('add')">Add Wallet</q-btn>
         <q-space />
         <q-input
           borderless
@@ -47,7 +45,9 @@
                     <q-menu>
                       <q-list style="min-width: 100px">
                         <q-item clickable v-close-popup="true">
-                          <q-item-section @click="editWallet(props.row.id)">
+                          <q-item-section
+                            @click="openDialog('edit', props.row)"
+                          >
                             Edit
                           </q-item-section>
                         </q-item>
@@ -88,15 +88,18 @@
         </div>
       </template>
     </q-table>
-    <q-dialog v-model="addWalletVisible">
+    <q-dialog v-model="walletDialogVisible">
       <q-card style="min-width: 350px">
         <q-card-section>
-          <div class="text-h6">Your Wallet</div>
+          <div class="text-h6">
+            {{ isEdit ? "Edit Your Wallet" : "Your Wallet" }}
+          </div>
         </q-card-section>
         <q-card-section class="q-pt-none">
           <q-form @submit="onSubmit" ref="walletForm" class="q-gutter-md">
             <q-input
               filled
+              :disable="isEdit"
               v-model="address"
               label="Wallet Address *"
               hint="Enter Principal ID or Account ID"
@@ -109,6 +112,7 @@
                   'Please enter Principal ID or Account ID',
                 (val) =>
                   (val && !rows.some((item) => item.address === val)) ||
+                  isEdit ||
                   'Can not add wallet, address duplicated',
               ]"
             />
@@ -137,6 +141,14 @@
             <div class="q-gutter-sm justify-end flex">
               <q-btn flat label="Cancel" v-close-popup="true" />
               <q-btn
+                v-if="isEdit"
+                :loading="loading"
+                label="Update"
+                type="submit"
+                color="primary"
+              />
+              <q-btn
+                v-else
                 :loading="loading"
                 label="Submit"
                 type="submit"
@@ -160,7 +172,7 @@ import {
 } from "@/api/user"
 import type { WalletInfo } from "@/types/user"
 import { isPrincipal, p2a } from "@/utils/common"
-import { confirmDialog, inputDialog } from "@/utils/dialog"
+import { confirmDialog } from "@/utils/dialog"
 import { showMessageSuccess, showResultError } from "@/utils/message"
 import type { QForm } from "quasar"
 import { onMounted, ref, watch } from "vue"
@@ -177,14 +189,16 @@ const columns = [
   { name: "transactions", label: "Transactions", field: "transactions" },
 ]
 const froms = ["NNS", "Plug", "Stoic", "AstorMe"]
-const addWalletVisible = ref(false)
+const walletDialogVisible = ref(false)
 const loading = ref(false)
 const filter = ref("") // 搜索框
 const selected = ref([]) // 当前选中的对象们
 const address = ref("") // 当前用户输入的地址，可能是principal ID，也可能是account ID
 const addressIsPrincipal = ref(false) // 是否是principal，关系到某些字段的显示
+const isEdit = ref(false) // dialog是否是edit功能，否就是add功能
 
 const wallet = ref({
+  id: 0n,
   address: "",
   principal_id: [] as string[], // 无值就用[]，而不是[""]，不然opt类型会报错
   from: "NNS",
@@ -194,6 +208,7 @@ const wallet = ref({
   last_sync_time: 0,
 })
 const walletPrototype = {
+  id: 0n,
   address: "",
   principal_id: [] as string[],
   from: "NNS",
@@ -223,7 +238,6 @@ const identifyAddress = () => {
   } else {
     wallet.value.address = address.value
   }
-  console.log("walletaddress", wallet.value.address)
 }
 
 const getWallets = (isRefresh: boolean) => {
@@ -252,21 +266,12 @@ const onSubmit = async () => {
   loading.value = true
   const validationSuccess = await walletForm.value?.validate()
   if (validationSuccess) {
-    const { address, name, from, principal_id } = wallet.value
-    const res = await addUserWallet(
-      address.trim(),
-      name.trim(),
-      from,
-      principal_id,
-    )
-    if (res.Ok) {
-      rows.value.push({ ...wallet.value })
-      wallet.value = { ...walletPrototype }
-      addWalletVisible.value = false
-      getWallets(true)
+    if (isEdit) {
+      await editWallet()
     } else {
-      showResultError(res)
+      await addWallet()
     }
+    walletDialogVisible.value = false
   } else {
     // 数据验证失败
     // 用户至少输入了一个无效值
@@ -274,19 +279,46 @@ const onSubmit = async () => {
   loading.value = false
 }
 
-const editWallet = (walletId: bigint) => {
-  inputDialog({
-    title: "Edit Wallet",
-    message: "Your new wallet name: ",
-    okMethod: (username) => {
-      console.log("data", username, walletId)
-      editUserWallet(walletId, username).then((res) => {
-        if (res.Ok) {
-          getWallets(true)
-        }
-      })
-    },
-  })
+const openDialog = (action: string, itemInfo?: WalletInfo) => {
+  if (action === "edit" && itemInfo) {
+    isEdit.value = true
+    address.value = itemInfo.address
+    wallet.value = { ...itemInfo }
+  } else {
+    //不为edit就是add
+    isEdit.value = false
+    address.value = ""
+    wallet.value = { ...walletPrototype }
+  }
+  walletDialogVisible.value = true
+}
+
+const addWallet = async () => {
+  const { address, name, from, principal_id } = wallet.value
+  const res = await addUserWallet(
+    address.trim(),
+    name.trim(),
+    from,
+    principal_id,
+  )
+  if (res.Ok) {
+    rows.value.push({ ...wallet.value })
+    wallet.value = { ...walletPrototype }
+    walletDialogVisible.value = false
+    getWallets(true)
+  } else {
+    showResultError(res)
+  }
+}
+
+const editWallet = async () => {
+  const { id, from, name } = wallet.value
+  const res = await editUserWallet(id, from, name)
+  if (res.Ok) {
+    getWallets(true)
+  } else {
+    showResultError(res)
+  }
 }
 
 const deleteWallet = (walletId: bigint) => {

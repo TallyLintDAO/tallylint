@@ -13,8 +13,9 @@ export interface UserInfoElement {
 }
 
 export interface WalletInfo {
+  id: bigint
   address: string
-  principal_id?: string[] //opt
+  principal_id: string[] //opt
   from: string //'NNS' | 'Plug' | 'Stoic' | 'AstorMe'
   name: string
   transactions: number

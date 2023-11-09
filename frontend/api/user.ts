@@ -48,10 +48,12 @@ export async function getUserWallet(
 // 编辑用户钱包
 export async function editUserWallet(
   walletId: bigint,
+  from: string,
   name: string,
 ): Promise<ApiResult<boolean>> {
   return getBackend().update_wallet({
     id: walletId,
+    from: from,
     name: name,
   })
 }
