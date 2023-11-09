@@ -153,10 +153,7 @@ impl WalletRecordService {
         cmd: HistoryQueryCommand,
     ) -> Result<HashMap<WalletAddress, Vec<RecordProfile>>, String> {
         if cmd.address.is_some() { // query one 
-            let addr=cmd.address.unwrap().clone();
-            let records=self.query_a_wallet_his(addr.clone());
-            let mut res=HashMap::new();
-            res.insert(addr.clone(), records);
+            let res = self.query_one(cmd);
             return Ok(res);
         }else{ //query all 
             // let wallets=WalletService::query_wallet_array(self,caller());
@@ -166,7 +163,18 @@ impl WalletRecordService {
         return Err("nothing".to_string());
     }
 
-    pub fn query_a_wallet_his(&self,addr:WalletAddress)->Vec<RecordProfile>{
+    pub fn query_one(&self, cmd: HistoryQueryCommand) -> HashMap<String, Vec<RecordProfile>> {
+        let addr=cmd.address.unwrap().clone();
+        let records=self.query_a_wallet_history_records(addr.clone());
+        if records.is_empty() {
+            return HashMap::new();
+        }
+        let mut res=HashMap::new();
+        res.insert(addr.clone(), records);
+        res
+    }
+
+    pub fn query_a_wallet_history_records(&self,addr:WalletAddress)->Vec<RecordProfile>{
         let records=self.records
         .values()
         .filter(|record| record.address == addr)

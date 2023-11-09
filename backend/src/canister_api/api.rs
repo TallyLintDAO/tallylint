@@ -9,6 +9,12 @@ use ic_cdk_macros::{query, update};
 
 use super::service::{new_canister_args, new_install_info};
 
+
+/**
+ * 从罐子里面调用api创建罐子的api.
+ * 类比Java的反射. 运行时获取自身所有数据结构并创建
+ * 
+ */
 #[update]
 pub async fn create_and_install() -> String {
     let cycles = 4_00_000_000_000; //4TC
