@@ -35,9 +35,13 @@ pub struct WalletAddCommand {
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct WalletUpdateCommand {
-    // pub address: String,
+    //muttable
     pub from: String, //from which wallet_type: such as  NNS Plug  Stoic AstorMe  .. maybe add more
+    
+    // muttable
     pub name: String,
+
+    // immutable . for locate the wallet
     pub id: WalletId, //when update , specify id .
                       // pub transactions:u64,
                       // pub last_sync_time:u64,

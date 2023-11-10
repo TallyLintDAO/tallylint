@@ -2,6 +2,7 @@ use std::borrow::BorrowMut;
 use std::collections::HashMap;
 use std::task::Context;
 
+use ic_cdk::caller;
 use ic_cdk_macros::{query, update};
 use ic_ledger_types::AccountIdentifier;
 use ic_stable_structures::BTreeMap;
@@ -18,7 +19,7 @@ const PRINCIPAL_ID_LENGTH: usize = 63;
 #[update(guard = "user_owner_guard")]
 fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
     CONTEXT.with(|c| {
-        let if_principal: Option<&String>=cmd.principal_id.as_ref();
+        let if_principal: Option<&String> = cmd.principal_id.as_ref();
         if cmd.name.len() > MAX_WALLET_NAME_LENGTH {
             return Err(String::from("Wallet name exceeds maximum length 64"));
         }
@@ -47,7 +48,7 @@ fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
             principal_id: None,
         };
         if if_principal.is_some() {
-            profile.principal_id= if_principal.cloned();
+            profile.principal_id = if_principal.cloned();
         }
         match ctx.wallet_service.add_wallet(profile, caller) {
             Some(_) => {
@@ -60,6 +61,7 @@ fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
 }
 
 // todo records things todo .
+// todo  字段还未全部实现方法.只有定义.
 #[update(guard = "user_owner_guard")]
 fn update_wallet(cmd: WalletUpdateCommand) -> Result<bool, String> {
     CONTEXT.with(|c| {
@@ -75,6 +77,7 @@ fn update_wallet(cmd: WalletUpdateCommand) -> Result<bool, String> {
         // profile.address=wallet_update_command.address;
         // profile.from=wallet_update_command.from;
         profile.name = cmd.name;
+        profile.from=cmd.from;
         // id: id,
         // profile.create_time=now;
         // todo
@@ -123,6 +126,7 @@ fn delete_wallet(id: u64) -> Result<bool, String> {
 }
 
 // todo use: AddRecordCommand . front end dont need to input id . id gen by backend.
+// todo 测试 id 正常生成且不冲突
 #[update(guard = "user_owner_guard")]
 fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
     CONTEXT.with(|c| {
@@ -186,6 +190,10 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
  * 方法完成后，需要检查关联更新：钱包的交易记录总数，上次同步时间，上次交易发生的时间
 描述:户点击同步钱包按钮,调用nns或者交易所等api.获得历史交易记录并存储到后端.
 (前端已有一部分计算代码),可以选择全部搬移到后端或者前端直接把现有计算好的利润发送给后端
+
+需要用到的api: nns dashboard的api可能要用到. 详见前端查询方法.
+
+
  */
 #[update(guard = "user_owner_guard")]
 fn sync_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
@@ -195,19 +203,49 @@ fn sync_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
 // todo get all wallets of records info
 #[query(guard = "user_owner_guard")]
 fn wallet_history(
-    cmd: HistoryQueryCommand,
+    mut cmd: HistoryQueryCommand,
 ) -> Result<HashMap<WalletAddress, Vec<RecordProfile>>, String> {
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
-        let service = ctx.wallet_record_service.borrow_mut();
-        let history: Result<HashMap<WalletAddress, Vec<RecordProfile>>, String> =
-            service.wallet_history(cmd);
-        match history {
-            Ok(data) => Ok(data),
-            Err(msg) => Err(msg),
-        }
+
+        let mut history : HashMap<WalletAddress, Vec<RecordProfile>> = HashMap::new();
+        // query one
+        if cmd.address.is_some() {
+            let rec_srv = ctx.wallet_record_service.borrow_mut();
+            history= rec_srv.query_one(cmd);
+            if history.is_empty() {
+                return Err("no records stored!".to_string());
+            } else {
+                return Ok(history);
+            }
+        } 
+            // query all
+            // todo . need test .
+            // case1: wallet1 have addr and 3rec . w2 have 1 addr and 0rec.
+            // w3 have no addr and rec. query all 3 wallets.
+            let wal_srv = ctx.wallet_service.borrow_mut();
+            let wallets = wal_srv.query_wallet_array(caller());
+            let mut addrs: Vec<String> = wallets.iter().map(|wallet| wallet.address.clone()).collect();
+            let rec_srv = ctx.wallet_record_service.borrow_mut();
+            while !addrs.is_empty() {
+                let addr=addrs.pop().unwrap();
+                cmd.address=Some(addr.clone());
+                let rec= rec_srv.query_one(cmd.clone());
+                if rec.is_empty() {
+                    history.insert(addr,vec![] );
+                    continue;
+                }
+                let v= rec.get(&addr).unwrap();
+                history.insert(addr,v.to_vec() );
+            }
+
+            if history.is_empty() {
+                return Err("no records stored!".to_string());
+            } else {
+                return Ok(history);
+            }
+
     })
-    // return Err("no data".to_string());
 }
 
 fn convert_edit_command_to_record_profile(
@@ -239,4 +277,42 @@ fn get_account_id(hex_str: String) -> AccountIdentifier {
     )
     .unwrap();
     return empty_account_identifier;
+}
+
+#[cfg(test)]
+// #[cfg(target_arch = "wasm32")]
+mod tests {
+    use crate::wallet::WalletService;
+    use crate::CONTEXT;
+
+    use super::*;
+
+    #[test]
+    fn test_add_wallet() {
+        let should_ok_cmd = WalletAddCommand {
+            principal_id: Some(String::from(
+                "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
+            )),
+            name: String::from("My Wallet"),
+            address: String::from(
+                "868d0e5ed0d4a61c11c8c16e699af338058197a4e433a5b3fd582a1f31aaa5c3",
+            ),
+            from: String::from("Plug"),
+        };
+        // not work locally : https://forum.dfinity.org/t/guys-how-do-you-debug-your-rust-backend-canister/22965
+        // todo :maybe spilit rust logic and ic-logic
+        // ic-chain local replica(a rust binnary running distributed system ) supply a runtime for canister(wasm code).
+        // todo 如果可以debug ic-replica. 那么有可能可以联合 rust-logic 和ic-logic
+        let t = ic_cdk::api::time();
+        let c = ic_cdk::caller();
+        let can_id = ic_cdk::id();
+
+        let result = add_wallet(should_ok_cmd.clone());
+        // Check the result
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), true);
+        // Create a sample WalletAddCommand
+
+        // Additional assertions to verify the changes in the context or wallet_service if applicable
+    }
 }
