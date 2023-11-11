@@ -53,4 +53,7 @@ ic-ledger-types = "0.8.0"
 ic-agent = "0.30.0"
 tokio = { version = "1", features = ["full"] }
 
+# project itself declare. dont know its mechineism. but works - - 
+backend = "0.1.0"
+
 

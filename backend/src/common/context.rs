@@ -2,7 +2,9 @@ use crate::{
   common::env::Environment,
   wallet::{
     domain::RecordProfile,
-    service::{RecordId, TransactionRecord, WalletAddress, WalletId, WalletRecordService},
+    service::{
+      RecordId, TransactionRecord, WalletAddress, WalletId, WalletRecordService,
+    },
   },
 };
 use candid::{CandidType, Deserialize, Principal};
@@ -47,7 +49,6 @@ impl Default for CanisterContext {
 }
 
 use std::num::ParseIntError;
-
 #[allow(dead_code)]
 fn integer_part(value: &str) -> Result<u64, ParseIntError> {
   let dot_pos = value.find(".").unwrap_or(value.len());
@@ -81,8 +82,10 @@ impl From<CanisterContext> for CanisterDB {
   fn from(context: CanisterContext) -> Self {
     let id = context.id;
     let users = Vec::from_iter(context.user_service.users.values().cloned());
-    let wallets = Vec::from_iter(context.wallet_service.wallets.values().cloned());
-    let records = Vec::from_iter(context.wallet_record_service.records.values().cloned());
+    let wallets =
+      Vec::from_iter(context.wallet_service.wallets.values().cloned());
+    let records =
+      Vec::from_iter(context.wallet_record_service.records.values().cloned());
     Self {
       id,
       users,

@@ -36,8 +36,10 @@ fn pre_upgrade() {
     let context = c.borrow();
     let id = context.id;
     let users = Vec::from_iter(context.user_service.users.values().cloned());
-    let wallets = Vec::from_iter(context.wallet_service.wallets.values().cloned());
-    let records = Vec::from_iter(context.wallet_record_service.records.values().cloned());
+    let wallets =
+      Vec::from_iter(context.wallet_service.wallets.values().cloned());
+    let records =
+      Vec::from_iter(context.wallet_record_service.records.values().cloned());
     let payload: CanisterDB = CanisterDB {
       id,
       users,
@@ -54,7 +56,8 @@ fn pre_upgrade() {
 fn post_upgrade() {
   // IMPORTANT
   // () means retrieve multiple db.
-  let (payload,): (CanisterDB,) = storage::stable_restore().expect("failed to restore users");
+  let (payload,): (CanisterDB,) =
+    storage::stable_restore().expect("failed to restore users");
   let stable_state = CanisterContext::from(payload);
   CONTEXT.with(|s| {
     let mut state = s.borrow_mut();

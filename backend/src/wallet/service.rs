@@ -45,7 +45,11 @@ pub struct TransactionRecord {
 }
 
 impl WalletService {
-  pub fn add_wallet(&mut self, profile: WalletProfile, user: Principal) -> Option<String> {
+  pub fn add_wallet(
+    &mut self,
+    profile: WalletProfile,
+    user: Principal,
+  ) -> Option<String> {
     let user_wallets = self.query_wallet_array(user);
     if user_wallets
       .iter()
@@ -55,12 +59,17 @@ impl WalletService {
     }
     let id = profile.id;
     match self.wallets.insert(id, profile) {
-      Some(_) => Some("add success".to_string()), // Wallet found and removed successfully
+      Some(_) => Some("add success".to_string()), /* Wallet found and
+                                                    * removed successfully */
       None => Some("add fail".to_string()),
     }
   }
 
-  pub fn update_wallet(&mut self, profile: WalletProfile, user: Principal) -> Option<String> {
+  pub fn update_wallet(
+    &mut self,
+    profile: WalletProfile,
+    user: Principal,
+  ) -> Option<String> {
     let user_wallets = self.query_wallet_array(user);
     let mut id = 0;
     if let Some(wallet) = user_wallets
@@ -118,7 +127,10 @@ impl WalletService {
 
 impl WalletRecordService {
   // todo
-  pub fn add_transaction_record(&mut self, profile: RecordProfile) -> Result<bool, String> {
+  pub fn add_transaction_record(
+    &mut self,
+    profile: RecordProfile,
+  ) -> Result<bool, String> {
     let id = profile.id;
     if self.records.contains_key(&id) {
       return Err("transaction record already exsit".to_string());
@@ -132,7 +144,10 @@ impl WalletRecordService {
       return Err("Insert fail. may heap overflow".to_string());
     }
   }
-  pub fn delete_transaction_record(&mut self, id: RecordId) -> Result<bool, String> {
+  pub fn delete_transaction_record(
+    &mut self,
+    id: RecordId,
+  ) -> Result<bool, String> {
     if !self.records.contains_key(&id) {
       return Err("transaction record not exsit".to_string());
     }
@@ -165,7 +180,10 @@ impl WalletRecordService {
 
   // todo make sort method work.
   //
-  pub fn query_one(&self, cmd: HistoryQueryCommand) -> HashMap<String, Vec<RecordProfile>> {
+  pub fn query_one(
+    &self,
+    cmd: HistoryQueryCommand,
+  ) -> HashMap<String, Vec<RecordProfile>> {
     let addr = cmd.address.unwrap().clone();
     let records = self.query_a_wallet_history_records(addr.clone());
     if records.is_empty() {
@@ -176,7 +194,10 @@ impl WalletRecordService {
     res
   }
 
-  pub fn query_a_wallet_history_records(&self, addr: WalletAddress) -> Vec<RecordProfile> {
+  pub fn query_a_wallet_history_records(
+    &self,
+    addr: WalletAddress,
+  ) -> Vec<RecordProfile> {
     let records = self
       .records
       .values()

@@ -2,11 +2,11 @@ use candid::Principal;
 use std::cell::RefCell;
 // export apis below each
 pub mod canister_api;
+pub mod common;
 pub mod nns;
 pub mod user;
 pub mod wallet;
 
-mod common;
 use crate::common::context::CanisterContext;
 thread_local! {
   static CONTEXT: RefCell<CanisterContext> = RefCell::default();
@@ -36,8 +36,9 @@ use ic_cdk::api::call::CallResult;
 #[allow(unused_imports)]
 use ic_cdk::api::management_canister::{
   main::{
-    canister_info, canister_status, create_canister, install_code, update_settings,
-    CanisterInfoRequest, CanisterInfoResponse, CanisterStatusResponse,
+    canister_info, canister_status, create_canister, install_code,
+    update_settings, CanisterInfoRequest, CanisterInfoResponse,
+    CanisterStatusResponse,
   },
   provisional::{CanisterIdRecord, CanisterSettings},
 };

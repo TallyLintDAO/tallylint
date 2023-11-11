@@ -1,6 +1,9 @@
 use candid::{Nat, Principal};
 use ic_cdk::api::management_canister::{
-  main::{CanisterInstallMode, CreateCanisterArgument, InstallCodeArgument, WasmModule},
+  main::{
+    CanisterInstallMode, CreateCanisterArgument, InstallCodeArgument,
+    WasmModule,
+  },
   provisional::CanisterSettings,
 };
 
@@ -9,10 +12,11 @@ pub fn new_canister_args() -> CreateCanisterArgument {
   let mut callers = Vec::new();
   callers.push(caller);
   let canister_setting = CanisterSettings {
-    controllers: Some(callers),             // Set the caller as the controller
+    controllers: Some(callers), // Set the caller as the controller
     compute_allocation: Some(Nat::from(0)), // Use default compute allocation
-    memory_allocation: Some(Nat::from(0)),  // default
-    freezing_threshold: Some(Nat::from(2592000)), // Use default freezing threshold
+    memory_allocation: Some(Nat::from(0)), // default
+    freezing_threshold: Some(Nat::from(2592000)), /* Use default freezing
+                                                   * threshold */
   };
   let args = CreateCanisterArgument {
     settings: Some(canister_setting),
@@ -40,8 +44,10 @@ fn get_wasm_module() -> Vec<u8> {
   // get from on-chain-DB. or local machine file .
   // 1. save the current .wasm file into db.
   // 2. get the wasm from db and treat as a vec<u8> bytes.
-  // why the code is running on the ic -chain can read local file ?? wasm ? and ic blockchain application ?
-  let bytes: &[u8] = std::include_bytes!("../../../.dfx/local/canisters/backend/backend.wasm");
+  // why the code is running on the ic -chain can read local file ?? wasm ? and
+  // ic blockchain application ?
+  let bytes: &[u8] =
+    std::include_bytes!("../../../.dfx/local/canisters/backend/backend.wasm");
   let mut wasm = bytes.to_vec();
   // wasm.clear(); // the return is too large !    //why ?
   return wasm;

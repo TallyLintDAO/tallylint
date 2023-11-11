@@ -13,7 +13,10 @@ pub struct UserService {
 }
 
 impl UserService {
-  pub fn insert_user(&mut self, user: UserProfile) -> Result<UserProfile, String> {
+  pub fn insert_user(
+    &mut self,
+    user: UserProfile,
+  ) -> Result<UserProfile, String> {
     let owner = user.owner;
     match self.users.get(&owner) {
       Some(_) => Err(String::from(" UserAlreadyExists")),

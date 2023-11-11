@@ -12,10 +12,11 @@ pub struct WalletProfile {
 
   // frontend para input
   pub address: String, // immutable.
-  pub from: String,    //from which wallet_type: such as  NNS Plug  Stoic AstorMe  .. maybe add more
+  pub from: String,    /* from which wallet_type: such as  NNS Plug  Stoic
+                        * AstorMe  .. maybe add more */
   pub name: String,
 
-  pub principal_id: Option<String>, //Plug use , need to convert to opt_account_id_hex(address) for use.
+  pub principal_id: Option<String>, /* Plug use , need to convert to opt_account_id_hex(address) for use. */
 
   // backend auto-gen
   pub create_time: u64, //ic_cdk::api::time();
@@ -28,24 +29,27 @@ pub struct WalletProfile {
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct WalletAddCommand {
   pub address: String,
-  pub principal_id: Option<String>, //Plug use , need to convert to opt_account_id_hex for use.
-  pub from: String, //from which wallet_type: such as  NNS Plug  Stoic AstorMe  .. maybe add more
+  pub principal_id: Option<String>, /* Plug use , need to convert to
+                                     * opt_account_id_hex for use. */
+  pub from: String, /* from which wallet_type: such as  NNS Plug  Stoic
+                     * AstorMe  .. maybe add more */
   pub name: String,
 }
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct WalletUpdateCommand {
   //muttable
-  pub from: String, //from which wallet_type: such as  NNS Plug  Stoic AstorMe  .. maybe add more
+  pub from: String, /* from which wallet_type: such as  NNS Plug  Stoic
+                     * AstorMe  .. maybe add more */
 
   // muttable
   pub name: String,
 
   // immutable . for locate the wallet
-  pub id: WalletId, //when update , specify id .
-                    // pub transactions:u64,
-                    // pub last_sync_time:u64,
-                    // pub last_transaction_time:u64,
+  pub id: WalletId, /*when update , specify id .
+                     * pub transactions:u64,
+                     * pub last_sync_time:u64,
+                     * pub last_transaction_time:u64, */
 }
 
 /**
@@ -55,8 +59,9 @@ pub struct WalletUpdateCommand {
 pub struct RecordProfile {
   pub id: RecordId,
   // Primary key
-  pub principal_id: Option<String>, //Plug use , need to convert to opt_account_id_hex for use.
-  pub address: WalletAddress,       // same as account_id_hex
+  pub principal_id: Option<String>, /* Plug use , need to convert to
+                                     * opt_account_id_hex for use. */
+  pub address: WalletAddress, // same as account_id_hex
   //Transaction record
   pub price: f64,
   pub amount: u32,
@@ -68,20 +73,24 @@ pub struct RecordProfile {
   pub manual: bool,
   pub comment: String,
   // pub warning:String,
-  // todo: Warning（用户是否标记某些记录为missing cost, missing rates）这条字段先只做出来，不用,
-  // 解释：比如missing rates是标记某个交易历史找不到对应的价格记录，例如某个NFT的交易价格查不到，就会被自动标记为missing rates
+  // todo: Warning（用户是否标记某些记录为missing cost, missing
+  // rates）这条字段先只做出来，不用, 解释：比如missing
+  // rates是标记某个交易历史找不到对应的价格记录，例如某个NFT的交易价格查不到，
+  // 就会被自动标记为missing rates
 }
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct HistoryQueryCommand {
   // Primary key
-  pub address: Option<WalletAddress>, //make this optional. if not provide. then query all.
+  pub address: Option<WalletAddress>, /* make this optional. if not provide.
+                                       * then query all. */
   pub from_time: TimeStamp,
   pub to_time: TimeStamp,
   pub t_type: String, //transaction_type SEND or RECEIVE or BOTH
   pub tag: String,
   //    todo sort method:
-  pub sort_method: String, //by date-asc or date-desc or profit-asc profit-desc
+  pub sort_method: String, //by date-asc or date-desc or profit-asc
+                           // profit-desc
 }
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct EditHistoryCommand {
@@ -102,7 +111,8 @@ pub struct AddRecordCommand {
   // pub id: RecordId,//delete id here . dont need.
   //Transaction record
   pub address: WalletAddress,
-  pub principal_id: Option<String>, //Plug use , need to convert to opt_account_id_hex for use.
+  pub principal_id: Option<String>, /* Plug use , need to convert to
+                                     * opt_account_id_hex for use. */
   pub price: f64,
   pub amount: u32,
   // todo , considering:

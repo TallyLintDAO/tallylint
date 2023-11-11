@@ -126,8 +126,8 @@ fn delete_wallet(id: u64) -> Result<bool, String> {
   })
 }
 
-// todo use: AddRecordCommand . front end dont need to input id . id gen by backend.
-// todo 测试 id 正常生成且不冲突
+// todo use: AddRecordCommand . front end dont need to input id . id gen by
+// backend. todo 测试 id 正常生成且不冲突
 #[update(guard = "user_owner_guard")]
 fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
   CONTEXT.with(|c| {
@@ -176,7 +176,9 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
     let mut ctx = c.borrow_mut();
     let service = ctx.wallet_record_service.borrow_mut();
     let addr = service.get_addr_from_id(cmd.id);
-    let ret = service.add_transaction_record(convert_edit_command_to_record_profile(cmd, addr));
+    let ret = service.add_transaction_record(
+      convert_edit_command_to_record_profile(cmd, addr),
+    );
     match ret {
       Ok(_) => Ok(true),
       Err(msg) => Err(msg),
@@ -206,7 +208,8 @@ fn wallet_history(
 ) -> Result<HashMap<WalletAddress, Vec<RecordProfile>>, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    let mut history: HashMap<WalletAddress, Vec<RecordProfile>> = HashMap::new();
+    let mut history: HashMap<WalletAddress, Vec<RecordProfile>> =
+      HashMap::new();
     // query one
     if cmd.address.is_some() {
       let rec_srv = ctx.wallet_record_service.borrow_mut();
@@ -272,9 +275,10 @@ fn get_account_id(hex_str: String) -> AccountIdentifier {
     return account.unwrap();
   }
   // err handle:
-  let empty_account_identifier =
-    AccountIdentifier::from_hex("0000000000000000000000000000000000000000000000000000000000000000")
-      .unwrap();
+  let empty_account_identifier = AccountIdentifier::from_hex(
+    "0000000000000000000000000000000000000000000000000000000000000000",
+  )
+  .unwrap();
   return empty_account_identifier;
 }
 
@@ -291,14 +295,17 @@ mod tests {
         "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
       )),
       name: String::from("My Wallet"),
-      address: String::from("868d0e5ed0d4a61c11c8c16e699af338058197a4e433a5b3fd582a1f31aaa5c3"),
+      address: String::from(
+        "868d0e5ed0d4a61c11c8c16e699af338058197a4e433a5b3fd582a1f31aaa5c3",
+      ),
       from: String::from("Plug"),
     };
     // not work locally : https://forum.dfinity.org/t/guys-how-do-you-debug-your-rust-backend-canister/22965
     // todo :maybe spilit rust logic and ic-logic
-    // ic-chain local replica(a rust binnary running distributed system ) supply a runtime for canister(wasm code).
-    // todo 如果可以debug ic-replica. 那么有可能可以联合 rust-logic 和ic-logic
-    // todo 如果都不行. 可以试试采用logging系统来记录程序运行.
+    // ic-chain local replica(a rust binnary running distributed system ) supply
+    // a runtime for canister(wasm code). todo 如果可以debug ic-replica.
+    // 那么有可能可以联合 rust-logic 和ic-logic todo 如果都不行.
+    // 可以试试采用logging系统来记录程序运行.
     let t = ic_cdk::api::time();
     let c = ic_cdk::caller();
     let can_id = ic_cdk::id();
@@ -309,6 +316,7 @@ mod tests {
     assert_eq!(result.unwrap(), true);
     // Create a sample WalletAddCommand
 
-    // Additional assertions to verify the changes in the context or wallet_service if applicable
+    // Additional assertions to verify the changes in the context or
+    // wallet_service if applicable
   }
 }
