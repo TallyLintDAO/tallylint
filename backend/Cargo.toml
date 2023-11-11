@@ -46,5 +46,11 @@ serde_bytes = "0.11.12"
 # use for plug 
 ic-ledger-types = "0.8.0"
 
+
+[dev-dependencies]
+#! testing dep scope, avoid dep not compatible with something.
 # simulate  CLI call ic-replica (dfx) using rust code .
 ic-agent = "0.30.0"
+tokio = { version = "1", features = ["full"] }
+
+

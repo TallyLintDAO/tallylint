@@ -1,50 +1,60 @@
-use candid::{CandidType, Decode, Encode, Nat};
-use ic_agent::{export::Principal, Agent};
-use serde::Deserialize;
+use candid::Decode;
+use candid::Principal;
+#[tokio::test]
+async fn test1() {
+  // Import the ic-agent crate and the candid crate
+  use candid::{CandidType, Decode, Encode};
+  use ic_agent::Agent;
 
-#[derive(CandidType)]
-struct Argument {
-  amount: Option<Nat>,
-}
-
-#[derive(CandidType, Deserialize)]
-struct CreateCanisterResult {
-  canister_id: Principal,
-}
-
-async fn create_a_canister() -> Result<Principal, Box<dyn std::error::Error>> {
+  // Define a struct that corresponds to the Candid record type of the add_wallet argument
+  #[derive(CandidType)]
+  struct AddWalletArgument {
+    address: String,
+    name: String,
+    from: String,
+  }
+  // ! simulate call from rust code :  dfx canister call backend add_wallet '(record { address = "a1"; name = "AmydaLu"; from = "asdaw" })'
+  // Create an instance of the Agent struct
   let agent = Agent::builder()
-    .with_url(URL)
+    // Use the URL of the Internet Computer or a local replica
+    .with_url("http://localhost:8000/")
+    // ! pgrep replica  # get pid from name
+    // !  lsof -i -P -n | grep LISTEN | grep <pid>
+    //  ! which port should i use ?
+    // Use an identity to sign messages
     .with_identity(create_identity())
     .build()?;
-  // Only do the following call when not contacting the IC main net (e.g. a local emulator).
-  // This is important as the main net public key is static and a rogue network could return
-  // a different key.
-  // If you know the root key ahead of time, you can use `agent.set_root_key(root_key);`.
-  agent.fetch_root_key().await?;
-  let management_canister_id = Principal::from_text("aaaaa-aa")?;
 
-  // Create a call to the management canister to create a new canister ID,
-  // and wait for a result.
-  // The effective canister id must belong to the canister ranges of the subnet at which the canister is created.
-  let effective_canister_id = Principal::from_text("rwlgt-iiaaa-aaaaa-aaaaa-cai").unwrap();
+  // Fetch the root key of the replica
+  agent.fetch_root_key().await?;
+
+  // Get the canister identifier of the backend canister
+  let backend_canister_id = Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai")?;
+
+  // Create a Candid value that represents the argument of the add_wallet method
+  let argument = Encode!(&AddWalletArgument {
+    address: "67cff347f803890e6bd1865b5a116c8c06384992b93d2fc8bb8da2f22fffc6a3".to_string(),
+    name: "AmydaLu".to_string(),
+    from: "nns".to_string(),
+  })?;
+
+  // Call the add_wallet method on the backend canister
   let response = agent
-    .update(
-      &management_canister_id,
-      "provisional_create_canister_with_cycles",
-    )
-    .with_effective_canister_id(effective_canister_id)
-    .with_arg(Encode!(&Argument { amount: None })?)
+    .update(&backend_canister_id, "add_wallet")
+    // Pass the Candid value as the argument of the add_wallet method
+    .with_arg(argument)
+    // Wait for the result of the update call
     .call_and_wait()
     .await?;
 
-  let result = Decode!(response.as_slice(), CreateCanisterResult)?;
-  let canister_id: Principal = result.canister_id;
-  Ok(canister_id)
-}
+  // Decode the result of the update call
 
-fn test_run() {
-  let canister_id = create_a_canister().await.unwrap();
-  eprintln!("{}", canister_id);
-  return;
+  let result = Decode!(response.as_slice(), Result<bool, String>)?;
+
+  match result {
+    Ok(_) => println!("Wallet added successfully"),
+    Err(msg) => println!("Error: {}", msg),
+  }
+  // Print the result
+  println!("{:?}", result);
 }
