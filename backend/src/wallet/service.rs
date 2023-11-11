@@ -163,6 +163,8 @@ impl WalletRecordService {
         return Err("nothing".to_string());
     }
 
+    // todo make sort method work. 
+    // 
     pub fn query_one(&self, cmd: HistoryQueryCommand) -> HashMap<String, Vec<RecordProfile>> {
         let addr=cmd.address.unwrap().clone();
         let records=self.query_a_wallet_history_records(addr.clone());

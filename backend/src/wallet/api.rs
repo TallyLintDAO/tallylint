@@ -144,7 +144,6 @@ fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
             comment: cmd.comment,
             principal_id: cmd.principal_id,
         };
-        profile.id = id;
         let ret = ctx
             .wallet_record_service
             .add_transaction_record(profile.clone());
@@ -175,7 +174,6 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
         let service = ctx.wallet_record_service.borrow_mut();
-
         let addr = service.get_addr_from_id(cmd.id);
         let ret = service.add_transaction_record(convert_edit_command_to_record_profile(cmd, addr));
         match ret {
@@ -207,7 +205,6 @@ fn wallet_history(
 ) -> Result<HashMap<WalletAddress, Vec<RecordProfile>>, String> {
     CONTEXT.with(|c| {
         let mut ctx = c.borrow_mut();
-
         let mut history : HashMap<WalletAddress, Vec<RecordProfile>> = HashMap::new();
         // query one
         if cmd.address.is_some() {
@@ -219,31 +216,31 @@ fn wallet_history(
                 return Ok(history);
             }
         } 
-            // query all
-            // todo . need test .
-            // case1: wallet1 have addr and 3rec . w2 have 1 addr and 0rec.
-            // w3 have no addr and rec. query all 3 wallets.
-            let wal_srv = ctx.wallet_service.borrow_mut();
-            let wallets = wal_srv.query_wallet_array(caller());
-            let mut addrs: Vec<String> = wallets.iter().map(|wallet| wallet.address.clone()).collect();
-            let rec_srv = ctx.wallet_record_service.borrow_mut();
-            while !addrs.is_empty() {
-                let addr=addrs.pop().unwrap();
-                cmd.address=Some(addr.clone());
-                let rec= rec_srv.query_one(cmd.clone());
-                if rec.is_empty() {
-                    history.insert(addr,vec![] );
-                    continue;
-                }
-                let v= rec.get(&addr).unwrap();
-                history.insert(addr,v.to_vec() );
+        // query all
+        // todo . need test .
+        // case1: wallet1 have addr and 3rec . w2 have 1 addr and 0rec.
+        // w3 have no addr and rec. query all 3 wallets.
+        let wal_srv = ctx.wallet_service.borrow_mut();
+        let wallets = wal_srv.query_wallet_array(caller());
+        let mut addrs: Vec<String> = wallets.iter().map(|wallet| wallet.addressclone()).collect();
+        let rec_srv = ctx.wallet_record_service.borrow_mut();
+        while !addrs.is_empty() {
+            let addr=addrs.pop().unwrap();
+            cmd.address=Some(addr.clone());
+            let rec= rec_srv.query_one(cmd.clone());
+            if rec.is_empty() {
+                history.insert(addr,vec![] );
+                continue;
             }
+            let v= rec.get(&addr).unwrap();
+            history.insert(addr,v.to_vec() );
+        }
 
-            if history.is_empty() {
-                return Err("no records stored!".to_string());
-            } else {
-                return Ok(history);
-            }
+        if history.is_empty() {
+            return Err("no records stored!".to_string());
+        } else {
+            return Ok(history);
+        }
 
     })
 }
@@ -284,9 +281,7 @@ fn get_account_id(hex_str: String) -> AccountIdentifier {
 mod tests {
     use crate::wallet::WalletService;
     use crate::CONTEXT;
-
     use super::*;
-
     #[test]
     fn test_add_wallet() {
         let should_ok_cmd = WalletAddCommand {
@@ -303,6 +298,7 @@ mod tests {
         // todo :maybe spilit rust logic and ic-logic
         // ic-chain local replica(a rust binnary running distributed system ) supply a runtime for canister(wasm code).
         // todo 如果可以debug ic-replica. 那么有可能可以联合 rust-logic 和ic-logic
+        // todo 如果都不行. 可以试试采用logging系统来记录程序运行.
         let t = ic_cdk::api::time();
         let c = ic_cdk::caller();
         let can_id = ic_cdk::id();
