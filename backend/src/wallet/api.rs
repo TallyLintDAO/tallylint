@@ -126,8 +126,8 @@ fn delete_wallet(id: u64) -> Result<bool, String> {
   })
 }
 
-// todo use: AddRecordCommand . front end dont need to input id . id gen by
-// backend. todo 测试 id 正常生成且不冲突
+// todo use: AddRecordCommand . front end dont need to input
+// id . id gen by backend. todo 测试 id 正常生成且不冲突
 #[update(guard = "user_owner_guard")]
 fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
   CONTEXT.with(|c| {
@@ -222,8 +222,9 @@ fn wallet_history(
     }
     // query all
     // todo . need test .
-    // case1: wallet1 have addr and 3rec . w2 have 1 addr and 0rec.
-    // w3 have no addr and rec. query all 3 wallets.
+    // case1: wallet1 have addr and 3rec . w2 have 1 addr
+    // and 0rec. w3 have no addr and rec. query all 3
+    // wallets.
     let wal_srv = ctx.wallet_service.borrow_mut();
     let wallets = wal_srv.query_wallet_array(caller());
     let mut addrs: Vec<String> = wallets
@@ -302,9 +303,11 @@ mod tests {
     };
     // not work locally : https://forum.dfinity.org/t/guys-how-do-you-debug-your-rust-backend-canister/22965
     // todo :maybe spilit rust logic and ic-logic
-    // ic-chain local replica(a rust binnary running distributed system ) supply
-    // a runtime for canister(wasm code). todo 如果可以debug ic-replica.
-    // 那么有可能可以联合 rust-logic 和ic-logic todo 如果都不行.
+    // ic-chain local replica(a rust binnary running
+    // distributed system ) supply a runtime for
+    // canister(wasm code). todo 如果可以debug ic-replica.
+    // 那么有可能可以联合 rust-logic 和ic-logic todo
+    // 如果都不行.
     // 可以试试采用logging系统来记录程序运行.
     let t = ic_cdk::api::time();
     let c = ic_cdk::caller();
@@ -316,7 +319,7 @@ mod tests {
     assert_eq!(result.unwrap(), true);
     // Create a sample WalletAddCommand
 
-    // Additional assertions to verify the changes in the context or
-    // wallet_service if applicable
+    // Additional assertions to verify the changes in the
+    // context or wallet_service if applicable
   }
 }

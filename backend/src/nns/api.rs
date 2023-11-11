@@ -16,9 +16,10 @@ pub async fn get_neuron_info(neuron_id: u64) -> CallResult<(CustomResult1,)> {
   return _get_neuron_info(neuron_id).await;
 }
 pub async fn _get_neuron_info(arg0: u64) -> CallResult<(CustomResult1,)> {
-  // maybe get_neuron_info only can call inside ic .not exposed api.
-  // call to another canister : on local replica or main net cross networks.
-  // maybe cant use local canister call mainnet`s subnet canister ?
+  // maybe get_neuron_info only can call inside ic .not
+  // exposed api. call to another canister : on local
+  // replica or main net cross networks. maybe cant use
+  // local canister call mainnet`s subnet canister ?
   let id = Principal::from_text("rrkah-fqaaa-aaaaa-aaaaq-cai").unwrap();
   ic_cdk::call(id, "get_neuron_info", (arg0,)).await
 }

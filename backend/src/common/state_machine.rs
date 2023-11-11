@@ -22,7 +22,8 @@ fn init() {
  * will *erase* all ic-DB (canister stable memory)
  * so we can:
  *      1.manually erase all,
- *      2.or , restore from a in memory data.(such as a hashmap)
+ *      2.or , restore from a in memory data.(such as a
+ * hashmap)
  * 2. transactional upgrade:
  * if pre_upgrade, upgrade ,post_upgrade
  * any step go wrong.

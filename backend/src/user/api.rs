@@ -60,10 +60,12 @@ fn get_ledger_id(p: Principal) -> u32 {
   return id;
 }
 
-//   The replica returned a replica error: Replica Error: reject code
-// CanisterError, reject message IC0504: Canister v7g7o-oiaaa-aaaag-qcj3q-cai
-// violated contract: "ic0_call_new" cannot be executed in non replicated query
-// mode, error code Some("IC0504") take about 20s to get ret.
+//   The replica returned a replica error: Replica Error:
+// reject code CanisterError, reject message IC0504:
+// Canister v7g7o-oiaaa-aaaag-qcj3q-cai violated contract:
+// "ic0_call_new" cannot be executed in non replicated query
+// mode, error code Some("IC0504") take about 20s to get
+// ret.
 #[update(guard = "user_owner_guard")]
 async fn get_balance() -> u64 {
   let balance = check_callers_balance().await.e8s();
@@ -105,13 +107,15 @@ mod tests {
 
   #[test]
   fn test_account_id_from_hex() {
-    //todo :  hex should be  (0-9, a-f or A-F). but . the above is not . or it
-    // is ? some how transform? let p = String::from("
+    //todo :  hex should be  (0-9, a-f or A-F). but . the
+    // above is not . or it is ? some how transform? let
+    // p = String::from("
     // b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae");
     let p = String::from(
       "rintb-5nazg-thqf4-rnq2c-6geuh-ufcjx-fsfm7-qinyq-ma2gb-5rgny-7ae",
     );
-    // len should be 56 or 64 (56 is 64-8  <8 - symbol in total? > )
+    // len should be 56 or 64 (56 is 64-8  <8 - symbol in
+    // total? > )
     let len = p.len();
     let account = AccountIdentifier::new(
       &Principal::from_text(p).unwrap(),
@@ -119,7 +123,8 @@ mod tests {
     );
     let addr = account.to_hex();
     println!("addr is {}", addr);
-    assert!(false); //:   ! means macro here. ! is not "not" here ...  silly
+    assert!(false); //:   ! means macro here. ! is not "not"
+                    //: here ...  silly
                     //: syntax.
   }
 }

@@ -67,9 +67,7 @@ async fn test1() {
 
   match result {
     Ok(_) => println!("Wallet added successfully"),
-    Err(msg) => {
-      println!("Error: {}", msg)
-    }
+    Err(msg) => println!("Error: {}", msg),
   }
   // Print the result
   println!("{:?}", result);

@@ -55,12 +55,13 @@ impl WalletService {
       .iter()
       .any(|wallet| wallet.address == profile.address)
     {
-      return None; //add fail: wallet address already exists
+      return None; //add fail: wallet address already
+                   // exists
     }
     let id = profile.id;
     match self.wallets.insert(id, profile) {
-      Some(_) => Some("add success".to_string()), /* Wallet found and
-                                                    * removed successfully */
+      Some(_) => Some("add success".to_string()), /* Wallet found and */
+      // removed successfully
       None => Some("add fail".to_string()),
     }
   }
@@ -88,8 +89,9 @@ impl WalletService {
 
   pub fn delete_wallet(&mut self, id: u64) -> Option<bool> {
     match self.wallets.remove(&id) {
-      Some(_) => Some(true), // Wallet found and removed successfully
-      None => Some(false),   // Wallet not found
+      Some(_) => Some(true), /* Wallet found and removed */
+      // successfully
+      None => Some(false), // Wallet not found
     }
   }
 
