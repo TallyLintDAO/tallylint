@@ -1,9 +1,9 @@
 use crate::{
-    common::env::Environment,
-    wallet::{
-        domain::RecordProfile,
-        service::{TransactionRecord, WalletAddress, WalletId, WalletRecordService, RecordId},
-    },
+  common::env::Environment,
+  wallet::{
+    domain::RecordProfile,
+    service::{RecordId, TransactionRecord, WalletAddress, WalletId, WalletRecordService},
+  },
 };
 use candid::{CandidType, Deserialize, Principal};
 use std::collections::BTreeMap;
@@ -19,75 +19,75 @@ use super::env::{CanisterEnvironment, EmptyEnvironment};
 pub type TimeStamp = u64;
 
 pub struct CanisterContext {
-    pub env: Box<dyn Environment>,
-    pub id: u64,
-    pub user_service: UserService,
-    pub wallet_service: WalletService,
-    pub wallet_record_service: WalletRecordService,
+  pub env: Box<dyn Environment>,
+  pub id: u64,
+  pub user_service: UserService,
+  pub wallet_service: WalletService,
+  pub wallet_record_service: WalletRecordService,
 }
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct CanisterDB {
-    pub id: u64,
-    pub users: Vec<UserProfile>,
-    pub wallets: Vec<WalletProfile>,
-    pub records: Vec<RecordProfile>,
+  pub id: u64,
+  pub users: Vec<UserProfile>,
+  pub wallets: Vec<WalletProfile>,
+  pub records: Vec<RecordProfile>,
 }
 
 impl Default for CanisterContext {
-    fn default() -> Self {
-        Self {
-            env: Box::new(EmptyEnvironment {}),
-            id: 10001,
-            user_service: UserService::default(),
-            wallet_service: WalletService::default(),
-            wallet_record_service: WalletRecordService::default(),
-        }
+  fn default() -> Self {
+    Self {
+      env: Box::new(EmptyEnvironment {}),
+      id: 10001,
+      user_service: UserService::default(),
+      wallet_service: WalletService::default(),
+      wallet_record_service: WalletRecordService::default(),
     }
+  }
 }
 
 use std::num::ParseIntError;
 
 #[allow(dead_code)]
 fn integer_part(value: &str) -> Result<u64, ParseIntError> {
-    let dot_pos = value.find(".").unwrap_or(value.len());
-    value[..dot_pos].parse()
+  let dot_pos = value.find(".").unwrap_or(value.len());
+  value[..dot_pos].parse()
 }
 
 impl From<CanisterDB> for CanisterContext {
-    fn from(payload: CanisterDB) -> Self {
-        let users: BTreeMap<Principal, UserProfile> =
-            payload.users.into_iter().map(|u| (u.owner, u)).collect();
-        let wallets: BTreeMap<WalletId, WalletProfile> =
-            payload.wallets.into_iter().map(|p| (p.id, p)).collect();
-        let records: BTreeMap<RecordId, RecordProfile> = payload
-            .records
-            .into_iter() //traverse each element in the Map instance
-            //manipulate each element iterator gives
-            .map(|v|(v.id, v))
-            .collect();
+  fn from(payload: CanisterDB) -> Self {
+    let users: BTreeMap<Principal, UserProfile> =
+      payload.users.into_iter().map(|u| (u.owner, u)).collect();
+    let wallets: BTreeMap<WalletId, WalletProfile> =
+      payload.wallets.into_iter().map(|p| (p.id, p)).collect();
+    let records: BTreeMap<RecordId, RecordProfile> = payload
+      .records
+      .into_iter() //traverse each element in the Map instance
+      //manipulate each element iterator gives
+      .map(|v| (v.id, v))
+      .collect();
 
-        Self {
-            env: Box::new(CanisterEnvironment {}),
-            id: payload.id,
-            user_service: UserService { users },
-            wallet_service: WalletService { wallets },
-            wallet_record_service: WalletRecordService { records },
-        }
+    Self {
+      env: Box::new(CanisterEnvironment {}),
+      id: payload.id,
+      user_service: UserService { users },
+      wallet_service: WalletService { wallets },
+      wallet_record_service: WalletRecordService { records },
     }
+  }
 }
 
 impl From<CanisterContext> for CanisterDB {
-    fn from(context: CanisterContext) -> Self {
-        let id = context.id;
-        let users = Vec::from_iter(context.user_service.users.values().cloned());
-        let wallets = Vec::from_iter(context.wallet_service.wallets.values().cloned());
-        let records = Vec::from_iter(context.wallet_record_service.records.values().cloned());
-        Self {
-            id,
-            users,
-            wallets,
-            records,
-        }
+  fn from(context: CanisterContext) -> Self {
+    let id = context.id;
+    let users = Vec::from_iter(context.user_service.users.values().cloned());
+    let wallets = Vec::from_iter(context.wallet_service.wallets.values().cloned());
+    let records = Vec::from_iter(context.wallet_record_service.records.values().cloned());
+    Self {
+      id,
+      users,
+      wallets,
+      records,
     }
+  }
 }

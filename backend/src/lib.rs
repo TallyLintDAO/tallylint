@@ -1,10 +1,10 @@
 use candid::Principal;
 use std::cell::RefCell;
 // export apis below each
-pub mod user;
-pub mod wallet;
 pub mod canister_api;
 pub mod nns;
+pub mod user;
+pub mod wallet;
 
 mod common;
 use crate::common::context::CanisterContext;
@@ -30,13 +30,16 @@ use std::collections::HashMap;
 // use crate::canister_api::domain::*;
 #[allow(unused_imports)]
 use crate::nns::api::*;
+use crate::wallet::service::RecordId;
 #[allow(unused_imports)]
 use ic_cdk::api::call::CallResult;
 #[allow(unused_imports)]
 use ic_cdk::api::management_canister::{
-  main::{create_canister, install_code, update_settings, canister_info, canister_status, CanisterInfoRequest, CanisterInfoResponse, CanisterStatusResponse},
-  provisional::{CanisterSettings, CanisterIdRecord},
+  main::{
+    canister_info, canister_status, create_canister, install_code, update_settings,
+    CanisterInfoRequest, CanisterInfoResponse, CanisterStatusResponse,
+  },
+  provisional::{CanisterIdRecord, CanisterSettings},
 };
-use crate::wallet::service::RecordId;
 // use ic_cdk::export_candid;
 ic_cdk::export_candid!();

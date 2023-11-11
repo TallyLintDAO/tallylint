@@ -7,14 +7,14 @@ use crate::{CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
 
 #[init]
 fn init() {
-    ic_cdk::setup();
-    let context = CanisterContext {
-        env: Box::new(CanisterEnvironment {}),
-        ..CanisterContext::default()
-    };
-    let _now = context.env.now();
-    let _creator1 = GOVERNANCE_BTWL.with(|g| *g);
-    let _creator2 = GOVERNANCE_ZHOU.with(|g| *g);
+  ic_cdk::setup();
+  let context = CanisterContext {
+    env: Box::new(CanisterEnvironment {}),
+    ..CanisterContext::default()
+  };
+  let _now = context.env.now();
+  let _creator1 = GOVERNANCE_BTWL.with(|g| *g);
+  let _creator2 = GOVERNANCE_ZHOU.with(|g| *g);
 }
 
 /**
@@ -30,29 +30,34 @@ fn init() {
  */
 #[pre_upgrade]
 fn pre_upgrade() {
-    // with is a function can receive a function as para.
-    // and | | syntax here means a function with no name.
-    CONTEXT.with(|c| {
-        let context = c.borrow();
-        let id = context.id;
-        let users = Vec::from_iter(context.user_service.users.values().cloned());
-        let wallets = Vec::from_iter(context.wallet_service.wallets.values().cloned());
-        let records = Vec::from_iter(context.wallet_record_service.records.values().cloned());
-        let payload: CanisterDB = CanisterDB {id,users,wallets, records};
-        storage::stable_save((payload,)).expect("failed to save state data");
-        // IMPORTANT erase db in running canister.(ic or local)
-        // dfx deploy backend  -m reinstall
-    });
+  // with is a function can receive a function as para.
+  // and | | syntax here means a function with no name.
+  CONTEXT.with(|c| {
+    let context = c.borrow();
+    let id = context.id;
+    let users = Vec::from_iter(context.user_service.users.values().cloned());
+    let wallets = Vec::from_iter(context.wallet_service.wallets.values().cloned());
+    let records = Vec::from_iter(context.wallet_record_service.records.values().cloned());
+    let payload: CanisterDB = CanisterDB {
+      id,
+      users,
+      wallets,
+      records,
+    };
+    storage::stable_save((payload,)).expect("failed to save state data");
+    // IMPORTANT erase db in running canister.(ic or local)
+    // dfx deploy backend  -m reinstall
+  });
 }
 
 #[post_upgrade]
 fn post_upgrade() {
-    // IMPORTANT
-    // () means retrieve multiple db.
-    let (payload,): (CanisterDB,) = storage::stable_restore().expect("failed to restore users");
-    let stable_state = CanisterContext::from(payload);
-    CONTEXT.with(|s| {
-        let mut state = s.borrow_mut();
-        *state = stable_state;
-    });
+  // IMPORTANT
+  // () means retrieve multiple db.
+  let (payload,): (CanisterDB,) = storage::stable_restore().expect("failed to restore users");
+  let stable_state = CanisterContext::from(payload);
+  CONTEXT.with(|s| {
+    let mut state = s.borrow_mut();
+    *state = stable_state;
+  });
 }
