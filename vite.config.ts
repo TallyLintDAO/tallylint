@@ -125,6 +125,7 @@ export default defineConfig(({ command, mode }) => {
             rewrite: (path) => path,
           },
         },
+        port: 3000,
         cors: true,
         host: "0.0.0.0",
       },
