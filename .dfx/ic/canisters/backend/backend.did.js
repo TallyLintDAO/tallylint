@@ -149,6 +149,18 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Vec(WalletProfile),
     'Err' : IDL.Vec(WalletProfile),
   });
+  const RecordProfile = IDL.Record({
+    'id' : IDL.Nat64,
+    'tag' : IDL.Text,
+    'time' : IDL.Nat64,
+    't_type' : IDL.Text,
+    'comment' : IDL.Text,
+    'address' : IDL.Text,
+    'manual' : IDL.Bool,
+    'principal_id' : IDL.Opt(IDL.Text),
+    'price' : IDL.Float64,
+    'amount' : IDL.Nat32,
+  });
   const WalletUpdateCommand = IDL.Record({
     'id' : IDL.Nat64,
     'from' : IDL.Text,
@@ -161,18 +173,6 @@ export const idlFactory = ({ IDL }) => {
     't_type' : IDL.Text,
     'sort_method' : IDL.Text,
     'address' : IDL.Opt(IDL.Text),
-  });
-  const RecordProfile = IDL.Record({
-    'id' : IDL.Nat64,
-    'tag' : IDL.Text,
-    'time' : IDL.Nat64,
-    't_type' : IDL.Text,
-    'comment' : IDL.Text,
-    'address' : IDL.Text,
-    'manual' : IDL.Bool,
-    'principal_id' : IDL.Opt(IDL.Text),
-    'price' : IDL.Float64,
-    'amount' : IDL.Nat32,
   });
   const Result_6 = IDL.Variant({
     'Ok' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(RecordProfile))),
@@ -194,7 +194,11 @@ export const idlFactory = ({ IDL }) => {
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
     'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_4], ['query']),
     'query_all_wallets' : IDL.Func([], [Result_5], ['query']),
-    'sync_transaction_record' : IDL.Func([EditHistoryCommand], [Result_1], []),
+    'sync_transaction_record' : IDL.Func(
+        [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(RecordProfile)))],
+        [Result_1],
+        [],
+      ),
     'update_wallet' : IDL.Func([WalletUpdateCommand], [Result_1], []),
     'user_quantity' : IDL.Func([], [IDL.Nat32], []),
     'wallet_history' : IDL.Func([HistoryQueryCommand], [Result_6], ['query']),

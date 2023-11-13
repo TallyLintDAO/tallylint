@@ -179,7 +179,10 @@ export interface _SERVICE {
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
   'query_a_wallet' : ActorMethod<[bigint], Result_4>,
   'query_all_wallets' : ActorMethod<[], Result_5>,
-  'sync_transaction_record' : ActorMethod<[EditHistoryCommand], Result_1>,
+  'sync_transaction_record' : ActorMethod<
+    [Array<[string, Array<RecordProfile>]>],
+    Result_1
+  >,
   'update_wallet' : ActorMethod<[WalletUpdateCommand], Result_1>,
   'user_quantity' : ActorMethod<[], number>,
   'wallet_history' : ActorMethod<[HistoryQueryCommand], Result_6>,

@@ -197,11 +197,12 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
 
  */
 #[update(guard = "user_owner_guard")]
-fn sync_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
+fn sync_transaction_record(data: HashMap<WalletAddress, Vec<RecordProfile>>) -> Result<bool, String> {
   return Err("sync fail".to_string());
 }
 
 // todo get all wallets of records info
+// 根据前端查询到的历史记录传到后端啊
 #[query(guard = "user_owner_guard")]
 fn wallet_history(
   mut cmd: HistoryQueryCommand,

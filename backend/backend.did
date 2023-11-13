@@ -166,7 +166,9 @@ service : () -> {
   list_all_user : () -> (vec UserProfile);
   query_a_wallet : (nat64) -> (Result_4) query;
   query_all_wallets : () -> (Result_5) query;
-  sync_transaction_record : (EditHistoryCommand) -> (Result_1);
+  sync_transaction_record : (vec record { text; vec RecordProfile }) -> (
+      Result_1,
+    );
   update_wallet : (WalletUpdateCommand) -> (Result_1);
   user_quantity : () -> (nat32);
   wallet_history : (HistoryQueryCommand) -> (Result_6) query;
