@@ -8,7 +8,7 @@ use ic_ledger_types::AccountIdentifier;
 use ic_stable_structures::BTreeMap;
 
 use super::domain::*;
-use super::service::{RecordId, WalletAddress};
+use super::service::{RecordId, WalletAddress, WalletId};
 use crate::common::guard::user_owner_guard;
 use crate::CONTEXT;
 
@@ -197,7 +197,7 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
 
  */
 #[update(guard = "user_owner_guard")]
-fn sync_transaction_record(data: HashMap<WalletAddress, Vec<RecordProfile>>) -> Result<bool, String> {
+fn sync_transaction_record(data: HashMap<WalletId, Vec<RecordProfile>>) -> Result<bool, String> {
   return Err("sync fail".to_string());
 }
 

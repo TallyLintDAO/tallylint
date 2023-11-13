@@ -31,6 +31,7 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use crate::nns::api::*;
 use crate::wallet::service::RecordId;
+use crate::wallet::service::WalletId;
 #[allow(unused_imports)]
 use ic_cdk::api::call::CallResult;
 #[allow(unused_imports)]

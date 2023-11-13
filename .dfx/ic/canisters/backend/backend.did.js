@@ -195,7 +195,7 @@ export const idlFactory = ({ IDL }) => {
     'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_4], ['query']),
     'query_all_wallets' : IDL.Func([], [Result_5], ['query']),
     'sync_transaction_record' : IDL.Func(
-        [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(RecordProfile)))],
+        [IDL.Vec(IDL.Tuple(IDL.Nat64, IDL.Vec(RecordProfile)))],
         [Result_1],
         [],
       ),
