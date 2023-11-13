@@ -8,6 +8,12 @@ a{
   background-color: transparent;
 }
 
+/*垂直居中*/
+.flex-y-center{
+  display: flex;
+  align-items: center;
+}
+
 /* 修改quasar组件样式 */
 .q-table__grid-item-value {
   word-wrap: break-word;

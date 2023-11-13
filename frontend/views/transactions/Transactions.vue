@@ -105,7 +105,13 @@
             </q-item>
           </template>
         </q-list>
-        <q-pagination v-model="currentPage" :max="maxPage" input />
+        <q-pagination
+          v-model="currentPage"
+          :max="maxPage"
+          direction-links
+          boundary-links
+          class="justify-center"
+        />
       </div>
     </div>
   </div>
@@ -122,9 +128,6 @@ const route = useRoute()
 
 const address = route.params.address
 const walletList = ref<InferredTransaction[]>([])
-const groupedList = ref<{
-  [date: string]: InferredTransaction[]
-}>({})
 const options = ["FIFO"]
 const model = ref("FIFO")
 const currentPage = ref(1)
@@ -147,27 +150,21 @@ const groupedTransactions = (
   console.log("groups", groups)
   return groups
 }
+//先分页，再分组。
+const paginatedGroups = computed(
+  (): {
+    [date: string]: InferredTransaction[]
+  } => {
+    const start = (currentPage.value - 1) * pageSize.value
+    const end = start + pageSize.value
+    const paginatedData = walletList.value.slice(start, end)
 
-const paginatedGroups = computed(() => {
-  const keys = Object.keys(groupedList.value)
-  const paginatedData = {}
-
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
-
-  const paginatedKeys = keys.slice(start, end)
-
-  for (const key of paginatedKeys) {
-    paginatedData[key] = groupedList.value[key]
-  }
-  console.log("paginatedData", paginatedData)
-
-  return paginatedData
-})
+    return groupedTransactions(paginatedData)
+  },
+)
 
 onMounted(() => {
   getWalletHistory()
-  paginatedGroups
 })
 
 const getWalletHistory = async () => {
@@ -177,7 +174,6 @@ const getWalletHistory = async () => {
     if (res.total && res.total != 0) {
       walletList.value = res.transactions
       maxPage.value = Number(res.total / pageSize.value)
-      groupedList.value = groupedTransactions(res.transactions)
     }
   })
 }
