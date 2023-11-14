@@ -64,3 +64,11 @@ export async function deleteUserWallet(
 ): Promise<ApiResult<boolean>> {
   return getBackend().delete_wallet(walletId)
 }
+
+// 同步钱包交易记录到后端
+export async function syncWallet(
+  walletId: bigint,
+  history,
+): Promise<ApiResult<boolean>> {
+  return getBackend().sync_transaction_record({ walletId, history })
+}

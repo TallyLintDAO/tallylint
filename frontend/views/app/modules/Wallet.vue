@@ -11,7 +11,12 @@
       row-key="address"
     >
       <template v-slot:top>
-        <q-btn color="primary" @click="openDialog('add')">Add Wallet</q-btn>
+        <div class="q-gutter-md">
+          <q-btn color="primary" @click="openDialog('add')">Add Wallet</q-btn>
+          <q-btn color="secondary" @click="syncAllWallet()" icon="cached"
+            >Sync All Wallet</q-btn
+          >
+        </div>
         <q-space />
         <q-input
           borderless
@@ -169,6 +174,7 @@ import {
   deleteUserWallet,
   editUserWallet,
   getUserWallet,
+  syncWallet,
 } from "@/api/user"
 import type { WalletInfo } from "@/types/user"
 import { isPrincipal, p2a } from "@/utils/common"
@@ -224,6 +230,17 @@ const rows = ref<WalletInfo[]>([])
 onMounted(() => {
   getWallets(false)
 })
+
+const syncAllWallet = () => {
+  rows.value.forEach((row, index) => {
+    console.log(`Row ${index + 1}`, row)
+    getICPTransactions(row.address, true).then((res) => {
+      //将钱包数据同步
+      syncWallet(row.id, res.transactions)
+    })
+  })
+}
+
 // 识别用户输入的地址属于principal ID还是account ID
 watch(address, () => {
   identifyAddress()
