@@ -13,6 +13,7 @@
     "@dfinity/identity": "^0.19.3",
     "@dfinity/ledger": "^1.0.0",
     "@dfinity/ledger-icp": "^1.0.0",
+    "@dfinity/ledger-icrc": "^1.0.0",
     "@dfinity/nns": "^2.0.0",
     "@dfinity/nns-proto": "^1.0.0",
     "@dfinity/principal": "^0.19.3",
@@ -28,10 +29,10 @@
     "vue-router": "^4.0.0-0"
   },
   "devDependencies": {
-    "@quasar/vite-plugin": "^1.6.0",
+    "@quasar/vite-plugin": "^1.4.1",
     "@types/node": "^18.0.0",
-    "@vitejs/plugin-legacy": "^4.1.1",
-    "@vitejs/plugin-vue": "^4.1.1",
+    "@vitejs/plugin-legacy": "^1.8.2",
+    "@vitejs/plugin-vue": "^2.3.3",
     "@vue/compiler-sfc": "^3.2.37",
     "buffer": "^6.0.3",
     "sass": "^1.32.12",
