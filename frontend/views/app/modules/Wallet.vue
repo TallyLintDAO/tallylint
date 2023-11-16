@@ -283,7 +283,7 @@ const onSubmit = async () => {
   loading.value = true
   const validationSuccess = await walletForm.value?.validate()
   if (validationSuccess) {
-    if (isEdit) {
+    if (isEdit.value) {
       await editWallet()
     } else {
       await addWallet()
