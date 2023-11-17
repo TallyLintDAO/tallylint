@@ -8,6 +8,7 @@
           label="Cost Basis Method"
         />
         <q-btn
+          v-if="walletList.length > 0"
           flat
           color="primary"
           icon="file_download"
@@ -193,6 +194,7 @@ const exportToCSV = async () => {
     "Income",
     "Profit",
   ]
+
   // 生成包含列名和数据的数组
   const data = [
     columnNames,
@@ -200,7 +202,8 @@ const exportToCSV = async () => {
       transaction.hash,
       transaction.type,
       transaction.details.status,
-      new Date(Number(transaction.timestamp)).toLocaleString(),
+      //Time format fixed to Switzerland
+      new Date(Number(transaction.timestamp)).toLocaleString("fr-CH"),
       transaction.details?.from,
       transaction.details?.to,
       transaction.details.amount,
@@ -217,6 +220,7 @@ const exportToCSV = async () => {
   const csvContent = data.map((row) => row.join(",")).join("\n")
 
   // 使用 exportFile 函数导出 CSV 文件
+  //TODO 在文件名里增加月份或者年份
   exportFile(address + ".csv", csvContent, "text/csv")
 }
 </script>
