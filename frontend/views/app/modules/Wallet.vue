@@ -118,7 +118,7 @@
                 (val) =>
                   (val && !rows.some((item) => item.address === val)) ||
                   isEdit ||
-                  'Can not add wallet, address duplicated',
+                  'Can not add this wallet, address duplicated',
               ]"
             />
             <q-input
