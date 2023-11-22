@@ -89,6 +89,11 @@ export interface KnownNeuronData {
   'name' : string,
   'description' : [] | [string],
 }
+export interface NeuronAddCommand {
+  'from' : string,
+  'name' : string,
+  'address' : string,
+}
 export interface NeuronId { 'id' : Uint8Array | number[] }
 export interface NeuronInfo {
   'dissolve_delay_seconds' : bigint,
@@ -121,9 +126,9 @@ export type RejectionCode = { 'NoError' : null } |
   { 'Unknown' : null } |
   { 'SysFatal' : null } |
   { 'CanisterReject' : null };
-export type Result = { 'Ok' : bigint } |
+export type Result = { 'Ok' : boolean } |
   { 'Err' : string };
-export type Result_1 = { 'Ok' : boolean } |
+export type Result_1 = { 'Ok' : bigint } |
   { 'Err' : string };
 export type Result_2 = { 'Ok' : UserProfile } |
   { 'Err' : string };
@@ -164,13 +169,14 @@ export interface WalletUpdateCommand {
   'name' : string,
 }
 export interface _SERVICE {
-  'add_transaction_record' : ActorMethod<[AddRecordCommand], Result>,
-  'add_wallet' : ActorMethod<[WalletAddCommand], Result_1>,
+  'add_neuron_wallet' : ActorMethod<[NeuronAddCommand], Result>,
+  'add_transaction_record' : ActorMethod<[AddRecordCommand], Result_1>,
+  'add_wallet' : ActorMethod<[WalletAddCommand], Result>,
   'auto_register_user' : ActorMethod<[], Result_2>,
   'create_and_install' : ActorMethod<[], string>,
-  'delete_transaction_record' : ActorMethod<[bigint], Result>,
-  'delete_wallet' : ActorMethod<[bigint], Result_1>,
-  'edit_transaction_record' : ActorMethod<[EditHistoryCommand], Result_1>,
+  'delete_transaction_record' : ActorMethod<[bigint], Result_1>,
+  'delete_wallet' : ActorMethod<[bigint], Result>,
+  'edit_transaction_record' : ActorMethod<[EditHistoryCommand], Result>,
   'get_balance' : ActorMethod<[], bigint>,
   'get_canister_info' : ActorMethod<[string], CanisterInfoResponse>,
   'get_canister_status' : ActorMethod<[string], CanisterStatusResponse>,
@@ -181,9 +187,9 @@ export interface _SERVICE {
   'query_all_wallets' : ActorMethod<[], Result_5>,
   'sync_transaction_record' : ActorMethod<
     [Array<[bigint, Array<RecordProfile>]>],
-    Result_1
+    Result
   >,
-  'update_wallet' : ActorMethod<[WalletUpdateCommand], Result_1>,
+  'update_wallet' : ActorMethod<[WalletUpdateCommand], Result>,
   'user_quantity' : ActorMethod<[], number>,
   'wallet_history' : ActorMethod<[HistoryQueryCommand], Result_6>,
   'whoami' : ActorMethod<[], Principal>,

@@ -84,14 +84,17 @@ dfx canister call backend add_transaction_record '(record {id=10006; tag="tg1"; 
 dfx canister call --network ic backend auto_register_user
 dfx canister call --network ic backend get_balance
 
-dfx canister call --network ic backend add_wallet '(record { address = "01awd916dwa335wda2042"; name = "AmydaLu"; from = "asdaw" })'
+dfx canister call --network ic backend add_wallet '(record { address = "0d7c6cff7cee0f5b34cc62f02bc0cfef7e5e744ecdd841edfd68256431d448e3"; name = "AmydaLu"; from = "asdaw" })'
 dfx canister call --network ic backend add_wallet '(record { address = "addr111"; name = "astrome001"; from = "astrome" })'
 dfx canister call --network ic backend add_wallet '(record { address = "adr333"; name = "astrome001"; from = "astrome" })'
 dfx canister call --network ic backend delete_wallet "01awd916dwa335wda2042"
 dfx canister call --network ic backend query_all_wallets --query
 dfx canister call --network ic backend get_caller_principal
 dfx canister call --network ic backend add_wallet '(record { address = "test_dup001"; name = "astrome001"; from = "astrome" })'
-dfx canister call --network ic backend query_wallet_array
+dfx canister call --network ic backend query_all_wallets
+dfx canister call --network ic backend query_a_wallet "10016"
+dfx canister call --network ic backend delete_wallet "10016"
+dfx canister call --network ic backend update_wallet "10016"
 dfx canister call --network ic backend get_caller_principal
 dfx canister call --network ic backend test_print
 dfx canister call --network ic backend list_all_user

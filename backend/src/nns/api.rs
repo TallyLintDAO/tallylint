@@ -15,6 +15,8 @@ independent query neuron info .
 pub async fn get_neuron_info(neuron_id: u64) -> CallResult<(CustomResult1,)> {
   return _get_neuron_info(neuron_id).await;
 }
+
+
 pub async fn _get_neuron_info(arg0: u64) -> CallResult<(CustomResult1,)> {
   // maybe get_neuron_info only can call inside ic .not
   // exposed api. call to another canister : on local

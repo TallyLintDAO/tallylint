@@ -40,6 +40,22 @@ pub struct WalletAddCommand {
                      * AstorMe  .. maybe add more */
   pub name: String,
 }
+impl Default for WalletAddCommand {
+    fn default() -> Self {
+        WalletAddCommand {
+            address: String::new(),
+            principal_id: None,
+            from: String::new(),
+            name: String::new(),
+        }
+    }
+}
+#[derive(Debug, Clone, CandidType, Deserialize)]
+pub struct NeuronAddCommand {
+  pub address: String,
+  pub from: String, 
+  pub name: String,
+}
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct WalletUpdateCommand {

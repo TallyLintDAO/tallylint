@@ -20,8 +20,8 @@ use candid::Principal;
 //     from: String,
 //   }
 //   // ! simulate call from rust code :  dfx canister call backend add_wallet
-//   // '(record { address = "a1"; name = "AmydaLu"; from = "asdaw" })' Create an
-//   // instance of the Agent struct
+//   // '(record { address = "a1"; name = "AmydaLu"; from = "asdaw" })' Create
+// an   // instance of the Agent struct
 //   let agent = Agent::builder()
 //     // Use the URL of the Internet Computer or a local replica
 //     .with_url("http://localhost:8000/")
@@ -30,8 +30,8 @@ use candid::Principal;
 //     //  todo ! which port should i use ?
 //     // Use an identity to sign messages
 //     .with_identity(create_identity())
-//     // todo: how to simulate : dfx use btwl1 ? and the account have passwd. when
-//     // i exec dfx cmd . it requires my passwd in bash
+//     // todo: how to simulate : dfx use btwl1 ? and the account have passwd.
+// when     // i exec dfx cmd . it requires my passwd in bash
 //     .build()?;
 
 //   // Fetch the root key of the replica
@@ -45,8 +45,8 @@ use candid::Principal;
 //     "67cff347f803890e6bd1865b5a116c8c06384992b93d2fc8bb8da2f22fffc6a3"
 //       .to_string();
 
-//   // Create a Candid value that represents the argument of the add_wallet method
-//   let argument = Encode!(&AddWalletArgument {
+//   // Create a Candid value that represents the argument of the add_wallet
+// method   let argument = Encode!(&AddWalletArgument {
 //     address: test_addr,
 //     name: "AmydaLu_wallet".to_string(),
 //     from: "nns".to_string(),

@@ -1,11 +1,9 @@
 use std::borrow::BorrowMut;
 use std::collections::HashMap;
-use std::task::Context;
 
 use ic_cdk::caller;
 use ic_cdk_macros::{query, update};
 use ic_ledger_types::AccountIdentifier;
-use ic_stable_structures::BTreeMap;
 
 use super::domain::*;
 use super::service::{RecordId, WalletAddress, WalletId};
@@ -17,20 +15,31 @@ const ACCOUNT_ID_LENGTH: usize = 64;
 const PRINCIPAL_ID_LENGTH: usize = 63;
 
 #[update(guard = "user_owner_guard")]
+fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
+  let mut add=WalletAddCommand::default();
+  add.from="NNS_neuron".to_string();
+  add.name=cmd.name;
+  add.address=cmd.address;
+  add_wallet(add)
+}
+
+#[update(guard = "user_owner_guard")]
 fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
   CONTEXT.with(|c| {
-    let if_principal: Option<&String> = cmd.principal_id.as_ref();
     if cmd.name.len() > MAX_WALLET_NAME_LENGTH {
       return Err(String::from("Wallet name exceeds maximum length 64"));
-    }
-    if if_principal.is_some() {
-      if if_principal.unwrap().len() != PRINCIPAL_ID_LENGTH {
-        return Err(String::from("principal_id length need to be 63"));
-      }
     }
     if cmd.address.len() != ACCOUNT_ID_LENGTH {
       return Err(String::from("acccount_id length need to be 64"));
     }
+
+    let if_principal: Option<String> = cmd.principal_id.clone();
+    if if_principal.is_some() {
+      if if_principal.clone().unwrap().len() != PRINCIPAL_ID_LENGTH {
+        return Err(String::from("principal_id length need to be 63"));
+      }
+    }
+
     let mut ctx = c.borrow_mut();
     let caller = ctx.env.caller();
     let now = ctx.env.now();
@@ -48,7 +57,7 @@ fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
       principal_id: None,
     };
     if if_principal.is_some() {
-      profile.principal_id = if_principal.cloned();
+      profile.principal_id = if_principal.clone();
     }
     match ctx.wallet_service.add_wallet(profile, caller) {
       Some(_) => {
@@ -72,7 +81,11 @@ fn update_wallet(cmd: WalletUpdateCommand) -> Result<bool, String> {
     let caller = ctx.env.caller();
     let now = ctx.env.now();
     let id: u64 = cmd.id;
-    let mut profile = ctx.wallet_service.query_a_wallet(id).unwrap().clone();
+    let  ret = ctx.wallet_service.query_a_wallet(id);
+    if ret.is_none(){
+      return Err("Can not update wallet".to_string());
+    }
+    let mut profile=ret.unwrap();
     // holder: caller,
     // profile.address=wallet_update_command.address;
     // profile.from=wallet_update_command.from;
@@ -197,7 +210,9 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
 
  */
 #[update(guard = "user_owner_guard")]
-fn sync_transaction_record(data: HashMap<WalletId, Vec<RecordProfile>>) -> Result<bool, String> {
+fn sync_transaction_record(
+  data: HashMap<WalletId, Vec<RecordProfile>>,
+) -> Result<bool, String> {
   return Err("sync fail".to_string());
 }
 
@@ -301,6 +316,14 @@ mod tests {
         "868d0e5ed0d4a61c11c8c16e699af338058197a4e433a5b3fd582a1f31aaa5c3",
       ),
       from: String::from("Plug"),
+    };
+    let cm2 = WalletAddCommand {
+      principal_id: None,
+      name: String::from("My Wallet"),
+      address: String::from(
+        "868d0e5ed0d4a61c11c8c16e699af338058197a4e433a5b3fd582a1f31aaa5c3",
+      ),
+      from: String::from("NNS"),
     };
     // not work locally : https://forum.dfinity.org/t/guys-how-do-you-debug-your-rust-backend-canister/22965
     // todo :maybe spilit rust logic and ic-logic
