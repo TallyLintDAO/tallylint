@@ -118,6 +118,26 @@ impl WalletService {
       return cloned_profiles;
     }
   }
+  pub fn query_all_neuron(&self, user: Principal) -> Vec<WalletProfile> {
+    let profiles: Vec<&WalletProfile> = self
+      .wallets
+      .values()
+      .filter(|profile| &profile.holder == &user)
+      .filter(|p|p.from=="NNS_neuron".to_string())
+      .collect();
+    // profiles.into_iter().filter(|p|p.from=="NNS_neuron".to_string()).collect();
+    if profiles.is_empty() {
+      return Vec::new();
+    } else {
+      // convert Vec<&xx> to Vec<xx>
+      let cloned_profiles: Vec<WalletProfile> = profiles
+        .iter()
+        .cloned()
+        .map(|profile| (*profile).clone())
+        .collect();
+      return cloned_profiles;
+    }
+  }
 
   #[allow(dead_code)]
   pub fn new() -> Self {

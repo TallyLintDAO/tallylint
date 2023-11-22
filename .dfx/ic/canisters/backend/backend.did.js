@@ -200,8 +200,8 @@ export const idlFactory = ({ IDL }) => {
     'get_neuron_info' : IDL.Func([IDL.Nat64], [Result_3], []),
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
     'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_4], ['query']),
+    'query_all_neuron_wallet' : IDL.Func([], [Result_5], []),
     'query_all_wallets' : IDL.Func([], [Result_5], ['query']),
-    'query_neuron_wallet' : IDL.Func([IDL.Nat64], [Result_4], []),
     'sync_transaction_record' : IDL.Func(
         [IDL.Vec(IDL.Tuple(IDL.Nat64, IDL.Vec(RecordProfile)))],
         [Result],

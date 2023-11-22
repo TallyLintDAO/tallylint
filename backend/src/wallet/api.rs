@@ -34,8 +34,13 @@ fn update_neuron_wallet(cmd: NeuronUpdateCommand) -> Result<bool, String> {
  update_wallet(update_info)
 }
 #[update(guard = "user_owner_guard")]
-fn query_neuron_wallet(id: u64) -> Result<WalletProfile, String> {
-  query_a_wallet(id)
+fn query_all_neuron_wallet() -> Result<Vec<WalletProfile>, Vec<WalletProfile>> {
+    CONTEXT.with(|c| {
+    let ctx = c.borrow_mut();
+    let user = ctx.env.caller();
+    let wallets = ctx.wallet_service.query_all_neuron(user);
+    return Ok(wallets);
+  })
 }
 
 #[update(guard = "user_owner_guard")]

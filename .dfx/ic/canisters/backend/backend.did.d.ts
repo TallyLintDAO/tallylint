@@ -185,8 +185,8 @@ export interface _SERVICE {
   'get_neuron_info' : ActorMethod<[bigint], Result_3>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
   'query_a_wallet' : ActorMethod<[bigint], Result_4>,
+  'query_all_neuron_wallet' : ActorMethod<[], Result_5>,
   'query_all_wallets' : ActorMethod<[], Result_5>,
-  'query_neuron_wallet' : ActorMethod<[bigint], Result_4>,
   'sync_transaction_record' : ActorMethod<
     [Array<[bigint, Array<RecordProfile>]>],
     Result

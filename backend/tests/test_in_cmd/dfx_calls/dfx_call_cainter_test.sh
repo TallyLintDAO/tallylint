@@ -50,12 +50,17 @@ dfx canister call backend add_wallet '(record { address = "c1"; name = "AmydaLu"
 dfx canister call backend add_wallet '(record { address = "c3"; name = "AmydaLu"; from = "asdaw" })'
 dfx canister call backend add_wallet '(record { address = "c2"; name = "AmydaLu"; from = "asdaw" })'
 dfx canister call backend add_wallet '(record { address = "c5"; name = "AmydaLu"; from = "asdaw" })'
+dfx canister call backend add_wallet '(record { address = "c5"; name = "AmydaLu"; from = "asdaw" })'
 dfx canister call backend update_wallet '(record { address = "c5"; name = "AmydaLu"; from = "asdaw";transactions=8; last_sync_time=8; last_transaction_time=9;})'
 dfx canister call backend update_wallet '(record { address = "c7"; name = "AmydaLu"; from = "asdaw";transactions=8; last_sync_time=8; last_transaction_time=9;})'
 # update a non exist wallet test :
 dfx canister call backend update_wallet '(record { address = "c9"; name = "AmydaLu"; from = "asdaw";transactions=8; last_sync_time=8; last_transaction_time=9;})'
 dfx canister call backend add_wallet '(record { address = "c9"; name = "AmydaLu"; from = "asdaw" })'
-dfx canister call backend add_transaction_record '(record { address = "c9"; name = "AmydaLu"; from = "asdaw" })'
+dfx canister call backend add_wallet '(record { address = "c9"; name = "AmydaLu"; from = "asdaw" })'
+
+#neuron CRUD test 
+dfx canister call backend add_neuron_wallet '(record { address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"; name = "AmydaLu"; from = "asdaw" })'
+dfx canister call backend query_all_neuron_wallet
 
 
 
@@ -101,6 +106,7 @@ dfx canister call --network ic backend list_all_user
 dfx canister call --network ic backend user_quantity
 dfx canister call --network ic backend auto_register_user
 dfx canister call --network ic backend  get_neuron_info "9758293084897065223"
+dfx canister call --network ic backend  get_neuron_info "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
 
 
 
