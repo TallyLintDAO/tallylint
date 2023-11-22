@@ -107,6 +107,11 @@ export interface NeuronInfo {
   'voting_power' : bigint,
   'age_seconds' : bigint,
 }
+export interface NeuronUpdateCommand {
+  'id' : bigint,
+  'from' : string,
+  'name' : string,
+}
 export interface RecordProfile {
   'id' : bigint,
   'tag' : string,
@@ -163,17 +168,13 @@ export interface WalletProfile {
   'holder' : Principal,
   'transactions' : bigint,
 }
-export interface WalletUpdateCommand {
-  'id' : bigint,
-  'from' : string,
-  'name' : string,
-}
 export interface _SERVICE {
   'add_neuron_wallet' : ActorMethod<[NeuronAddCommand], Result>,
   'add_transaction_record' : ActorMethod<[AddRecordCommand], Result_1>,
   'add_wallet' : ActorMethod<[WalletAddCommand], Result>,
   'auto_register_user' : ActorMethod<[], Result_2>,
   'create_and_install' : ActorMethod<[], string>,
+  'delete_neuron_wallet' : ActorMethod<[bigint], Result>,
   'delete_transaction_record' : ActorMethod<[bigint], Result_1>,
   'delete_wallet' : ActorMethod<[bigint], Result>,
   'edit_transaction_record' : ActorMethod<[EditHistoryCommand], Result>,
@@ -185,11 +186,13 @@ export interface _SERVICE {
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
   'query_a_wallet' : ActorMethod<[bigint], Result_4>,
   'query_all_wallets' : ActorMethod<[], Result_5>,
+  'query_neuron_wallet' : ActorMethod<[bigint], Result_4>,
   'sync_transaction_record' : ActorMethod<
     [Array<[bigint, Array<RecordProfile>]>],
     Result
   >,
-  'update_wallet' : ActorMethod<[WalletUpdateCommand], Result>,
+  'update_neuron_wallet' : ActorMethod<[NeuronUpdateCommand], Result>,
+  'update_wallet' : ActorMethod<[NeuronUpdateCommand], Result>,
   'user_quantity' : ActorMethod<[], number>,
   'wallet_history' : ActorMethod<[HistoryQueryCommand], Result_6>,
   'whoami' : ActorMethod<[], Principal>,

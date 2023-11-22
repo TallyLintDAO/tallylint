@@ -93,6 +93,7 @@ type NeuronInfo = record {
   voting_power : nat64;
   age_seconds : nat64;
 };
+type NeuronUpdateCommand = record { id : nat64; from : text; name : text };
 type RecordProfile = record {
   id : nat64;
   tag : text;
@@ -150,13 +151,13 @@ type WalletProfile = record {
   holder : principal;
   transactions : nat64;
 };
-type WalletUpdateCommand = record { id : nat64; from : text; name : text };
 service : () -> {
   add_neuron_wallet : (NeuronAddCommand) -> (Result);
   add_transaction_record : (AddRecordCommand) -> (Result_1);
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_2);
   create_and_install : () -> (text);
+  delete_neuron_wallet : (nat64) -> (Result);
   delete_transaction_record : (nat64) -> (Result_1);
   delete_wallet : (nat64) -> (Result);
   edit_transaction_record : (EditHistoryCommand) -> (Result);
@@ -168,10 +169,12 @@ service : () -> {
   list_all_user : () -> (vec UserProfile);
   query_a_wallet : (nat64) -> (Result_4) query;
   query_all_wallets : () -> (Result_5) query;
+  query_neuron_wallet : (nat64) -> (Result_4);
   sync_transaction_record : (vec record { nat64; vec RecordProfile }) -> (
       Result,
     );
-  update_wallet : (WalletUpdateCommand) -> (Result);
+  update_neuron_wallet : (NeuronUpdateCommand) -> (Result);
+  update_wallet : (NeuronUpdateCommand) -> (Result);
   user_quantity : () -> (nat32);
   wallet_history : (HistoryQueryCommand) -> (Result_6) query;
   whoami : () -> (principal) query;

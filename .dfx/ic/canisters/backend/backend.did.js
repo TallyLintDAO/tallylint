@@ -166,7 +166,7 @@ export const idlFactory = ({ IDL }) => {
     'price' : IDL.Float64,
     'amount' : IDL.Nat32,
   });
-  const WalletUpdateCommand = IDL.Record({
+  const NeuronUpdateCommand = IDL.Record({
     'id' : IDL.Nat64,
     'from' : IDL.Text,
     'name' : IDL.Text,
@@ -189,6 +189,7 @@ export const idlFactory = ({ IDL }) => {
     'add_wallet' : IDL.Func([WalletAddCommand], [Result], []),
     'auto_register_user' : IDL.Func([], [Result_2], []),
     'create_and_install' : IDL.Func([], [IDL.Text], []),
+    'delete_neuron_wallet' : IDL.Func([IDL.Nat64], [Result], []),
     'delete_transaction_record' : IDL.Func([IDL.Nat64], [Result_1], []),
     'delete_wallet' : IDL.Func([IDL.Nat64], [Result], []),
     'edit_transaction_record' : IDL.Func([EditHistoryCommand], [Result], []),
@@ -200,12 +201,14 @@ export const idlFactory = ({ IDL }) => {
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
     'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_4], ['query']),
     'query_all_wallets' : IDL.Func([], [Result_5], ['query']),
+    'query_neuron_wallet' : IDL.Func([IDL.Nat64], [Result_4], []),
     'sync_transaction_record' : IDL.Func(
         [IDL.Vec(IDL.Tuple(IDL.Nat64, IDL.Vec(RecordProfile)))],
         [Result],
         [],
       ),
-    'update_wallet' : IDL.Func([WalletUpdateCommand], [Result], []),
+    'update_neuron_wallet' : IDL.Func([NeuronUpdateCommand], [Result], []),
+    'update_wallet' : IDL.Func([NeuronUpdateCommand], [Result], []),
     'user_quantity' : IDL.Func([], [IDL.Nat32], []),
     'wallet_history' : IDL.Func([HistoryQueryCommand], [Result_6], ['query']),
     'whoami' : IDL.Func([], [IDL.Principal], ['query']),

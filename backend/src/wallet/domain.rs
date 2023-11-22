@@ -57,6 +57,8 @@ pub struct NeuronAddCommand {
   pub name: String,
 }
 
+
+
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct WalletUpdateCommand {
   //muttable
@@ -72,6 +74,33 @@ pub struct WalletUpdateCommand {
                      * pub transactions:u64,
                      * pub last_sync_time:u64,
                      * pub last_transaction_time:u64, */
+}
+#[derive(Debug, Clone, CandidType, Deserialize)]
+pub struct NeuronUpdateCommand {
+  //muttable
+  pub from: String, /* from which wallet_type: such as
+                     * NNS Plug  Stoic
+                     * AstorMe  .. maybe add more */
+
+  // muttable
+  pub name: String,
+
+  // immutable . for locate the wallet
+  pub id: WalletId, /*when update , specify id .
+                     * pub transactions:u64,
+                     * pub last_sync_time:u64,
+                     * pub last_transaction_time:u64, */
+}
+
+
+impl Default for WalletUpdateCommand {
+    fn default() -> Self {
+        WalletUpdateCommand {
+            from: String::new(),
+            name: String::new(),
+            id: WalletId::default(), // Assuming WalletId has a default implementation
+        }
+    }
 }
 
 /**

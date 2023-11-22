@@ -22,6 +22,21 @@ fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
   add.address=cmd.address;
   add_wallet(add)
 }
+#[update(guard = "user_owner_guard")]
+fn delete_neuron_wallet(id: u64) -> Result<bool, String> {
+  delete_wallet(id)
+}
+#[update(guard = "user_owner_guard")]
+fn update_neuron_wallet(cmd: NeuronUpdateCommand) -> Result<bool, String> {
+  let mut update_info=WalletUpdateCommand::default();
+  update_info.from="NNS_neuron".to_string();
+  update_info.name=cmd.name;
+ update_wallet(update_info)
+}
+#[update(guard = "user_owner_guard")]
+fn query_neuron_wallet(id: u64) -> Result<WalletProfile, String> {
+  query_a_wallet(id)
+}
 
 #[update(guard = "user_owner_guard")]
 fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
