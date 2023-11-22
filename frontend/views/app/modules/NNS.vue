@@ -120,16 +120,14 @@
             <q-input
               filled
               :disable="isEdit"
-              v-model="address"
+              v-model="neuron.address"
               label="Neuron Account ID *"
               hint="Enter Neuron Account ID"
               lazy-rules
               :rules="[
                 (val) =>
-                  (val &&
-                    val.length > 0 &&
-                    (val.length === 63 || val.length === 64)) ||
-                  'Please enter Principal ID or Account ID',
+                  (val && val.length > 0 && val.length === 64) ||
+                  'Please enter Account ID',
                 (val) =>
                   (val && !rows.some((item) => item.address === val)) ||
                   isEdit ||
@@ -173,6 +171,12 @@
 <script lang="ts" setup>
 import { initAuth } from "@/api/auth"
 import { DOCS_URL, NNS_HELP } from "@/api/constants/docs"
+import {
+  addUserNeuron,
+  deleteUserNeuron,
+  editUserNeuron,
+  getUserNeuron,
+} from "@/api/user"
 import { useUserStore } from "@/stores/user"
 import type { WalletInfo } from "@/types/user"
 import { confirmDialog } from "@/utils/dialog"
@@ -207,6 +211,7 @@ const columns = [
 const form = ref<QForm | null>(null)
 
 const rows = ref<any[]>([])
+const nnsNeruons = ref<any[]>([])
 const loading = ref(false)
 const isEdit = ref(false) // dialog是否是edit功能，否就是add功能
 const address = ref("")
@@ -214,15 +219,13 @@ const neuron = ref({
   id: 0n,
   address: "",
   principal_id: [] as string[], // 无值就用[]，而不是[""]，不然opt类型会报错
-  from: "NNS",
+  from: "NNS", // neuron固定from值，不需要改变
   name: "",
-  transactions: 0,
-  last_transaction_time: 0,
-  last_sync_time: 0,
 })
 
 onMounted(() => {
   getNNS()
+  getNeurons(false)
   // getSNS()
 })
 
@@ -234,9 +237,6 @@ const resetNeuron = () => {
     principal_id: [] as string[],
     from: "NNS",
     name: "",
-    transactions: 0,
-    last_transaction_time: 0,
-    last_sync_time: 0,
   }
 }
 
@@ -264,36 +264,42 @@ const onSubmit = async () => {
       await addItem()
     }
     dialogVisible.value = false
-  } else {
-    // 数据验证失败
-    // 用户至少输入了一个无效值
   }
   loading.value = false
 }
 
+const getNeurons = (isRefresh: boolean) => {
+  //执行add，delete操作后刷新缓存，其他查询操作则不需要刷新缓存。
+  getUserNeuron(isRefresh).then((res) => {
+    console.log("getNeurons", res)
+    if (res.Ok) {
+      rows.value = res.Ok.concat(nnsNeruons.value)
+      console.log("getNeurons", rows.value)
+    }
+  })
+}
+
 const addItem = async () => {
-  const { address, name, from, principal_id } = neuron.value
-  const res = await addUserWallet(
-    address.trim(),
-    name.trim(),
-    from,
-    principal_id,
-  )
+  const { address, name } = neuron.value
+  const res = await addUserNeuron(address.trim(), name.trim())
+  console.log("add", res)
   if (res.Ok) {
     rows.value.push({ ...neuron.value })
     resetNeuron()
     dialogVisible.value = false
-    // getWallets(true)
+    getNeurons(true)
   } else {
     showResultError(res)
   }
 }
 
 const editItem = async () => {
-  const { id, from, name } = neuron.value
-  const res = await editUserWallet(id, from, name)
+  const { id, name } = neuron.value
+  console.log("edit", id, name)
+  const res = await editUserNeuron(id, name)
+  console.log("edit", res)
   if (res.Ok) {
-    // getWallets(true)
+    getNeurons(true)
   } else {
     showResultError(res)
   }
@@ -305,9 +311,9 @@ const deleteItem = (itemId: bigint) => {
     message:
       "Are you sure delete this Neuron? Delete Neuron will clear this Neuron history info",
     okMethod: (data) => {
-      deleteUserWallet(itemId).then((res) => {
+      deleteUserNeuron(itemId).then((res) => {
         if (res.Ok) {
-          getWallets(true)
+          getNeurons(true)
           showMessageSuccess("delete wallet success")
         }
       })
@@ -326,7 +332,6 @@ const getNNS = async () => {
     })
     //获取授权当前pid的神经元列表
     neuron.listNeurons({ certified: false }).then((res) => {
-      console.log("getListNeurons", res)
       if (res.length > 0) {
         for (const neuron of res) {
           if (neuron.fullNeuron) {
@@ -345,7 +350,7 @@ const getNNS = async () => {
               from: "hotkey",
             }
             console.log("neuronData", neuronData)
-            rows.value.push(neuronData)
+            nnsNeruons.value.push(neuronData)
           }
         }
       }
