@@ -85,6 +85,12 @@
                         </q-list>
                       </q-menu>
                     </q-btn>
+                    <q-badge
+                      v-else
+                      outline
+                      color="secondary"
+                      label="Hotkey Import"
+                    />
                   </div>
                 </q-card-section>
                 <q-list>
@@ -99,6 +105,31 @@
                       <q-item-label v-else caption>{{
                         col.value
                       }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <!-- 有值才显示 -->
+                  <q-item v-if="props.row.neruonId">
+                    <q-item-section>
+                      <q-item-label> Neruon Id </q-item-label>
+                      <q-item-label caption>
+                        {{ props.row.neruonId }}
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item v-if="props.row.maturity">
+                    <q-item-section>
+                      <q-item-label> Maturity</q-item-label>
+                      <q-item-label caption>
+                        {{ props.row.maturity }}
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item v-if="props.row.stakedMaturity">
+                    <q-item-section>
+                      <q-item-label> StakedMaturity</q-item-label>
+                      <q-item-label caption>
+                        {{ props.row.stakedMaturity }}
+                      </q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
@@ -204,9 +235,9 @@ const columns = [
     label: "Neuron Account",
     field: (row) => row.address,
   },
-  { name: "id", label: "Neuron Id", field: "id" },
-  { name: "maturity", label: "Maturity", field: "maturity" },
-  { name: "stakedMaturity", label: "StakedMaturity", field: "stakedMaturity" },
+  // { name: "id", label: "Neuron Id", field: "id" },
+  // { name: "maturity", label: "Maturity", field: "maturity" },
+  // { name: "stakedMaturity", label: "StakedMaturity", field: "stakedMaturity" },
 ]
 const form = ref<QForm | null>(null)
 
@@ -342,7 +373,7 @@ const getNNS = async () => {
               stakedMaturityE8sEquivalent,
             } = neuron.fullNeuron
             const neuronData = {
-              id: id,
+              neruonId: id,
               address: accountIdentifier,
               //1e8是10的八次方，除以1e8得到原数
               maturity: Number(maturityE8sEquivalent) / 1e8,
