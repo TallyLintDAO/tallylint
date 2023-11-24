@@ -5,7 +5,9 @@
   debug_assertions,
   allow(dead_code, unused_imports, unused_variables, unused_mut)
 )]
+#[allow(unused_imports)]
 use candid::{CandidType, Principal};
+#[allow(unused_imports)]
 use ic_cdk::api::management_canister::{
   main::{
     canister_info, canister_status, create_canister, install_code,
@@ -36,7 +38,7 @@ pub async fn create_and_install() -> String {
   //  CallResult<(CanisterIdRecord,)> : Result----unwrap
   // ()----tuple .0 to get the first tuple.
   #[warn(unused_mut)]
-  let mut new_canister_principal = create_res.unwrap().0.canister_id;
+  let new_canister_principal = create_res.unwrap().0.canister_id;
   // new_canister_principal=ic_cdk::caller();
   let result = install_code(new_install_info(new_canister_principal)).await;
   if result.is_err() {

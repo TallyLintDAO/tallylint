@@ -38,6 +38,7 @@ type CanisterStatusResponse = record {
   memory_size : nat;
   cycles : nat;
   settings : DefiniteCanisterSettings;
+  query_stats : QueryStats;
   idle_cycles_burned_per_day : nat;
   module_hash : opt vec nat8;
 };
@@ -93,7 +94,20 @@ type NeuronInfo = record {
   voting_power : nat64;
   age_seconds : nat64;
 };
-type NeuronUpdateCommand = record { id : nat64; from : text; name : text };
+type NeuronProfile = record {
+  id : nat64;
+  owner : principal;
+  addr : text;
+  name : text;
+  create_time : nat64;
+};
+type NeuronUpdateCommand = record { id : nat64; name : text };
+type QueryStats = record {
+  response_payload_bytes_total : nat;
+  num_instructions_total : nat;
+  num_calls_total : nat;
+  request_payload_bytes_total : nat;
+};
 type RecordProfile = record {
   id : nat64;
   tag : text;
@@ -122,9 +136,11 @@ type Result_3 = variant {
   Ok : record { CustomResult1 };
   Err : record { RejectionCode; text };
 };
-type Result_4 = variant { Ok : WalletProfile; Err : text };
-type Result_5 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
-type Result_6 = variant {
+type Result_4 = variant { Ok : NeuronProfile; Err : text };
+type Result_5 = variant { Ok : WalletProfile; Err : text };
+type Result_6 = variant { Ok : vec NeuronProfile; Err : vec NeuronProfile };
+type Result_7 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
+type Result_8 = variant {
   Ok : vec record { text; vec RecordProfile };
   Err : text;
 };
@@ -151,6 +167,7 @@ type WalletProfile = record {
   holder : principal;
   transactions : nat64;
 };
+type WalletUpdateCommand = record { id : nat64; from : text; name : text };
 service : () -> {
   add_neuron_wallet : (NeuronAddCommand) -> (Result);
   add_transaction_record : (AddRecordCommand) -> (Result_1);
@@ -164,18 +181,18 @@ service : () -> {
   get_balance : () -> (nat64);
   get_canister_info : (text) -> (CanisterInfoResponse);
   get_canister_status : (text) -> (CanisterStatusResponse);
-  get_ledger_id : (principal) -> (nat32) query;
   get_neuron_info : (nat64) -> (Result_3);
   list_all_user : () -> (vec UserProfile);
-  query_a_wallet : (nat64) -> (Result_4) query;
-  query_all_neuron_wallet : () -> (Result_5);
-  query_all_wallets : () -> (Result_5) query;
+  query_a_neuron_wallet : (nat64) -> (Result_4) query;
+  query_a_wallet : (nat64) -> (Result_5) query;
+  query_all_neuron_wallet : () -> (Result_6) query;
+  query_all_wallets : () -> (Result_7) query;
   sync_transaction_record : (vec record { nat64; vec RecordProfile }) -> (
       Result,
     );
   update_neuron_wallet : (NeuronUpdateCommand) -> (Result);
-  update_wallet : (NeuronUpdateCommand) -> (Result);
+  update_wallet : (WalletUpdateCommand) -> (Result);
   user_quantity : () -> (nat32);
-  wallet_history : (HistoryQueryCommand) -> (Result_6) query;
+  wallet_history : (HistoryQueryCommand) -> (Result_8) query;
   whoami : () -> (principal) query;
 }

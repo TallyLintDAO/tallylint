@@ -30,36 +30,6 @@ pub struct WalletProfile {
 }
 
 #[derive(Debug, Clone, CandidType, Deserialize)]
-pub struct WalletAddCommand {
-  pub address: String,
-  pub principal_id: Option<String>, /* Plug use , need
-                                     * to convert to
-                                     * opt_account_id_hex for use. */
-  pub from: String, /* from which wallet_type: such as
-                     * NNS Plug  Stoic
-                     * AstorMe  .. maybe add more */
-  pub name: String,
-}
-impl Default for WalletAddCommand {
-    fn default() -> Self {
-        WalletAddCommand {
-            address: String::new(),
-            principal_id: None,
-            from: String::new(),
-            name: String::new(),
-        }
-    }
-}
-#[derive(Debug, Clone, CandidType, Deserialize)]
-pub struct NeuronAddCommand {
-  pub address: String,
-  pub from: String, 
-  pub name: String,
-}
-
-
-
-#[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct WalletUpdateCommand {
   //muttable
   pub from: String, /* from which wallet_type: such as
@@ -75,32 +45,36 @@ pub struct WalletUpdateCommand {
                      * pub last_sync_time:u64,
                      * pub last_transaction_time:u64, */
 }
+
+impl Default for WalletUpdateCommand {
+  fn default() -> Self {
+    WalletUpdateCommand {
+      from: String::new(),
+      name: String::new(),
+      id: WalletId::default(), // Assuming WalletId has a default implementation
+    }
+  }
+}
 #[derive(Debug, Clone, CandidType, Deserialize)]
-pub struct NeuronUpdateCommand {
-  //muttable
+pub struct WalletAddCommand {
+  pub address: String,
+  pub principal_id: Option<String>, /* Plug use , need
+                                     * to convert to
+                                     * opt_account_id_hex for use. */
   pub from: String, /* from which wallet_type: such as
                      * NNS Plug  Stoic
                      * AstorMe  .. maybe add more */
-
-  // muttable
   pub name: String,
-
-  // immutable . for locate the wallet
-  pub id: WalletId, /*when update , specify id .
-                     * pub transactions:u64,
-                     * pub last_sync_time:u64,
-                     * pub last_transaction_time:u64, */
 }
-
-
-impl Default for WalletUpdateCommand {
-    fn default() -> Self {
-        WalletUpdateCommand {
-            from: String::new(),
-            name: String::new(),
-            id: WalletId::default(), // Assuming WalletId has a default implementation
-        }
+impl Default for WalletAddCommand {
+  fn default() -> Self {
+    WalletAddCommand {
+      address: String::new(),
+      principal_id: None,
+      from: String::new(),
+      name: String::new(),
     }
+  }
 }
 
 /**

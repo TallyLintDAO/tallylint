@@ -1,7 +1,7 @@
-use std::collections::{BTreeMap, HashMap};
-
+#[allow(unused_imports)]
 use candid::{CandidType, Principal};
 use ic_cdk::caller;
+use std::collections::{BTreeMap, HashMap};
 
 use super::domain::*;
 
@@ -72,13 +72,12 @@ impl WalletService {
     user: Principal,
   ) -> Option<String> {
     let user_wallets = self.query_wallet_array(user);
-    let mut id = 0;
+
     if let Some(wallet) = user_wallets
       .iter()
       .find(|wallet| wallet.address == profile.address)
     {
-      id = wallet.id;
-      match self.wallets.insert(id, profile) {
+      match self.wallets.insert(wallet.id, profile) {
         Some(_) => Some("update success".to_string()),
         None => None,
       }
@@ -123,9 +122,10 @@ impl WalletService {
       .wallets
       .values()
       .filter(|profile| &profile.holder == &user)
-      .filter(|p|p.from=="NNS_neuron".to_string())
+      .filter(|p| p.from == "NNS_neuron".to_string())
       .collect();
-    // profiles.into_iter().filter(|p|p.from=="NNS_neuron".to_string()).collect();
+    // profiles.into_iter().filter(|p|p.from=="NNS_neuron".to_string()).
+    // collect();
     if profiles.is_empty() {
       return Vec::new();
     } else {

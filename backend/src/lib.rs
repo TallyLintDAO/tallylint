@@ -30,6 +30,7 @@ use std::collections::HashMap;
 // use crate::canister_api::domain::*;
 #[allow(unused_imports)]
 use crate::nns::api::*;
+use crate::nns::domain::*;
 use crate::wallet::service::RecordId;
 use crate::wallet::service::WalletId;
 #[allow(unused_imports)]

@@ -2,7 +2,10 @@
   debug_assertions,
   allow(dead_code, unused_imports, unused_variables, unused_mut)
 )]
+use std::{borrow::BorrowMut, collections::BTreeMap};
+
 use candid::Principal;
+#[allow(unused_imports)]
 use candid::{self, CandidType, Decode, Deserialize, Encode};
 use ic_cdk::api::call::CallResult;
 use ic_cdk_macros::{query, update};
@@ -10,12 +13,12 @@ use serde::Serialize;
 
 /*
 independent query neuron info .
+todo: just basic info. need auth to get detailed info.
 */
 #[update]
 pub async fn get_neuron_info(neuron_id: u64) -> CallResult<(CustomResult1,)> {
   return _get_neuron_info(neuron_id).await;
 }
-
 
 pub async fn _get_neuron_info(arg0: u64) -> CallResult<(CustomResult1,)> {
   // maybe get_neuron_info only can call inside ic .not
@@ -63,4 +66,95 @@ pub enum CustomResult1 {
 pub struct GovernanceError {
   pub error_message: String,
   pub error_type: i32,
+}
+
+use crate::{
+  common::guard::user_owner_guard, nns::domain::*,
+  wallet::domain::WalletProfile, CONTEXT,
+};
+
+use super::service::NeuronService;
+#[update(guard = "user_owner_guard")]
+fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
+  CONTEXT.with(|c| {
+    let mut ctx = c.borrow_mut();
+    let user = ctx.env.caller();
+    let time = ctx.env.now();
+    let id = ctx.id;
+
+    let mut service = ctx.neuron_service.borrow_mut();
+    let addr = cmd.address.clone();
+    if service.neurons.contains_key(&addr) {
+      return Err("addr duplicated".to_string());
+    }
+
+    let profile = NeuronProfile {
+      owner: user,
+      name: cmd.name,
+      id: id,
+      create_time: time,
+      addr: cmd.address,
+    };
+    let ret = service.neurons.insert(addr, profile);
+    ctx.id = id + 1;
+    return Ok(true);
+  })
+}
+#[update(guard = "user_owner_guard")]
+fn delete_neuron_wallet(id: u64) -> Result<bool, String> {
+  CONTEXT.with(|c| {
+    let mut ctx = c.borrow_mut();
+    let user = ctx.env.caller();
+    let mut service = ctx.neuron_service.borrow_mut();
+    let profile = service.search_by_id(id);
+    if profile.is_none() {
+      return Err("no data ".to_string());
+    }
+    service.neurons.remove(&profile.unwrap().addr.clone());
+    return Ok(true);
+  })
+}
+#[update(guard = "user_owner_guard")]
+fn update_neuron_wallet(cmd: NeuronUpdateCommand) -> Result<bool, String> {
+  CONTEXT.with(|c| {
+    let mut ctx = c.borrow_mut();
+    let user = ctx.env.caller();
+    let mut service = ctx.neuron_service.borrow_mut();
+    let mut profile = service.search_by_id(cmd.id);
+    if profile.is_none() {
+      return Err("no data ".to_string());
+    }
+    let mut p = profile.unwrap().clone();
+    p.name = cmd.name;
+    service.neurons.insert(p.addr.clone(), p.to_owned());
+    return Ok(true);
+  })
+}
+#[query(guard = "user_owner_guard")]
+fn query_all_neuron_wallet() -> Result<Vec<NeuronProfile>, Vec<NeuronProfile>> {
+  CONTEXT.with(|c| {
+    let ctx = c.borrow_mut();
+    let user = ctx.env.caller();
+    let neurons = ctx
+      .neuron_service
+      .search_by_owner(user)
+      .into_iter()
+      .cloned()
+      .collect();
+    return Ok(neurons);
+  })
+}
+
+#[query(guard = "user_owner_guard")]
+fn query_a_neuron_wallet(id: u64) -> Result<NeuronProfile, String> {
+  CONTEXT.with(|c| {
+    let mut ctx = c.borrow_mut();
+    let user = ctx.env.caller();
+    let mut ns = ctx.neuron_service.borrow_mut();
+    let ret = ns.search_by_id(id);
+    if ret.is_none() {
+      return Err("no data".to_string());
+    }
+    return Ok(ret.unwrap().clone());
+  })
 }

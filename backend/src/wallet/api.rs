@@ -15,35 +15,6 @@ const ACCOUNT_ID_LENGTH: usize = 64;
 const PRINCIPAL_ID_LENGTH: usize = 63;
 
 #[update(guard = "user_owner_guard")]
-fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
-  let mut add=WalletAddCommand::default();
-  add.from="NNS_neuron".to_string();
-  add.name=cmd.name;
-  add.address=cmd.address;
-  add_wallet(add)
-}
-#[update(guard = "user_owner_guard")]
-fn delete_neuron_wallet(id: u64) -> Result<bool, String> {
-  delete_wallet(id)
-}
-#[update(guard = "user_owner_guard")]
-fn update_neuron_wallet(cmd: NeuronUpdateCommand) -> Result<bool, String> {
-  let mut update_info=WalletUpdateCommand::default();
-  update_info.from="NNS_neuron".to_string();
-  update_info.name=cmd.name;
- update_wallet(update_info)
-}
-#[update(guard = "user_owner_guard")]
-fn query_all_neuron_wallet() -> Result<Vec<WalletProfile>, Vec<WalletProfile>> {
-    CONTEXT.with(|c| {
-    let ctx = c.borrow_mut();
-    let user = ctx.env.caller();
-    let wallets = ctx.wallet_service.query_all_neuron(user);
-    return Ok(wallets);
-  })
-}
-
-#[update(guard = "user_owner_guard")]
 fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
   CONTEXT.with(|c| {
     if cmd.name.len() > MAX_WALLET_NAME_LENGTH {
@@ -99,13 +70,13 @@ fn update_wallet(cmd: WalletUpdateCommand) -> Result<bool, String> {
     }
     let mut ctx = c.borrow_mut();
     let caller = ctx.env.caller();
-    let now = ctx.env.now();
+    // let now = ctx.env.now();
     let id: u64 = cmd.id;
-    let  ret = ctx.wallet_service.query_a_wallet(id);
-    if ret.is_none(){
-      return Err("Can not update wallet".to_string());
+    let ret = ctx.wallet_service.query_a_wallet(id);
+    if ret.is_none() {
+      return Err("wallet not exist".to_string());
     }
-    let mut profile=ret.unwrap();
+    let mut profile = ret.unwrap();
     // holder: caller,
     // profile.address=wallet_update_command.address;
     // profile.from=wallet_update_command.from;
@@ -166,7 +137,7 @@ fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     let id = ctx.id;
-    let mut profile = RecordProfile {
+    let profile = RecordProfile {
       id: id,
       address: cmd.address,
       price: cmd.price,
@@ -306,6 +277,7 @@ fn convert_edit_command_to_record_profile(
   }
 }
 
+#[allow(dead_code)]
 fn get_account_id(hex_str: String) -> AccountIdentifier {
   let account = AccountIdentifier::from_hex(&hex_str);
   if account.is_ok() {

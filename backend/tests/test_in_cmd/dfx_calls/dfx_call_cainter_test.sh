@@ -60,10 +60,16 @@ dfx canister call backend add_wallet '(record { address = "c9"; name = "AmydaLu"
 
 #neuron CRUD test 
 dfx canister call backend add_neuron_wallet '(record { address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"; name = "AmydaLu"; from = "asdaw" })'
+dfx canister call backend add_wallet '(record { address = "107b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"; name = "AmydaLu"; from = "asdaw" })'
+
 dfx canister call backend query_all_neuron_wallet
+dfx canister call backend query_a_wallet 10003
+dfx canister call backend  update_neuron_wallet '(record { id = 10003; from="nns1"; name = "cczz";})'
 
 
 
+
+# testing :    backend: http://127.0.0.1:4943/?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai&id=bkyz2-fmaaa-aaaaa-qaaaq-cai
 dfx canister call backend delete_wallet 100002
 dfx canister call backend query_all_wallets --query
 dfx canister call backend get_caller_principal
@@ -79,6 +85,7 @@ dfx canister call backend  get_neuron_info "9758293084897065223"
 dfx canister call backend  delete_wallet "9758293084897065223"
 dfx canister call backend  query_a_wallet "10002"
 dfx canister call backend  update_wallet '(record { id = 10002; name = "cczz";})'
+dfx canister call backend  update_neuron_wallet '(record { id = 10003; name = "cczz"; from="nns1";})'
 dfx canister call backend  query_a_wallet "10006"
 dfx canister call backend query_all_wallets --query
 dfx canister call backend delete_transaction_record "10006"

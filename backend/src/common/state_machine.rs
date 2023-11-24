@@ -41,11 +41,15 @@ fn pre_upgrade() {
       Vec::from_iter(context.wallet_service.wallets.values().cloned());
     let records =
       Vec::from_iter(context.wallet_record_service.records.values().cloned());
+    let neurons =
+      // Vec::from_iter(context.neuron_service.neurons.values().cloned());
+      Vec::new();
     let payload: CanisterDB = CanisterDB {
       id,
       users,
       wallets,
       records,
+      neurons,
     };
     storage::stable_save((payload,)).expect("failed to save state data");
     // IMPORTANT erase db in running canister.(ic or local)

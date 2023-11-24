@@ -54,11 +54,11 @@ fn user_quantity() -> u32 {
   })
 }
 
-#[query(guard = "user_owner_guard")]
-fn get_ledger_id(p: Principal) -> u32 {
-  let id: u32 = 0;
-  return id;
-}
+// #[query(guard = "user_owner_guard")]
+// fn get_ledger_id(p: Principal) -> u32 {
+//   let id: u32 = 0;
+//   return id;
+// }
 
 //   The replica returned a replica error: Replica Error:
 // reject code CanisterError, reject message IC0504:
