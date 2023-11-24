@@ -116,9 +116,9 @@
                       </q-item-label>
                     </q-item-section>
                   </q-item>
-                  <q-item v-if="props.row.maturity">
+                  <q-item v-if="props.row.maturity || props.row.maturity === 0">
                     <q-item-section>
-                      <q-item-label> Maturity</q-item-label>
+                      <q-item-label> Maturity </q-item-label>
                       <q-item-label caption>
                         {{ props.row.maturity }}
                       </q-item-label>
@@ -126,7 +126,7 @@
                   </q-item>
                   <q-item v-if="props.row.stakedMaturity">
                     <q-item-section>
-                      <q-item-label> StakedMaturity</q-item-label>
+                      <q-item-label> StakedMaturity </q-item-label>
                       <q-item-label caption>
                         {{ props.row.stakedMaturity }}
                       </q-item-label>
