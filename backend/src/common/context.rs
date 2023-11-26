@@ -73,7 +73,11 @@ impl From<CanisterDB> for CanisterContext {
       //manipulate each element iterator gives
       .map(|v| (v.id, v))
       .collect();
-    let neurons = payload.neurons.into_iter().map(|p| (p.addr.clone(), p)).collect();
+    let neurons = payload
+      .neurons
+      .into_iter()
+      .map(|p| (p.addr.clone(), p))
+      .collect();
     Self {
       env: Box::new(CanisterEnvironment {}),
       id: payload.id,

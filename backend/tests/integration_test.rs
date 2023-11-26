@@ -2,6 +2,7 @@
 
 use candid::{CandidType, Decode, Encode, Nat};
 use ic_agent::{export::Principal, Agent};
+use ic_stable_structures::BTreeMap;
 use serde::Deserialize;
 
 #[derive(CandidType)]
@@ -68,4 +69,69 @@ async fn test1() {
 async fn test_run() {
   let canister_id = create_a_canister().await.unwrap();
   eprintln!("{}", canister_id);
+}
+
+
+
+#[test]
+fn test_stable_mem(){
+use ic_stable_structures::{
+    memory_manager::{MemoryId, MemoryManager, VirtualMemory},
+    DefaultMemoryImpl,
+};
+
+const UPGRADES: MemoryId = MemoryId::new(0);
+const INSTRUCTION_COUNTS_INDEX: MemoryId = MemoryId::new(1);
+const INSTRUCTION_COUNTS_DATA: MemoryId = MemoryId::new(2);
+
+pub type Memory = VirtualMemory<DefaultMemoryImpl>;
+
+thread_local! {
+    static MEMORY_MANAGER: MemoryManager<DefaultMemoryImpl>
+        = MemoryManager::init_with_bucket_size(DefaultMemoryImpl::default(), 16);
+}
+
+pub fn get_upgrades_memory() -> Memory {
+    get_memory(UPGRADES)
+}
+
+pub fn get_instruction_counts_index_memory() -> Memory {
+    get_memory(INSTRUCTION_COUNTS_INDEX)
+}
+
+pub fn get_instruction_counts_data_memory() -> Memory {
+    get_memory(INSTRUCTION_COUNTS_DATA)
+}
+
+fn get_memory(id: MemoryId) -> Memory {
+    MEMORY_MANAGER.with(|m| m.get(id))
+}
+
+
+
+let mut map: BTreeMap<u64, u64, _> = BTreeMap::init(DefaultMemoryImpl::default());
+
+map.insert(1, 2);
+assert_eq!(map.get(&1), Some(2));
+
+use std::cell::RefCell;
+use ic_stable_structures::{StableBTreeMap};
+
+thread_local! {
+  static USERS: RefCell<StableBTreeMap<(u32,u32), u32, DefaultMemoryImpl>> =
+    RefCell::new(StableBTreeMap::init(DefaultMemoryImpl::default()));
+}
+USERS.with(|u|{
+  let mut users= u.borrow_mut();
+  users.insert((10,1), 5);
+  
+  let ret=users.get(&(10,1));
+  assert_eq!(ret,Some(5));
+});
+
+let m=get_memory(INSTRUCTION_COUNTS_DATA);
+
+
+
+
 }
