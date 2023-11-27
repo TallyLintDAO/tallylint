@@ -26,6 +26,9 @@ dfx deploy backend
 # above work for ic-cdk 0.10.0
 # 0.11.3 use this :
 cargo build --release --target wasm32-unknown-unknown --package backend && candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/backend.did
+cargo build --release --target wasm32-unknown-unknown --package backend && candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/canisters/backend/backend.did
+cargo build --target wasm32-unknown-unknown --release -p backend --locked
+
 # maybe almost the same stuff. just abstraction or simplfied 0.10.0 cmd.
 # step2:
 dfx deploy backend --network ic 

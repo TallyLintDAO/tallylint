@@ -1,4 +1,5 @@
 {
+  "dfx": "0.15.1",
   "canisters": {
     "assets": {
       "dependencies": [],
@@ -9,9 +10,30 @@
       "type": "assets"
     },
     "backend": {
-      "candid": "backend/backend.did",
+      "candid": "backend/canisters/backend/backend.did",
       "package": "backend",
       "type": "rust"
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8080",
+      "type": "ephemeral",
+      "replica": {
+        "subnet_type": "system"
+      }
+    },
+    "ic": {
+      "providers": ["https://ic0.app/"],
+      "type": "persistent"
+    },
+    "ic_test": {
+      "providers": ["https://ic0.app/"],
+      "type": "persistent"
+    },
+    "web_test": {
+      "providers": ["https://ic0.app/"],
+      "type": "persistent"
     }
   },
   "defaults": {
@@ -22,5 +44,4 @@
   },
   "output_env_file": ".env",
   "version": 1
-
 }

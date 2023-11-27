@@ -4,7 +4,6 @@ use pocket_ic::{PocketIc, WasmResult};
 
 #[test]
 fn test_counter_canister() {
-
   use std::fs::File;
   use std::io::Read;
   //   let mut buf = Vec::new();
@@ -18,7 +17,6 @@ fn test_counter_canister() {
   // Create an empty canister as the anonymous principal and add cycles.
   let canister_id = pic.create_canister();
   pic.add_cycles(canister_id, 2_000_000_000_000);
-
 
   pic.install_canister(canister_id, wasm, vec![], None);
   // 'inc' is a counter canister method.
