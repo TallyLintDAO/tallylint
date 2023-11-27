@@ -72,3 +72,49 @@ export async function syncWallet(
 ): Promise<ApiResult<boolean>> {
   return getBackend().sync_transaction_record({ walletId, history })
 }
+
+// 增加用户神经元的钱包地址
+export async function addUserNeuron(
+  address: string,
+  name: string,
+): Promise<ApiResult<boolean>> {
+  return getBackend().add_neuron_wallet({
+    address: address,
+    name: name,
+    from: "NNS",
+    principal_id: [],
+  })
+}
+
+// 编辑用户神经元钱包
+export async function editUserNeuron(
+  walletId: bigint,
+  name: string,
+): Promise<ApiResult<boolean>> {
+  return getBackend().update_neuron_wallet({
+    id: walletId,
+    from: "NNS",
+    name: name,
+  })
+}
+
+// 删除用户神经元钱包
+export async function deleteUserNeuron(
+  walletId: bigint,
+): Promise<ApiResult<boolean>> {
+  return getBackend().delete_neuron_wallet(walletId)
+}
+
+// 查询用户神经元的钱包地址
+export async function getUserNeuron(
+  refresh: boolean,
+): Promise<ApiResult<WalletInfo[]>> {
+  return getBackend().query_all_neuron_wallet()
+  // return await getCache({
+  //   key: "USER_Neurons",
+  //   execute: () => getBackend().query_all_neuron_wallet(),
+  //   ttl: walletTTL,
+  //   // isLocal: true, //TODO 是否需要本地存储还需考虑，理论上来说内存存储就足够了
+  //   refresh: refresh, //是否刷新缓存，用于执行增删改操作后的刷新。
+  // })
+}
