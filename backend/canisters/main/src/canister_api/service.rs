@@ -50,7 +50,7 @@ fn get_wasm_module() -> Vec<u8> {
   // 2. get the wasm from db and treat as a vec<u8> bytes.
   // why the code is running on the ic -chain can read local
   // file ?? wasm ? and ic blockchain application ?
-  let bytes: &[u8] ;
+  let bytes: &[u8]= b"Hello, world!";
   // =std::include_bytes!("../../../.dfx/local/canisters/backend/backend.wasm");
   let mut wasm = bytes.to_vec();
   // wasm.clear(); // the return is too large !    //why ?

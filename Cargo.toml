@@ -1,6 +1,6 @@
 [workspace]
 members = [
-"backend/main",
+"backend/canisters/main",
 "backend/lib/canister_tracing_macros",
 
 ]

@@ -10,7 +10,7 @@ crate-type = [
   "cdylib",
 ] #  necessary to compile this Rust program into WebAssembly module.
 # cdy: "C Dynamic Library."
-
+path = "src/lib.rs"
 
 [dependencies]
 # 099 or 096 confilct with nns goveranance.
@@ -65,6 +65,9 @@ pocket-ic = "2.0.1"
 tracing = "0.1.40"
 tracing-attributes = "0.1.27"
 tracing-subscriber = "0.3.18"
+canister_tracing_macros = { path = "../../lib/canister_tracing_macros" } # this path ../ here is not so convinient for universal use. push the lib to crate.io(or any self hold lib) will be better ?
+
+
 
 
 

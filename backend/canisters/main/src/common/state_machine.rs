@@ -22,7 +22,7 @@ fn init() {
 }
 
 /**
- * 1. each time upgrade(cmd : dfx deploy ),
+ * 1. each time upgrade(such as CLI-cmd : dfx deploy ),
  * will *erase* all ic-DB (canister stable memory)
  * so we can:
  *      1.manually erase all,
