@@ -25,7 +25,6 @@ dfx deploy backend
 # cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did 
 # above work for ic-cdk 0.10.0
 # 0.11.3 use this :
-cargo build --release --target wasm32-unknown-unknown --package backend && candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/backend.did
 cargo build --release --target wasm32-unknown-unknown --package backend && candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/canisters/backend/backend.did
 cargo build --target wasm32-unknown-unknown --release -p backend --locked
 
@@ -63,6 +62,8 @@ dfx canister call backend add_wallet '(record { address = "c9"; name = "AmydaLu"
 
 #neuron CRUD test 
 dfx canister call backend add_neuron_wallet '(record { address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"; name = "AmydaLu"; from = "asdaw" })'
+
+# good wallet addr with proper transactions  
 dfx canister call backend add_wallet '(record { address = "107b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"; name = "AmydaLu"; from = "asdaw" })'
 
 dfx canister call backend query_all_neuron_wallet
