@@ -24,7 +24,7 @@ find . -name "*.rs" -print | xargs wc -l
 goal: update can without losing data and incompability when datastructure modifyied cause restore_fs fail.
 1.openchat的存储应用案例是stable memory.
 threadlocal with ic-stable memory manager with memory(0,1,2...)
-memory(x)  is Virtuaized Mem in a canister mem.into 16 VMs.
+memory(x)  is Virtuaized Mem in a canister mem.into 16 VMems.
 now taxlint use: ic的storage库和ic-stable-memory是否调用的同样的底层存储?
 
 

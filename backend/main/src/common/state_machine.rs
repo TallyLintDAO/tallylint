@@ -1,5 +1,9 @@
 use ic_cdk::storage;
 use ic_cdk_macros::*;
+use canister_tracing_macros::trace;
+
+
+use tracing::info;
 
 use super::context::{CanisterContext, CanisterDB};
 use super::env::CanisterEnvironment;
@@ -33,6 +37,9 @@ fn init() {
 fn pre_upgrade() {
   // with is a function can receive a function as para.
   // and | | syntax here means a function with no name.
+
+      info!("Pre-upgrade starting");
+
   CONTEXT.with(|c| {
     let context = c.borrow();
     let id = context.id;
