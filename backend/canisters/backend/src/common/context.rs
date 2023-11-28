@@ -2,9 +2,7 @@ use crate::{
   common::env::Environment,
   wallet::{
     domain::RecordProfile,
-    service::{
-      RecordId, WalletId, WalletRecordService,
-    },
+    service::{RecordId, WalletId, WalletRecordService},
   },
 };
 use candid::{CandidType, Deserialize, Principal};

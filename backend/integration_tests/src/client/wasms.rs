@@ -1,5 +1,5 @@
 use super::utils::local_bin;
-use candid::{CandidType};
+use candid::CandidType;
 use lazy_static::lazy_static;
 use std::fs::File;
 use std::io::Read;

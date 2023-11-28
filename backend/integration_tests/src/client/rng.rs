@@ -2,25 +2,28 @@ use std::fmt::{Display, Formatter};
 
 use candid::Principal;
 
-use rand::{random, RngCore, distributions::{Distribution, Standard}, Rng};
+use rand::{
+  distributions::{Distribution, Standard},
+  random, Rng, RngCore,
+};
 pub struct MessageId(u128);
 
 impl Distribution<MessageId> for Standard {
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> MessageId {
-        MessageId(rng.gen())
-    }
+  fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> MessageId {
+    MessageId(rng.gen())
+  }
 }
 
 impl From<u128> for MessageId {
-    fn from(value: u128) -> MessageId {
-        MessageId(value)
-    }
+  fn from(value: u128) -> MessageId {
+    MessageId(value)
+  }
 }
 
 impl Display for MessageId {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        std::fmt::Display::fmt(&self.0, f)
-    }
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    std::fmt::Display::fmt(&self.0, f)
+  }
 }
 
 use super::setup::NNS_INTERNET_IDENTITY_CANISTER_ID;
@@ -37,7 +40,8 @@ pub fn random_user_principal() -> (Principal, Vec<u8>) {
   ];
 
   // TODO : productivtiy .
-  // if user need this rand dep . what cargo just auto import for me ?? like JAVA
+  // if user need this rand dep . what cargo just auto import for me ?? like
+  // JAVA
   let random_bytes: [u8; 32] = random();
 
   let mut public_key = Vec::from(algorithm_bytes);

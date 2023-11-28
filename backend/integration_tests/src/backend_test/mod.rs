@@ -1,1 +1,1 @@
-mod test;
+mod nns_wallet_test;

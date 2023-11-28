@@ -21,13 +21,30 @@ pub struct TestEnv {
 //  gunzip xxx.
 // sudo ln -s ~/app/pocket-ic /usr/bin/pocket-ic
 // TODO pocket-ic dont tell me he got new version , how ?
-pub static POCKET_IC_BIN: &str = "/usr/bin/pocket-ic";
+pub static MY_POCKET_IC_BIN: &str = "/usr/bin/pocket-ic";
 
 pub fn setup_new_env() -> TestEnv {
+  get_pocket_ic_path();
+
+  let mut replica = PocketIcBuilder::new()
+    .with_nns_subnet()
+    .with_application_subnet()
+    .build();
+  let controller = random_principal();
+  let canister_ids = install_canisters(&mut replica, controller);
+
+  TestEnv {
+    env: replica,
+    canister_ids,
+    controller,
+  }
+}
+
+fn get_pocket_ic_path() {
   let path = match env::var_os("POCKET_IC_BIN") {
     None => {
-      env::set_var("POCKET_IC_BIN", POCKET_IC_BIN);
-      POCKET_IC_BIN.to_string()
+      env::set_var("POCKET_IC_BIN", MY_POCKET_IC_BIN);
+      MY_POCKET_IC_BIN.to_string()
     }
     Some(path) => path
       .clone()
@@ -44,19 +61,6 @@ pub fn setup_new_env() -> TestEnv {
         Running the testing script will automatically place the PocketIC binary at the right place to be run without setting the POCKET_IC_BIN environment variable:
             ./scripts/run-integration-tests.sh
         ", &path, &env::current_dir().map(|x| x.display().to_string()).unwrap_or_else(|_| "an unknown directory".to_string()));
-  }
-
-  let mut env = PocketIcBuilder::new()
-    .with_nns_subnet()
-    .with_application_subnet()
-    .build();
-  let controller = random_principal();
-  let canister_ids = install_canisters(&mut env, controller);
-
-  TestEnv {
-    env,
-    canister_ids,
-    controller,
   }
 }
 // code behavoir: install canisters(wasm file) into test-env(ic-replica of impl

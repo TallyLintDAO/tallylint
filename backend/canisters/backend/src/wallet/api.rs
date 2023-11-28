@@ -295,8 +295,7 @@ fn get_account_id(hex_str: String) -> AccountIdentifier {
 // #[cfg(target_arch = "wasm32")]
 mod tests {
   use super::*;
-  
-  
+
   #[test]
   fn test_add_wallet() {
     let should_ok_cmd = WalletAddCommand {

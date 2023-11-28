@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use candid::Principal;
 
-use super::{domain::NeuronProfile};
+use super::domain::NeuronProfile;
 
 #[derive(Debug, Default)]
 pub struct NeuronService {
