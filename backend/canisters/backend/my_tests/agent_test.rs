@@ -1,5 +1,5 @@
-use candid::Decode;
-use candid::Principal;
+// use candid::Decode;
+// use candid::Principal;
 
 // usage :
 // https://forum.dfinity.org/t/how-do-you-geeks-use-ic-agent-in-rust-for-testing/24593
