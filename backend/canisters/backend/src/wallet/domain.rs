@@ -51,7 +51,8 @@ impl Default for WalletUpdateCommand {
     WalletUpdateCommand {
       from: String::new(),
       name: String::new(),
-      id: WalletId::default(), // Assuming WalletId has a default implementation
+      id: WalletId::default(), /* Assuming WalletId has a default
+                                * implementation */
     }
   }
 }
@@ -110,7 +111,8 @@ pub struct RecordProfile {
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct HistoryQueryCommand {
   // Primary key
-  pub address: Option<WalletAddress>, /* make this optional. if not provide.
+  pub address: Option<WalletAddress>, /* make this optional. if not
+                                       * provide.
                                        * then query all. */
   pub from_time: TimeStamp,
   pub to_time: TimeStamp,

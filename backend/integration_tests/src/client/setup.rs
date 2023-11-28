@@ -27,10 +27,13 @@ pub fn setup_new_env() -> TestEnv {
   get_local_pocket_ic_bin();
 
   // TODO goes err here :
+  // pocket-ic build a single node of ic-replica. not the same like dfx start
+  // stuff. this will make ic-update fast.
   let mut replica = PocketIcBuilder::new()
     .with_nns_subnet()
     .with_application_subnet()
     .build();
+  // let  mut replica=PocketIc::new();
   let controller = random_principal();
   let canister_ids = install_canisters(&mut replica, controller);
 
