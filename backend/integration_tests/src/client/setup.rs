@@ -24,8 +24,9 @@ pub struct TestEnv {
 pub static MY_POCKET_IC_BIN: &str = "/usr/bin/pocket-ic";
 
 pub fn setup_new_env() -> TestEnv {
-  get_pocket_ic_path();
+  get_local_pocket_ic_bin();
 
+  // TODO goes err here :
   let mut replica = PocketIcBuilder::new()
     .with_nns_subnet()
     .with_application_subnet()
@@ -40,7 +41,7 @@ pub fn setup_new_env() -> TestEnv {
   }
 }
 
-fn get_pocket_ic_path() {
+fn get_local_pocket_ic_bin() {
   let path = match env::var_os("POCKET_IC_BIN") {
     None => {
       env::set_var("POCKET_IC_BIN", MY_POCKET_IC_BIN);
