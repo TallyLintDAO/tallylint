@@ -35,7 +35,7 @@ target/
 !/.dfx/ic/canisters/backend/backend.did.d.ts  
 !/.dfx/ic/canisters/backend/backend.did.js
 !/.dfx/ic/canisters/backend/index.js
-
+.log
 change_name.sh
 
 # TODO : only want to uplaod / download but never track history? how ?
