@@ -2,15 +2,17 @@
 .idea/
 **/*~
 .vscode/
+.VSCodeCounter/
 
-##frontend code
+
+##frontend code----------------------------------
 # dependencies:
 node_modules/
 # compiled frontend for distribution , such as .vue->.js .scss->.css
 dist/
-package-lock.json
+# package-lock.json
 
-##backend codes
+##backend codes------------------------------
 # binary file , debug file 
 target/
 # anywhere of folder named target
@@ -42,5 +44,8 @@ change_name.sh
 
 Cargo.lock
 
-.VSCodeCounter/
+
+#------------------------------
+
+
 
