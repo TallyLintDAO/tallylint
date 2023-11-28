@@ -21,6 +21,15 @@ impl Default for CanisterWasm {
     }
   }
 }
+impl Debug for CanisterWasm {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    f.debug_struct("CanisterWasm")
+      // .field("version", &self.version)
+      .field("byte_length", &self.module.len())
+      .finish()
+  }
+}
+
 // export file to ohter code:
 lazy_static! {
   pub static ref BACKEND: CanisterWasm = get_canister_wasm("backend");

@@ -30,4 +30,5 @@ lazy_static = "1.4.0"
 # testing:
 # some times compile fail. need to mention. and fix .
 pocket-ic = "2.0.1"
+rand = "0.8.5"
 

@@ -1,7 +1,29 @@
-use crate::NNS_INTERNET_IDENTITY_CANISTER_ID;
+use std::fmt::{Display, Formatter};
+
 use candid::Principal;
-use rand::{random, RngCore};
-use types::MessageId;
+
+use rand::{random, RngCore, distributions::{Distribution, Standard}, Rng};
+pub struct MessageId(u128);
+
+impl Distribution<MessageId> for Standard {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> MessageId {
+        MessageId(rng.gen())
+    }
+}
+
+impl From<u128> for MessageId {
+    fn from(value: u128) -> MessageId {
+        MessageId(value)
+    }
+}
+
+impl Display for MessageId {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(&self.0, f)
+    }
+}
+
+use super::setup::NNS_INTERNET_IDENTITY_CANISTER_ID;
 
 pub fn random_principal() -> Principal {
   let random_bytes = rand::thread_rng().next_u32().to_ne_bytes();
@@ -13,6 +35,9 @@ pub fn random_user_principal() -> (Principal, Vec<u8>) {
   let algorithm_bytes = [
     48u8, 60, 48, 12, 6, 10, 43, 6, 1, 4, 1, 131, 184, 67, 1, 2, 3, 44, 0,
   ];
+
+  // TODO : productivtiy .
+  // if user need this rand dep . what cargo just auto import for me ?? like JAVA
   let random_bytes: [u8; 32] = random();
 
   let mut public_key = Vec::from(algorithm_bytes);

@@ -17,8 +17,11 @@ pub struct TestEnv {
   pub canister_ids: CanisterIds,
   pub controller: Principal,
 }
-
-pub static POCKET_IC_BIN: &str = "./pocket-ic";
+// https://github.com/dfinity/pocketic
+//  gunzip xxx.
+// sudo ln -s ~/app/pocket-ic /usr/bin/pocket-ic
+// TODO pocket-ic dont tell me he got new version , how ?
+pub static POCKET_IC_BIN: &str = "/usr/bin/pocket-ic";
 
 pub fn setup_new_env() -> TestEnv {
   let path = match env::var_os("POCKET_IC_BIN") {
@@ -63,9 +66,28 @@ fn install_canisters(env: &mut PocketIc, controller: Principal) -> CanisterIds {
 
   let local_backend_canister_id = create_canister(env, controller);
 
-  let backend_init_args = backend::init::Args {
+  #[derive(CandidType, Serialize, Deserialize, Debug)]
+  pub struct Args {
+    // Only these principals can call upgrade_user_canister_wasm
+    pub service_principals: Vec<Principal>,
+
+    pub backend_canister_wasm: CanisterWasm,
+    // pub local_user_index_canister_wasm: CanisterWasm,
+    // pub group_index_canister_id: CanisterId,
+    // pub notifications_index_canister_id: CanisterId,
+    // pub proposals_bot_canister_id: CanisterId,
+    // pub cycles_dispenser_canister_id: CanisterId,
+    // pub storage_index_canister_id: CanisterId,
+    // pub internet_identity_canister_id: CanisterId,
+    // pub wasm_version: BuildVersion,
+    pub test_mode: bool,
+  }
+
+  // TODO should be  user_index_canister::init::Args {  in canisters/ folder
+  // code . 捡懒
+  let backend_init_args = Args {
     service_principals: vec![controller],
-    local_backend_canister_wasm: CanisterWasm::default(),
+    backend_canister_wasm: CanisterWasm::default(),
     // wasm_version: BuildVersion::min(),
     test_mode: true,
   };
@@ -77,27 +99,27 @@ fn install_canisters(env: &mut PocketIc, controller: Principal) -> CanisterIds {
     backend_canister_wasm,
     backend_init_args,
   );
-return CanisterIds {
-        backend: local_backend_canister_id,     
-    }
+  return CanisterIds {
+    backend: local_backend_canister_id,
+  };
 }
 
 pub fn install_canister<P: CandidType>(
-    env: &mut PocketIc,
-    sender: Principal,
-    canister_id: CanisterId,
-    wasm: CanisterWasm,
-    payload: P,
+  env: &mut PocketIc,
+  sender: Principal,
+  canister_id: CanisterId,
+  wasm: CanisterWasm,
+  payload: P,
 ) {
-    env.install_canister(
-        canister_id,
-        wasm.module,
-        candid::encode_one(&payload).unwrap(),
-        Some(sender),
-    )
+  env.install_canister(
+    canister_id,
+    wasm.module,
+    candid::encode_one(&payload).unwrap(),
+    Some(sender),
+  )
 }
 
-const INIT_CYCLES_BALANCE: u128 = 1_000 * Tera;
+const INIT_CYCLES_BALANCE: u128 = 1_000 * TERA;
 
 pub fn create_canister(
   env: &mut PocketIc,
@@ -179,6 +201,6 @@ pub struct CanisterIds {
 pub type Cycles = u128;
 
 // T is not so good. simialr with gererics <T>
-const Tera: Cycles = 1_000_000_000_000;
-const NNS_INTERNET_IDENTITY_CANISTER_ID: CanisterId =
+pub const TERA: Cycles = 1_000_000_000_000;
+pub const NNS_INTERNET_IDENTITY_CANISTER_ID: CanisterId =
   Principal::from_slice(&[0, 0, 0, 0, 0, 0, 0, 10, 1, 1]);
