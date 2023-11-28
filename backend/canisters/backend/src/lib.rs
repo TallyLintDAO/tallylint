@@ -1,8 +1,10 @@
 use candid::Principal;
 use std::cell::RefCell;
 // export apis below each
+
 pub mod canister_api;
 pub mod common;
+pub mod lifecycle;
 pub mod nns;
 pub mod user;
 pub mod wallet;

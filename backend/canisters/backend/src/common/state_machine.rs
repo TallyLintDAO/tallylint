@@ -41,7 +41,7 @@ fn pre_upgrade() {
   info!("Pre-upgrade starting");
   let logs = canister_logger::export_logs();
   let traces = canister_logger::export_traces();
-  
+
   CONTEXT.with(|c| {
     let context = c.borrow();
     let id = context.id;

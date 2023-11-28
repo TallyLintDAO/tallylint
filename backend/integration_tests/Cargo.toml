@@ -1,0 +1,13 @@
+
+[package]
+name = "integration_tests"
+version = "0.1.0"
+edition = "2021"
+
+
+[dev-dependencies]
+lazy_static = { workspace = true }
+pocket-ic = { workspace = true }
+candid = { workspace = true }
+serde = { workspace = true }
+serde_bytes = { workspace = true }
