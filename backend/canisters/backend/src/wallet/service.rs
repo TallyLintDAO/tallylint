@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use candid::{CandidType, Principal};
-use ic_cdk::caller;
+
 use std::collections::{BTreeMap, HashMap};
 
 use super::domain::*;

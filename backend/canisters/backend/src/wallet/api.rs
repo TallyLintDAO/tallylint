@@ -202,7 +202,7 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
  */
 #[update(guard = "user_owner_guard")]
 fn sync_transaction_record(
-  data: HashMap<WalletId, Vec<RecordProfile>>,
+  _data: HashMap<WalletId, Vec<RecordProfile>>,
 ) -> Result<bool, String> {
   return Err("sync fail".to_string());
 }
@@ -295,8 +295,8 @@ fn get_account_id(hex_str: String) -> AccountIdentifier {
 // #[cfg(target_arch = "wasm32")]
 mod tests {
   use super::*;
-  use crate::wallet::WalletService;
-  use crate::CONTEXT;
+  
+  
   #[test]
   fn test_add_wallet() {
     let should_ok_cmd = WalletAddCommand {
@@ -309,7 +309,7 @@ mod tests {
       ),
       from: String::from("Plug"),
     };
-    let cm2 = WalletAddCommand {
+    let _cm2 = WalletAddCommand {
       principal_id: None,
       name: String::from("My Wallet"),
       address: String::from(
@@ -325,9 +325,9 @@ mod tests {
     // 那么有可能可以联合 rust-logic 和ic-logic TODO
     // 如果都不行.
     // 可以试试采用logging系统来记录程序运行.
-    let t = ic_cdk::api::time();
-    let c = ic_cdk::caller();
-    let can_id = ic_cdk::id();
+    let _t = ic_cdk::api::time();
+    let _c = ic_cdk::caller();
+    let _can_id = ic_cdk::id();
 
     let result = add_wallet(should_ok_cmd.clone());
     // Check the result

@@ -3,7 +3,7 @@ use crate::{
   wallet::{
     domain::RecordProfile,
     service::{
-      RecordId, TransactionRecord, WalletAddress, WalletId, WalletRecordService,
+      RecordId, WalletId, WalletRecordService,
     },
   },
 };

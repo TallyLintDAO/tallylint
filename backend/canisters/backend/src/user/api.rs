@@ -1,6 +1,6 @@
 use crate::CONTEXT;
 use candid::Principal;
-use ic_cdk_macros::{query, update};
+use ic_cdk_macros::{update};
 /**
  * IMPORTANT INFO
 自动登录和自动注册.api名称定了.注释描述一下在这里.
@@ -72,7 +72,7 @@ async fn get_balance() -> u64 {
   return balance;
 }
 
-use ic_cdk::api::{call::call, caller};
+use ic_cdk::api::{caller};
 use ic_ledger_types::{
   account_balance, AccountBalanceArgs, AccountIdentifier, Tokens,
   DEFAULT_SUBACCOUNT, MAINNET_LEDGER_CANISTER_ID,
@@ -101,7 +101,7 @@ pub fn get_caller_principal() -> String {
 
 #[cfg(test)] //unit-test attribute(#) in rust syntax
 mod tests {
-  use std::default;
+  
 
   use super::*;
 
@@ -116,7 +116,7 @@ mod tests {
     );
     // len should be 56 or 64 (56 is 64-8  <8 - symbol in
     // total? > )
-    let len = p.len();
+    let _len = p.len();
     let account = AccountIdentifier::new(
       &Principal::from_text(p).unwrap(),
       &DEFAULT_SUBACCOUNT,

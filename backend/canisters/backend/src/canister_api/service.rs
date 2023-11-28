@@ -52,7 +52,7 @@ fn get_wasm_module() -> Vec<u8> {
   // file ?? wasm ? and ic blockchain application ?
   let bytes: &[u8] = b"Hello, world!";
   // =std::include_bytes!("../../../.dfx/local/canisters/backend/backend.wasm");
-  let mut wasm = bytes.to_vec();
+  let wasm = bytes.to_vec();
   // wasm.clear(); // the return is too large !    //why ?
   return wasm;
 }

@@ -1,4 +1,4 @@
-use canister_tracing_macros::trace;
+
 use ic_cdk::storage;
 use ic_cdk_macros::*;
 
@@ -39,8 +39,8 @@ fn pre_upgrade() {
   // and | | syntax here means a function with no name.
 
   info!("Pre-upgrade starting");
-  let logs = canister_logger::export_logs();
-  let traces = canister_logger::export_traces();
+  let _logs = canister_logger::export_logs();
+  let _traces = canister_logger::export_traces();
 
   CONTEXT.with(|c| {
     let context = c.borrow();
