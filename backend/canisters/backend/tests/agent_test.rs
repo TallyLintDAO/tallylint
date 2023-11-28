@@ -3,7 +3,7 @@ use candid::Principal;
 
 // usage :
 // https://forum.dfinity.org/t/how-do-you-geeks-use-ic-agent-in-rust-for-testing/24593
-// todo: offical dont have tutorial of using this . maybe can PR some to the
+// TODO: offical dont have tutorial of using this . maybe can PR some to the
 // offical doc.
 // #[tokio::test]
 // async fn test1() {
@@ -27,10 +27,10 @@ use candid::Principal;
 //     .with_url("http://localhost:8000/")
 //     // ! pgrep replica  # get pid from name
 //     // !  lsof -i -P -n | grep LISTEN | grep <pid>
-//     //  todo ! which port should i use ?
+//     //  TODO ! which port should i use ?
 //     // Use an identity to sign messages
 //     .with_identity(create_identity())
-//     // todo: how to simulate : dfx use btwl1 ? and the account have passwd.
+//     // TODO: how to simulate : dfx use btwl1 ? and the account have passwd.
 // when     // i exec dfx cmd . it requires my passwd in bash
 //     .build()?;
 

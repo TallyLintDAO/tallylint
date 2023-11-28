@@ -36,7 +36,7 @@ dfx deploy backend --network ic
 ./change_name.sh
 # step4: git push did file to front dev. 
 ./backend/scripts/sync_remote.sh "did uploading of sync records"
-#todo: maybe use makefile or bash can auto this process.
+#TODO: maybe use makefile or bash can auto this process.
 
 dfx identity use btwl0
 dfx deploy backend --network ic

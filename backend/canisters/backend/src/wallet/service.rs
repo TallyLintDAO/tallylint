@@ -35,7 +35,7 @@ pub struct TransactionRecord {
 
   pub price: f64,
   pub amount: u32,
-  // todo , considering:
+  // TODO , considering:
   // pub wallet_amount:u32,
   pub time: TimeStamp, //transaction_time
   pub t_type: String,  //transaction_type
@@ -148,7 +148,7 @@ impl WalletService {
 }
 
 impl WalletRecordService {
-  // todo
+  // TODO
   pub fn add_transaction_record(
     &mut self,
     profile: RecordProfile,
@@ -200,7 +200,7 @@ impl WalletRecordService {
     return Err("nothing".to_string());
   }
 
-  // todo make sort method work.
+  // TODO make sort method work.
   //
   pub fn query_one(
     &self,

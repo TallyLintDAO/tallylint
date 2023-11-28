@@ -13,4 +13,4 @@ dfx deploy backend --network ic
 ./change_name.sh
 # step4: git push did file to front dev. 
 ./backend/scripts/sync_remote.sh "query wallet-records api working "
-#todo: maybe use makefile or bash can auto this process.
+#TODO: maybe use makefile or bash can auto this process.

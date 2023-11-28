@@ -13,7 +13,7 @@ use serde::Serialize;
 
 /*
 independent query neuron info .
-todo: just basic info. need auth to get detailed info.
+TODO: just basic info. need auth to get detailed info.
 */
 #[update]
 pub async fn get_neuron_info(neuron_id: u64) -> CallResult<(CustomResult1,)> {

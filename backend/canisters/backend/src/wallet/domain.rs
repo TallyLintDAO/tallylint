@@ -91,7 +91,7 @@ pub struct RecordProfile {
   //Transaction record
   pub price: f64,
   pub amount: u32,
-  // todo , considering wallet_amount :
+  // TODO , considering wallet_amount :
   // pub wallet_amount:u32,
   pub time: TimeStamp, //transaction_time
   pub t_type: String,  //transaction_type
@@ -99,7 +99,7 @@ pub struct RecordProfile {
   pub manual: bool,
   pub comment: String,
   // pub warning:String,
-  // todo: Warning（用户是否标记某些记录为missing cost,
+  // TODO: Warning（用户是否标记某些记录为missing cost,
   // missing rates）这条字段先只做出来，不用,
   // 解释：比如missing
   // rates是标记某个交易历史找不到对应的价格记录，
@@ -117,7 +117,7 @@ pub struct HistoryQueryCommand {
   pub t_type: String, /* transaction_type SEND or
                        * RECEIVE or BOTH */
   pub tag: String,
-  //    todo sort method:
+  //    TODO sort method:
   pub sort_method: String, /*by date-asc or date-desc
                             * or profit-asc
                             * profit-desc */
@@ -128,7 +128,7 @@ pub struct EditHistoryCommand {
   //Transaction record
   pub price: f64,
   pub amount: u32,
-  // todo , considering:
+  // TODO , considering:
   // pub wallet_amount:u32,
   pub time: TimeStamp, //transaction_time
   pub t_type: String,  //transaction_type
@@ -146,7 +146,7 @@ pub struct AddRecordCommand {
                                      * opt_account_id_hex for use. */
   pub price: f64,
   pub amount: u32,
-  // todo , considering:
+  // TODO , considering:
   // pub wallet_amount:u32,
   pub time: TimeStamp, //transaction_time
   pub t_type: String,  //transaction_type

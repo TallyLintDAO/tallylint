@@ -57,7 +57,7 @@ pub fn setup_new_env() -> TestEnv {
   }
 }
 // code behavoir: install canisters(wasm file) into test-env(ic-replica of impl
-// by pocketIC) todo: under constructing
+// by pocketIC) TODO: under constructing
 fn install_canisters(env: &mut PocketIc, controller: Principal) -> CanisterIds {
   let backend_canister_wasm = wasms::BACKEND.clone();
 

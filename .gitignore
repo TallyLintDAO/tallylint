@@ -16,7 +16,7 @@ target/
 # anywhere of folder named target
 
 #share .dfx folder for delicated development
-# todo
+# TODO
 # in the .dfx folder
 # exclusive track and  upload 
 # 1. .dfx/ic/canisters/
@@ -36,7 +36,7 @@ target/
 
 change_name.sh
 
-# todo : only want to uplaod / download but never track history? how ?
+# TODO : only want to uplaod / download but never track history? how ?
 
 .env
 

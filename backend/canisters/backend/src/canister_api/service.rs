@@ -41,7 +41,7 @@ pub fn new_install_info(canister_id: Principal) -> InstallCodeArgument {
   return install_config;
 }
 
-//todo: get the all current wasm module. include front end
+//TODO: get the all current wasm module. include front end
 // and backend . they are .wasm file . how to revoke himself
 // of the running code ?
 fn get_wasm_module() -> Vec<u8> {

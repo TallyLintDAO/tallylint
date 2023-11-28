@@ -60,8 +60,8 @@ fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
   })
 }
 
-// todo records things todo .
-// todo  字段还未全部实现方法.只有定义.
+// TODO records things TODO .
+// TODO  字段还未全部实现方法.只有定义.
 #[update(guard = "user_owner_guard")]
 fn update_wallet(cmd: WalletUpdateCommand) -> Result<bool, String> {
   CONTEXT.with(|c| {
@@ -84,7 +84,7 @@ fn update_wallet(cmd: WalletUpdateCommand) -> Result<bool, String> {
     profile.from = cmd.from;
     // id: id,
     // profile.create_time=now;
-    // todo
+    // TODO
     // transactions: now,
     // last_sync_time: now,
     // last_transaction_time: now,
@@ -130,8 +130,8 @@ fn delete_wallet(id: u64) -> Result<bool, String> {
   })
 }
 
-// todo use: AddRecordCommand . front end dont need to input
-// id . id gen by backend. todo 测试 id 正常生成且不冲突
+// TODO use: AddRecordCommand . front end dont need to input
+// id . id gen by backend. TODO 测试 id 正常生成且不冲突
 #[update(guard = "user_owner_guard")]
 fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
   CONTEXT.with(|c| {
@@ -190,7 +190,7 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
   })
 }
 
-// todo
+// TODO
 /**
  * 方法完成后，需要检查关联更新：钱包的交易记录总数，上次同步时间，上次交易发生的时间
 描述:户点击同步钱包按钮,调用nns或者交易所等api.获得历史交易记录并存储到后端.
@@ -207,7 +207,7 @@ fn sync_transaction_record(
   return Err("sync fail".to_string());
 }
 
-// todo get all wallets of records info
+// TODO get all wallets of records info
 // 根据前端查询到的历史记录传到后端啊
 #[query(guard = "user_owner_guard")]
 fn wallet_history(
@@ -228,7 +228,7 @@ fn wallet_history(
       }
     }
     // query all
-    // todo . need test .
+    // TODO . need test .
     // case1: wallet1 have addr and 3rec . w2 have 1 addr
     // and 0rec. w3 have no addr and rec. query all 3
     // wallets.
@@ -318,11 +318,11 @@ mod tests {
       from: String::from("NNS"),
     };
     // not work locally : https://forum.dfinity.org/t/guys-how-do-you-debug-your-rust-backend-canister/22965
-    // todo :maybe spilit rust logic and ic-logic
+    // TODO :maybe spilit rust logic and ic-logic
     // ic-chain local replica(a rust binnary running
     // distributed system ) supply a runtime for
-    // canister(wasm code). todo 如果可以debug ic-replica.
-    // 那么有可能可以联合 rust-logic 和ic-logic todo
+    // canister(wasm code). TODO 如果可以debug ic-replica.
+    // 那么有可能可以联合 rust-logic 和ic-logic TODO
     // 如果都不行.
     // 可以试试采用logging系统来记录程序运行.
     let t = ic_cdk::api::time();

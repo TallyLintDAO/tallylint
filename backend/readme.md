@@ -16,7 +16,7 @@ find . -name "*.rs" -print | xargs wc -l
 ## check canister cycles balance:
 
 
-<!-- todo -->
+<!-- TODO -->
 
 
 
@@ -78,7 +78,7 @@ compare with dfx:
 dfx : 
 (hiding stuff is ic-env and caller )
 dfx call backend greet "alex"  
-todo: maybe use dfx::core in rs code can also do this ? need with a env running ?
+TODO: maybe use dfx::core in rs code can also do this ? need with a env running ?
 
 rs code with pocketIC:
 #[macro_export]

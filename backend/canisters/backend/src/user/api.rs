@@ -107,7 +107,7 @@ mod tests {
 
   #[test]
   fn test_account_id_from_hex() {
-    //todo :  hex should be  (0-9, a-f or A-F). but . the
+    //TODO :  hex should be  (0-9, a-f or A-F). but . the
     // above is not . or it is ? some how transform? let
     // p = String::from("
     // b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae");
