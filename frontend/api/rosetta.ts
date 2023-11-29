@@ -94,6 +94,28 @@ export const getICPTransactions = async (
   }
 }
 
+//批量获取多个地址的交易记录
+export const getAllTransactions = async (
+  walletAddresses: string[],
+): Promise<GetTransactionsResponse[]> => {
+  try {
+    // 使用 Promise.all 并行地获取多个钱包的交易记录
+    const transactionsPromises = walletAddresses.map((address) =>
+      getICPTransactions(address, true),
+    )
+    const transactionsResults = await Promise.all(transactionsPromises)
+
+    // transactionsResults 现在是一个包含所有交易记录数组的数组
+    // 将数组展平，得到一个包含所有交易记录的单一数组
+    const allTransactions = transactionsResults.flat()
+
+    return allTransactions
+  } catch (error) {
+    console.error("Error fetching transactions:", error)
+    throw error
+  }
+}
+
 interface Operation {
   account: {
     address: string
