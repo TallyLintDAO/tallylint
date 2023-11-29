@@ -109,12 +109,12 @@ export async function deleteUserNeuron(
 export async function getUserNeuron(
   refresh: boolean,
 ): Promise<ApiResult<WalletInfo[]>> {
-  return getBackend().query_all_neuron_wallet()
-  // return await getCache({
-  //   key: "USER_Neurons",
-  //   execute: () => getBackend().query_all_neuron_wallet(),
-  //   ttl: walletTTL,
-  //   // isLocal: true, //TODO 是否需要本地存储还需考虑，理论上来说内存存储就足够了
-  //   refresh: refresh, //是否刷新缓存，用于执行增删改操作后的刷新。
-  // })
+  // return getBackend().query_all_neuron_wallet()
+  return await getCache({
+    key: "USER_Neurons",
+    execute: () => getBackend().query_all_neuron_wallet(),
+    ttl: walletTTL,
+    // isLocal: true, //TODO 是否需要本地存储还需考虑，理论上来说内存存储就足够了
+    refresh: refresh, //是否刷新缓存，用于执行增删改操作后的刷新。
+  })
 }

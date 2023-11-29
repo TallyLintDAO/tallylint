@@ -119,7 +119,8 @@
 </template>
 
 <script lang="ts" setup>
-import { InferredTransaction, getICPTransactions } from "@/api/rosetta"
+import { InferredTransaction, getAllTransactions } from "@/api/rosetta"
+import { getUserNeuron, getUserWallet } from "@/api/user"
 import { showUsername } from "@/utils/avatars"
 import { exportFile } from "quasar"
 import { computed, onMounted, ref } from "vue"
@@ -169,14 +170,19 @@ onMounted(() => {
 })
 
 const getWalletHistory = async () => {
-  //@ts-ignore TODO 传递进来的可能是单个地址，也可能是多个地址，需处理
-  getICPTransactions(address, true).then((res) => {
-    console.log("getWalletHistory", res)
-    if (res.total && res.total != 0) {
-      walletList.value = res.transactions
-      maxPage.value = Number(res.total / pageSize.value)
-    }
-  })
+  const res1 = await getUserWallet(false)
+  const res2 = await getUserNeuron(false)
+  if (res1.Ok && res2.Ok) {
+    const userWallets = res1.Ok.map((wallet) => wallet.address)
+    const neuronWallets = res2.Ok.map((wallet) => wallet.address)
+    getAllTransactions([...userWallets, ...neuronWallets]).then((res) => {
+      console.log("getWalletHistory", res)
+      // if (res.total && res.total != 0) {
+      walletList.value = res
+      // maxPage.value = Number(res.total / pageSize.value)
+      // }
+    })
+  }
 }
 const exportToCSV = async () => {
   const columnNames = [
