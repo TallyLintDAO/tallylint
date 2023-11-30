@@ -84,9 +84,9 @@ export const idlFactory = ({ IDL }) => {
   const NeuronProfile = IDL.Record({
     'id' : IDL.Nat64,
     'owner' : IDL.Principal,
-    'addr' : IDL.Text,
     'name' : IDL.Text,
     'create_time' : IDL.Nat64,
+    'address' : IDL.Text,
   });
   const Result_4 = IDL.Variant({ 'Ok' : NeuronProfile, 'Err' : IDL.Text });
   const WalletProfile = IDL.Record({

@@ -93,7 +93,7 @@ fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
       name: cmd.name,
       id: id,
       create_time: time,
-      addr: cmd.address,
+      address: cmd.address,
     };
     let ret = service.neurons.insert(addr, profile);
     ctx.id = id + 1;
@@ -110,7 +110,7 @@ fn delete_neuron_wallet(id: u64) -> Result<bool, String> {
     if profile.is_none() {
       return Err("no data ".to_string());
     }
-    service.neurons.remove(&profile.unwrap().addr.clone());
+    service.neurons.remove(&profile.unwrap().address.clone());
     return Ok(true);
   })
 }
@@ -126,7 +126,7 @@ fn update_neuron_wallet(cmd: NeuronUpdateCommand) -> Result<bool, String> {
     }
     let mut p = profile.unwrap().clone();
     p.name = cmd.name;
-    service.neurons.insert(p.addr.clone(), p.to_owned());
+    service.neurons.insert(p.address.clone(), p.to_owned());
     return Ok(true);
   })
 }

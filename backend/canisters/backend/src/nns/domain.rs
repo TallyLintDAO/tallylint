@@ -26,6 +26,6 @@ pub struct NeuronProfile {
   pub owner: Principal, // 用户 Principal
   pub name: String,
   pub id: u64,
-  pub addr: String,
+  pub address: String,
   pub create_time: u64,
 }

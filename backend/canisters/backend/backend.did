@@ -48,9 +48,9 @@ type NeuronInfo = record {
 type NeuronProfile = record {
   id : nat64;
   owner : principal;
-  addr : text;
   name : text;
   create_time : nat64;
+  address : text;
 };
 type NeuronUpdateCommand = record { id : nat64; name : text };
 type RecordProfile = record {

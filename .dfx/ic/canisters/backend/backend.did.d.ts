@@ -62,9 +62,9 @@ export interface NeuronInfo {
 export interface NeuronProfile {
   'id' : bigint,
   'owner' : Principal,
-  'addr' : string,
   'name' : string,
   'create_time' : bigint,
+  'address' : string,
 }
 export interface NeuronUpdateCommand { 'id' : bigint, 'name' : string }
 export interface RecordProfile {
