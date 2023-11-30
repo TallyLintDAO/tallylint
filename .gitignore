@@ -44,6 +44,9 @@ change_name.sh
 
 Cargo.lock
 
+# testing framewrok binary 
+pocket-ic*
+
 
 #------------------------------
 

@@ -1,3 +1,15 @@
+
+TODO list:
+now do:
+1. query_all_neuron_wallet err.
+
+middle level
+1. did classify. not alphabet. maybe ref openchat.
+2. update ic-fs wihout fail
+
+efficentcy:
+https://linuxhandbook.com/sudo-without-password/
+
 ## backend ic address    
 backend: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=v7g7o-oiaaa-aaaag-qcj3q-cai
 

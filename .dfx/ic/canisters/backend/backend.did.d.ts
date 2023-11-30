@@ -13,51 +13,8 @@ export interface AddRecordCommand {
   'amount' : number,
 }
 export interface BallotInfo { 'vote' : number, 'proposal_id' : [] | [NeuronId] }
-export interface CanisterChange {
-  'timestamp_nanos' : bigint,
-  'canister_version' : bigint,
-  'origin' : CanisterChangeOrigin,
-  'details' : CanisterChangeDetails,
-}
-export type CanisterChangeDetails = { 'creation' : CreationRecord } |
-  { 'code_deployment' : CodeDeploymentRecord } |
-  { 'controllers_change' : CreationRecord } |
-  { 'code_uninstall' : null };
-export type CanisterChangeOrigin = { 'from_user' : FromUserRecord } |
-  { 'from_canister' : FromCanisterRecord };
-export interface CanisterInfoResponse {
-  'controllers' : Array<Principal>,
-  'module_hash' : [] | [Uint8Array | number[]],
-  'recent_changes' : Array<CanisterChange>,
-  'total_num_changes' : bigint,
-}
-export type CanisterInstallMode = { 'reinstall' : null } |
-  { 'upgrade' : null } |
-  { 'install' : null };
-export interface CanisterStatusResponse {
-  'status' : CanisterStatusType,
-  'memory_size' : bigint,
-  'cycles' : bigint,
-  'settings' : DefiniteCanisterSettings,
-  'idle_cycles_burned_per_day' : bigint,
-  'module_hash' : [] | [Uint8Array | number[]],
-}
-export type CanisterStatusType = { 'stopped' : null } |
-  { 'stopping' : null } |
-  { 'running' : null };
-export interface CodeDeploymentRecord {
-  'mode' : CanisterInstallMode,
-  'module_hash' : Uint8Array | number[],
-}
-export interface CreationRecord { 'controllers' : Array<Principal> }
 export type CustomResult1 = { 'Ok' : NeuronInfo } |
   { 'Err' : GovernanceError };
-export interface DefiniteCanisterSettings {
-  'freezing_threshold' : bigint,
-  'controllers' : Array<Principal>,
-  'memory_allocation' : bigint,
-  'compute_allocation' : bigint,
-}
 export interface EditHistoryCommand {
   'id' : bigint,
   'tag' : string,
@@ -68,11 +25,6 @@ export interface EditHistoryCommand {
   'price' : number,
   'amount' : number,
 }
-export interface FromCanisterRecord {
-  'canister_version' : [] | [bigint],
-  'canister_id' : Principal,
-}
-export interface FromUserRecord { 'user_id' : Principal }
 export interface GovernanceError {
   'error_message' : string,
   'error_type' : number,
@@ -107,11 +59,14 @@ export interface NeuronInfo {
   'voting_power' : bigint,
   'age_seconds' : bigint,
 }
-export interface NeuronUpdateCommand {
+export interface NeuronProfile {
   'id' : bigint,
-  'from' : string,
+  'owner' : Principal,
+  'addr' : string,
   'name' : string,
+  'create_time' : bigint,
 }
+export interface NeuronUpdateCommand { 'id' : bigint, 'name' : string }
 export interface RecordProfile {
   'id' : bigint,
   'tag' : string,
@@ -139,11 +94,15 @@ export type Result_2 = { 'Ok' : UserProfile } |
   { 'Err' : string };
 export type Result_3 = { 'Ok' : [CustomResult1] } |
   { 'Err' : [RejectionCode, string] };
-export type Result_4 = { 'Ok' : WalletProfile } |
+export type Result_4 = { 'Ok' : NeuronProfile } |
   { 'Err' : string };
-export type Result_5 = { 'Ok' : Array<WalletProfile> } |
+export type Result_5 = { 'Ok' : WalletProfile } |
+  { 'Err' : string };
+export type Result_6 = { 'Ok' : Array<NeuronProfile> } |
+  { 'Err' : Array<NeuronProfile> };
+export type Result_7 = { 'Ok' : Array<WalletProfile> } |
   { 'Err' : Array<WalletProfile> };
-export type Result_6 = { 'Ok' : Array<[string, Array<RecordProfile>]> } |
+export type Result_8 = { 'Ok' : Array<[string, Array<RecordProfile>]> } |
   { 'Err' : string };
 export interface UserProfile {
   'owner' : Principal,
@@ -168,32 +127,33 @@ export interface WalletProfile {
   'holder' : Principal,
   'transactions' : bigint,
 }
+export interface WalletUpdateCommand {
+  'id' : bigint,
+  'from' : string,
+  'name' : string,
+}
 export interface _SERVICE {
   'add_neuron_wallet' : ActorMethod<[NeuronAddCommand], Result>,
   'add_transaction_record' : ActorMethod<[AddRecordCommand], Result_1>,
   'add_wallet' : ActorMethod<[WalletAddCommand], Result>,
   'auto_register_user' : ActorMethod<[], Result_2>,
-  'create_and_install' : ActorMethod<[], string>,
   'delete_neuron_wallet' : ActorMethod<[bigint], Result>,
   'delete_transaction_record' : ActorMethod<[bigint], Result_1>,
   'delete_wallet' : ActorMethod<[bigint], Result>,
   'edit_transaction_record' : ActorMethod<[EditHistoryCommand], Result>,
   'get_balance' : ActorMethod<[], bigint>,
-  'get_canister_info' : ActorMethod<[string], CanisterInfoResponse>,
-  'get_canister_status' : ActorMethod<[string], CanisterStatusResponse>,
-  'get_ledger_id' : ActorMethod<[Principal], number>,
   'get_neuron_info' : ActorMethod<[bigint], Result_3>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
-  'query_a_wallet' : ActorMethod<[bigint], Result_4>,
-  'query_all_neuron_wallet' : ActorMethod<[], Result_5>,
-  'query_all_wallets' : ActorMethod<[], Result_5>,
+  'query_a_neuron_wallet' : ActorMethod<[bigint], Result_4>,
+  'query_a_wallet' : ActorMethod<[bigint], Result_5>,
+  'query_all_neuron_wallet' : ActorMethod<[], Result_6>,
+  'query_all_wallets' : ActorMethod<[], Result_7>,
   'sync_transaction_record' : ActorMethod<
     [Array<[bigint, Array<RecordProfile>]>],
     Result
   >,
   'update_neuron_wallet' : ActorMethod<[NeuronUpdateCommand], Result>,
-  'update_wallet' : ActorMethod<[NeuronUpdateCommand], Result>,
+  'update_wallet' : ActorMethod<[WalletUpdateCommand], Result>,
   'user_quantity' : ActorMethod<[], number>,
-  'wallet_history' : ActorMethod<[HistoryQueryCommand], Result_6>,
-  'whoami' : ActorMethod<[], Principal>,
+  'wallet_history' : ActorMethod<[HistoryQueryCommand], Result_8>,
 }

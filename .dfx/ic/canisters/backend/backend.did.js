@@ -39,62 +39,6 @@ export const idlFactory = ({ IDL }) => {
     'price' : IDL.Float64,
     'amount' : IDL.Nat32,
   });
-  const FromUserRecord = IDL.Record({ 'user_id' : IDL.Principal });
-  const FromCanisterRecord = IDL.Record({
-    'canister_version' : IDL.Opt(IDL.Nat64),
-    'canister_id' : IDL.Principal,
-  });
-  const CanisterChangeOrigin = IDL.Variant({
-    'from_user' : FromUserRecord,
-    'from_canister' : FromCanisterRecord,
-  });
-  const CreationRecord = IDL.Record({ 'controllers' : IDL.Vec(IDL.Principal) });
-  const CanisterInstallMode = IDL.Variant({
-    'reinstall' : IDL.Null,
-    'upgrade' : IDL.Null,
-    'install' : IDL.Null,
-  });
-  const CodeDeploymentRecord = IDL.Record({
-    'mode' : CanisterInstallMode,
-    'module_hash' : IDL.Vec(IDL.Nat8),
-  });
-  const CanisterChangeDetails = IDL.Variant({
-    'creation' : CreationRecord,
-    'code_deployment' : CodeDeploymentRecord,
-    'controllers_change' : CreationRecord,
-    'code_uninstall' : IDL.Null,
-  });
-  const CanisterChange = IDL.Record({
-    'timestamp_nanos' : IDL.Nat64,
-    'canister_version' : IDL.Nat64,
-    'origin' : CanisterChangeOrigin,
-    'details' : CanisterChangeDetails,
-  });
-  const CanisterInfoResponse = IDL.Record({
-    'controllers' : IDL.Vec(IDL.Principal),
-    'module_hash' : IDL.Opt(IDL.Vec(IDL.Nat8)),
-    'recent_changes' : IDL.Vec(CanisterChange),
-    'total_num_changes' : IDL.Nat64,
-  });
-  const CanisterStatusType = IDL.Variant({
-    'stopped' : IDL.Null,
-    'stopping' : IDL.Null,
-    'running' : IDL.Null,
-  });
-  const DefiniteCanisterSettings = IDL.Record({
-    'freezing_threshold' : IDL.Nat,
-    'controllers' : IDL.Vec(IDL.Principal),
-    'memory_allocation' : IDL.Nat,
-    'compute_allocation' : IDL.Nat,
-  });
-  const CanisterStatusResponse = IDL.Record({
-    'status' : CanisterStatusType,
-    'memory_size' : IDL.Nat,
-    'cycles' : IDL.Nat,
-    'settings' : DefiniteCanisterSettings,
-    'idle_cycles_burned_per_day' : IDL.Nat,
-    'module_hash' : IDL.Opt(IDL.Vec(IDL.Nat8)),
-  });
   const NeuronId = IDL.Record({ 'id' : IDL.Vec(IDL.Nat8) });
   const BallotInfo = IDL.Record({
     'vote' : IDL.Int32,
@@ -137,6 +81,14 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Tuple(CustomResult1),
     'Err' : IDL.Tuple(RejectionCode, IDL.Text),
   });
+  const NeuronProfile = IDL.Record({
+    'id' : IDL.Nat64,
+    'owner' : IDL.Principal,
+    'addr' : IDL.Text,
+    'name' : IDL.Text,
+    'create_time' : IDL.Nat64,
+  });
+  const Result_4 = IDL.Variant({ 'Ok' : NeuronProfile, 'Err' : IDL.Text });
   const WalletProfile = IDL.Record({
     'id' : IDL.Nat64,
     'last_transaction_time' : IDL.Nat64,
@@ -149,8 +101,12 @@ export const idlFactory = ({ IDL }) => {
     'holder' : IDL.Principal,
     'transactions' : IDL.Nat64,
   });
-  const Result_4 = IDL.Variant({ 'Ok' : WalletProfile, 'Err' : IDL.Text });
-  const Result_5 = IDL.Variant({
+  const Result_5 = IDL.Variant({ 'Ok' : WalletProfile, 'Err' : IDL.Text });
+  const Result_6 = IDL.Variant({
+    'Ok' : IDL.Vec(NeuronProfile),
+    'Err' : IDL.Vec(NeuronProfile),
+  });
+  const Result_7 = IDL.Variant({
     'Ok' : IDL.Vec(WalletProfile),
     'Err' : IDL.Vec(WalletProfile),
   });
@@ -168,6 +124,10 @@ export const idlFactory = ({ IDL }) => {
   });
   const NeuronUpdateCommand = IDL.Record({
     'id' : IDL.Nat64,
+    'name' : IDL.Text,
+  });
+  const WalletUpdateCommand = IDL.Record({
+    'id' : IDL.Nat64,
     'from' : IDL.Text,
     'name' : IDL.Text,
   });
@@ -179,7 +139,7 @@ export const idlFactory = ({ IDL }) => {
     'sort_method' : IDL.Text,
     'address' : IDL.Opt(IDL.Text),
   });
-  const Result_6 = IDL.Variant({
+  const Result_8 = IDL.Variant({
     'Ok' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(RecordProfile))),
     'Err' : IDL.Text,
   });
@@ -188,30 +148,26 @@ export const idlFactory = ({ IDL }) => {
     'add_transaction_record' : IDL.Func([AddRecordCommand], [Result_1], []),
     'add_wallet' : IDL.Func([WalletAddCommand], [Result], []),
     'auto_register_user' : IDL.Func([], [Result_2], []),
-    'create_and_install' : IDL.Func([], [IDL.Text], []),
     'delete_neuron_wallet' : IDL.Func([IDL.Nat64], [Result], []),
     'delete_transaction_record' : IDL.Func([IDL.Nat64], [Result_1], []),
     'delete_wallet' : IDL.Func([IDL.Nat64], [Result], []),
     'edit_transaction_record' : IDL.Func([EditHistoryCommand], [Result], []),
     'get_balance' : IDL.Func([], [IDL.Nat64], []),
-    'get_canister_info' : IDL.Func([IDL.Text], [CanisterInfoResponse], []),
-    'get_canister_status' : IDL.Func([IDL.Text], [CanisterStatusResponse], []),
-    'get_ledger_id' : IDL.Func([IDL.Principal], [IDL.Nat32], ['query']),
     'get_neuron_info' : IDL.Func([IDL.Nat64], [Result_3], []),
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
-    'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_4], ['query']),
-    'query_all_neuron_wallet' : IDL.Func([], [Result_5], []),
-    'query_all_wallets' : IDL.Func([], [Result_5], ['query']),
+    'query_a_neuron_wallet' : IDL.Func([IDL.Nat64], [Result_4], ['query']),
+    'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_5], ['query']),
+    'query_all_neuron_wallet' : IDL.Func([], [Result_6], ['query']),
+    'query_all_wallets' : IDL.Func([], [Result_7], ['query']),
     'sync_transaction_record' : IDL.Func(
         [IDL.Vec(IDL.Tuple(IDL.Nat64, IDL.Vec(RecordProfile)))],
         [Result],
         [],
       ),
     'update_neuron_wallet' : IDL.Func([NeuronUpdateCommand], [Result], []),
-    'update_wallet' : IDL.Func([NeuronUpdateCommand], [Result], []),
+    'update_wallet' : IDL.Func([WalletUpdateCommand], [Result], []),
     'user_quantity' : IDL.Func([], [IDL.Nat32], []),
-    'wallet_history' : IDL.Func([HistoryQueryCommand], [Result_6], ['query']),
-    'whoami' : IDL.Func([], [IDL.Principal], ['query']),
+    'wallet_history' : IDL.Func([HistoryQueryCommand], [Result_8], ['query']),
   });
 };
 export const init = ({ IDL }) => { return []; };
