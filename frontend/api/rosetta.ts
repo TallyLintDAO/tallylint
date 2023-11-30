@@ -97,19 +97,27 @@ export const getICPTransactions = async (
 //批量获取多个地址的交易记录
 export const getAllTransactions = async (
   walletAddresses: string[],
-): Promise<GetTransactionsResponse[]> => {
+): Promise<GetTransactionsResponse> => {
+  console.log("addresses", walletAddresses)
   try {
     // 使用 Promise.all 并行地获取多个钱包的交易记录
     const transactionsPromises = walletAddresses.map((address) =>
       getICPTransactions(address, true),
     )
     const transactionsResults = await Promise.all(transactionsPromises)
+    console.log("transactionsResults", transactionsResults)
+    // 使用 Array.reduce 将所有 total 相加，并将 transactions 拼接在一起
+    const response: GetTransactionsResponse = transactionsResults.reduce(
+      (acc, curr) => {
+        return {
+          total: acc.total + curr.total,
+          transactions: acc.transactions.concat(curr.transactions),
+        }
+      },
+      { total: 0, transactions: [] },
+    )
 
-    // transactionsResults 现在是一个包含所有交易记录数组的数组
-    // 将数组展平，得到一个包含所有交易记录的单一数组
-    const allTransactions = transactionsResults.flat()
-
-    return allTransactions
+    return response
   } catch (error) {
     console.error("Error fetching transactions:", error)
     throw error

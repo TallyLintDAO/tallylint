@@ -3,6 +3,14 @@
     <div class="column">
       <div class="header q-gutter-md row q-mb-md">
         <q-select
+          filled
+          v-model="selectedWallet"
+          multiple
+          :options="wallets"
+          label="All Wallets"
+          style="width: 250px"
+        />
+        <q-select
           v-model="model"
           :options="options"
           label="Cost Basis Method"
@@ -59,6 +67,8 @@
                   }}
                 </div>
                 <div class="col">
+                  Wallet Name
+                  <br />
                   {{ transaction.details.currency.symbol }}
                   {{ transaction.details.amount }}
                   <br />
@@ -132,6 +142,9 @@ const address = route.params.address
 const walletList = ref<InferredTransaction[]>([])
 const options = ["FIFO"]
 const model = ref("FIFO")
+const selectedWallet = ref([])
+const wallets = ["wallet1", "wallet2"]
+
 const currentPage = ref(1)
 const maxPage = ref(1)
 const pageSize = ref(10)
@@ -177,10 +190,10 @@ const getWalletHistory = async () => {
     const neuronWallets = res2.Ok.map((wallet) => wallet.address)
     getAllTransactions([...userWallets, ...neuronWallets]).then((res) => {
       console.log("getWalletHistory", res)
-      // if (res.total && res.total != 0) {
-      walletList.value = res
-      // maxPage.value = Number(res.total / pageSize.value)
-      // }
+      if (res.total && res.total != 0) {
+        walletList.value = res.transactions
+        maxPage.value = Number(res.total / pageSize.value)
+      }
     })
   }
 }
