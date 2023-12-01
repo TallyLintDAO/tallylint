@@ -67,6 +67,7 @@ getrandom = { version = "0.2.11", features = ["js"] }
 tokio = "1.34.0"
 
 
+########   DEV lib scope   ########
 [dev-dependencies]
 #!this above means testing dep scope, avoid dep not compatible with something.
 # be careful with this scope. down this [] all dep will only on dev scope.
@@ -77,3 +78,7 @@ pocket-ic = "2.0.1"
 
 # simulate  CLI call ic-replica (dfx) using rust code .
 ic-agent = "0.30.2"
+
+candid_gen = { path = "../../lib/candid_gen" }
+
+########   DEV lib scope   ########

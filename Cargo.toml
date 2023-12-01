@@ -1,12 +1,16 @@
 [workspace]
 members = [
+    # main:
     "backend/canisters/backend",
     
+    # test
     "backend/integration_tests",
 
+    # lib
     "backend/lib/canister_tracing_macros",
     "backend/lib/canister_logger",
     "backend/lib/canister_time",
+    "backend/lib/candid_gen",
 
 ]
 resolver = "2"
@@ -34,3 +38,5 @@ lazy_static = "1.4.0"
 # some times compile fail. need to mention. and fix .
 pocket-ic = "2.0.1"
 rand = "0.8.5"
+
+

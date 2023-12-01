@@ -34,3 +34,28 @@ pub fn local_bin() -> PathBuf {
   file_path.push("wasms");
   file_path
 }
+
+#[test]
+fn test1(){
+  generate_workout(5,6);
+}
+fn generate_workout(intensity: u32, random_number: u32) {
+
+    let expensive_closure = |num| {
+        println!("calculating slowly ...");
+        num
+    };
+
+    // Check the conditions before calling the closure
+    if intensity > 25 && random_number == 3 {
+        println!("Take a break today! Remember to stay hydrated!");
+        return; // Return early and skip the closure
+    }
+
+    if intensity < 25 {
+        println!("Today, do {} pushups!", expensive_closure(intensity));
+        println!("Next, do {} situps!", expensive_closure(intensity));
+    } else {
+        println!("Today, run for {} minutes!", expensive_closure(intensity));
+    }
+}
