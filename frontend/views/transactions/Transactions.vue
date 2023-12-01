@@ -1,15 +1,33 @@
 <template>
   <div class="transactions-container">
     <div class="column">
-      <div class="header q-gutter-md row q-mb-md">
+      <div class="header q-gutter-md row q-mb-md items-end">
         <q-select
-          filled
           v-model="selectedWallet"
+          use-chips
           multiple
+          option-label="name"
+          option-value="address"
           :options="wallets"
           label="All Wallets"
           style="width: 250px"
-        />
+        >
+          <template v-slot:option="scope">
+            <q-item v-bind="scope.itemProps">
+              <q-item-section avatar>
+                <img
+                  class="head-icon"
+                  src="@/assets/dfinity.svg"
+                  alt="NNS Icon"
+                />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ scope.opt.name }}</q-item-label>
+                <q-item-label caption>Synced</q-item-label>
+              </q-item-section>
+            </q-item>
+          </template></q-select
+        >
         <q-select
           v-model="model"
           :options="options"
@@ -143,7 +161,10 @@ const walletList = ref<InferredTransaction[]>([])
 const options = ["FIFO"]
 const model = ref("FIFO")
 const selectedWallet = ref([])
-const wallets = ["wallet1", "wallet2"]
+const wallets = [
+  { name: "wallet1", address: "0x1" },
+  { name: "wallet2", address: "0x232" },
+]
 
 const currentPage = ref(1)
 const maxPage = ref(1)
