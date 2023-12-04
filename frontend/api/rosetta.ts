@@ -65,7 +65,9 @@ export const getICPTransactions = async (
   })
   if (!response.ok) {
     showMessageError(
-      "Unable to get information from ICP Rosetta Api, " +
+      "Address: " +
+        address +
+        " unable to get information from ICP Rosetta Api, " +
         "please check that the wallet address and network are correct.",
     )
     throw Error("error for rosetta api" + response.statusText)

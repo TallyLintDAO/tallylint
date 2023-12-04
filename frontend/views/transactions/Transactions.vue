@@ -161,10 +161,7 @@ const walletList = ref<InferredTransaction[]>([])
 const options = ["FIFO"]
 const model = ref("FIFO")
 const selectedWallet = ref([])
-const wallets = [
-  { name: "wallet1", address: "0x1" },
-  { name: "wallet2", address: "0x232" },
-]
+const wallets = ref([] as { name: string; address: string; from: string }[])
 
 const currentPage = ref(1)
 const maxPage = ref(1)
@@ -200,22 +197,41 @@ const paginatedGroups = computed(
 )
 
 onMounted(() => {
-  getWalletHistory()
+  getWallets()
 })
 
-const getWalletHistory = async () => {
+const getWallets = async () => {
   const res1 = await getUserWallet(false)
   const res2 = await getUserNeuron(false)
   if (res1.Ok && res2.Ok) {
-    const userWallets = res1.Ok.map((wallet) => wallet.address)
-    const neuronWallets = res2.Ok.map((wallet) => wallet.address)
-    getAllTransactions([...userWallets, ...neuronWallets]).then((res) => {
-      console.log("getWalletHistory", res)
-      if (res.total && res.total != 0) {
-        walletList.value = res.transactions
-        maxPage.value = Number(res.total / pageSize.value)
-      }
-    })
+    const userWallets = res1.Ok.map((wallet) => ({
+      name: wallet.name,
+      address: wallet.address,
+      from: wallet.from,
+    }))
+    const neuronWallets = res2.Ok.map((wallet) => ({
+      name: wallet.name,
+      address: wallet.address,
+      from: wallet.from,
+    }))
+    // 将userWallets和neuronWallets合并到wallets数组中
+    wallets.value.push(...userWallets, ...neuronWallets)
+  }
+  getWalletHistory()
+  console.log("wallets", wallets.value)
+}
+
+const getWalletHistory = async () => {
+  if (wallets.value.length > 0) {
+    getAllTransactions(wallets.value.map((wallet) => wallet.address)).then(
+      (res) => {
+        console.log("getWalletHistory", res)
+        if (res.total && res.total != 0) {
+          walletList.value = res.transactions
+          maxPage.value = Number(res.total / pageSize.value)
+        }
+      },
+    )
   }
 }
 const exportToCSV = async () => {
