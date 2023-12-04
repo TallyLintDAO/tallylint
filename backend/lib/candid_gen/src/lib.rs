@@ -65,8 +65,8 @@ fn get_method_attribute(inputs: Vec<String>) -> MethodAttribute {
     let second_arg = inputs.get(1).unwrap();
     let third_arg = inputs.get(2).unwrap();
 
-    let canister_name = format!("{first_arg}_canister");
-    // let canister_name = first_arg.to_string();
+    // let canister_name = format!("{first_arg}_canister");
+    let canister_name = first_arg.to_string();
  
     let method_name = second_arg.to_string();
 

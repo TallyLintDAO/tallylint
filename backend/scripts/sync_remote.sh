@@ -17,13 +17,3 @@ echo ----------status-------------
 git status
 echo ----------done-------------------
 
-#TODO:
-#git pull origin master
-#should i pull the newest from remote firstly ?
-
-
-# TODO:
-# display push status instantly , not wait for buffer in cmd output
-#which means , if push need a bit more network. i must after push finish to know the procedure
-#if procedure stucked due to network , i cant see it .
-#if im not using .sh file . but directly git push cmd in terminal . i can see the procedure in real-time

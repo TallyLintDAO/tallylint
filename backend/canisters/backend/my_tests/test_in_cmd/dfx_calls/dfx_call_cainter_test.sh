@@ -20,7 +20,7 @@ dfx start --background
 cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did
 dfx deploy backend 
 
-#TODO: maybe use makefile or bash can auto this process.
+#TODO: effiency: maybe use makefile or bash can auto this process.
 #! Continious Deploy on Main net :
 # step1: gen did
 # cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did 
@@ -43,7 +43,7 @@ dfx deploy backend --network ic
 
 # IMPORTANT
 # TDD idea , Test Driven Development . a kind of OKR .  to confident with  code !
-# TODO. make the whole CRUD into a auto things . auto-test
+# TODO. Itest autorun: make the whole CRUD into a auto things . auto-test
 # both work to local or ic need test .
 dfx canister call backend auto_register_user
 
