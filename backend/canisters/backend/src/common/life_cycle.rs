@@ -1,13 +1,14 @@
 use ic_cdk::storage;
 use ic_cdk_macros::*;
 
+use canister_tracing_macros::trace;
 use tracing::info;
 
 use super::context::{CanisterContext, CanisterDB};
 use super::env::CanisterEnvironment;
+use super::memory::get_upgrades_memory;
 use crate::{CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
-
-#[init]
+  use stable_memory::*;
 fn init() {
   ic_cdk::setup();
   let context = CanisterContext {
@@ -18,7 +19,7 @@ fn init() {
   let _creator1 = GOVERNANCE_BTWL.with(|g| *g);
   let _creator2 = GOVERNANCE_ZHOU.with(|g| *g);
 
-  info!( "canister initialization complete");
+  info!("canister initialization complete");
 }
 
 /**
@@ -35,10 +36,8 @@ fn init() {
  */
 // #[pre_upgrade] is a hook. everytime update canister will auto call this.
 #[pre_upgrade]
+#[trace]
 fn pre_upgrade() {
-  // with is a function can receive a function as para.
-  // and | | syntax here means a function with no name.
-
   info!("Pre-upgrade starting");
   let _logs = canister_logger::export_logs();
   let _traces = canister_logger::export_traces();
@@ -62,19 +61,26 @@ fn pre_upgrade() {
       neurons,
     };
     // save canister fs to ic-replica.
-    storage::stable_save((payload,)).expect("failed to save state data");
+    let mut memory = get_upgrades_memory();
+    let writer = get_writer(&mut memory);
+    serializer::serialize(payload, writer).unwrap();
     // IMPORTANT erase db in running canister.(ic or local)
     // dfx deploy backend  -m reinstall
   });
 }
 
 #[post_upgrade]
+#[trace]
 fn post_upgrade() {
   // IMPORTANT
   // load canister fs from ic-replica
   // () means retrieve multiple db. a collection of tuples
-  let (payload,): (CanisterDB,) =
-    storage::stable_restore().expect("failed to restore users");
+  let memory = get_upgrades_memory();
+
+
+  let reader = get_reader(&memory);
+
+  let (payload,): (CanisterDB,) = serializer::deserialize(reader).unwrap();
   let stable_state = CanisterContext::from(payload);
   CONTEXT.with(|s| {
     let mut state = s.borrow_mut();

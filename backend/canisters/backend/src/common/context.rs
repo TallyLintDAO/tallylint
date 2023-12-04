@@ -5,7 +5,7 @@ use crate::{
     service::{RecordId, WalletId, WalletRecordService},
   },
 };
-use candid::{CandidType, Deserialize, Principal};
+use candid::{CandidType, Principal};
 use std::collections::BTreeMap;
 use std::iter::FromIterator;
 
@@ -15,6 +15,7 @@ use crate::user::domain::UserProfile;
 use crate::user::service::UserService;
 use crate::wallet::domain::WalletProfile;
 use crate::wallet::service::WalletService;
+use serde::{Deserialize, Serialize};
 
 use super::env::{CanisterEnvironment, EmptyEnvironment};
 
@@ -29,7 +30,8 @@ pub struct CanisterContext {
   pub neuron_service: NeuronService,
 }
 
-#[derive(Debug, Clone, CandidType, Deserialize)]
+
+#[derive(Debug, Clone, CandidType, Serialize,Deserialize)]
 pub struct CanisterDB {
   pub id: u64,
   pub users: Vec<UserProfile>,

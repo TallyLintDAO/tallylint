@@ -11,11 +11,18 @@ members = [
     "backend/lib/canister_logger",
     "backend/lib/canister_time",
     "backend/lib/candid_gen",
+    "backend/lib/serializer",
+    "backend/lib/stable_memory",
 
 ]
 resolver = "2"
 
 [workspace.dependencies]
+ic-cdk = "0.11.3"
+ic-stable-structures = "0.6.0"
+
+
+
 proc-macro2 = "1.0.69"
 quote = "1.0.33"
 syn = "2.0.39"
@@ -38,5 +45,8 @@ lazy_static = "1.4.0"
 # some times compile fail. need to mention. and fix .
 pocket-ic = "2.0.1"
 rand = "0.8.5"
+
+rmp-serde = "1.1.2"
+
 
 

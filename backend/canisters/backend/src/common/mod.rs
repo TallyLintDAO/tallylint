@@ -8,4 +8,5 @@ pub mod env;
 
 pub mod constants;
 pub mod fs;
-pub mod state_machine;
+pub mod life_cycle;
+pub mod memory;

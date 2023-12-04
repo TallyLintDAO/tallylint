@@ -1,13 +1,14 @@
-use candid::{CandidType, Deserialize, Principal};
+use candid::{CandidType,  Principal};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, CandidType, Deserialize)]
+#[derive(Debug, Clone, CandidType,Serialize, Deserialize)]
 pub struct UserProfile {
   pub owner: Principal, // 用户 Principal
   pub name: String,
   pub create_time: u64,
 }
 
-#[derive(Debug, Clone, CandidType, Deserialize)]
+#[derive(Debug, Clone, CandidType,Serialize, Deserialize)]
 pub struct UserInfo {
   pub owner: Principal, // 用户 Principal
   pub name: String,
