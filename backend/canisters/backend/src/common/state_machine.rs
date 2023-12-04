@@ -50,8 +50,8 @@ fn pre_upgrade() {
     let records =
       Vec::from_iter(context.wallet_record_service.records.values().cloned());
     let neurons =
-      // Vec::from_iter(context.neuron_service.neurons.values().cloned());
-      Vec::new();
+      Vec::from_iter(context.neuron_service.neurons.values().cloned());
+      // Vec::new();
     let payload: CanisterDB = CanisterDB {
       id,
       users,
