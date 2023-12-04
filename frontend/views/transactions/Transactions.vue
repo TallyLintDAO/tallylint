@@ -1,7 +1,33 @@
 <template>
   <div class="transactions-container">
     <div class="column">
-      <div class="header q-gutter-md row q-mb-md">
+      <div class="header q-gutter-md row q-mb-md items-end">
+        <q-select
+          v-model="selectedWallet"
+          use-chips
+          multiple
+          option-label="name"
+          option-value="address"
+          :options="wallets"
+          label="All Wallets"
+          style="width: 250px"
+        >
+          <template v-slot:option="scope">
+            <q-item v-bind="scope.itemProps">
+              <q-item-section avatar>
+                <img
+                  class="head-icon"
+                  src="@/assets/dfinity.svg"
+                  alt="NNS Icon"
+                />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ scope.opt.name }}</q-item-label>
+                <q-item-label caption>Synced</q-item-label>
+              </q-item-section>
+            </q-item>
+          </template></q-select
+        >
         <q-select
           v-model="model"
           :options="options"
@@ -59,6 +85,8 @@
                   }}
                 </div>
                 <div class="col">
+                  Wallet Name
+                  <br />
                   {{ transaction.details.currency.symbol }}
                   {{ transaction.details.amount }}
                   <br />
@@ -132,6 +160,9 @@ const address = route.params.address
 const walletList = ref<InferredTransaction[]>([])
 const options = ["FIFO"]
 const model = ref("FIFO")
+const selectedWallet = ref([])
+const wallets = ref([] as { name: string; address: string; from: string }[])
+
 const currentPage = ref(1)
 const maxPage = ref(1)
 const pageSize = ref(10)
@@ -166,22 +197,41 @@ const paginatedGroups = computed(
 )
 
 onMounted(() => {
-  getWalletHistory()
+  getWallets()
 })
 
-const getWalletHistory = async () => {
+const getWallets = async () => {
   const res1 = await getUserWallet(false)
   const res2 = await getUserNeuron(false)
   if (res1.Ok && res2.Ok) {
-    const userWallets = res1.Ok.map((wallet) => wallet.address)
-    const neuronWallets = res2.Ok.map((wallet) => wallet.address)
-    getAllTransactions([...userWallets, ...neuronWallets]).then((res) => {
-      console.log("getWalletHistory", res)
-      // if (res.total && res.total != 0) {
-      walletList.value = res
-      // maxPage.value = Number(res.total / pageSize.value)
-      // }
-    })
+    const userWallets = res1.Ok.map((wallet) => ({
+      name: wallet.name,
+      address: wallet.address,
+      from: wallet.from,
+    }))
+    const neuronWallets = res2.Ok.map((wallet) => ({
+      name: wallet.name,
+      address: wallet.address,
+      from: wallet.from,
+    }))
+    // 将userWallets和neuronWallets合并到wallets数组中
+    wallets.value.push(...userWallets, ...neuronWallets)
+  }
+  getWalletHistory()
+  console.log("wallets", wallets.value)
+}
+
+const getWalletHistory = async () => {
+  if (wallets.value.length > 0) {
+    getAllTransactions(wallets.value.map((wallet) => wallet.address)).then(
+      (res) => {
+        console.log("getWalletHistory", res)
+        if (res.total && res.total != 0) {
+          walletList.value = res.transactions
+          maxPage.value = Number(res.total / pageSize.value)
+        }
+      },
+    )
   }
 }
 const exportToCSV = async () => {

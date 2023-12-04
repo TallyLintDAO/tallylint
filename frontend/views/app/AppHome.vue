@@ -103,7 +103,7 @@ const menuItems = [
   { icon: "inbox", label: "Wallet", route: "/app/wallet" },
   { icon: "star", label: "NNS", route: "/app/nns" },
   { icon: "swap_horiz", label: "Transactions", route: "/app/transactions" },
-  { icon: "send", label: "Email Set", route: "" },
+  // { icon: "send", label: "Email Set", route: "" },
 ]
 const leftDrawerOpen = ref(false)
 // 与 II 认证相关的信息

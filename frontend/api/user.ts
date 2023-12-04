@@ -68,7 +68,7 @@ export async function deleteUserWallet(
 // 同步钱包交易记录到后端
 export async function syncWallet(
   walletId: bigint,
-  history,
+  history: any,
 ): Promise<ApiResult<boolean>> {
   return getBackend().sync_transaction_record({ walletId, history })
 }
