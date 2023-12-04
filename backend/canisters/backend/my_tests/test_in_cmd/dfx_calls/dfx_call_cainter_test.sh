@@ -60,15 +60,15 @@ dfx canister call backend update_wallet '(record { address = "c9"; name = "Amyda
 dfx canister call backend add_wallet '(record { address = "c9"; name = "AmydaLu"; from = "asdaw" })'
 dfx canister call backend add_wallet '(record { address = "c9"; name = "AmydaLu"; from = "asdaw" })'
 
-#neuron CRUD test 
-dfx canister call backend add_neuron_wallet '(record { address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"; name = "AmydaLu"; from = "asdaw" })'
 
 # good wallet addr with proper transactions  
 dfx canister call backend add_wallet '(record { address = "107b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"; name = "AmydaLu"; from = "asdaw" })'
 
+#neuron CRUD test 
+dfx canister call backend add_neuron_wallet '(record { address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"; name = "AmydaLu"; from = "asdaw" })'
 dfx canister call backend query_all_neuron_wallet
 dfx canister call backend query_a_wallet 10003
-dfx canister call backend  update_neuron_wallet '(record { id = 10003; from="nns1"; name = "cczz";})'
+dfx canister call backend  update_neuron_wallet '(record { id = 10002; from="nns1"; name = "cczz";})'
 dfx canister call backend  query_a_neuron_wallet 10002
 dfx canister call backend  delete_neuron_wallet 10002
 

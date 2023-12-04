@@ -20,6 +20,7 @@ pub struct NeuronAddCommand {
   pub address: String,
   pub from: String,
   pub name: String,
+  pub test1: String,
 }
 #[derive(Debug, Clone, CandidType,Serialize,  Deserialize)]
 pub struct NeuronProfile {
