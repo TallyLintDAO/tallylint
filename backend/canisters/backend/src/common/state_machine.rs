@@ -17,6 +17,8 @@ fn init() {
   let _now = context.env.now();
   let _creator1 = GOVERNANCE_BTWL.with(|g| *g);
   let _creator2 = GOVERNANCE_ZHOU.with(|g| *g);
+
+  info!( "canister initialization complete");
 }
 
 /**
@@ -51,8 +53,8 @@ fn pre_upgrade() {
       Vec::from_iter(context.wallet_record_service.records.values().cloned());
     let neurons =
       Vec::from_iter(context.neuron_service.neurons.values().cloned());
-      // Vec::new();
-    let payload= CanisterDB {
+    // Vec::new();
+    let payload = CanisterDB {
       id,
       users,
       wallets,

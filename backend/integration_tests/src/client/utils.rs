@@ -36,26 +36,25 @@ pub fn local_bin() -> PathBuf {
 }
 
 #[test]
-fn test1(){
-  generate_workout(5,6);
+fn test1() {
+  generate_workout(5, 6);
 }
 fn generate_workout(intensity: u32, random_number: u32) {
+  let expensive_closure = |num| {
+    println!("calculating slowly ...");
+    num
+  };
 
-    let expensive_closure = |num| {
-        println!("calculating slowly ...");
-        num
-    };
+  // Check the conditions before calling the closure
+  if intensity > 25 && random_number == 3 {
+    println!("Take a break today! Remember to stay hydrated!");
+    return; // Return early and skip the closure
+  }
 
-    // Check the conditions before calling the closure
-    if intensity > 25 && random_number == 3 {
-        println!("Take a break today! Remember to stay hydrated!");
-        return; // Return early and skip the closure
-    }
-
-    if intensity < 25 {
-        println!("Today, do {} pushups!", expensive_closure(intensity));
-        println!("Next, do {} situps!", expensive_closure(intensity));
-    } else {
-        println!("Today, run for {} minutes!", expensive_closure(intensity));
-    }
+  if intensity < 25 {
+    println!("Today, do {} pushups!", expensive_closure(intensity));
+    println!("Next, do {} situps!", expensive_closure(intensity));
+  } else {
+    println!("Today, run for {} minutes!", expensive_closure(intensity));
+  }
 }
