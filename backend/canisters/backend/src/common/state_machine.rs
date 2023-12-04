@@ -52,13 +52,14 @@ fn pre_upgrade() {
     let neurons =
       Vec::from_iter(context.neuron_service.neurons.values().cloned());
       // Vec::new();
-    let payload: CanisterDB = CanisterDB {
+    let payload= CanisterDB {
       id,
       users,
       wallets,
       records,
       neurons,
     };
+    // save canister fs to ic-replica.
     storage::stable_save((payload,)).expect("failed to save state data");
     // IMPORTANT erase db in running canister.(ic or local)
     // dfx deploy backend  -m reinstall
@@ -68,7 +69,8 @@ fn pre_upgrade() {
 #[post_upgrade]
 fn post_upgrade() {
   // IMPORTANT
-  // () means retrieve multiple db.
+  // load canister fs from ic-replica
+  // () means retrieve multiple db. a collection of tuples
   let (payload,): (CanisterDB,) =
     storage::stable_restore().expect("failed to restore users");
   let stable_state = CanisterContext::from(payload);
