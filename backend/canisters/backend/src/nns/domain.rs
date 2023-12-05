@@ -1,5 +1,5 @@
 use candid::{CandidType, Principal};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::wallet::service::WalletId;
 
@@ -15,13 +15,14 @@ pub struct NeuronUpdateCommand {
                      * pub last_transaction_time:u64, */
 }
 
-#[derive(Debug, Clone, CandidType, Deserialize, Default)]
+#[derive(Debug, Clone, CandidType,Serialize,  Deserialize, Default)]
 pub struct NeuronAddCommand {
   pub address: String,
   pub from: String,
   pub name: String,
+  pub test1: String,
 }
-#[derive(Debug, Clone, CandidType, Deserialize)]
+#[derive(Debug, Clone, CandidType,Serialize,  Deserialize)]
 pub struct NeuronProfile {
   pub owner: Principal, // 用户 Principal
   pub name: String,

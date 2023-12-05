@@ -11,7 +11,7 @@ pocket-ic = { workspace = true }
 candid = { workspace = true }
 serde = { workspace = true }
 serde_bytes = { workspace = true }
-# TODO IMPORTANT
-#! this will cause ld(link) error in compile very hidden, 
+# IMPORTANT
+#! this will cause ld(link) error in compile very hidden bug!!!, 
 # backend = { path = "../canisters/backend/" }
 rand = { workspace = true }

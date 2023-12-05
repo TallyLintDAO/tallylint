@@ -1,18 +1,37 @@
 
 TODO list:
 now do:
-1. query_all_neuron_wallet err.
+fixed, 1. query_all_neuron_wallet err. 
+
+
 
 middle level
 1. did classify. not alphabet. maybe ref openchat.
-2. update ic-fs wihout fail
+2. TODO critical for production:  update ic-fs wihout fail. middle level complexity. need divide and conquer.
+3. 
+
+testing ic-fs : 
+ic fs testing . 
+1. add a fs data structure.   is fs data update OK?
+2. update a fs data structure.   is fs data update OK?
+its not diffcult to do. but just fussy
 
 efficentcy:
-https://linuxhandbook.com/sudo-without-password/
+done, https://linuxhandbook.com/sudo-without-password/
+  steps in my github repo: linux_useful_scripts
+
+done, give vm 18 cores, for compile
+
+how to edit a file in vscode with root permit when i login vscode in normal user ?
+for example:
+Failed to save 'sources.list': Unable to write file 'vscode-remote://ssh-remote+ubuntu_vmware_btwl/etc/apt/sources.list' (NoPermissions (FileSystemError): Error: EACCES: permission denied, open '/etc/apt/sources.list')
 
 ## backend ic address    
 backend: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=v7g7o-oiaaa-aaaag-qcj3q-cai
 
+
+TODO all dfx calls can be made by ic-agent-rs code
+openchat even directly use dfx::core lib of rs.(to manage canister on replica)
 ## add cycles to can:
 dfx canister --network ic --wallet vwfus-yaaaa-aaaag-qcj2a-cai deposit-cycles 5000000000000 assets
 5 000 000 000 000 5TC
@@ -20,7 +39,7 @@ dfx canister --network ic --wallet vwfus-yaaaa-aaaag-qcj2a-cai deposit-cycles 50
 ## generate rust backend canister did file :
 https://internetcomputer.org/docs/current/developer-docs/backend/rust/candid
 
-## line of code
+## lines of code
 ```
 find . -name "*.rs" -print | xargs wc -l
 ```
@@ -28,7 +47,7 @@ find . -name "*.rs" -print | xargs wc -l
 ## check canister cycles balance:
 
 
-<!-- TODO -->
+
 
 
 
@@ -91,6 +110,8 @@ dfx :
 (hiding stuff is ic-env and caller )
 dfx call backend greet "alex"  
 TODO: maybe use dfx::core in rs code can also do this ? need with a env running ?
+IMPORTANT . pocket-ic is a binary file that run directly. dfx is another binary file .
+They both provide a env for canister .but different env.
 
 rs code with pocketIC:
 #[macro_export]

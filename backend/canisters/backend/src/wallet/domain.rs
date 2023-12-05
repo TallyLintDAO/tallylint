@@ -1,10 +1,11 @@
-pub(crate) use candid::{CandidType, Deserialize, Principal};
+pub(crate) use candid::{CandidType, Principal};
 
 use crate::common::context::TimeStamp;
 
 use super::service::{RecordId, WalletAddress, WalletId};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, CandidType, Deserialize)]
+#[derive(Debug, Clone, CandidType,Serialize, Deserialize)]
 pub struct WalletProfile {
   // primary key
   pub id: u64,
@@ -29,7 +30,7 @@ pub struct WalletProfile {
   pub last_transaction_time: u64,
 }
 
-#[derive(Debug, Clone, CandidType, Deserialize)]
+#[derive(Debug, Clone, CandidType,Serialize,  Deserialize)]
 pub struct WalletUpdateCommand {
   //muttable
   pub from: String, /* from which wallet_type: such as
@@ -56,7 +57,7 @@ impl Default for WalletUpdateCommand {
     }
   }
 }
-#[derive(Debug, Clone, CandidType, Deserialize)]
+#[derive(Debug, Clone, CandidType,Serialize,  Deserialize)]
 pub struct WalletAddCommand {
   pub address: String,
   pub principal_id: Option<String>, /* Plug use , need
@@ -81,7 +82,7 @@ impl Default for WalletAddCommand {
 /**
  * Class Record main storage:
  */
-#[derive(Debug, Clone, CandidType, Deserialize)]
+#[derive(Debug, Clone, CandidType,Serialize,  Deserialize)]
 pub struct RecordProfile {
   pub id: RecordId,
   // Primary key
@@ -108,7 +109,7 @@ pub struct RecordProfile {
   // 就会被自动标记为missing rates
 }
 
-#[derive(Debug, Clone, CandidType, Deserialize)]
+#[derive(Debug, Clone, CandidType,Serialize,  Deserialize)]
 pub struct HistoryQueryCommand {
   // Primary key
   pub address: Option<WalletAddress>, /* make this optional. if not
@@ -124,7 +125,7 @@ pub struct HistoryQueryCommand {
                             * or profit-asc
                             * profit-desc */
 }
-#[derive(Debug, Clone, CandidType, Deserialize)]
+#[derive(Debug, Clone, CandidType,Serialize,  Deserialize)]
 pub struct EditHistoryCommand {
   pub id: RecordId, //delete id here . dont need.
   //Transaction record

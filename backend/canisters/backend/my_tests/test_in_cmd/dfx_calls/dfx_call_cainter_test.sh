@@ -20,7 +20,7 @@ dfx start --background
 cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did
 dfx deploy backend 
 
-#TODO: maybe use makefile or bash can auto this process.
+#TODO: effiency: maybe use makefile or bash can auto this process.
 #! Continious Deploy on Main net :
 # step1: gen did
 # cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did 
@@ -43,7 +43,7 @@ dfx deploy backend --network ic
 
 # IMPORTANT
 # TDD idea , Test Driven Development . a kind of OKR .  to confident with  code !
-# TODO. make the whole CRUD into a auto things . auto-test
+# TODO. Itest autorun: make the whole CRUD into a auto things . auto-test
 # both work to local or ic need test .
 dfx canister call backend auto_register_user
 
@@ -60,15 +60,15 @@ dfx canister call backend update_wallet '(record { address = "c9"; name = "Amyda
 dfx canister call backend add_wallet '(record { address = "c9"; name = "AmydaLu"; from = "asdaw" })'
 dfx canister call backend add_wallet '(record { address = "c9"; name = "AmydaLu"; from = "asdaw" })'
 
-#neuron CRUD test 
-dfx canister call backend add_neuron_wallet '(record { address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"; name = "AmydaLu"; from = "asdaw" })'
 
 # good wallet addr with proper transactions  
 dfx canister call backend add_wallet '(record { address = "107b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"; name = "AmydaLu"; from = "asdaw" })'
 
+#neuron CRUD test 
+dfx canister call backend add_neuron_wallet '(record { address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"; name = "AmydaLu"; from = "asdaw" })'
 dfx canister call backend query_all_neuron_wallet
 dfx canister call backend query_a_wallet 10003
-dfx canister call backend  update_neuron_wallet '(record { id = 10003; from="nns1"; name = "cczz";})'
+dfx canister call backend  update_neuron_wallet '(record { id = 10002; from="nns1"; name = "cczz";})'
 dfx canister call backend  query_a_neuron_wallet 10002
 dfx canister call backend  delete_neuron_wallet 10002
 

@@ -40,3 +40,5 @@ fn call_counter_canister(
     )
     .expect("Failed to call counter canister")
 }
+
+
