@@ -373,7 +373,7 @@ const getNNS = async () => {
               stakedMaturityE8sEquivalent,
             } = neuron.fullNeuron
             const neuronData = {
-              neruonId: id,
+              neuronId: id,
               address: accountIdentifier,
               //1e8是10的八次方，除以1e8得到原数
               maturity: Number(maturityE8sEquivalent) / 1e8,

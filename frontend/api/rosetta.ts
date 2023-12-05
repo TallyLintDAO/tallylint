@@ -5,7 +5,7 @@ import {
   ROSETTA_URL,
 } from "@/api/constants/ic"
 import { getICPPrice } from "@/api/token"
-import type { WalletHistory } from "@/types/user"
+import type { WalletHistory, WalletTag } from "@/types/user"
 import { currencyCalculate } from "@/utils/common"
 import { showMessageError } from "@/utils/message"
 
@@ -15,6 +15,7 @@ export interface InferredTransaction {
   hash: string
   timestamp: number
   type: string
+  name: string
   details: {
     status: string
     fee: {
@@ -46,7 +47,7 @@ export interface GetTransactionsResponse {
 }
 
 export const getICPTransactions = async (
-  address: string,
+  wallet: WalletTag,
   requireFormat: boolean,
 ): Promise<GetTransactionsResponse> => {
   //... 需要添加一个同地址缓存方法，以免调用过于频繁
@@ -55,7 +56,7 @@ export const getICPTransactions = async (
     body: JSON.stringify({
       network_identifier: NET_ID,
       account_identifier: {
-        address: address,
+        address: wallet.address,
       },
     }),
     headers: {
@@ -66,7 +67,7 @@ export const getICPTransactions = async (
   if (!response.ok) {
     showMessageError(
       "Address: " +
-        address +
+        wallet.address +
         " unable to get information from ICP Rosetta Api, " +
         "please check that the wallet address and network are correct.",
     )
@@ -82,7 +83,7 @@ export const getICPTransactions = async (
     transactions.reverse()
     for (const { transaction } of transactions) {
       const formattedTransaction = await formatIcpTransaccion(
-        address,
+        wallet,
         transaction,
       )
       transactionsInfo.push(formattedTransaction)
@@ -98,13 +99,13 @@ export const getICPTransactions = async (
 
 //批量获取多个地址的交易记录
 export const getAllTransactions = async (
-  walletAddresses: string[],
+  wallets: WalletTag[],
 ): Promise<GetTransactionsResponse> => {
-  console.log("addresses", walletAddresses)
+  console.log("addresses", wallets)
   try {
     // 使用 Promise.all 并行地获取多个钱包的交易记录
-    const transactionsPromises = walletAddresses.map((address) =>
-      getICPTransactions(address, true),
+    const transactionsPromises = wallets.map((wallet) =>
+      getICPTransactions(wallet, true),
     )
     const transactionsResults = await Promise.all(transactionsPromises)
     console.log("transactionsResults", transactionsResults)
@@ -153,7 +154,7 @@ interface RosettaTransaction {
 }
 
 export const formatIcpTransaccion = async (
-  accountAddress: string,
+  wallet: WalletTag,
   rosettaTransaction: RosettaTransaction,
 ): Promise<InferredTransaction> => {
   const {
@@ -187,8 +188,8 @@ export const formatIcpTransaccion = async (
       transaction.details.status = operation.status
 
     transaction.type =
-      transaction.details.to === accountAddress ? "RECEIVE" : "SEND"
-
+      transaction.details.to === wallet.address ? "RECEIVE" : "SEND"
+    transaction.name = wallet.name
     //直接输出真实的数量，不再使用浮点数
     transaction.details.amount = currencyCalculate(
       amount,
@@ -272,7 +273,10 @@ const initialWalletHistory = {
 
 //根据交易历史，手动生成钱包历史
 export const getWalletHistory = async (accountAddress: string) => {
-  const res = await getICPTransactions(accountAddress, true)
+  const res = await getICPTransactions(
+    { address: accountAddress, name: "", from: "" },
+    true,
+  )
   // 倒序交易数组，以确保最早的交易在前面
   const transactions = res.transactions.reverse()
   // 初始化钱包历史

@@ -31,3 +31,17 @@ export interface WalletHistory {
   walletValue: number
   type: string
 }
+
+export interface WalletTag {
+  address: string
+  name: string
+  from: string
+}
+
+export interface NNSNeuron {
+  neuronId: bigint
+  address: string
+  from: string
+  maturity: number
+  stakedMaturity: number
+}

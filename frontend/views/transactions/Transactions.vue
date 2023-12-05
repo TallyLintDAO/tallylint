@@ -4,6 +4,7 @@
       <div class="header q-gutter-md row q-mb-md items-end">
         <q-select
           v-model="selectedWallet"
+          @update:model-value="getWalletHistory(selectedWallet)"
           use-chips
           multiple
           option-label="name"
@@ -42,7 +43,7 @@
           @click="exportToCSV"
         />
       </div>
-      <div v-if="walletList.length === 0">
+      <div v-if="showLoading">
         <q-spinner-cube size="xl" color="primary" />
       </div>
       <div v-else>
@@ -85,8 +86,14 @@
                   }}
                 </div>
                 <div class="col">
-                  Wallet Name
-                  <br />
+                  <div class="flex-y-center q-gutter-sm">
+                    <img
+                      class="head-icon"
+                      src="@/assets/dfinity.svg"
+                      alt="NNS Icon"
+                    />
+                    <span>{{ transaction.name }}</span>
+                  </div>
                   {{ transaction.details.currency.symbol }}
                   {{ transaction.details.amount }}
                   <br />
@@ -149,7 +156,9 @@
 <script lang="ts" setup>
 import { InferredTransaction, getAllTransactions } from "@/api/rosetta"
 import { getUserNeuron, getUserWallet } from "@/api/user"
+import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
+import { getNNS } from "@/utils/nns"
 import { exportFile } from "quasar"
 import { computed, onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
@@ -160,8 +169,9 @@ const address = route.params.address
 const walletList = ref<InferredTransaction[]>([])
 const options = ["FIFO"]
 const model = ref("FIFO")
-const selectedWallet = ref([])
-const wallets = ref([] as { name: string; address: string; from: string }[])
+const selectedWallet = ref<WalletTag[]>([])
+const wallets = ref<WalletTag[]>([])
+const showLoading = ref(true)
 
 const currentPage = ref(1)
 const maxPage = ref(1)
@@ -197,43 +207,72 @@ const paginatedGroups = computed(
 )
 
 onMounted(() => {
-  getWallets()
+  console.log("route", address)
+  getWallets().then(() => {
+    if (address) {
+      if (Array.isArray(address)) {
+        // 如果route是数组，传递整个数组
+        getWalletHistory(
+          address.map((addr) => ({
+            address: addr,
+            name: "",
+            from: "",
+          })),
+        )
+      } else {
+        // 如果route是字符串，构造包含单个地址的数组
+        getWalletHistory([
+          {
+            address: address,
+            name: "",
+            from: "",
+          },
+        ])
+      }
+    } else {
+      // 如果route不存在，默认查询所有地址
+      getWalletHistory(wallets.value)
+    }
+  })
 })
 
 const getWallets = async () => {
-  const res1 = await getUserWallet(false)
-  const res2 = await getUserNeuron(false)
-  if (res1.Ok && res2.Ok) {
-    const userWallets = res1.Ok.map((wallet) => ({
+  showLoading.value = true
+  const [userWallets, neuronWallets, nnsWallets] = await Promise.all([
+    getUserWallet(false),
+    getUserNeuron(false),
+    getNNS(),
+  ])
+  console.log("nnsWallet", nnsWallets)
+  if (userWallets.Ok && neuronWallets.Ok) {
+    const mapToWallet = (wallet) => ({
       name: wallet.name,
       address: wallet.address,
       from: wallet.from,
-    }))
-    const neuronWallets = res2.Ok.map((wallet) => ({
-      name: wallet.name,
-      address: wallet.address,
-      from: wallet.from,
-    }))
-    // 将userWallets和neuronWallets合并到wallets数组中
-    wallets.value.push(...userWallets, ...neuronWallets)
+    })
+    const userWalletList = userWallets.Ok.map(mapToWallet)
+    const neuronWalletList = neuronWallets.Ok.map(mapToWallet)
+
+    wallets.value.push(...userWalletList, ...neuronWalletList)
   }
-  getWalletHistory()
-  console.log("wallets", wallets.value)
 }
 
-const getWalletHistory = async () => {
-  if (wallets.value.length > 0) {
-    getAllTransactions(wallets.value.map((wallet) => wallet.address)).then(
-      (res) => {
-        console.log("getWalletHistory", res)
-        if (res.total && res.total != 0) {
-          walletList.value = res.transactions
-          maxPage.value = Number(res.total / pageSize.value)
-        }
-      },
-    )
-  }
+const getWalletHistory = async (targetWallets: WalletTag[]) => {
+  showLoading.value = true
+  console.log("targetWallets", targetWallets)
+  getAllTransactions(targetWallets)
+    .then((res) => {
+      console.log("getWalletHistory", res)
+      if (res.total && res.total != 0) {
+        walletList.value = res.transactions
+        maxPage.value = Math.ceil(res.total / pageSize.value)
+      }
+    })
+    .finally(() => {
+      showLoading.value = false
+    })
 }
+
 const exportToCSV = async () => {
   const columnNames = [
     "Hash",

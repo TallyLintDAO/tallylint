@@ -234,10 +234,12 @@ onMounted(() => {
 const syncAllWallet = () => {
   rows.value.forEach((row, index) => {
     console.log(`Row ${index + 1}`, row)
-    getICPTransactions(row.address, true).then((res) => {
-      //将钱包数据同步
-      syncWallet(row.id, res.transactions)
-    })
+    getICPTransactions({ address: row.address, name: "", from: "" }, true).then(
+      (res) => {
+        //将钱包数据同步
+        syncWallet(row.id, res.transactions)
+      },
+    )
   })
 }
 
@@ -266,7 +268,10 @@ const getWallets = (isRefresh: boolean) => {
       for (const row of rows.value) {
         try {
           row.transactions = 0
-          getICPTransactions(row.address, false).then((res) => {
+          getICPTransactions(
+            { address: row.address, name: "", from: "" },
+            false,
+          ).then((res) => {
             // 将查询得到的transactions绑定回原数组中的transactions
             row.transactions = res.total
           })

@@ -14,6 +14,7 @@
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
     "useDefineForClassFields": true,
+    "outDir": "./dist",
     "types": ["vite/client"],
     "paths": {
       "@/*": ["frontend/*"],
@@ -21,6 +22,7 @@
     },
     "baseUrl": ".",
     "importsNotUsedAsValues": "error",
+    "ignoreDeprecations": "5.0", //忽略ts新版本对importsNotUsedAsValues的报错
     "isolatedModules": true
   },
   "include": [
