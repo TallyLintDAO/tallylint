@@ -10,6 +10,12 @@ middle level
 2. TODO critical for production:  update ic-fs wihout fail. middle level complexity. need divide and conquer.
 3. 
 
+testing ic-fs : 
+ic fs testing . 
+1. add a fs data structure.   is fs data update OK?
+2. update a fs data structure.   is fs data update OK?
+its not diffcult to do. but just fussy
+
 efficentcy:
 done, https://linuxhandbook.com/sudo-without-password/
   steps in my github repo: linux_useful_scripts
