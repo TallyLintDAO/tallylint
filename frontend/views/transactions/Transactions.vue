@@ -252,8 +252,13 @@ const getWallets = async () => {
     })
     const userWalletList = userWallets.Ok.map(mapToWallet)
     const neuronWalletList = neuronWallets.Ok.map(mapToWallet)
+    const nnsWalletList = neuronWallets.Ok.map((wallet, index) => ({
+      name: "hotkey " + index + 1,
+      address: wallet.address,
+      from: "hotkey",
+    }))
 
-    wallets.value.push(...userWalletList, ...neuronWalletList)
+    wallets.value.push(...userWalletList, ...neuronWalletList, ...nnsWalletList)
   }
 }
 

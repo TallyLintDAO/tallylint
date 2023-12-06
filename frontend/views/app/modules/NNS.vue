@@ -200,7 +200,6 @@
 </template>
 
 <script lang="ts" setup>
-import { initAuth } from "@/api/auth"
 import { DOCS_URL, NNS_HELP } from "@/api/constants/docs"
 import {
   addUserNeuron,
@@ -216,8 +215,7 @@ import {
   showMessageSuccess,
   showResultError,
 } from "@/utils/message"
-import { HttpAgent } from "@dfinity/agent"
-import { GovernanceCanister } from "@dfinity/nns"
+import { getNNS } from "@/utils/nns"
 import { Principal } from "@dfinity/principal"
 import { SnsWrapper, initSnsWrapper } from "@dfinity/sns"
 import { QForm, copyToClipboard } from "quasar"
@@ -227,7 +225,7 @@ const userStore = useUserStore()
 
 const dialogVisible = ref(false)
 const filter = ref("") //搜索框
-const principal = ref(useUserStore().principal) //搜索框
+const principal = ref(useUserStore().principal) //用户
 const columns = [
   {
     name: "address",
@@ -254,8 +252,8 @@ const neuron = ref({
   name: "",
 })
 
-onMounted(() => {
-  getNNS()
+onMounted(async () => {
+  await getHotkeyWallet()
   getNeurons(false)
   // getSNS()
 })
@@ -352,41 +350,9 @@ const deleteItem = (itemId: bigint) => {
   })
 }
 
-const getNNS = async () => {
-  const ai = await initAuth()
-  if (ai.info) {
-    const identity = ai.info.identity
-    const agent = new HttpAgent({ identity })
-    console.log("agent", agent)
-    const neuron = GovernanceCanister.create({
-      agent: agent,
-    })
-    //获取授权当前pid的神经元列表
-    neuron.listNeurons({ certified: false }).then((res) => {
-      if (res.length > 0) {
-        for (const neuron of res) {
-          if (neuron.fullNeuron) {
-            const {
-              id,
-              accountIdentifier,
-              maturityE8sEquivalent,
-              stakedMaturityE8sEquivalent,
-            } = neuron.fullNeuron
-            const neuronData = {
-              neuronId: id,
-              address: accountIdentifier,
-              //1e8是10的八次方，除以1e8得到原数
-              maturity: Number(maturityE8sEquivalent) / 1e8,
-              stakedMaturity: Number(stakedMaturityE8sEquivalent) / 1e8,
-              from: "hotkey",
-            }
-            console.log("neuronData", neuronData)
-            nnsNeruons.value.push(neuronData)
-          }
-        }
-      }
-    })
-  }
+const getHotkeyWallet = async () => {
+  const res = await getNNS()
+  nnsNeruons.value.push(...res)
 }
 const getSNS = async () => {
   const snsWrapper: SnsWrapper = await initSnsWrapper({
