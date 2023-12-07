@@ -1,144 +1,140 @@
 <template>
   <div class="nns-container">
-    <div class="q-pa-md">
-      <q-table
-        grid
-        title="NNS"
-        :rows="rows"
-        :columns="columns"
-        selection="multiple"
-        :filter="filter"
-        row-key="address"
-      >
-        <template v-slot:top>
-          <div class="q-gutter-sm">
-            <q-btn color="primary" @click="openDialog('add')"
-              >Add NNS Neuron</q-btn
-            >
-            <el-tooltip effect="dark" placement="top-start">
-              <template #content>
-                Your Principal ID is {{ principal }}
-                <q-icon
-                  name="content_copy"
-                  class="cursor-pointer"
-                  @click="copyPid()"
-                />
-              </template>
-              <q-btn
-                flat
-                color="primary"
-                label="Help"
-                icon="lightbulb_outline"
-                @click="goHelp()"
+    <q-table
+      grid
+      :loading="tableLoading"
+      title="NNS"
+      :rows="rows"
+      :columns="columns"
+      selection="multiple"
+      :filter="filter"
+      row-key="address"
+    >
+      <template v-slot:top>
+        <div class="q-gutter-sm">
+          <q-btn color="primary" @click="openDialog('add')"
+            >Add NNS Neuron</q-btn
+          >
+          <el-tooltip effect="dark" placement="top-start">
+            <template #content>
+              Your Principal ID is {{ principal }}
+              <q-icon
+                name="content_copy"
+                class="cursor-pointer"
+                @click="copyPid()"
               />
-            </el-tooltip>
-          </div>
-
-          <q-space />
-          <q-input
-            borderless
-            dense
-            debounce="300"
-            v-model="filter"
-            placeholder="Search"
-          >
-            <template v-slot:append>
-              <q-icon name="search" />
             </template>
-          </q-input>
-        </template>
-        <template v-slot:item="props">
-          <div
-            class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
-          >
-            <q-card>
+            <q-btn
+              flat
+              color="primary"
+              label="Help"
+              icon="lightbulb_outline"
+              @click="goHelp()"
+            />
+          </el-tooltip>
+        </div>
+        <q-space />
+        <q-input
+          borderless
+          dense
+          debounce="300"
+          v-model="filter"
+          placeholder="Search"
+        >
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </template>
+      <template v-slot:item="props">
+        <div
+          class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
+        >
+          <q-card>
+            <q-card-section>
               <q-card-section>
-                <q-card-section>
-                  <div class="row justify-between items-center">
-                    <div class="flex q-gutter-xs">
-                      <img
-                        class="head-icon"
-                        src="@/assets/dfinity.svg"
-                        alt="NNS Icon"
-                      />
-                      <div class="text-h6">{{ props.row.name }}</div>
-                    </div>
-                    <q-btn
-                      v-if="props.row.from !== 'hotkey'"
-                      flat
-                      icon="more_vert"
-                    >
-                      <q-menu>
-                        <q-list style="min-width: 100px">
-                          <q-item clickable v-close-popup="true">
-                            <q-item-section
-                              @click="openDialog('edit', props.row)"
-                            >
-                              Edit
-                            </q-item-section>
-                          </q-item>
-                          <q-item clickable v-close-popup="true">
-                            <q-item-section @click="deleteItem(props.row.id)">
-                              Delete
-                            </q-item-section>
-                          </q-item>
-                        </q-list>
-                      </q-menu>
-                    </q-btn>
-                    <q-badge
-                      v-else
-                      outline
-                      color="secondary"
-                      label="Hotkey Import"
+                <div class="row justify-between items-center">
+                  <div class="flex q-gutter-xs">
+                    <img
+                      class="head-icon"
+                      src="@/assets/dfinity.svg"
+                      alt="NNS Icon"
                     />
+                    <div class="text-h6">{{ props.row.name }}</div>
                   </div>
-                </q-card-section>
-                <q-list>
-                  <q-item v-for="col in props.cols" :key="col.name">
-                    <q-item-section>
-                      <q-item-label>{{ col.label }}</q-item-label>
-                      <q-item-label v-if="col.name === 'address'" caption>
-                        <router-link :to="'/app/transactions/' + col.value">
-                          {{ col.value }}
-                        </router-link>
-                      </q-item-label>
-                      <q-item-label v-else caption>{{
-                        col.value
-                      }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <!-- 有值才显示 -->
-                  <q-item v-if="props.row.neruonId">
-                    <q-item-section>
-                      <q-item-label> Neruon Id </q-item-label>
-                      <q-item-label caption>
-                        {{ props.row.neruonId }}
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item v-if="props.row.maturity || props.row.maturity === 0">
-                    <q-item-section>
-                      <q-item-label> Maturity </q-item-label>
-                      <q-item-label caption>
-                        {{ props.row.maturity }}
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item v-if="props.row.stakedMaturity">
-                    <q-item-section>
-                      <q-item-label> StakedMaturity </q-item-label>
-                      <q-item-label caption>
-                        {{ props.row.stakedMaturity }}
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
+                  <q-btn
+                    v-if="props.row.from !== 'hotkey'"
+                    flat
+                    icon="more_vert"
+                  >
+                    <q-menu>
+                      <q-list style="min-width: 100px">
+                        <q-item clickable v-close-popup="true">
+                          <q-item-section
+                            @click="openDialog('edit', props.row)"
+                          >
+                            Edit
+                          </q-item-section>
+                        </q-item>
+                        <q-item clickable v-close-popup="true">
+                          <q-item-section @click="deleteItem(props.row.id)">
+                            Delete
+                          </q-item-section>
+                        </q-item>
+                      </q-list>
+                    </q-menu>
+                  </q-btn>
+                  <q-badge
+                    v-else
+                    outline
+                    color="secondary"
+                    label="Hotkey Import"
+                  />
+                </div>
               </q-card-section>
-            </q-card>
-          </div>
-        </template>
-      </q-table>
-    </div>
+              <q-list>
+                <q-item v-for="col in props.cols" :key="col.name">
+                  <q-item-section>
+                    <q-item-label>{{ col.label }}</q-item-label>
+                    <q-item-label v-if="col.name === 'address'" caption>
+                      <router-link :to="'/app/transactions/' + col.value">
+                        {{ col.value }}
+                      </router-link>
+                    </q-item-label>
+                    <q-item-label v-else caption>{{ col.value }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+                <!-- 有值才显示 -->
+                <q-item v-if="props.row.neruonId">
+                  <q-item-section>
+                    <q-item-label> Neruon Id </q-item-label>
+                    <q-item-label caption>
+                      {{ props.row.neruonId }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item v-if="props.row.maturity || props.row.maturity === 0">
+                  <q-item-section>
+                    <q-item-label> Maturity </q-item-label>
+                    <q-item-label caption>
+                      {{ props.row.maturity }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item v-if="props.row.stakedMaturity">
+                  <q-item-section>
+                    <q-item-label> StakedMaturity </q-item-label>
+                    <q-item-label caption>
+                      {{ props.row.stakedMaturity }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-card-section>
+          </q-card>
+        </div>
+      </template>
+    </q-table>
     <q-dialog v-model="dialogVisible">
       <q-card style="min-width: 350px">
         <q-card-section>
@@ -242,6 +238,7 @@ const form = ref<QForm | null>(null)
 const rows = ref<any[]>([])
 const nnsNeruons = ref<any[]>([])
 const loading = ref(false)
+const tableLoading = ref(false)
 const isEdit = ref(false) // dialog是否是edit功能，否就是add功能
 const address = ref("")
 const neuron = ref({
@@ -299,13 +296,17 @@ const onSubmit = async () => {
 
 const getNeurons = (isRefresh: boolean) => {
   //执行add，delete操作后刷新缓存，其他查询操作则不需要刷新缓存。
-  getUserNeuron(isRefresh).then((res) => {
-    console.log("getNeurons", res)
-    if (res.Ok) {
-      rows.value = res.Ok.concat(nnsNeruons.value)
-      console.log("getNeurons", rows.value)
-    }
-  })
+  getUserNeuron(isRefresh)
+    .then((res) => {
+      console.log("getNeurons", res)
+      if (res.Ok) {
+        rows.value = res.Ok.concat(nnsNeruons.value)
+        console.log("getNeurons", rows.value)
+      }
+    })
+    .finally(() => {
+      tableLoading.value = false
+    })
 }
 
 const addItem = async () => {
@@ -351,6 +352,7 @@ const deleteItem = (itemId: bigint) => {
 }
 
 const getHotkeyWallet = async () => {
+  tableLoading.value = true
   const res = await getNNS()
   nnsNeruons.value.push(...res)
 }

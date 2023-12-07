@@ -2,6 +2,7 @@
   <div class="wallet-container">
     <q-table
       grid
+      :loading="tableLoading"
       title="Wallets"
       :rows="rows"
       :columns="columns"
@@ -11,7 +12,7 @@
       row-key="address"
     >
       <template v-slot:top>
-        <div class="q-gutter-md">
+        <div class="q-gutter-sm">
           <q-btn color="primary" @click="openDialog('add')">Add Wallet</q-btn>
           <q-btn color="secondary" @click="syncAllWallet()" icon="cached"
             >Sync All Wallet</q-btn
@@ -197,6 +198,7 @@ const columns = [
 const froms = ["NNS", "Plug", "Stoic", "AstorMe"]
 const walletDialogVisible = ref(false)
 const loading = ref(false)
+const tableLoading = ref(false)
 const filter = ref("") // 搜索框
 const selected = ref([]) // 当前选中的对象们
 const address = ref("") // 当前用户输入的地址，可能是principal ID，也可能是account ID
@@ -260,28 +262,33 @@ const identifyAddress = () => {
 }
 
 const getWallets = (isRefresh: boolean) => {
+  tableLoading.value = true
   //执行add，delete操作后刷新缓存，其他查询操作则不需要刷新缓存。
-  getUserWallet(isRefresh).then((res) => {
-    console.log("getUserWallet", res)
-    if (res.Ok) {
-      rows.value = res.Ok
-      for (const row of rows.value) {
-        try {
-          row.transactions = 0
-          getICPTransactions(
-            { address: row.address, name: "", from: "" },
-            false,
-          ).then((res) => {
-            // 将查询得到的transactions绑定回原数组中的transactions
-            row.transactions = res.total
-          })
-        } catch (error) {
-          // 处理错误情况
-          console.error(`查询地址 ${row.address} 的交易时出错:`, error)
+  getUserWallet(isRefresh)
+    .then((res) => {
+      console.log("getUserWallet", res)
+      if (res.Ok) {
+        rows.value = res.Ok
+        for (const row of rows.value) {
+          try {
+            row.transactions = 0
+            getICPTransactions(
+              { address: row.address, name: "", from: "" },
+              false,
+            ).then((res) => {
+              // 将查询得到的transactions绑定回原数组中的transactions
+              row.transactions = res.total
+            })
+          } catch (error) {
+            // 处理错误情况
+            console.error(`查询地址 ${row.address} 的交易时出错:`, error)
+          }
         }
       }
-    }
-  })
+    })
+    .finally(() => {
+      tableLoading.value = false
+    })
 }
 
 const onSubmit = async () => {
@@ -370,6 +377,9 @@ const deleteWallet = (walletId: bigint) => {
   }
   .text-caption {
     font-size: 0.9rem;
+  }
+  .q-table__top {
+    padding: 0;
   }
 }
 </style>
