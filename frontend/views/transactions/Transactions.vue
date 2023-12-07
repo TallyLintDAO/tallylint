@@ -46,6 +46,9 @@
       <div v-if="showLoading">
         <q-spinner-cube size="xl" color="primary" />
       </div>
+      <div v-else-if="wallets.length === 0">
+        <span>No data available</span>
+      </div>
       <div v-else>
         <q-list bordered separator>
           <template v-for="(transactions, date) in paginatedGroups" :key="date">
