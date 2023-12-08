@@ -40,7 +40,7 @@ export async function getUserWallet(
     key: "USER_WALLET",
     execute: () => getBackend().query_all_wallets(),
     ttl: walletTTL,
-    // isLocal: true, //TODO 是否需要本地存储还需考虑，理论上来说内存存储就足够了
+    // isLocal: true, //使用内存储存就够了
     refresh: refresh, //是否刷新缓存，用于执行增删改操作后的刷新。
   })
 }
@@ -114,7 +114,7 @@ export async function getUserNeuron(
     key: "USER_Neurons",
     execute: () => getBackend().query_all_neuron_wallet(),
     ttl: walletTTL,
-    // isLocal: true, //TODO 是否需要本地存储还需考虑，理论上来说内存存储就足够了
+    // isLocal: true, //使用内存储存就够了
     refresh: refresh, //是否刷新缓存，用于执行增删改操作后的刷新。
   })
 }

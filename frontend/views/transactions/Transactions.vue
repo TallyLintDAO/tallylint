@@ -321,10 +321,10 @@ const exportToCSV = async () => {
 
   // 将数据转换为 CSV 格式的字符串
   const csvContent = data.map((row) => row.join(",")).join("\n")
-
+  const todayDate = new Date().toLocaleDateString("fr-CH").replace(/\./g, "")
+  const fileName = address ? "Tax_Data_" + address : "Tax_Data_All_Wallet"
   // 使用 exportFile 函数导出 CSV 文件
-  //TODO 在文件名里增加月份或者年份
-  exportFile(address + ".csv", csvContent, "text/csv")
+  exportFile(`${todayDate}_${fileName}.csv`, csvContent, "text/csv")
 }
 </script>
 
