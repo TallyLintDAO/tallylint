@@ -24,16 +24,16 @@ taxlint will automatically calculate the profit from the transaction and the tra
 ffmpeg -i AI_audio.mkv -vn -c:a libmp3lame output.mp3
 ```
 - Who are your target users?
-    Anyone who currently in the US ,buy and sale between ICP and US dollar.
-    In the process of generating capital gain and loss.If you need to report tax base on it .Using taxlint can automatically calculate all profit or loss for you.
+    Anyone who is need to report crypto tax ,such as  buy and sell between ICP and US dollar.
+    In the process of generating capital gain and loss. If you need to report tax based on it. Using Taxlint can automatically calculate all profit or loss for you.
 
 
 - What is the problem you are solving?
-    User may encounter tedious collect transaction records,search for coin history value,compute detailed part of coin sale or buy ,finally  calculate them by their own .
-    We will automatically do most of the verbose work on our TaxLint dapp and generate tax report file for users.
+    User may encounter a tedious collection of transaction records, search for coin history value, compute detailed part of coin sale or buy, and finally calculate them on their own.
+    We will automatically do most of the verbose work on our TaxLint dapp and generate tax report files for users.
 
 - Why is this a problem (pain point) for your users?
-    Calculating cryptocurrency tax is a complex work for users, using taxlint can make capital tax calculation much easier than doing by hand everytime.
+    Calculating cryptocurrency tax is a complex work for users, using taxlint can make capital tax calculation much easier than doing it by hand every time.
 
 - Why did you choose to build on IC?
-    We agree with IC philosophy of decentralized application , smart contract, and self-governance by commnity.  which makes the application code on IC is safe and unbreakable.
+    We agree with IC's philosophy of decentralized application, smart contracts, and self-governance by the community.  which makes the application code on IC safe and unbreakable.
