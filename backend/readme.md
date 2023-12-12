@@ -1,24 +1,23 @@
-
 TODO list:
 now do:
-fixed, 1. query_all_neuron_wallet err. 
-
-
+fixed, 1. query_all_neuron_wallet err.
 
 middle level
-1. did classify. not alphabet. maybe ref openchat.
-2. TODO critical for production:  update ic-fs wihout fail. middle level complexity. need divide and conquer.
-3. 
 
-testing ic-fs : 
-ic fs testing . 
-1. add a fs data structure.   is fs data update OK?
-2. update a fs data structure.   is fs data update OK?
-its not diffcult to do. but just fussy
+1. did classify. not alphabet. maybe ref openchat.
+2. TODO critical for production: update ic-fs wihout fail. middle level complexity. need divide and conquer.
+3. How to do product time logging ? need to learn about wasm running on ic ?
+
+testing ic-fs :
+ic fs testing .
+
+1. add a fs data structure. is fs data update OK?
+2. update a fs data structure. is fs data update OK?
+   its not diffcult to do. but just fussy
 
 efficentcy:
 done, https://linuxhandbook.com/sudo-without-password/
-  steps in my github repo: linux_useful_scripts
+steps in my github repo: linux_useful_scripts
 
 done, give vm 18 cores, for compile
 
@@ -26,125 +25,112 @@ how to edit a file in vscode with root permit when i login vscode in normal user
 for example:
 Failed to save 'sources.list': Unable to write file 'vscode-remote://ssh-remote+ubuntu_vmware_btwl/etc/apt/sources.list' (NoPermissions (FileSystemError): Error: EACCES: permission denied, open '/etc/apt/sources.list')
 
-## backend ic address    
-backend: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=v7g7o-oiaaa-aaaag-qcj3q-cai
+## backend ic address
 
+backend: https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=v7g7o-oiaaa-aaaag-qcj3q-cai
 
 TODO all dfx calls can be made by ic-agent-rs code
 openchat even directly use dfx::core lib of rs.(to manage canister on replica)
+
 ## add cycles to can:
+
 dfx canister --network ic --wallet vwfus-yaaaa-aaaag-qcj2a-cai deposit-cycles 5000000000000 assets
 5 000 000 000 000 5TC
 
 ## generate rust backend canister did file :
+
 https://internetcomputer.org/docs/current/developer-docs/backend/rust/candid
 
 ## lines of code
+
 ```
 find . -name "*.rs" -print | xargs wc -l
 ```
 
 ## check canister cycles balance:
 
-
-
-
-
-
-
 goal: update can without losing data and incompability when datastructure modifyied cause restore_fs fail.
-1.openchat的存储应用案例是stable memory.
+1.openchat 的存储应用案例是 stable memory.
 threadlocal with ic-stable memory manager with memory(0,1,2...)
-memory(x)  is Virtuaized Mem in a canister mem.into 16 VMems.
-now taxlint use: ic的storage库和ic-stable-memory是否调用的同样的底层存储?
-
-
+memory(x) is Virtuaized Mem in a canister mem.into 16 VMems.
+now taxlint use: ic 的 storage 库和 ic-stable-memory 是否调用的同样的底层存储?
 
 goal:run rs code instead of dfx-CLI to install and upgrade canister and inspect canister.(canistergeek can do this?)
-2.oc升级罐子的案例是用的ic-rs-agent配合一部分dfx::core的接口直接调用.来升级
-还用到了获取本地wasm文件.说明一部分rs代码是跑在开发机的?跑的main.rs
-另外类似的安装罐子也用的rs-agent
+2.oc 升级罐子的案例是用的 ic-rs-agent 配合一部分 dfx::core 的接口直接调用.来升级
+还用到了获取本地 wasm 文件.说明一部分 rs 代码是跑在开发机的?跑的 main.rs
+另外类似的安装罐子也用的 rs-agent
 
-
-
-goal: generate grouped, usage categoriesed did file . instead of alphabet sort api 
-3.oc如何生成did的?
-使用library/candid_gen/的rs代码
-如community的罐子,在mian.rs使用 generate_candid_method macro 生成了did文件?
+goal: generate grouped, usage categoriesed did file . instead of alphabet sort api
+3.oc 如何生成 did 的?
+使用 library/candid_gen/的 rs 代码
+如 community 的罐子,在 mian.rs 使用 generate_candid_method macro 生成了 did 文件?
 part of oc rs code have main.rs .whats for ? run local to gen did in dev workspace?
-以及candid库的: export_service() 
-也许cargo build --release --target wasm32-unknown-unknown --package backend && candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/backend.did
-这个candid-extractor也会用到  candid::export_service() ?
+以及 candid 库的: export_service()
+也许 cargo build --release --target wasm32-unknown-unknown --package backend && candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/backend.did
+这个 candid-extractor 也会用到 candid::export_service() ?
 并没有:用到的是:impl Parse for SystemAPI
 export_service() 生成的文件在哪?
 
+## goal:run UTest and ITest and Log??
 
-## goal:run UTest and ITest  and Log??
 ref:openchat
 canister_ids.json use like this :
-  "group_index": {
-    "ic": "4ijyc-kiaaa-aaaaf-aaaja-cai",
-    "ic_test": "7kifq-3yaaa-aaaaf-ab2cq-cai"
-  },  
+"group_index": {
+"ic": "4ijyc-kiaaa-aaaaf-aaaja-cai",
+"ic_test": "7kifq-3yaaa-aaaaf-ab2cq-cai"
+},
 
- "ic_test": {
-  "providers": [
-    "https://ic0.app/"
-  ],
-  "type": "persistent"
+"ic_test": {
+"providers": [
+"https://ic0.app/"
+],
+"type": "persistent"
 },
 
 in rs code:  
-// const NETWORK = "ic_test";  
+// const NETWORK = "ic_test";
 
-logging: keywords: info!  ,     canister_logger::init_with_logs(data.test_mode, logs, traces);
-where the log file store? ic-fs? or local ? 
-what about running in production time logging ? 
-
+logging: keywords: info! , canister_logger::init_with_logs(data.test_mode, logs, traces);
+where the log file store? ic-fs? or local ?
+what about running in production time logging ?
 
 src/utils lib . any useful stuff for taxlint?
+
 ### Itest : use "pocketIC" as env to provide canister running platform.
+
 pocketIC , good name ,explain how ez to provide function of a running platform of IC.
-compare with dfx: 
-dfx : 
+compare with dfx:
+dfx :
 (hiding stuff is ic-env and caller )
 dfx call backend greet "alex"  
 TODO: maybe use dfx::core in rs code can also do this ? need with a env running ?
 IMPORTANT . pocket-ic is a binary file that run directly. dfx is another binary file .
 They both provide a env for canister .but different env.
 
-rs code with pocketIC:
-#[macro_export]
+rs code with pocketIC: #[macro_export]
 macro_rules! generate_update_call {
-    ($method_name:ident) => {
+($method_name:ident) => {
         #[allow(dead_code)]
         pub fn $method_name(
             env: &mut pocket_ic::PocketIc,
             sender: candid::Principal,
             canister_id: candid::Principal,
             args: &$method_name::Args,
-        ) -> $method_name::Response {
+) -> $method_name::Response {
             let method_name = stringify!($method_name);
 
             $crate::client::execute_update(env, sender, canister_id, method_name, args)
         }
     };
+
 }
 backend/integration_tests/src/client/community.rs
 
 // Queries
 generate_query_call!(channel_summary);
 // after generate calls. when exec? where is return and assert ?
-// go  pub fn create_channel()  may have some clue.
+// go pub fn create_channel() may have some clue.
 
 // Updates
 generate_update_call!(add_reaction);
 generate_update_call!(block_user);
-
-
-
-
-
-
-
-
