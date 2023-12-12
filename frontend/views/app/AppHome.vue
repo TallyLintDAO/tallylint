@@ -146,6 +146,7 @@ const getUserInfoFromServices = () => {
     })
     .catch((e) => {
       console.error("mounted get user info failed: ", e)
+      showMessageError("mounted get user info failed: " + e)
       onLogOut()
     })
 }
