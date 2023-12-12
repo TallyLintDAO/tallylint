@@ -1,0 +1,11 @@
+#!/bin/python3
+
+import os
+import sys
+
+if sys.argv[1] == "run":
+    os.system("export http_proxy=")
+    os.system("export https_proxy=")
+    os.system("dfx stop")
+    os.system("dfx start --background ")
+    os.system("dfx deploy backend")
