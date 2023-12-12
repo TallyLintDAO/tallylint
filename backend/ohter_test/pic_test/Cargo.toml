@@ -1,0 +1,17 @@
+
+[package]
+name = "pic_test"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+pocket-ic = "2.0.1"
+chrono = "0.4.31"
+
+
+#### to keep it out of the taxlint workspace ####
+# make the target folder just under here . handy to find binary exec and run it .
+[workspace]
+

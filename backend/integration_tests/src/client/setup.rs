@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::env;
 use std::fmt::{Debug, Display, Formatter};
 use std::path::Path;
+use std::time::SystemTime;
 
 use candid::{CandidType, Principal};
 use pocket_ic::{PocketIc, PocketIcBuilder};
@@ -34,6 +35,10 @@ pub fn setup_new_env() -> TestEnv {
     .with_application_subnet()
     .build();
   // let  mut replica=PocketIc::new();
+    use chrono::{DateTime, Utc};
+  let t: SystemTime = replica.get_time();
+  let datetime: DateTime<Utc> = t.into();
+  println!("{}", datetime.to_string());
   let controller = random_principal();
   let canister_ids = install_canisters(&mut replica, controller);
 
@@ -45,17 +50,20 @@ pub fn setup_new_env() -> TestEnv {
 }
 
 fn get_local_pocket_ic_bin() {
-  let path = match env::var_os("POCKET_IC_BIN") {
-    None => {
-      env::set_var("POCKET_IC_BIN", MY_POCKET_IC_BIN);
-      MY_POCKET_IC_BIN.to_string()
-    }
-    Some(path) => path
-      .clone()
-      .into_string()
-      .unwrap_or_else(|_| panic!("Invalid string path for {path:?}")),
-  };
-
+  // let path = match env::var_os("POCKET_IC_BIN") {
+  //   None => {
+  //     env::set_var("POCKET_IC_BIN", MY_POCKET_IC_BIN);
+  //     MY_POCKET_IC_BIN.to_string()
+  //   }
+  //   Some(path) => path
+  //     .clone()
+  //     .into_string()
+  //     .unwrap_or_else(|_| panic!("Invalid string path for {path:?}")),
+  // };
+  env::set_var("POCKET_IC_BIN", MY_POCKET_IC_BIN);
+  env::set_var("http_proxy", "");
+  env::set_var("https_proxy", "");
+  let path= MY_POCKET_IC_BIN.to_string();
   if !Path::new(&path).exists() {
     println!("
         Could not find the PocketIC binary to run canister integration tests.

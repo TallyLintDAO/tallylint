@@ -37,6 +37,7 @@ fn init() {
 // #[pre_upgrade] is a hook. everytime update canister will auto call this.
 #[pre_upgrade]
 #[trace]
+// old version . last version exec.
 fn pre_upgrade() {
   info!("Pre-upgrade starting");
   let _logs = canister_logger::export_logs();
@@ -79,8 +80,10 @@ fn post_upgrade() {
 
 
   let reader = get_reader(&memory);
-
+  // TODO this way to fix deserialize err.
+  // find the old version data structure. and then do deserialize. find old data structure and then mannuly do it 
   let (payload,): (CanisterDB,) = serializer::deserialize(reader).unwrap();
+
   let stable_state = CanisterContext::from(payload);
   CONTEXT.with(|s| {
     let mut state = s.borrow_mut();

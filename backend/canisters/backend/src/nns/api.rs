@@ -85,7 +85,7 @@ fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
     let mut service = ctx.neuron_service.borrow_mut();
     let addr = cmd.address.clone();
     if service.neurons.contains_key(&addr) {
-      return Err("addr duplicated".to_string());
+      return Err("neuron addr duplicated".to_string());
     }
 
     let profile = NeuronProfile {
