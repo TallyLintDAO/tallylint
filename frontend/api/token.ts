@@ -39,7 +39,6 @@ export const getICPPrice = async (timestamp: number): Promise<string | undefined
 
 }
 
-
 export const getICPPriceHistory = async (): Promise<[number, number][]> => {
     try {
         //获取coingecko的所有ICP价格历史数据。

@@ -53,11 +53,63 @@
         </q-card>
       </div>
     </div>
+    <div class="row">
+      <q-card flat bordered>
+        <q-item>
+          <q-item-section>
+            <q-item-label caption> Holdings </q-item-label>
+            <q-table :rows="rows" :columns="columns" row-key="name">
+              <template v-slot:header="props">
+                <q-tr :props="props">
+                  <q-th auto-width />
+                  <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                  >
+                    {{ col.label }}
+                  </q-th>
+                </q-tr>
+              </template>
+
+              <template v-slot:body="props">
+                <q-tr :props="props">
+                  <q-td auto-width>
+                    <q-btn
+                      size="sm"
+                      color="accent"
+                      round
+                      dense
+                      @click="props.expand = !props.expand"
+                      :icon="props.expand ? 'remove' : 'add'"
+                    />
+                  </q-td>
+                  <q-td
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                  >
+                    {{ col.value }}
+                  </q-td>
+                </q-tr>
+                <q-tr v-show="props.expand" :props="props">
+                  <q-td colspan="100%">
+                    <div class="text-left">
+                      This is expand slot for row above: {{ props.row.name }}.
+                    </div>
+                  </q-td>
+                </q-tr>
+              </template>
+            </q-table>
+          </q-item-section>
+        </q-item>
+      </q-card>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { getWalletHistory } from "@/api/rosetta"
+import { getICPBalance, getWalletHistory } from "@/api/rosetta"
 import { getUserWallet } from "@/api/user"
 import type { WalletHistory } from "@/types/user"
 import { showMessageError } from "@/utils/message"
@@ -70,6 +122,56 @@ const totalHistory = ref<WalletHistory[]>([])
 const received = ref(0)
 const sent = ref(0)
 const gains = ref(0)
+
+const columns = [
+  {
+    name: "name",
+    required: true,
+    label: "Dessert (100g serving)",
+    align: "left",
+    field: (row) => row.name,
+    format: (val) => `${val}`,
+    sortable: true,
+  },
+  {
+    name: "calories",
+    align: "center",
+    label: "Calories",
+    field: "calories",
+    sortable: true,
+  },
+  { name: "fat", label: "Fat (g)", field: "fat", sortable: true },
+  { name: "carbs", label: "Carbs (g)", field: "carbs" },
+  { name: "protein", label: "Protein (g)", field: "protein" },
+  { name: "sodium", label: "Sodium (mg)", field: "sodium" },
+  {
+    name: "calcium",
+    label: "Calcium (%)",
+    field: "calcium",
+    sortable: true,
+    sort: (a, b) => parseInt(a, 10) - parseInt(b, 10),
+  },
+  {
+    name: "iron",
+    label: "Iron (%)",
+    field: "iron",
+    sortable: true,
+    sort: (a, b) => parseInt(a, 10) - parseInt(b, 10),
+  },
+]
+
+const rows = [
+  {
+    name: "Frozen Yogurt",
+    calories: 159,
+    fat: 6.0,
+    carbs: 24,
+    protein: 4.0,
+    sodium: 87,
+    calcium: "14%",
+    iron: "1%",
+  },
+]
 
 onMounted(() => {
   initECharts()
@@ -84,6 +186,9 @@ const getWallet = async () => {
       //TODO 有bug，多个钱包的资产总值没有计算。
       //将用户的每个钱包地址下的交易记录查出来，并总和到一起
       const walletHistory = await getWalletHistory(walletInfo.address)
+      //获取用户当前钱包资产
+      const walletBalance = await getICPBalance(walletInfo.address)
+      console.log(walletInfo.address + " balance: ", walletBalance)
       totalHistory.value = totalHistory.value.concat(walletHistory.history)
     }
     // 按时间戳排序交易记录数组
