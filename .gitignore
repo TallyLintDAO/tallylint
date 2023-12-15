@@ -47,8 +47,16 @@ Cargo.lock
 # testing framewrok binary 
 pocket-ic*
 
+# Ignore all files without extension
+# what about folders?
+# *[^.]*
+# *.*
+!Makefile
+!README
 
 #------------------------------
 
 
 
+backend/ohter_test/pic_test/pic_test
+backend/ohter_test/pic_test/err.log
