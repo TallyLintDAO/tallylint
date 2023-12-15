@@ -8,6 +8,7 @@ import { getICPPrice } from "@/api/token"
 import type { WalletHistory, WalletTag } from "@/types/user"
 import { currencyCalculate } from "@/utils/common"
 import { showMessageError } from "@/utils/message"
+import { TOKENS } from "./constants/tokens"
 
 const radixNumber = 4 //保留4位小数
 
@@ -313,4 +314,36 @@ export const getWalletHistory = async (accountAddress: string) => {
     walletHistory.history.push(transactionRecord)
   }
   return walletHistory
+}
+
+interface Balance {
+  value: string
+  decimals: number
+  error?: string
+}
+
+export const getICPBalance = async (accountId: string): Promise<Balance> => {
+  const response = await fetch(`${ROSETTA_URL}/account/balance`, {
+    method: "POST",
+    body: JSON.stringify({
+      network_identifier: NET_ID,
+      account_identifier: {
+        address: accountId,
+      },
+    }),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "*/*",
+    },
+  })
+  if (!response.ok) {
+    return {
+      value: "Error",
+      decimals: TOKENS.ICP.decimals,
+      error: response.statusText,
+    }
+  }
+  const { balances } = await response.json()
+  const [{ value, currency }] = balances
+  return { value, decimals: currency.decimals }
 }

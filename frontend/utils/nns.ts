@@ -9,7 +9,6 @@ export const getNNS = async (): Promise<NNSNeuron[]> => {
   if (ai.info) {
     const identity = ai.info.identity
     const agent = new HttpAgent({ identity })
-    console.log("agent", agent)
     const neuron = GovernanceCanister.create({
       agent: agent,
     })

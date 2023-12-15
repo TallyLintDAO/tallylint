@@ -359,7 +359,7 @@ const getHotkeyWallet = async () => {
 const getSNS = async () => {
   const snsWrapper: SnsWrapper = await initSnsWrapper({
     rootOptions: {
-      //根容器id在dashboard
+      //根容器id在dashboard 这里获取的是openchat的
       canisterId: Principal.fromText("3e3x2-xyaaa-aaaaq-aaalq-cai"),
     },
   })
