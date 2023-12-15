@@ -155,3 +155,36 @@ Learn from deserailization procedure:
 TODO:
 Q: if rust instance is struct S(A:int,B:int) then do serialize.  then the struct S becomde(A:string,B:int) 
 how to do err handling when deserializing ?
+
+
+
+#[derive(Debug, Clone, CandidType,Serialize,  Deserialize)]
+pub struct NeuronProfile {
+  pub owner: Principal, // 用户 Principal
+  pub name: String,
+  pub id: u64,
+  pub address: String,
+  pub create_time: u64,
+
+}
+#[derive(Debug, Clone, CandidType,Serialize,  Deserialize)]
+pub struct NeuronProfile {
+  pub owner: Principal, // 用户 Principal
+  pub name: String,
+  pub id: u64,
+  pub address: String,
+  pub create_time: u64,
+
+  // newlly add . update with DB deserilize err. the odd bin DB file fail to find this field . shoud ignore it .
+  pub update_time: u64,
+}
+ how to let serde deserialize this with new data structure added when using the old data structure serialized missing update_time field. 
+
+
+Senerios: how to handle all those serde issue ? not language specific. a convert problem. 
+
+rs: A(B:int,C:string) -> serialized data(json ,CBOR,...):  -> deserialize: A(B:int,C:string)  [OK]
+rs: A(B:int,C:string) -> serialized data(json ,CBOR,...):  -> deserialize as new rs data structure: A(B:int,C:int)  [?] [rs code field type changed ],...
+rs: A(B:int,C:string) -> serialized data(json ,CBOR,...):  -> deserialize as new rs data structure: A(B:int,C:string,D:int)  [?] rs code field added ,...
+rs: A(B:int,C:string) -> serialized data(json ,CBOR,...):  -> deserialize as new rs data structure: A(B:int)  [?] rs code field removed 
+

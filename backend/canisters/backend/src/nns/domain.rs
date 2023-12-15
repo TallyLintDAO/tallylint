@@ -31,6 +31,8 @@ pub struct NeuronProfile {
   pub create_time: u64,
 
   // newlly add . update with DB deserilize err. the odd bin DB file fail to find this field . shoud ignore it .
-  
+  #[serde(default)] // Use default value if missing during deserialization
+  // also : #[serde(default="a_function")] to give it a custom val.
   pub update_time: u64,
+  // TODO need let dfx deploy backend print deserialize err info ! in order to fix !
 }

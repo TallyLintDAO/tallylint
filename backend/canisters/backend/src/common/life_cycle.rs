@@ -55,6 +55,13 @@ fn pre_upgrade() {
     let neurons =
       Vec::from_iter(context.neuron_service.neurons.values().cloned());
     // Vec::new();
+
+    // TODO make this serialization one by one . just make sure every part is serialize ok.
+    // and then combine them inro one bin file . or use multiple VM on ic-node-replica FS.
+    // also the deserialization part one by one . users, then walletes, then records...
+    //furthur: encasulate each serde of users,walletes, into a generic serde function.
+    //even furthur. we can use multi-thread for each. (when have many data to serde)
+
     let payload = CanisterDB {
       id,
       users,
