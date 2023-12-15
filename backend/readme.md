@@ -134,3 +134,24 @@ generate_query_call!(channel_summary);
 // Updates
 generate_update_call!(add_reaction);
 generate_update_call!(block_user);
+
+
+
+Commit: Refactor existing utility functions in state_machine.rs, adding new functionalities such as stable memory management and a safe upgrading mechanism to ensure backward data compatibility. Enhance Error Handling:
+Commit: Implement more descriptive error messages and structured logging to facilitate debugging and traceability.
+
+
+Serialization process:
+rust instance -> json ,xml,ymal,...
+rust instance ->  CBOR(Concise Binary Object Representation) , do this for good storage space maybe ?
+
+
+
+
+Learn from deserailization procedure:
+
+1. you can ignore unknown field when deserialization.
+
+TODO:
+Q: if rust instance is struct S(A:int,B:int) then do serialize.  then the struct S becomde(A:string,B:int) 
+how to do err handling when deserializing ?

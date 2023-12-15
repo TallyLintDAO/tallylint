@@ -1,9 +1,6 @@
 use candid::Principal;
 use std::cell::RefCell;
-// export apis below each
 
-// TODO future function: a user have his own canister
-// pub mod canister_api;
 pub mod common;
 pub mod lifecycle;
 pub mod nns;
@@ -28,9 +25,6 @@ use crate::wallet::domain::*;
 use crate::wallet::service::WalletAddress;
 #[allow(unused_imports)]
 use std::collections::HashMap;
-
-// #[allow(unused_imports)]
-// use crate::canister_api::domain::*;
 #[allow(unused_imports)]
 use crate::nns::api::*;
 use crate::nns::domain::*;

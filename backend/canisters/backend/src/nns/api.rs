@@ -13,7 +13,7 @@ use serde::Serialize;
 
 /*
 independent query neuron info .
-TODO: just basic info. need auth to get detailed info.
+TODO: just basic info. need auth or hotkey to get detailed info.
 */
 #[update]
 pub async fn get_neuron_info(neuron_id: u64) -> CallResult<(CustomResult1,)> {
@@ -74,6 +74,8 @@ use crate::{
 };
 
 use super::service::NeuronService;
+
+
 #[update(guard = "user_owner_guard")]
 fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
   CONTEXT.with(|c| {
@@ -94,12 +96,14 @@ fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
       id: id,
       create_time: time,
       address: cmd.address,
+      update_time: time,
     };
     let ret = service.neurons.insert(addr, profile);
     ctx.id = id + 1;
     return Ok(true);
   })
 }
+
 #[update(guard = "user_owner_guard")]
 fn delete_neuron_wallet(id: u64) -> Result<bool, String> {
   CONTEXT.with(|c| {
@@ -108,12 +112,13 @@ fn delete_neuron_wallet(id: u64) -> Result<bool, String> {
     let mut service = ctx.neuron_service.borrow_mut();
     let profile = service.search_by_id(id);
     if profile.is_none() {
-      return Err("no data ".to_string());
+      return Err("no neuron find by id ".to_string());
     }
     service.neurons.remove(&profile.unwrap().address.clone());
     return Ok(true);
   })
 }
+
 #[update(guard = "user_owner_guard")]
 fn update_neuron_wallet(cmd: NeuronUpdateCommand) -> Result<bool, String> {
   CONTEXT.with(|c| {
@@ -122,14 +127,15 @@ fn update_neuron_wallet(cmd: NeuronUpdateCommand) -> Result<bool, String> {
     let mut service = ctx.neuron_service.borrow_mut();
     let mut profile = service.search_by_id(cmd.id);
     if profile.is_none() {
-      return Err("no data ".to_string());
+      return Err("no neuron find by id ".to_string());
     }
-    let mut p = profile.unwrap().clone();
+    let mut p: NeuronProfile = profile.unwrap().clone();
     p.name = cmd.name;
     service.neurons.insert(p.address.clone(), p.to_owned());
     return Ok(true);
   })
 }
+
 #[query(guard = "user_owner_guard")]
 fn query_all_neuron_wallet() -> Result<Vec<NeuronProfile>, Vec<NeuronProfile>> {
   CONTEXT.with(|c| {
@@ -151,10 +157,10 @@ fn query_a_neuron_wallet(id: u64) -> Result<NeuronProfile, String> {
     let mut ctx = c.borrow_mut();
     let user = ctx.env.caller();
     let mut ns = ctx.neuron_service.borrow_mut();
-    let ret = ns.search_by_id(id);
-    if ret.is_none() {
-      return Err("no data".to_string());
+    let a_neuron = ns.search_by_id(id);
+    if a_neuron.is_none() {
+      return Err("no neuron find by id".to_string());
     }
-    return Ok(ret.unwrap().clone());
+    return Ok(a_neuron.unwrap().clone());
   })
 }

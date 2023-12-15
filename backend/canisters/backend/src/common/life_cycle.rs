@@ -9,7 +9,8 @@ use super::env::CanisterEnvironment;
 use super::memory::get_upgrades_memory;
 use crate::{CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
   use stable_memory::*;
-fn init() {
+#[init]
+  fn init() {
   ic_cdk::setup();
   let context = CanisterContext {
     env: Box::new(CanisterEnvironment {}),
@@ -61,6 +62,11 @@ fn pre_upgrade() {
       records,
       neurons,
     };
+
+    // this call candid serialization. custom impl of serialization diff to serde lib .
+//     ic_cdk::storage::stable_save((state, permit, users, roles)).unwrap();
+
+
     // save canister fs to ic-replica.
     let mut memory = get_upgrades_memory();
     let writer = get_writer(&mut memory);
@@ -77,12 +83,12 @@ fn post_upgrade() {
   // load canister fs from ic-replica
   // () means retrieve multiple db. a collection of tuples
   let memory = get_upgrades_memory();
-
-
   let reader = get_reader(&memory);
-  // TODO this way to fix deserialize err.
+  // TODO this way to fix deserialize err. type force casting here. 
   // find the old version data structure. and then do deserialize. find old data structure and then mannuly do it 
   let (payload,): (CanisterDB,) = serializer::deserialize(reader).unwrap();
+  // this deserialize procedure is open an ic replica node local file . and then use a reader to read its local disk file
+  // and then load it into memory. and deserialize it . 
 
   let stable_state = CanisterContext::from(payload);
   CONTEXT.with(|s| {
@@ -90,3 +96,11 @@ fn post_upgrade() {
     *state = stable_state;
   });
 }
+
+// the whole update canister procedure: ( on a IC node program running on a ubuntu server.)
+// 1.(ser DB)save current thread local datas in to a binary file.
+// 2.(update code logic)replace .wasm file with new .wasm file 
+// 3.(de DB) load TL data into memory with that running .wasm file process addr space.
+
+// TODO : in step1 how to save the DB to dev machine?(contains user data and running logs)
+// and (the reverse step:) how dev machine upload DB file to IC node machine ?

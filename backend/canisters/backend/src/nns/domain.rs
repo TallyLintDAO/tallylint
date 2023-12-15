@@ -20,7 +20,7 @@ pub struct NeuronAddCommand {
   pub address: String,
   pub from: String,
   pub name: String,
-  pub test1: String,
+  // pub test1: String,
 }
 #[derive(Debug, Clone, CandidType,Serialize,  Deserialize)]
 pub struct NeuronProfile {
@@ -29,4 +29,8 @@ pub struct NeuronProfile {
   pub id: u64,
   pub address: String,
   pub create_time: u64,
+
+  // newlly add . update with DB deserilize err. the odd bin DB file fail to find this field . shoud ignore it .
+  
+  pub update_time: u64,
 }
