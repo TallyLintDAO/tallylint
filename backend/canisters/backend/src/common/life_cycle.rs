@@ -3,6 +3,8 @@ use std::borrow::Borrow;
 use ic_cdk::storage;
 use ic_cdk_macros::*;
 
+use serde_json::*;
+
 use canister_tracing_macros::trace;
 use tracing::info;
 
@@ -77,6 +79,8 @@ fn pre_upgrade() {
     // serde lib . ic_cdk::storage::stable_save((state, permit, users,
     // roles)).unwrap();
 
+    let json=serde_json::to_string_pretty(&payload).unwrap();  
+    println!("{}", json);
     // save canister fs to ic-replica.
     let mut memory = get_upgrades_memory();
     let writer = get_writer(&mut memory);
