@@ -41,11 +41,11 @@ const routes: Array<RouteRecordRaw> = [
       { path: "nns", component: NNS },
     ],
   },
-  ...errors,
-  {
-    path: "/:catchAll(.*)",
-    redirect: "/error/404",
-  },
+  // ...errors,
+  // {
+  //   path: "/:catchAll(.*)",
+  //   redirect: "/error/404",
+  // },
 ]
 
 const router = createRouter({
