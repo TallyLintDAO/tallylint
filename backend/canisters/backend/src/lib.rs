@@ -18,17 +18,15 @@ thread_local! {
 // IMPORTANT :dont remove ref
 // cargo hint to remove these is wrong. but must use below.
 #[allow(unused_imports)]
+use crate::nns::api::*;
+use crate::nns::domain::*;
+#[allow(unused_imports)]
 use crate::user::domain::*;
 #[allow(unused_imports)]
 use crate::wallet::domain::*;
+use crate::wallet::service::RecordId;
 #[allow(unused_imports)]
 use crate::wallet::service::WalletAddress;
-#[allow(unused_imports)]
-use std::collections::HashMap;
-#[allow(unused_imports)]
-use crate::nns::api::*;
-use crate::nns::domain::*;
-use crate::wallet::service::RecordId;
 use crate::wallet::service::WalletId;
 #[allow(unused_imports)]
 use ic_cdk::api::call::CallResult;
@@ -41,5 +39,7 @@ use ic_cdk::api::management_canister::{
   },
   provisional::{CanisterIdRecord, CanisterSettings},
 };
+#[allow(unused_imports)]
+use std::collections::HashMap;
 
 ic_cdk::export_candid!();

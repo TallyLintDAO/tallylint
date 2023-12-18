@@ -15,14 +15,14 @@ pub struct NeuronUpdateCommand {
                      * pub last_transaction_time:u64, */
 }
 
-#[derive(Debug, Clone, CandidType,Serialize,  Deserialize, Default)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize, Default)]
 pub struct NeuronAddCommand {
   pub address: String,
   pub from: String,
   pub name: String,
   // pub test1: String,
 }
-#[derive(Debug, Clone, CandidType,Serialize,  Deserialize)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct NeuronProfile {
   pub owner: Principal, // 用户 Principal
   pub name: String,
@@ -30,10 +30,12 @@ pub struct NeuronProfile {
   pub address: String,
   pub create_time: u64,
 
-  // newlly add . update with DB deserilize err. the odd bin DB file fail to find this field . shoud ignore it .
+  // newlly add . update with DB deserilize err. the odd bin DB file fail to
+  // find this field . shoud ignore it .
   #[serde(default)] // Use default value if missing during deserialization
   // also : #[serde(default="a_function")] to give it a custom val.
-  // #[serde(default)] still bug here 
+  // #[serde(default)] still bug here
   pub update_time: u64,
-  // TODO need let dfx deploy backend print deserialize err info ! in order to fix !
+  // TODO need let dfx deploy backend print deserialize err info ! in order to
+  // fix !
 }

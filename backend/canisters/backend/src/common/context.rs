@@ -30,8 +30,7 @@ pub struct CanisterContext {
   pub neuron_service: NeuronService,
 }
 
-
-#[derive(Debug, Clone, CandidType, Serialize,Deserialize)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct CanisterDB {
   pub id: u64,
   pub users: Vec<UserProfile>,

@@ -75,7 +75,6 @@ use crate::{
 
 use super::service::NeuronService;
 
-
 #[update(guard = "user_owner_guard")]
 fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
   CONTEXT.with(|c| {
