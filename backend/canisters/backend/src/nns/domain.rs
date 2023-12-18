@@ -23,7 +23,7 @@ pub struct NeuronAddCommand {
   // pub test1: String,
 }
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+// #[serde(deny_unknown_fields)]
 pub struct NeuronProfile {
   pub owner: Principal, // 用户 Principal
   pub name: String,
