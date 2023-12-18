@@ -188,3 +188,6 @@ rs: A(B:int,C:string) -> serialized data(json ,CBOR,...):  -> deserialize as new
 rs: A(B:int,C:string) -> serialized data(json ,CBOR,...):  -> deserialize as new rs data structure: A(B:int,C:string,D:int)  [?] rs code field added ,...
 rs: A(B:int,C:string) -> serialized data(json ,CBOR,...):  -> deserialize as new rs data structure: A(B:int)  [?] rs code field removed 
 
+#[serde(deny_unknown_fields)] ?
+
+

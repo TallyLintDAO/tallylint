@@ -1,3 +1,5 @@
+use std::borrow::Borrow;
+
 use ic_cdk::storage;
 use ic_cdk_macros::*;
 
@@ -101,7 +103,14 @@ fn post_upgrade() {
   // TODO this way to fix deserialize err. type force casting here.
   // find the old version data structure. and then do deserialize. find old data
   // structure and then mannuly do it
-  let (payload,): (CanisterDB,) = serializer::deserialize(reader).unwrap();
+  let ret = serializer::deserialize(reader);
+  if ret.as_ref().is_err() {
+    info!("deserialize err: {:?}", ret.as_ref().err());
+    println!("deserialize err: {:?}", ret.as_ref().err());
+  }
+  let payload: CanisterDB = ret.unwrap();
+  info!("deserialize ok,old data loaded from ic-fs.");
+
   // this deserialize procedure is open an ic replica node local file . and then
   // use a reader to read its local disk file and then load it into memory.
   // and deserialize it .

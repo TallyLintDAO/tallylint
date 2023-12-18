@@ -23,6 +23,7 @@ pub struct NeuronAddCommand {
   // pub test1: String,
 }
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct NeuronProfile {
   pub owner: Principal, // 用户 Principal
   pub name: String,
@@ -32,9 +33,8 @@ pub struct NeuronProfile {
 
   // newlly add . update with DB deserilize err. the odd bin DB file fail to
   // find this field . shoud ignore it .
-  #[serde(default)] // Use default value if missing during deserialization
   // also : #[serde(default="a_function")] to give it a custom val.
-  // #[serde(default)] still bug here
+  #[serde(default)] // Use default value if missing during deserialization
   pub update_time: u64,
   // TODO need let dfx deploy backend print deserialize err info ! in order to
   // fix !
