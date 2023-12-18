@@ -25,7 +25,7 @@ pub struct NeuronAddCommand {
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 // #[serde(deny_unknown_fields)]
 pub struct NeuronProfile {
-  pub owner: Principal, // 用户 Principal
+  pub owner: Principal, 
   pub name: String,
   pub id: u64,
   pub address: String,
@@ -37,5 +37,4 @@ pub struct NeuronProfile {
   #[serde(default)] // Use default value if missing during deserialization
   pub update_time: u64,
   // TODO need let dfx deploy backend print deserialize err info ! in order to
-  // fix !
 }
