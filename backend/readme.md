@@ -183,8 +183,23 @@ pub struct NeuronProfile {
 
 Senerios: how to handle all those serde issue ? not language specific. a convert problem. 
 
+
 rs: A(B:int,C:string) -> serialized data(json ,CBOR,...):  -> deserialize: A(B:int,C:string)  [OK]
+
+
 rs: A(B:int,C:string) -> serialized data(json ,CBOR,...):  -> deserialize as new rs data structure: A(B:int,C:int)  [?] [rs code field type changed ],...
+so modify the middle json file. edit the C field.
+
+
 rs: A(B:int,C:string) -> serialized data(json ,CBOR,...):  -> deserialize as new rs data structure: A(B:int,C:string,D:int)  [?] rs code field added ,...
+let rust auto give default field value for D . 
+
 rs: A(B:int,C:string) -> serialized data(json ,CBOR,...):  -> deserialize as new rs data structure: A(B:int)  [?] rs code field removed 
+let rust ignore that when no match. this doing by default automatic.
+
+
+
+
+#[serde(deny_unknown_fields)] ?
+
 

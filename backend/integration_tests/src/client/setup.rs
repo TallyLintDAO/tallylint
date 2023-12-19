@@ -35,7 +35,7 @@ pub fn setup_new_env() -> TestEnv {
     .with_application_subnet()
     .build();
   // let  mut replica=PocketIc::new();
-    use chrono::{DateTime, Utc};
+  use chrono::{DateTime, Utc};
   let t: SystemTime = replica.get_time();
   let datetime: DateTime<Utc> = t.into();
   println!("{}", datetime.to_string());
@@ -63,7 +63,7 @@ fn get_local_pocket_ic_bin() {
   env::set_var("POCKET_IC_BIN", MY_POCKET_IC_BIN);
   env::set_var("http_proxy", "");
   env::set_var("https_proxy", "");
-  let path= MY_POCKET_IC_BIN.to_string();
+  let path = MY_POCKET_IC_BIN.to_string();
   if !Path::new(&path).exists() {
     println!("
         Could not find the PocketIC binary to run canister integration tests.
