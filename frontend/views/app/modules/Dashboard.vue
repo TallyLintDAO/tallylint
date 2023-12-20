@@ -58,7 +58,12 @@
         <q-item>
           <q-item-section>
             <q-item-label caption> Holdings </q-item-label>
-            <q-table :rows="rows" :columns="columns" row-key="name">
+            <q-table
+              title="Treats"
+              :rows="rows"
+              :columns="columns"
+              row-key="name"
+            >
               <template v-slot:header="props">
                 <q-tr :props="props">
                   <q-th auto-width />
@@ -125,10 +130,28 @@ const gains = ref(0)
 
 const columns = [
   {
-    name: "address",
+    name: "token",
     required: true,
-    label: "Neuron Account",
-    field: (row) => row.address,
+    label: "Tokens",
+    field: "token",
+  },
+  {
+    name: "balance",
+    required: true,
+    label: "Balance",
+    field: "balance",
+  },
+  {
+    name: "cost",
+    required: true,
+    label: "Cost",
+    field: "cost",
+  },
+  {
+    name: "value",
+    required: true,
+    label: "Value",
+    field: "value",
   },
 ]
 

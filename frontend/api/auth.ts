@@ -66,11 +66,13 @@ export async function signIn(client: AuthClient): Promise<IdentityInfo> {
   const days = BigInt(1)
   const hours = BigInt(24)
   const nanoseconds = BigInt(3600000000000)
-  console.log("ASSETS_CANISTER_ID", process.env.ASSETS_CANISTER_ID)
   const result: IdentityInfo = await new Promise((resolve, reject) => {
     // 进行登录
     client.login({
-      derivationOrigin: `https://${process.env.ASSETS_CANISTER_ID}.ic0.app`,
+      derivationOrigin:
+        process.env.mode === "production"
+          ? `https://${process.env.ASSETS_CANISTER_ID}.ic0.app`
+          : undefined,
       identityProvider: "https://identity.ic0.app", // 用线上的 II 认证，本地没法搭建II认证
       onSuccess: () => {
         // 登录成功后取出用户信息
