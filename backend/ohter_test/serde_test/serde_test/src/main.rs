@@ -32,16 +32,19 @@ fn serde_example() -> Result<()> {
   // Serialize it to a JSON string.
   let person_json = serde_json::to_string(&person)?;
 
-  println!("Serialized: {}", person_json);
-
   // Deserialize the JSON string back to a Person.
   let pd: Person = serde_json::from_str(&person_json).unwrap();
 
-  println!("Deserialized: {:?}", pd);
+  println!("normal Deserialized: {:?}", pd);
 
+  let trailing_json = format!("{} extra characters", person_json); // add trailing characters
 
+  let pd: Person = serde_json::from_str(&trailing_json).unwrap();
 
-  let new_pd: AddNewMissingFieldPerson = serde_json::from_str(&person_json).unwrap();
+  println!("trailing_json Deserialized: {:?}", pd);
+
+  let new_pd: AddNewMissingFieldPerson =
+    serde_json::from_str(&person_json).unwrap();
 
   println!("Deserialized: {:?}", new_pd);
 

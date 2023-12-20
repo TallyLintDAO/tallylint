@@ -1,4 +1,5 @@
 use std::borrow::Borrow;
+use std::io::Read;
 
 use ic_cdk::storage;
 use ic_cdk_macros::*;
@@ -79,8 +80,8 @@ fn pre_upgrade() {
     // serde lib . ic_cdk::storage::stable_save((state, permit, users,
     // roles)).unwrap();
 
-    let json=serde_json::to_string_pretty(&payload).unwrap();  
-    println!("{}", json);
+    // let json=serde_json::to_string_pretty(&payload).unwrap();
+    // println!("{}", json);
     // save canister fs to ic-replica.
     let mut memory = get_upgrades_memory();
     let writer = get_writer(&mut memory);
@@ -99,20 +100,45 @@ fn pre_upgrade() {
 #[post_upgrade]
 #[trace]
 fn post_upgrade() {
+  // use reader  make the whole serde process become a Volcano/Pipeline Model
+  // process procedure use string as a whole file is a Materialization Model
+  // process procedure
+
   // IMPORTANT
   // load canister fs from ic-replica
   // () means retrieve multiple db. a collection of tuples
   let memory = get_upgrades_memory();
-  let reader = get_reader(&memory);
+  let mut reader = get_reader(&memory);
+
+  let mut payload_json = String::new();
+  reader
+    .read_to_string(&mut payload_json)
+    .expect("Failed to read from reader");
+
+  // Handle trailing characters
+
+  let end_of_json = payload_json.rfind('}').unwrap_or(0) + 1;
+  payload_json = payload_json[..end_of_json].to_string();
+
   // TODO this way to fix deserialize err. type force casting here.
   // find the old version data structure. and then do deserialize. find old data
   // structure and then mannuly do it
-  let ret = serializer::deserialize(reader);
-  if ret.as_ref().is_err() {
-    info!("deserialize err: {:?}", ret.as_ref().err());
-    println!("deserialize err: {:?}", ret.as_ref().err());
-  }
-  let payload: CanisterDB = ret.unwrap();
+  // let ret_json = serializer::deserialize(reader);
+  // if ret_json.as_ref().is_err() {
+  //   info!("deserialize err: {:?}", ret_json.as_ref().err());
+  //   println!("deserialize err: {:?}", ret_json.as_ref().err());
+
+  //   // Handle trailing characters
+  //   // let end_of_json = ret_json.rfind('}').unwrap_or(0) + 1;
+  //   // ret_json = ret_json[..end_of_json].to_string();
+  // }
+
+  // somehow when serialized add this kind of stuff.
+  // TODO . need to print the serialized data to programmer check it .
+  //     let trailing_json = format!("{} extra characters", json); // add
+  // trailing characters
+
+  let payload: CanisterDB = serde_json::from_str(&payload_json).unwrap();
   info!("deserialize ok,old data loaded from ic-fs.");
 
   // this deserialize procedure is open an ic replica node local file . and then

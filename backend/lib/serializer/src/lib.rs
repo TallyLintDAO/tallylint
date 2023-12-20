@@ -33,6 +33,7 @@ where
 {
   // let mut deserializer = rmp_serde::Deserializer::new(reader);
   // let mut deserializer = serde_json::Deserializer::new(rd);
-  serde_json::from_reader(reader)
+  let ret = serde_json::from_reader(reader);
+  return ret;
   // T::deserialize(&mut deserializer)
 }
