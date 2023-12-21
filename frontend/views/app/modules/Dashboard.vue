@@ -59,6 +59,7 @@
           <q-item-section>
             <q-item-label caption> Holdings </q-item-label>
             <q-table
+              v-if="null"
               title="Treats"
               :rows="rows"
               :columns="columns"

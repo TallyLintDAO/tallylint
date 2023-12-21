@@ -71,7 +71,7 @@ export async function signIn(client: AuthClient): Promise<IdentityInfo> {
     client.login({
       derivationOrigin:
         process.env.mode === "production"
-          ? `https://${process.env.ASSETS_CANISTER_ID}.ic0.app`
+          ? `https://${process.env.ASSETS_CANISTER_ID}.icp0.io`
           : undefined,
       identityProvider: "https://identity.ic0.app", // 用线上的 II 认证，本地没法搭建II认证
       onSuccess: () => {
