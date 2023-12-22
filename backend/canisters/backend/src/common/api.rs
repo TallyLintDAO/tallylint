@@ -11,7 +11,7 @@ use super::env::CanisterEnvironment;
 use super::memory::get_upgrades_memory;
 use crate::{CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
 use stable_memory::*;
-#[init]
+
 fn init() {
   ic_cdk::setup();
   let context = CanisterContext {
@@ -38,10 +38,10 @@ fn init() {
  * will revert to last version.
  */
 // #[pre_upgrade] is a hook. everytime update canister will auto call this.
-#[pre_upgrade]
-#[trace]
+
 // old version . last version exec.
-fn pre_upgrade() {
+#[query]
+fn do_pre_upgrade_and_print_db() -> String {
   info!("Pre-upgrade starting");
   // let _logs = canister_logger::export_logs();
   // let _traces = canister_logger::export_traces();
@@ -82,21 +82,26 @@ fn pre_upgrade() {
     // save canister fs to ic-replica.
     let mut memory = get_upgrades_memory();
     let writer = get_writer(&mut memory);
-    let ret = serializer::serialize(payload, writer);
+    let ret = serializer::serialize(payload.clone(), writer);
     if ret.is_err() {
       info!("serialize err: {:?}", ret.err());
     } else {
       info!("serialize ok,old data saved to ic-fs.");
     }
 
+    let json = serde_json::to_string_pretty(&payload).unwrap();
+    return json;
+
     // IMPORTANT erase db in running canister.(ic or local)
     // dfx deploy backend  -m reinstall
-  });
+  })
 }
 
-#[post_upgrade]
-#[trace]
-fn post_upgrade() {
+/*
+    if no db_json input as first para. get db from ic-fs.
+*/
+#[update]
+fn do_post_upgrade(mut db_json: String) -> bool {
   // use reader  make the whole serde process become a Volcano/Pipeline Model
   // process procedure use string as a whole file is a Materialization Model
   // process procedure
@@ -104,20 +109,21 @@ fn post_upgrade() {
   // IMPORTANT
   // load canister fs from ic-replica
   // () means retrieve multiple db. a collection of tuples
-  let memory = get_upgrades_memory();
-  let mut reader = get_reader(&memory);
 
-  let mut payload_json = String::new();
-  reader
-    .read_to_string(&mut payload_json)
-    .expect("Failed to read from reader");
+  if db_json.len() == 0 {
+    let memory = get_upgrades_memory();
+    let mut reader = get_reader(&memory);
+    reader
+      .read_to_string(&mut db_json)
+      .expect("Failed to read from reader");
+  }
 
   // Handle trailing characters
   // TODO this maybe danger. is serialize format not good enough.
   // TODO should do data backup data to ic-VM-slot(2) ...
 
-  let end_of_json = payload_json.rfind('}').unwrap_or(0) + 1;
-  payload_json = payload_json[..end_of_json].to_string();
+  let end_of_json = db_json.rfind('}').unwrap_or(0) + 1;
+  db_json = db_json[..end_of_json].to_string();
 
   // TODO this way to fix deserialize err. type force casting here.
   // find the old version data structure. and then do deserialize. find old data
@@ -137,7 +143,7 @@ fn post_upgrade() {
   //     let trailing_json = format!("{} extra characters", json); // add
   // trailing characters
 
-  let payload: CanisterDB = serde_json::from_str(&payload_json).unwrap();
+  let payload: CanisterDB = serde_json::from_str(&db_json).unwrap();
   info!("deserialize ok,old data loaded from ic-fs.");
 
   // this deserialize procedure is open an ic replica node local file . and then
@@ -148,7 +154,8 @@ fn post_upgrade() {
   CONTEXT.with(|s| {
     let mut state = s.borrow_mut();
     *state = stable_state;
-  });
+    return true;
+  })
 }
 
 // the whole update canister procedure: ( on a IC node program running on a

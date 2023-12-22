@@ -76,7 +76,7 @@ dfx canister call backend  delete_neuron_wallet 10002
 #neuron CRUD test 
 dfx canister call backend auto_register_user  --network ic
 dfx canister call backend add_neuron_wallet '(record { address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"; name = "AmydaLu"; from = "asdaw" })' --network ic
-dfx canister call backend add_neuron_wallet '(record { address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d25626f655"; name = "A2"; from = "nns" })'
+dfx canister call backend add_neuron_wallet '(record { address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d25626f655"; name = "A2"; from = "nns" })' --network ic
 dfx canister call backend query_all_neuron_wallet --network ic
 dfx canister call backend  update_neuron_wallet '(record { id = 10002; from="nns1"; name = "cczz";})' --network ic
 dfx canister call backend  query_a_neuron_wallet 10002 --network ic
