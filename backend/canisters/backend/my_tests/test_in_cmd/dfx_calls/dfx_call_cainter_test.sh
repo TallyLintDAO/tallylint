@@ -138,3 +138,24 @@ dfx canister call --network ic backend  get_neuron_info "307b116d3afaebde45e59b1
 
 command palette
 
+
+# mannually update db
+--network ic
+dfx canister call  backend do_pre_upgrade_and_print_db 
+dfx canister call  backend do_pre_upgrade_and_print_db 
+dfx canister call  backend do_post_upgrade 
+
+
+
+
+
+ dfx canister call  backend do_post_upgrade   "{\"id\":10003,\"users\":[{\"own
+er\":\"b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae\",\"name\":\"\",\"create_time\":1703247739924712849}],\"w
+allets\":[],\"records\":[],\"neurons\":[{\"owner\":\"b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae\",\"name\":
+\"AmydaLu\",\"id\":10002,\"address\":\"307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739\",\"create_time\":170324
+7749341550806,\"update_time\":1703247749341550806}]}asd"
+
+
+
+
+

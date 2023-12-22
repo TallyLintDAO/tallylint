@@ -203,3 +203,5 @@ let rust ignore that when no match. this doing by default automatic.
 #[serde(deny_unknown_fields)] ?
 
 
+Now can you generic these two approach into rust code of serialize and deserialize as a whole file ,like materialized mode(batch mode). or using a kind of File stream . to make it like volcano process(or pipeline iterator) ?
+Is pipeline mode better than batch mode if the file is huge when deal with serde?

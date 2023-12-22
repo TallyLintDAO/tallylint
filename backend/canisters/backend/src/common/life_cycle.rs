@@ -11,7 +11,7 @@ use super::env::CanisterEnvironment;
 use super::memory::get_upgrades_memory;
 use crate::{CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
 use stable_memory::*;
-#[init]
+// #[init]
 fn init() {
   ic_cdk::setup();
   let context = CanisterContext {

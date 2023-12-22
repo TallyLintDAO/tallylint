@@ -10,6 +10,7 @@ use super::context::{CanisterContext, CanisterDB};
 use super::env::CanisterEnvironment;
 use super::memory::get_upgrades_memory;
 use crate::{CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
+
 use stable_memory::*;
 
 fn init() {
@@ -89,11 +90,42 @@ fn do_pre_upgrade_and_print_db() -> String {
       info!("serialize ok,old data saved to ic-fs.");
     }
 
-    let json = serde_json::to_string_pretty(&payload).unwrap();
+    let json = serde_json::to_string(&payload).unwrap();
     return json;
 
     // IMPORTANT erase db in running canister.(ic or local)
     // dfx deploy backend  -m reinstall
+  })
+}
+// old version . last version exec.
+#[query]
+fn clean_db() -> String {
+  CONTEXT.with(|c| {
+    let context = c.borrow();
+    let id = context.id;
+    let users = Vec::new();
+    let wallets = Vec::new();
+    let records = Vec::new();
+    let neurons = Vec::new();
+    let payload = CanisterDB {
+      id,
+      users,
+      wallets,
+      records,
+      neurons,
+    };
+
+    let mut memory = get_upgrades_memory();
+    let writer = get_writer(&mut memory);
+    let ret = serializer::serialize(payload.clone(), writer);
+    if ret.is_err() {
+      info!("serialize err: {:?}", ret.err());
+    } else {
+      info!("serialize ok,old data saved to ic-fs.");
+    }
+
+    let json = serde_json::to_string(&payload).unwrap();
+    return json;
   })
 }
 
