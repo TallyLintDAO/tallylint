@@ -59,8 +59,7 @@
           <q-item-section>
             <q-item-label caption> Holdings </q-item-label>
             <q-table
-              v-if="null"
-              title="Treats"
+              title="Holding"
               :rows="rows"
               :columns="columns"
               row-key="name"
@@ -101,6 +100,7 @@
                 <q-tr v-show="props.expand" :props="props">
                   <q-td colspan="100%">
                     <div class="text-left">
+                      <Progress />
                       This is expand slot for row above: {{ props.row.name }}.
                     </div>
                   </q-td>
@@ -117,10 +117,11 @@
 <script lang="ts" setup>
 import { getICPBalance, getWalletHistory } from "@/api/rosetta"
 import { getUserWallet } from "@/api/user"
+import Progress from "@/components/Progress.vue"
 import type { WalletHistory } from "@/types/user"
 import { showMessageError } from "@/utils/message"
 import * as echarts from "echarts"
-import { onMounted, ref } from "vue"
+import { onMounted, ref, watch } from "vue"
 
 const echartsContainer = ref<null>(null)
 const date = ref("2023/01/01")
@@ -149,19 +150,68 @@ const columns = [
     field: "cost",
   },
   {
+    name: "price",
+    required: true,
+    label: "Price",
+    field: "price",
+  },
+  {
     name: "value",
     required: true,
     label: "Value",
     field: "value",
   },
 ]
+interface Token {
+  symbol: string
+  balance: number
+}
 
-const rows = ref<any[]>([])
+interface Wallet {
+  address: string
+  tokens: Token[]
+}
+const wallets = ref<Wallet[]>([])
+const icpBalance = ref(0)
+const rows = ref<any[]>([
+  {
+    token: "ICP",
+    balance: 0,
+    cost: 0,
+    price: 0,
+    value: 0,
+  },
+])
 
 onMounted(() => {
   initECharts()
   getWallet()
 })
+
+const getBalance = async (address: string) => {
+  //获取用户当前钱包资产
+  const balance = await getICPBalance(address)
+  console.log(address + " balance: ", balance)
+  wallets.value.push({
+    address: address,
+    tokens: [{ symbol: "ICP", balance: balance }],
+  })
+}
+
+watch(
+  () => wallets.value.length,
+  () => {
+    console.log("watch", wallets.value)
+    icpBalance.value = wallets.value.reduce(
+      // token[0] 目前暂为ICP
+      (total, wallet) => total + wallet.tokens[0].balance,
+      0,
+    )
+    rows.value[0].balance = icpBalance.value
+    console.log("icpBalance", icpBalance.value)
+    console.log("rows", rows.value)
+  },
+)
 
 const getWallet = async () => {
   const res = await getUserWallet(false)
@@ -171,9 +221,7 @@ const getWallet = async () => {
       //TODO 有bug，多个钱包的资产总值没有计算。
       //将用户的每个钱包地址下的交易记录查出来，并总和到一起
       const walletHistory = await getWalletHistory(walletInfo.address)
-      //获取用户当前钱包资产
-      const walletBalance = await getICPBalance(walletInfo.address)
-      console.log(walletInfo.address + " balance: ", walletBalance)
+      getBalance(walletInfo.address)
       totalHistory.value = totalHistory.value.concat(walletHistory.history)
     }
     // 按时间戳排序交易记录数组
