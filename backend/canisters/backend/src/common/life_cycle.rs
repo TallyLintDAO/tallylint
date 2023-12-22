@@ -1,10 +1,7 @@
 use std::borrow::Borrow;
 use std::io::Read;
 
-use ic_cdk::storage;
 use ic_cdk_macros::*;
-
-use serde_json::*;
 
 use canister_tracing_macros::trace;
 use tracing::info;
@@ -116,7 +113,8 @@ fn post_upgrade() {
     .expect("Failed to read from reader");
 
   // Handle trailing characters
-
+// TODO this maybe danger. is serialize format not good enough.
+// TODO should do data backup data to ic-VM-slot(2) ...
   let end_of_json = payload_json.rfind('}').unwrap_or(0) + 1;
   payload_json = payload_json[..end_of_json].to_string();
 
