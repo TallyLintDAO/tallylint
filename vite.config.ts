@@ -71,11 +71,12 @@ export default defineConfig(({ command, mode }) => {
       },
       extensions: [".js", ".ts", ".jsx", ".tsx", ".vue"], // import 可以省略的拓展名
     },
+    publicDir: "frontend/public", //指定新的静态资源目录，免得都堆在根目录，更美观。
     build: {
       minify: isBuild ? "esbuild" : false, // 默认为 Esbuild，它比 terser 快 20-40 倍，压缩率只差 1%-2%
       terserOptions: {
         compress: {
-          // 线上环境移除console，注释则表示线上环境启用console
+          // 线上环境移除console，注释此段代码则表示线上环境启用console
           // drop_console:
           //     configMode == ConfigMode.production
           //         ? true // 线上部署的生产打包一定不包含
@@ -95,7 +96,7 @@ export default defineConfig(({ command, mode }) => {
         output: {
           manualChunks: {
             // 每个 '键' 都表示一个分包块，'值' 包含列出的模块及其所有依赖项
-            vue: ["vue", "vue-router", "pinia"], // 目前打包还是这个最小，还没有 bug
+            vue: ["vue", "vue-router", "pinia"],
             quasar: ["quasar"],
           },
         },

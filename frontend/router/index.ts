@@ -1,13 +1,13 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router"
-import Home from "@/views/home/Home.vue"
-import App from "@/views/app/AppHome.vue"
-import NNS from "@/views/app/modules/NNS.vue"
-import Transactions from "@/views/transactions/Transactions.vue"
-import Wallet from "@/views/app/modules/Wallet.vue"
-import DashBoard from "@/views/app/modules/Dashboard.vue"
-import errors from "./modules/errors"
 import { initAuth } from "@/api/auth"
 import { setCurrentIdentity } from "@/api/canister_pool"
+import App from "@/views/app/AppHome.vue"
+import DashBoard from "@/views/app/modules/Dashboard.vue"
+import NNS from "@/views/app/modules/NNS.vue"
+import Wallet from "@/views/app/modules/Wallet.vue"
+import Home from "@/views/home/Home.vue"
+import Transactions from "@/views/transactions/Transactions.vue"
+import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router"
+import errors from "./modules/errors"
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -41,11 +41,11 @@ const routes: Array<RouteRecordRaw> = [
       { path: "nns", component: NNS },
     ],
   },
-  // ...errors,
-  // {
-  //   path: "/:catchAll(.*)",
-  //   redirect: "/error/404",
-  // },
+  ...errors,
+  {
+    path: "/:catchAll(.*)",
+    redirect: "/error/404",
+  },
 ]
 
 const router = createRouter({
