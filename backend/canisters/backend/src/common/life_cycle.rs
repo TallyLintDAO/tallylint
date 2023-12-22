@@ -38,7 +38,7 @@ fn init() {
  * will revert to last version.
  */
 // #[pre_upgrade] is a hook. everytime update canister will auto call this.
-#[pre_upgrade]
+// #[pre_upgrade]
 #[trace]
 // old version . last version exec.
 fn pre_upgrade() {
@@ -94,7 +94,7 @@ fn pre_upgrade() {
   });
 }
 
-#[post_upgrade]
+// #[post_upgrade]
 #[trace]
 fn post_upgrade() {
   // use reader  make the whole serde process become a Volcano/Pipeline Model
