@@ -2,37 +2,97 @@
   <div>
     <div class="progress-bar">
       <div
-        v-for="(balance, walletName, index) in wallets"
-        :key="walletName"
+        v-for="(wallet, index) in computedBalancePercent"
+        :key="index"
         :style="{
-          width: balance + '%',
+          width: wallet.percentage + '%',
           backgroundColor: getBackgroundColor(index),
         }"
         class="bar"
       ></div>
     </div>
-    <div
-      v-for="(balance, walletName) in wallets"
-      :key="walletName"
-      class="label"
-    >
-      {{ walletName }}: {{ balance }}%
-    </div>
+    <q-table
+      title="Holding"
+      :rows="computedBalancePercent"
+      :columns="columns"
+      row-key="name"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue"
-
-const wallets = ref({
-  Wallet1: 50,
-  Wallet2: 30,
-  Wallet3: 20,
+import type { Wallet } from "@/types/user"
+import { calculatePercent } from "@/utils/math"
+import { number } from "echarts"
+import { computed, ref } from "vue"
+const props = defineProps({
+  wallets: {
+    type: Array as () => Wallet[], // 指定类型为数组，且数组元素类型为 Wallet
+    required: true,
+  },
+  symbol: {
+    type: String,
+    required: true,
+  },
+  totalBalance: {
+    type: Number,
+    required: true,
+  },
 })
+// const totalBalance = ref(0)
+const columns = [
+  {
+    name: "name",
+    required: true,
+    label: "Name",
+    field: "name",
+  },
+  {
+    name: "balance",
+    required: true,
+    label: "Balance",
+    field: "balance",
+  },
+  {
+    name: "value",
+    required: true,
+    label: "Value",
+    field: "value",
+  },
+  {
+    name: "percentage",
+    required: true,
+    label: "Allocation",
+    field: (row) => row.percentage + "%",
+  },
+]
+
 const colors = ["#3498db", "#e74c3c", "#2ecc71", "#f39c12", "#9b59b6"]
 const getBackgroundColor = (index) => {
   return colors[index % colors.length]
 }
+
+//计算每个钱包对应的币种占比
+const computedBalancePercent = computed(() => {
+  const res = props.wallets.map((wallet) => {
+    const token = wallet.tokens.find((t) => t.symbol === props.symbol)
+    const balance = token ? token.balance : 0
+    // totalBalance.value += balance
+
+    const percentage = calculatePercent(balance, props.totalBalance)
+    return { name: wallet.name, balance, percentage }
+  })
+  console.log("computedBalancePercent", res)
+  console.log("totalBalance", props.totalBalance)
+  return res
+})
+
+// watch(
+//   () => props.wallets.length,
+//   () => {
+//     countBalancePercent()
+//   },
+// )
 </script>
 
 <style>

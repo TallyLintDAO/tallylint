@@ -45,3 +45,14 @@ export interface NNSNeuron {
   maturity: number
   stakedMaturity: number
 }
+
+export interface Token {
+  symbol: string
+  balance: number
+}
+
+export interface Wallet {
+  address: string
+  name: string
+  tokens: Token[]
+}
