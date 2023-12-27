@@ -12,19 +12,32 @@
       ></div>
     </div>
     <q-table
-      title="Holding"
       :rows="computedBalancePercent"
       :columns="columns"
       row-key="name"
-    />
+      :rowsPerPageOptions="[0]"
+      hide-pagination
+      flat
+    >
+      <template v-slot:body-cell-percentage="props">
+        <q-td :props="props">
+          <div>
+            {{ props.value }}
+            <q-icon
+              name="font_download"
+              :style="{ color: getBackgroundColor(props.rowIndex) }"
+            />
+          </div>
+        </q-td>
+      </template>
+    </q-table>
   </div>
 </template>
 
 <script lang="ts" setup>
 import type { Wallet } from "@/types/user"
 import { calculatePercent } from "@/utils/math"
-import { number } from "echarts"
-import { computed, ref } from "vue"
+import { computed } from "vue"
 const props = defineProps({
   wallets: {
     type: Array as () => Wallet[], // 指定类型为数组，且数组元素类型为 Wallet
@@ -39,7 +52,6 @@ const props = defineProps({
     required: true,
   },
 })
-// const totalBalance = ref(0)
 const columns = [
   {
     name: "name",
@@ -50,18 +62,21 @@ const columns = [
   {
     name: "balance",
     required: true,
+    sortable: true,
     label: "Balance",
     field: "balance",
   },
   {
     name: "value",
     required: true,
+    sortable: true,
     label: "Value",
     field: "value",
   },
   {
     name: "percentage",
     required: true,
+    sortable: true,
     label: "Allocation",
     field: (row) => row.percentage + "%",
   },
@@ -86,13 +101,6 @@ const computedBalancePercent = computed(() => {
   console.log("totalBalance", props.totalBalance)
   return res
 })
-
-// watch(
-//   () => props.wallets.length,
-//   () => {
-//     countBalancePercent()
-//   },
-// )
 </script>
 
 <style>

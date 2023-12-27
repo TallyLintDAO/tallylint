@@ -57,12 +57,16 @@
       <q-card flat bordered>
         <q-item>
           <q-item-section>
-            <q-item-label caption> Holdings </q-item-label>
+            <q-item-label caption style="font-size: 1rem">
+              Holdings
+            </q-item-label>
             <q-table
-              title="Holding"
               :rows="rows"
               :columns="columns"
               row-key="name"
+              :rowsPerPageOptions="[0]"
+              hide-pagination
+              flat
             >
               <template v-slot:header="props">
                 <q-tr :props="props">
@@ -97,7 +101,7 @@
                     {{ col.value }}
                   </q-td>
                 </q-tr>
-                <q-tr v-show="props.expand" :props="props">
+                <q-tr v-show="props.expand" :props="props" no-hover>
                   <q-td colspan="100%">
                     <div class="text-left">
                       <Progress
@@ -105,7 +109,6 @@
                         :symbol="props.row.token"
                         :totalBalance="icpBalance"
                       />
-                      This is expand slot for row above: {{ props.row.name }}.
                     </div>
                   </q-td>
                 </q-tr>
@@ -146,24 +149,28 @@ const columns = [
     name: "balance",
     required: true,
     label: "Balance",
+    sortable: true,
     field: "balance",
   },
   {
     name: "cost",
     required: true,
     label: "Cost",
+    sortable: true,
     field: "cost",
   },
   {
     name: "price",
     required: true,
     label: "Price",
+    sortable: true,
     field: "price",
   },
   {
     name: "value",
     required: true,
     label: "Value",
+    sortable: true,
     field: "value",
   },
 ]
