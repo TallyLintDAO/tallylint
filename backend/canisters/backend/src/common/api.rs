@@ -43,13 +43,9 @@ fn init() {
 // old version . last version exec.
 #[query]
 fn do_pre_upgrade_and_print_db() -> String {
-  info!("Pre-upgrade starting");
-  // let _logs = canister_logger::export_logs();
-  // let _traces = canister_logger::export_traces();
-
   CONTEXT.with(|c| {
     let context = c.borrow();
-    let id = context.id;
+    let id = context.id; // global increamenter.
     let users = Vec::from_iter(context.user_service.users.values().cloned());
     let wallets =
       Vec::from_iter(context.wallet_service.wallets.values().cloned());
@@ -57,14 +53,6 @@ fn do_pre_upgrade_and_print_db() -> String {
       Vec::from_iter(context.wallet_record_service.records.values().cloned());
     let neurons =
       Vec::from_iter(context.neuron_service.neurons.values().cloned());
-
-    // TODO make this serialization one by one . just make sure every part is
-    // serialize ok. and then combine them inro one bin file . or use
-    // multiple VM on ic-node-replica FS.(ref stable structure on IC machine)
-    // also the deserialization part one by one . users, then walletes, then
-    // records... furthur: encasulate each serde of users,walletes, into a
-    // generic serde function. even furthur. we can use multi-thread for
-    // each. (when have many data to serde)
 
     let payload = CanisterDB {
       id,
@@ -74,31 +62,30 @@ fn do_pre_upgrade_and_print_db() -> String {
       neurons,
     };
 
-    // this call candid serialization. custom impl of serialization diff to
-    // serde lib . ic_cdk::storage::stable_save((state, permit, users,
-    // roles)).unwrap();
-
-    // let json=serde_json::to_string_pretty(&payload).unwrap();
-    // println!("{}", json);
-    // save canister fs to ic-replica.
     let mut memory = get_upgrades_memory();
-    let writer = get_writer(&mut memory);
-    let ret = serializer::serialize(payload.clone(), writer);
-    if ret.is_err() {
-      info!("serialize err: {:?}", ret.err());
-    } else {
-      info!("serialize ok,old data saved to ic-fs.");
+    {
+      let writer = get_writer(&mut memory);
+      let ret = serializer::serialize(payload.clone(), writer);
+      if ret.is_err() {
+        info!("serialize err: {:?}", ret.err());
+      } else {
+        info!("serialize ok,old data saved to ic-fs.");
+      }
+    }
+    {
+      let reader = get_reader(&mut memory);
+      
     }
 
     let json = serde_json::to_string(&payload).unwrap();
-    return json;
 
-    // IMPORTANT erase db in running canister.(ic or local)
-    // dfx deploy backend  -m reinstall
+    ic_cdk::println!("json: {}", json); // this print debug info to ic-replica node console.
+    return json;
   })
 }
-// old version . last version exec.
-#[query]
+
+// TODO not work as clean_db should do yet.
+#[update]
 fn clean_db() -> String {
   CONTEXT.with(|c| {
     let context = c.borrow();

@@ -37,9 +37,9 @@ pub struct NeuronProfile {
 
   // This attr will use default value(maybe 0) if missing during
   // deserialization
-  #[serde(default = "default_update_time")]
-  pub update_time: u64, /* TODO need let dfx deploy backend print
-                         * deserialize err info ! in order to */
+  // #[serde(default = "default_update_time")]
+  // pub update_time: u64, 
+  /* TODO need let dfx deploy backend print deserialize err info ! in order to */
 }
 
 fn default_update_time() -> u64 {

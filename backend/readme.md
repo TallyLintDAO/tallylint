@@ -205,3 +205,23 @@ let rust ignore that when no match. this doing by default automatic.
 
 Now can you generic these two approach into rust code of serialize and deserialize as a whole file ,like materialized mode(batch mode). or using a kind of File stream . to make it like volcano process(or pipeline iterator) ?
 Is pipeline mode better than batch mode if the file is huge when deal with serde?
+
+
+
+
+How to get transaction history of a sns instance coin :
+
+user input: 
+  sns coin name,
+  sns wallet addr,
+
+ouput:
+  transaction history .
+
+How to get coin history price?
+input: 
+  sns coin name,
+  transaction time,
+ 
+ output:
+  coin price at transaction time.

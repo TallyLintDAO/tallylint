@@ -38,7 +38,7 @@ fn init() {
  * will revert to last version.
  */
 // #[pre_upgrade] is a hook. everytime update canister will auto call this.
-// #[pre_upgrade]
+#[pre_upgrade]
 #[trace]
 // old version . last version exec.
 fn pre_upgrade() {
@@ -81,20 +81,41 @@ fn pre_upgrade() {
     // println!("{}", json);
     // save canister fs to ic-replica.
     let mut memory = get_upgrades_memory();
-    let writer = get_writer(&mut memory);
-    let ret = serializer::serialize(payload, writer);
-    if ret.is_err() {
-      info!("serialize err: {:?}", ret.err());
-    } else {
-      info!("serialize ok,old data saved to ic-fs.");
+    {
+      let writer = get_writer(&mut memory);
+      let ret = serializer::serialize(payload, writer);
+      if ret.is_err() {
+        info!("serialize err: {:?}", ret.err());
+      } else {
+        info!("serialize ok,old data saved to ic-fs.");
+      }
     }
+    {
+      let mut reader = get_reader(&mut memory);
+      let mut payload_json = String::new();
+      reader
+        .read_to_string(&mut payload_json)
+        .expect("Failed to read from reader");
+      
+    // Parse the JSON string into a serde_json::Value
+    let v: serde_json::Value = serde_json::from_str(&payload_json)
+        .expect("Failed to parse JSON");
+
+    // Serialize the serde_json::Value into a pretty-printed JSON string
+    let pretty_json = serde_json::to_string_pretty(&v)
+        .expect("Failed to generate pretty JSON");
+
+    ic_cdk::println!("json: {}", pretty_json); // this print debug info to
+    }
+    // ic_cdk::println!("json: {}", json);    // this print debug info to
+    // ic-replica node console.
 
     // IMPORTANT erase db in running canister.(ic or local)
     // dfx deploy backend  -m reinstall
   });
 }
 
-// #[post_upgrade]
+#[post_upgrade]
 #[trace]
 fn post_upgrade() {
   // use reader  make the whole serde process become a Volcano/Pipeline Model

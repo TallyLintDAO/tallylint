@@ -6,6 +6,7 @@ pub mod lifecycle;
 pub mod nns;
 pub mod user;
 pub mod wallet;
+pub mod c2c;
 
 use crate::common::context::CanisterContext;
 thread_local! {
@@ -19,14 +20,19 @@ thread_local! {
 // cargo hint to remove these is wrong. but must use below.
 #[allow(unused_imports)]
 use crate::nns::api::*;
+#[allow(unused_imports)]
 use crate::nns::domain::*;
 #[allow(unused_imports)]
 use crate::user::domain::*;
+// #[allow(unused_imports)]
+// use crate::c2c::oc_wallet::*;
 #[allow(unused_imports)]
 use crate::wallet::domain::*;
+#[allow(unused_imports)]
 use crate::wallet::service::RecordId;
 #[allow(unused_imports)]
 use crate::wallet::service::WalletAddress;
+#[allow(unused_imports)]
 use crate::wallet::service::WalletId;
 #[allow(unused_imports)]
 use ic_cdk::api::call::CallResult;
