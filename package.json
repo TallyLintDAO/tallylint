@@ -19,6 +19,7 @@
     "@dfinity/principal": "^0.19.3",
     "@dfinity/sns": "2.0.0",
     "@dfinity/utils": "^1.0.0",
+    "@infu/icblast": "^2.0.46",
     "@quasar/extras": "^1.16.5",
     "axios": "^1.6.2",
     "echarts": "^5.4.3",

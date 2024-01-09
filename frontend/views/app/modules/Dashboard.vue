@@ -123,10 +123,13 @@
 
 <script lang="ts" setup>
 import { getICPBalance, getWalletHistory } from "@/api/rosetta"
+import { getAllSNSInfo } from "@/api/sns"
 import { getICPNowPrice } from "@/api/token"
 import { getUserWallet } from "@/api/user"
 import Progress from "@/components/Progress.vue"
+import type { TableColumn } from "@/types/model"
 import type { Wallet, WalletHistory } from "@/types/user"
+import { getICRC1Price } from "@/utils/icrc1"
 import { showMessageError } from "@/utils/message"
 import * as echarts from "echarts"
 import { onMounted, ref, watch } from "vue"
@@ -138,12 +141,13 @@ const received = ref(0)
 const sent = ref(0)
 const gains = ref(0)
 
-const columns = [
+const columns: TableColumn[] = [
   {
     name: "token",
     required: true,
     label: "Tokens",
     field: "token",
+    align: "left",
   },
   {
     name: "balance",
@@ -151,6 +155,7 @@ const columns = [
     label: "Balance",
     sortable: true,
     field: "balance",
+    align: "left",
   },
   {
     name: "cost",
@@ -158,6 +163,7 @@ const columns = [
     label: "Cost",
     sortable: true,
     field: "cost",
+    align: "left",
   },
   {
     name: "price",
@@ -165,6 +171,7 @@ const columns = [
     label: "Price",
     sortable: true,
     field: "price",
+    align: "left",
   },
   {
     name: "value",
@@ -172,6 +179,7 @@ const columns = [
     label: "Value",
     sortable: true,
     field: "value",
+    align: "left",
   },
 ]
 
@@ -191,6 +199,8 @@ onMounted(() => {
   initECharts()
   getWallet()
   getICPPrice()
+  getAllSNSInfo()
+  getICRC1Price("2ouva-viaaa-aaaaq-aaamq-cai") //chat token
 })
 
 const getBalance = async (address: string, walletName: string) => {

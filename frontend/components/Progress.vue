@@ -35,6 +35,7 @@
 </template>
 
 <script lang="ts" setup>
+import type { TableColumn } from "@/types/model"
 import type { Wallet } from "@/types/user"
 import { calculatePercent } from "@/utils/math"
 import { computed } from "vue"
@@ -52,12 +53,13 @@ const props = defineProps({
     required: true,
   },
 })
-const columns = [
+const columns: TableColumn[] = [
   {
     name: "name",
     required: true,
     label: "Name",
     field: "name",
+    align: "left",
   },
   {
     name: "balance",
@@ -65,6 +67,7 @@ const columns = [
     sortable: true,
     label: "Balance",
     field: "balance",
+    align: "left",
   },
   {
     name: "value",
@@ -72,6 +75,7 @@ const columns = [
     sortable: true,
     label: "Value",
     field: "value",
+    align: "left",
   },
   {
     name: "percentage",
@@ -79,6 +83,7 @@ const columns = [
     sortable: true,
     label: "Allocation",
     field: (row) => row.percentage + "%",
+    align: "left",
   },
 ]
 
