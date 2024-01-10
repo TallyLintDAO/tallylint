@@ -19,7 +19,7 @@ export const querySnsAggregator = async (page = 0) => {
   }
   const data = res.data
   if (data.length === AGGREGATOR_PAGE_SIZE) {
-    //由于一页只能查10个数据，所以这里自动自增查完所有sns。
+    //由于一页只能查10个数据，所以这里自动自增页码，查完所有sns。
     const nextPageData = await querySnsAggregator(page + 1)
     return [...data, ...nextPageData]
   }
@@ -30,7 +30,7 @@ export const getAllSNSInfo = async () => {
   try {
     const data = await querySnsAggregator()
     console.log("getSNSInfo", data)
-    // 3 === Committed
+    // lifecycle === 3 才是通过的SNS项目
     const snses = data
       .filter(
         ({
@@ -40,32 +40,18 @@ export const getAllSNSInfo = async () => {
         }) => lifecycle === 3,
       )
       .map((sns) => {
-        const {
-          list_sns_canisters: {
-            governance: governance_canister_id,
-            index: index_canister_id,
-            ledger: ledger_canister_id,
-            root: root_canister_id,
-            swap: swap_canister_id,
-          },
-          icrc1_metadata,
-          icrc1_fee,
-          meta,
-        } = sns
-
+        const { list_sns_canisters, icrc1_metadata, icrc1_fee, meta } = sns
+        const { governance, index, ledger, swap, root } = list_sns_canisters
         const assembledStructure = {
-          canister_ids: {
-            governance_canister_id,
-            index_canister_id,
-            ledger_canister_id,
-            root_canister_id,
-            swap_canister_id,
-          },
-          icrc1_metadata,
-          icrc1_fee,
+          canisters: { governance, index, ledger, swap, root },
+          name: icrc1_metadata.find(([key]) => key.endsWith(`:name`))[1].Text,
+          symbol: icrc1_metadata.find(([key]) => key.endsWith(`:symbol`))[1]
+            .Text,
+          fee: icrc1_fee[0],
+          decimals: icrc1_metadata.find(([key]) => key.endsWith(`:decimals`))[1]
+            .Nat[0],
           meta,
         }
-
         return assembledStructure
       })
     console.log("filter sns", snses)
