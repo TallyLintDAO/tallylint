@@ -40,8 +40,12 @@ export const getAllSNSInfo = async () => {
         }) => lifecycle === 3,
       )
       .map((sns) => {
-        const { list_sns_canisters, icrc1_metadata, icrc1_fee, meta } = sns
-        const { governance, index, ledger, swap, root } = list_sns_canisters
+        const {
+          list_sns_canisters: { governance, index, ledger, swap, root },
+          icrc1_metadata,
+          icrc1_fee,
+          meta,
+        } = sns
         const assembledStructure = {
           canisters: { governance, index, ledger, swap, root },
           name: icrc1_metadata.find(([key]) => key.endsWith(`:name`))[1].Text,
@@ -55,9 +59,7 @@ export const getAllSNSInfo = async () => {
         return assembledStructure
       })
     console.log("filter sns", snses)
-    // writeFileSync(join(DATA_FOLDER, "snses.json"), JSON.stringify(snses))
-
-    // await saveLogos(snses)
+    return snses
   } catch (err) {
     throw new Error("Error querying Snses")
   }

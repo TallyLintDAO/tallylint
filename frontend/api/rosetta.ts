@@ -33,7 +33,7 @@ export interface InferredTransaction {
       decimals: number
       symbol: string
     }
-    canisterId: string
+    ledgerCanisterId: string
     cost: number
     profit: number
     value: number
@@ -73,6 +73,7 @@ export const getICPTransactions = async (
     )
     throw Error("error for rosetta api" + response.statusText)
   }
+
   const { transactions, total_count } = await response.json()
   // console.log("rosetta api:", transactions)
   purchaseQueue.length = 0 //计算前先重置购买队列数组，防止出现问题。
@@ -202,7 +203,7 @@ export const formatIcpTransaccion = async (
       ),
     ) //计算总价值
     transaction.details.currency = operation.amount.currency
-    transaction.details.canisterId = LEDGER_CANISTER_ID
+    transaction.details.ledgerCanisterId = LEDGER_CANISTER_ID
 
     //先入先出的成本计算法，以IC的精度，建议保留4位小数
     const cost = calculateCost(transaction)

@@ -129,7 +129,7 @@ import { getUserWallet } from "@/api/user"
 import Progress from "@/components/Progress.vue"
 import type { TableColumn } from "@/types/model"
 import type { Wallet, WalletHistory } from "@/types/user"
-import { getICRC1Price } from "@/utils/icrc1"
+import { getAllTransactionsICRC1, getICRC1Price } from "@/utils/icrc1"
 import { showMessageError } from "@/utils/message"
 import * as echarts from "echarts"
 import { onMounted, ref, watch } from "vue"
@@ -201,6 +201,7 @@ onMounted(() => {
   getICPPrice()
   getAllSNSInfo()
   getICRC1Price("2ouva-viaaa-aaaaq-aaamq-cai") //chat token
+  getAllTransactionsICRC1("2awyi-oyaaa-aaaaq-aaanq-cai")
 })
 
 const getBalance = async (address: string, walletName: string) => {
