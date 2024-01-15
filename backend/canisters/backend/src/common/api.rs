@@ -74,7 +74,6 @@ fn do_pre_upgrade_and_print_db() -> String {
     }
     {
       let reader = get_reader(&mut memory);
-      
     }
 
     let json = serde_json::to_string(&payload).unwrap();

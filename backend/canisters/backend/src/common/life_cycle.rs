@@ -96,16 +96,16 @@ fn pre_upgrade() {
       reader
         .read_to_string(&mut payload_json)
         .expect("Failed to read from reader");
-      
-    // Parse the JSON string into a serde_json::Value
-    let v: serde_json::Value = serde_json::from_str(&payload_json)
-        .expect("Failed to parse JSON");
 
-    // Serialize the serde_json::Value into a pretty-printed JSON string
-    let pretty_json = serde_json::to_string_pretty(&v)
+      // Parse the JSON string into a serde_json::Value
+      let v: serde_json::Value =
+        serde_json::from_str(&payload_json).expect("Failed to parse JSON");
+
+      // Serialize the serde_json::Value into a pretty-printed JSON string
+      let pretty_json = serde_json::to_string_pretty(&v)
         .expect("Failed to generate pretty JSON");
 
-    ic_cdk::println!("json: {}", pretty_json); // this print debug info to
+      ic_cdk::println!("json: {}", pretty_json); // this print debug info to
     }
     // ic_cdk::println!("json: {}", json);    // this print debug info to
     // ic-replica node console.

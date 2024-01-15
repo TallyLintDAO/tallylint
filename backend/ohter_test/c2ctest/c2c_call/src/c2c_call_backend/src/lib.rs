@@ -109,11 +109,12 @@ impl Service {
   > { ic_cdk::call(self.0, "list_subaccounts", (arg0,)).await }
 }
 
-use ic_cdk_macros::{query, update};
+use ic_cdk::{query, update};
 
 #[update]
 async fn get_account_transactions() -> Result<GetTransactionsResult> {
-    let pid = Principal::from_text("2awyi-oyaaa-aaaaq-aaanq-cai").unwrap();
+    let oc_ledger = Principal::from_text("2awyi-oyaaa-aaaaq-aaanq-cai").unwrap();
+    let pid = oc_ledger;
     let service = Service(pid);
     let arg0 = GetAccountTransactionsArgs {
         max_results: candid::Nat::from(10),

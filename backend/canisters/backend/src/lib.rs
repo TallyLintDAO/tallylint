@@ -1,12 +1,12 @@
 use candid::Principal;
 use std::cell::RefCell;
 
+pub mod c2c;
 pub mod common;
 pub mod lifecycle;
 pub mod nns;
 pub mod user;
 pub mod wallet;
-pub mod c2c;
 
 use crate::common::context::CanisterContext;
 thread_local! {

@@ -139,6 +139,8 @@ fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
     let id = ctx.id;
     let profile = RecordProfile {
       id: id,
+
+      coin_type: cmd.coin_type,
       address: cmd.address,
       price: cmd.price,
       amount: cmd.amount,
@@ -148,6 +150,15 @@ fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
       manual: cmd.manual,
       comment: cmd.comment,
       principal_id: cmd.principal_id,
+      hash: cmd.hash,
+      status: cmd.status,
+      from: cmd.from,
+      to: cmd.to,
+      fee: cmd.fee,
+      memo: cmd.memo,
+      cost: cmd.cost,
+      income: cmd.income,
+      profit: cmd.profit,
     };
     let ret = ctx
       .wallet_record_service
@@ -208,7 +219,7 @@ fn sync_transaction_record(
 }
 
 // TODO get all wallets of records info
-// 根据前端查询到的历史记录传到后端啊
+// 根据前端查询到的历史记录传到后端
 #[query(guard = "user_owner_guard")]
 fn wallet_history(
   mut cmd: HistoryQueryCommand,
@@ -265,6 +276,8 @@ fn convert_edit_command_to_record_profile(
 ) -> RecordProfile {
   RecordProfile {
     id: cmd.id,
+    coin_type: cmd.coin_type,
+
     address: addr,
     price: cmd.price,
     amount: cmd.amount,
@@ -274,6 +287,15 @@ fn convert_edit_command_to_record_profile(
     manual: cmd.manual,
     comment: cmd.comment,
     principal_id: None,
+    hash: cmd.hash,
+    status: cmd.status,
+    from: cmd.from,
+    to: cmd.to,
+    fee: cmd.fee,
+    memo: cmd.memo,
+    cost: cmd.cost,
+    income: cmd.income,
+    profit: cmd.profit,
   }
 }
 

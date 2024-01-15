@@ -1,9 +1,19 @@
 type AddRecordCommand = record {
+  to : text;
+  fee : float64;
   tag : text;
+  status : text;
+  cost : float64;
+  from : text;
+  hash : text;
+  memo : text;
   time : nat64;
   t_type : text;
+  coin_type : text;
   comment : text;
+  income : float64;
   address : text;
+  profit : float64;
   manual : bool;
   principal_id : opt text;
   price : float64;
@@ -13,11 +23,23 @@ type BallotInfo = record { vote : int32; proposal_id : opt NeuronId };
 type CustomResult1 = variant { Ok : NeuronInfo; Err : GovernanceError };
 type EditHistoryCommand = record {
   id : nat64;
+  to : text;
+  fee : float64;
   tag : text;
+  status : text;
+  cost : float64;
+  from : text;
+  hash : text;
+  memo : text;
   time : nat64;
   t_type : text;
+  coin_type : text;
   comment : text;
+  income : float64;
+  address : text;
+  profit : float64;
   manual : bool;
+  principal_id : opt text;
   price : float64;
   amount : nat32;
 };
@@ -49,18 +71,27 @@ type NeuronProfile = record {
   id : nat64;
   owner : principal;
   name : text;
-  update_time : nat64;
   create_time : nat64;
   address : text;
 };
 type NeuronUpdateCommand = record { id : nat64; name : text };
 type RecordProfile = record {
   id : nat64;
+  to : text;
+  fee : float64;
   tag : text;
+  status : text;
+  cost : float64;
+  from : text;
+  hash : text;
+  memo : text;
   time : nat64;
   t_type : text;
+  coin_type : text;
   comment : text;
+  income : float64;
   address : text;
+  profit : float64;
   manual : bool;
   principal_id : opt text;
   price : float64;
@@ -114,11 +145,12 @@ type WalletProfile = record {
   transactions : nat64;
 };
 type WalletUpdateCommand = record { id : nat64; from : text; name : text };
-service : () -> {
+service : {
   add_neuron_wallet : (NeuronAddCommand) -> (Result);
   add_transaction_record : (AddRecordCommand) -> (Result_1);
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_2);
+  clean_db : () -> (text);
   delete_neuron_wallet : (nat64) -> (Result);
   delete_transaction_record : (nat64) -> (Result_1);
   delete_wallet : (nat64) -> (Result);

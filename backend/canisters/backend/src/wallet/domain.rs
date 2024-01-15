@@ -79,27 +79,38 @@ impl Default for WalletAddCommand {
   }
 }
 
-/**
- * Class Record main storage:
- */
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct RecordProfile {
+  //
+  // backend autogen:
   pub id: RecordId,
-  // Primary key
+  //
+
+  //
+  //  frontend passin:
+  pub coin_type: String,
   pub principal_id: Option<String>, /* Plug use , need
                                      * to convert to
                                      * opt_account_id_hex for use. */
   pub address: WalletAddress, // same as account_id_hex
-  //Transaction record
-  pub price: f64,
-  pub amount: u32,
-  // TODO , considering wallet_amount :
-  // pub wallet_amount:u32,
+  pub hash: String,
+  pub t_type: String, //transaction_type
+  pub status: String,
   pub time: TimeStamp, //transaction_time
-  pub t_type: String,  //transaction_type
+  pub from: String,
+  pub to: String,
+  pub amount: u32,
+  pub fee: f64,
+  pub memo: String,
+  pub price: f64,
+  pub cost: f64,
+  pub income: f64,
+  pub profit: f64,
   pub tag: String,
   pub manual: bool,
   pub comment: String,
+  // TODO , considering wallet_amount :
+  // pub wallet_amount:u32,
   // pub warning:String,
   // TODO: Warning（用户是否标记某些记录为missing cost,
   // missing rates）这条字段先只做出来，不用,
@@ -127,32 +138,51 @@ pub struct HistoryQueryCommand {
 }
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct EditHistoryCommand {
+  pub coin_type: String,
+
   pub id: RecordId, //delete id here . dont need.
-  //Transaction record
-  pub price: f64,
-  pub amount: u32,
-  // TODO , considering:
-  // pub wallet_amount:u32,
+  pub principal_id: Option<String>, /* Plug use , need
+                     * to convert to
+                     * opt_account_id_hex for use. */
+  pub address: WalletAddress, // same as account_id_hex
+  pub hash: String,
+  pub t_type: String, //transaction_type
+  pub status: String,
   pub time: TimeStamp, //transaction_time
-  pub t_type: String,  //transaction_type
+  pub from: String,
+  pub to: String,
+  pub amount: u32,
+  pub fee: f64,
+  pub memo: String,
+  pub price: f64,
+  pub cost: f64,
+  pub income: f64,
+  pub profit: f64,
   pub tag: String,
   pub manual: bool,
   pub comment: String,
 }
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct AddRecordCommand {
-  // pub id: RecordId,//delete id here . dont need.
-  //Transaction record
-  pub address: WalletAddress,
+  pub coin_type: String,
+
   pub principal_id: Option<String>, /* Plug use , need
                                      * to convert to
                                      * opt_account_id_hex for use. */
-  pub price: f64,
-  pub amount: u32,
-  // TODO , considering:
-  // pub wallet_amount:u32,
+  pub address: WalletAddress, // same as account_id_hex
+  pub hash: String,
+  pub t_type: String, //transaction_type
+  pub status: String,
   pub time: TimeStamp, //transaction_time
-  pub t_type: String,  //transaction_type
+  pub from: String,
+  pub to: String,
+  pub amount: u32,
+  pub fee: f64,
+  pub memo: String,
+  pub price: f64,
+  pub cost: f64,
+  pub income: f64,
+  pub profit: f64,
   pub tag: String,
   pub manual: bool,
   pub comment: String,

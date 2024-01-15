@@ -1,0 +1,30 @@
+{
+  "canisters": {
+    "c2c_call_backend": {
+      "candid": "src/c2c_call_backend/c2c_call_backend.did",
+      "package": "c2c_call_backend",
+      "type": "rust"
+    },
+    "c2c_call_frontend": {
+      "dependencies": [
+        "c2c_call_backend"
+      ],
+      "frontend": {
+        "entrypoint": "src/c2c_call_frontend/src/index.html"
+      },
+      "source": [
+        "src/c2c_call_frontend/assets",
+        "dist/c2c_call_frontend/"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}

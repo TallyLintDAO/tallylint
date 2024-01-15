@@ -1,4 +1,4 @@
-import { c2ctest_backend } from "../../declarations/c2ctest_backend";
+import { c2c_call_backend } from "../../declarations/c2c_call_backend";
 
 document.querySelector("form").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -9,7 +9,7 @@ document.querySelector("form").addEventListener("submit", async (e) => {
   button.setAttribute("disabled", true);
 
   // Interact with foo actor, calling the greet method
-  const greeting = await c2ctest_backend.greet(name);
+  const greeting = await c2c_call_backend.greet(name);
 
   button.removeAttribute("disabled");
 
