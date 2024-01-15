@@ -199,9 +199,23 @@ onMounted(() => {
   initECharts()
   getWallet()
   getICPPrice()
-  getAllSNSInfo()
-  getICRC1Price("2ouva-viaaa-aaaaq-aaamq-cai") //chat token
-  getAllTransactionsICRC1("2awyi-oyaaa-aaaaq-aaanq-cai")
+  getAllSNSInfo().then((snses) => {
+    const sns = snses.find((sns) => sns.symbol === "CHAT")
+    console.log("snses.find", sns)
+    if (sns) {
+      // getICRC1Price(sns.canisters.ledger)
+      getAllTransactionsICRC1(
+        {
+          address:
+            "bcc6t-arcy7-qgvxt-v3ubw-6xndu-ld6nf-vwetx-so4q3-pyjlv-3udyi-nae",
+          name: "",
+          from: "",
+        },
+        sns.canisters.index,
+        sns.decimals,
+      )
+    }
+  })
 })
 
 const getBalance = async (address: string, walletName: string) => {

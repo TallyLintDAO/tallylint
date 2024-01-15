@@ -20,15 +20,11 @@ export interface InferredTransaction {
     status: string
     fee: {
       amount: number
-      currency: {
-        decimals: number
-        symbol: string
-      }
     }
     to?: string
     from?: string
     amount: number
-    price: number // 添加这两个属性的定义
+    price: number // 发生交易时代币的单价
     currency: {
       decimals: number
       symbol: string
@@ -38,7 +34,6 @@ export interface InferredTransaction {
     profit: number
     value: number
   }
-  caller: string
 }
 
 export interface GetTransactionsResponse {
@@ -175,7 +170,7 @@ export const formatIcpTransaccion = async (
         amount,
         operation.amount.currency.decimals,
       )
-      transaction.details.fee.currency = operation.amount.currency
+      // transaction.details.fee.currency = operation.amount.currency
       return
     }
 
@@ -223,7 +218,6 @@ export const formatIcpTransaccion = async (
   })
   return {
     ...transaction,
-    caller: transaction.details.from,
     hash,
     timestamp: timestampNormal,
   } as InferredTransaction
