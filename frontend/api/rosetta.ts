@@ -5,6 +5,7 @@ import {
   ROSETTA_URL,
 } from "@/api/constants/ic"
 import { getICPPrice } from "@/api/token"
+import type { Currency } from "@/types/sns"
 import type { WalletHistory, WalletTag } from "@/types/user"
 import { currencyCalculate } from "@/utils/common"
 import { showMessageError } from "@/utils/message"
@@ -25,10 +26,7 @@ export interface InferredTransaction {
     from?: string
     amount: number
     price: number // 发生交易时代币的单价
-    currency: {
-      decimals: number
-      symbol: string
-    }
+    currency: Currency
     ledgerCanisterId: string
     cost: number
     profit: number
@@ -97,14 +95,12 @@ export const getICPTransactions = async (
 export const getAllTransactions = async (
   wallets: WalletTag[],
 ): Promise<GetTransactionsResponse> => {
-  console.log("addresses", wallets)
   try {
     // 使用 Promise.all 并行地获取多个钱包的交易记录
     const transactionsPromises = wallets.map((wallet) =>
       getICPTransactions(wallet, true),
     )
     const transactionsResults = await Promise.all(transactionsPromises)
-    console.log("transactionsResults", transactionsResults)
     // 使用 Array.reduce 将所有 total 相加，并将 transactions 拼接在一起
     const response: GetTransactionsResponse = transactionsResults.reduce(
       (acc, curr) => {

@@ -18,3 +18,8 @@ export interface SnsInfo {
   name: string
   symbol: string
 }
+
+export interface Currency {
+  decimals: number
+  symbol: string
+}

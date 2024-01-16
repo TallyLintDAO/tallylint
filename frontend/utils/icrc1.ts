@@ -1,23 +1,25 @@
 import { initAuth } from "@/api/auth"
 import { MILI_PER_SECOND } from "@/api/constants/ic"
+import type { Currency } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { HttpAgent } from "@dfinity/agent"
 import { IcrcAccount, IcrcIndexCanister } from "@dfinity/ledger-icrc"
 import type { TransactionWithId } from "@dfinity/ledger-icrc/dist/candid/icrc_index"
 import { Principal } from "@dfinity/principal"
+import { currencyCalculate } from "./common"
 import ic from "./icblast"
 
 export const getAllTransactionsICRC1 = async (
   wallet: WalletTag,
   indexCanisterId: string,
-  decimals: number,
+  currency: Currency,
 ) => {
   console.log("getAllTransactionsICRC1", indexCanisterId)
   const ai = await initAuth()
   if (ai.info) {
     const identity = ai.info.identity
     const agent = new HttpAgent({ identity })
-    const myPrincipal = Principal.fromText(wallet.address)
+    const address = Principal.fromText(wallet.address)
     const canisterPrincipal = Principal.fromText(indexCanisterId)
 
     const { getTransactions: ICRC1_getTransactions } = IcrcIndexCanister.create(
@@ -28,7 +30,7 @@ export const getAllTransactionsICRC1 = async (
     )
     const ICRC1getTransactions = await ICRC1_getTransactions({
       account: {
-        owner: myPrincipal,
+        owner: address,
       } as IcrcAccount,
       max_results: BigInt(10000),
     })
@@ -36,7 +38,9 @@ export const getAllTransactionsICRC1 = async (
     const transactionsInfo = ICRC1getTransactions.transactions
     console.log("getAllTransactionsICRC1", transactionsInfo)
     return transactionsInfo.map((transaction) => {
-      formatICRC1Transaction(wallet, transaction, decimals)
+      const res = formatICRC1Transaction(wallet, transaction, currency)
+      console.log("formation icrc1", res)
+      return res
     })
   }
 }
@@ -44,18 +48,34 @@ export const getAllTransactionsICRC1 = async (
 const formatICRC1Transaction = (
   wallet: WalletTag,
   transactionWithId: TransactionWithId,
-  decimals: number,
+  currency: Currency,
 ) => {
-  const transaction = transactionWithId.transaction
-  const hash = transactionWithId.id
+  const { transaction, id } = transactionWithId
   const timestampNormal = Number(transaction.timestamp) / MILI_PER_SECOND //处理时间戳为正常格式
-  transaction["name"] = wallet.name
-  transaction["decimals"] = decimals
-  const type = transaction[transaction.kind]
+  let detail = transaction[transaction.kind][0]
+  detail.amount = currencyCalculate(detail.amount, currency.decimals)
+  detail.to = detail.to.owner.toString()
+  delete detail.created_at_time
+
+  if (transaction.kind === "transfer") {
+    detail.fee = currencyCalculate(detail.fee[0], currency.decimals)
+    detail.from = detail.from.owner.toString()
+  } else if (transaction.kind === "mint") {
+    //mint没有fee，且没有from地址
+    detail.fee = 0
+    detail.from = "Minting Account"
+    detail.tag = "mint"
+  } else {
+    //kind == burn || approve
+  }
+  const type = detail.to === wallet.address ? "RECEIVE" : "SEND"
   return {
-    ...transaction,
-    hash,
+    detail,
+    name: wallet.name,
+    currency,
+    hash: id,
     timestamp: timestampNormal,
+    type,
   }
 }
 

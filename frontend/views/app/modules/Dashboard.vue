@@ -129,7 +129,7 @@ import { getUserWallet } from "@/api/user"
 import Progress from "@/components/Progress.vue"
 import type { TableColumn } from "@/types/model"
 import type { Wallet, WalletHistory } from "@/types/user"
-import { getAllTransactionsICRC1, getICRC1Price } from "@/utils/icrc1"
+import { getAllTransactionsICRC1 } from "@/utils/icrc1"
 import { showMessageError } from "@/utils/message"
 import * as echarts from "echarts"
 import { onMounted, ref, watch } from "vue"
@@ -201,7 +201,6 @@ onMounted(() => {
   getICPPrice()
   getAllSNSInfo().then((snses) => {
     const sns = snses.find((sns) => sns.symbol === "CHAT")
-    console.log("snses.find", sns)
     if (sns) {
       // getICRC1Price(sns.canisters.ledger)
       getAllTransactionsICRC1(
@@ -212,7 +211,7 @@ onMounted(() => {
           from: "",
         },
         sns.canisters.index,
-        sns.decimals,
+        { decimals: sns.decimals, symbol: sns.symbol },
       )
     }
   })
@@ -264,7 +263,7 @@ const getWallet = async () => {
     }
     // 按时间戳排序交易记录数组
     totalHistory.value.sort((a, b) => a.timestamp - b.timestamp)
-    console.log("totalHistory", totalHistory.value)
+    // console.log("totalHistory", totalHistory.value)
     const timestamps = totalHistory.value.map((record) =>
       new Date(Number(record.timestamp)).toLocaleString(),
     )
