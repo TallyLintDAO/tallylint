@@ -199,6 +199,7 @@ onMounted(() => {
   initECharts()
   getWallet()
   getICPPrice()
+  // matchICRC1Price(1705310119170855649, "2ouva-viaaa-aaaaq-aaamq-cai")
   getAllSNSInfo().then((snses) => {
     const sns = snses.find((sns) => sns.symbol === "CHAT")
     if (sns) {
@@ -211,6 +212,7 @@ onMounted(() => {
           from: "",
         },
         sns.canisters.index,
+        sns.canisters.ledger,
         { decimals: sns.decimals, symbol: sns.symbol },
       )
     }

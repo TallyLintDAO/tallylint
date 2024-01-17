@@ -4,7 +4,7 @@ import {
   NET_ID,
   ROSETTA_URL,
 } from "@/api/constants/ic"
-import { getICPPrice } from "@/api/token"
+import { matchICPPrice } from "@/api/token"
 import type { Currency } from "@/types/sns"
 import type { WalletHistory, WalletTag } from "@/types/user"
 import { currencyCalculate } from "@/utils/common"
@@ -156,7 +156,7 @@ export const formatIcpTransaccion = async (
   } = rosettaTransaction
   const transaction: any = { details: { status: "COMPLETED", fee: {} } }
   const timestampNormal = timestamp / MILI_PER_SECOND //处理时间戳为正常格式
-  const price = await getICPPrice(timestampNormal) // 使用 await 获取价格
+  const price = await matchICPPrice(timestampNormal) // 使用 await 获取价格
   operations.forEach((operation) => {
     const value = BigInt(operation.amount.value)
     const amount = value.toString()
