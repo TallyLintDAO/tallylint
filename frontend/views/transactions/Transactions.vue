@@ -193,7 +193,6 @@ const groupedTransactions = (
     }
     groups[date].push(transaction)
   })
-  console.log("groups", groups)
   return groups
 }
 //先分页，再分组。
@@ -246,7 +245,6 @@ const getWallets = async () => {
     getUserNeuron(false),
     getNNS(),
   ])
-  console.log("nnsWallet", nnsWallets)
   if (userWallets.Ok && neuronWallets.Ok) {
     const mapToWallet = (wallet) => ({
       name: wallet.name,
@@ -267,7 +265,6 @@ const getWallets = async () => {
 
 const getWalletHistory = async (targetWallets: WalletTag[]) => {
   showLoading.value = true
-  console.log("targetWallets", targetWallets)
   getAllTransactions(targetWallets)
     .then((res) => {
       console.log("getWalletHistory", res)

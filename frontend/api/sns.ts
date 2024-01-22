@@ -1,3 +1,4 @@
+import type { SnsInfo } from "@/types/sns"
 import axios from "axios"
 
 const AGGREGATOR_PAGE_SIZE = 10
@@ -26,7 +27,7 @@ export const querySnsAggregator = async (page = 0) => {
   return data
 }
 
-export const getAllSNSInfo = async () => {
+export const getAllSNSInfo = async (): Promise<SnsInfo[]> => {
   try {
     const data = await querySnsAggregator()
     console.log("getSNSInfo", data)
@@ -46,7 +47,7 @@ export const getAllSNSInfo = async () => {
           icrc1_fee,
           meta,
         } = sns
-        const assembledStructure = {
+        return {
           canisters: { governance, index, ledger, swap, root },
           name: icrc1_metadata.find(([key]) => key.endsWith(`:name`))[1].Text,
           symbol: icrc1_metadata.find(([key]) => key.endsWith(`:symbol`))[1]
@@ -56,7 +57,6 @@ export const getAllSNSInfo = async () => {
             .Nat[0],
           meta,
         }
-        return assembledStructure
       })
     console.log("filter sns", snses)
     return snses

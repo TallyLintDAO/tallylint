@@ -4,7 +4,8 @@ import {
   NET_ID,
   ROSETTA_URL,
 } from "@/api/constants/ic"
-import { getICPPrice } from "@/api/token"
+import { matchICPPrice } from "@/api/token"
+import type { Currency } from "@/types/sns"
 import type { WalletHistory, WalletTag } from "@/types/user"
 import { currencyCalculate } from "@/utils/common"
 import { showMessageError } from "@/utils/message"
@@ -20,25 +21,17 @@ export interface InferredTransaction {
     status: string
     fee: {
       amount: number
-      currency: {
-        decimals: number
-        symbol: string
-      }
     }
     to?: string
     from?: string
     amount: number
-    price: number // 添加这两个属性的定义
-    currency: {
-      decimals: number
-      symbol: string
-    }
+    price: number // 发生交易时代币的单价
+    currency: Currency
     ledgerCanisterId: string
     cost: number
     profit: number
     value: number
   }
-  caller: string
 }
 
 export interface GetTransactionsResponse {
@@ -102,14 +95,12 @@ export const getICPTransactions = async (
 export const getAllTransactions = async (
   wallets: WalletTag[],
 ): Promise<GetTransactionsResponse> => {
-  console.log("addresses", wallets)
   try {
     // 使用 Promise.all 并行地获取多个钱包的交易记录
     const transactionsPromises = wallets.map((wallet) =>
       getICPTransactions(wallet, true),
     )
     const transactionsResults = await Promise.all(transactionsPromises)
-    console.log("transactionsResults", transactionsResults)
     // 使用 Array.reduce 将所有 total 相加，并将 transactions 拼接在一起
     const response: GetTransactionsResponse = transactionsResults.reduce(
       (acc, curr) => {
@@ -165,7 +156,7 @@ export const formatIcpTransaccion = async (
   } = rosettaTransaction
   const transaction: any = { details: { status: "COMPLETED", fee: {} } }
   const timestampNormal = timestamp / MILI_PER_SECOND //处理时间戳为正常格式
-  const price = await getICPPrice(timestampNormal) // 使用 await 获取价格
+  const price = await matchICPPrice(timestampNormal) // 使用 await 获取价格
   operations.forEach((operation) => {
     const value = BigInt(operation.amount.value)
     const amount = value.toString()
@@ -175,7 +166,7 @@ export const formatIcpTransaccion = async (
         amount,
         operation.amount.currency.decimals,
       )
-      transaction.details.fee.currency = operation.amount.currency
+      // transaction.details.fee.currency = operation.amount.currency
       return
     }
 
@@ -223,7 +214,6 @@ export const formatIcpTransaccion = async (
   })
   return {
     ...transaction,
-    caller: transaction.details.from,
     hash,
     timestamp: timestampNormal,
   } as InferredTransaction

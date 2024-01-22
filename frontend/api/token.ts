@@ -3,7 +3,7 @@ import { getCache, TTL } from "@/utils/cache"
 import { showMessageError } from "@/utils/message"
 import axios from "axios"
 
-export const getICPPrice = async (
+export const matchICPPrice = async (
   timestamp: number,
 ): Promise<string | undefined> => {
   //将小数点的时间戳转为整数时间戳

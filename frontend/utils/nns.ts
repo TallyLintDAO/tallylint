@@ -31,7 +31,6 @@ export const getNNS = async (): Promise<NNSNeuron[]> => {
             stakedMaturity: Number(stakedMaturityE8sEquivalent) / 1e8,
             from: "hotkey",
           }
-          console.log("neuronData", neuronData)
           neuronList.push(neuronData)
         }
       }
