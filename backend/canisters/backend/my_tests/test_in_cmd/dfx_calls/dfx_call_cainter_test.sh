@@ -72,6 +72,13 @@ dfx canister call backend query_all_neuron_wallet
 dfx canister call backend  update_neuron_wallet '(record { id = 10002; from="nns1"; name = "cczz";})'
 dfx canister call backend  query_a_neuron_wallet 10002
 dfx canister call backend  delete_neuron_wallet 10002
+dfx canister call backend query_all_neuron_wallet
+dfx canister call backend get_payload
+dfx canister call backend set_payload
+dfx canister call backend get_payload_from_stable_mem
+dfx canister call backend set_stable_mem_use_payload
+
+
 
 #neuron CRUD test 
 dfx canister call backend auto_register_user  --network ic

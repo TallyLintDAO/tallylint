@@ -60,6 +60,9 @@ fn integer_part(value: &str) -> Result<u64, ParseIntError> {
 }
 
 impl From<CanisterDB> for CanisterContext {
+  /**
+   * convert vec into bmap
+   */
   fn from(payload: CanisterDB) -> Self {
     let users: BTreeMap<Principal, UserProfile> =
       payload.users.into_iter().map(|u| (u.owner, u)).collect();

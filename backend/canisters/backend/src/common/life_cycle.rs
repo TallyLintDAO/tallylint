@@ -1,9 +1,10 @@
 use std::borrow::Borrow;
-use std::io::Read;
+use std::io::{Read, Write};
 
 use ic_cdk_macros::*;
 
 use canister_tracing_macros::trace;
+use ic_stable_structures::{Memory, Storable};
 use tracing::info;
 
 use super::context::{CanisterContext, CanisterDB};
@@ -11,7 +12,7 @@ use super::env::CanisterEnvironment;
 use super::memory::get_upgrades_memory;
 use crate::{CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
 use stable_memory::*;
-// #[init]
+#[init]
 fn init() {
   ic_cdk::setup();
   let context = CanisterContext {
@@ -38,14 +39,83 @@ fn init() {
  * will revert to last version.
  */
 // #[pre_upgrade] is a hook. everytime update canister will auto call this.
+// old version . last version exec.
 #[pre_upgrade]
 #[trace]
-// old version . last version exec.
 fn pre_upgrade() {
+  // TODO
+  // this log send to ic-os machine. maybe we can send log to a private web2 server ?
+  // or how do we check the *main-net* log on ic-os machine ? dfx local replica seeing log OK. also dfx::print ok .
   info!("Pre-upgrade starting");
-  // let _logs = canister_logger::export_logs();
-  // let _traces = canister_logger::export_traces();
+  CONTEXT.with(|c| {
 
+    // collecting data
+    let context = c.borrow();
+    let id = context.id;
+    let users = Vec::from_iter(context.user_service.users.values().cloned());
+    let wallets =
+      Vec::from_iter(context.wallet_service.wallets.values().cloned());
+    let records =
+      Vec::from_iter(context.wallet_record_service.records.values().cloned());
+    let neurons =
+      Vec::from_iter(context.neuron_service.neurons.values().cloned());
+    let payload = CanisterDB {
+      id,
+      users,
+      wallets,
+      records,
+      neurons,
+    };
+
+    // save to db
+    let json = serde_json::to_string(&payload).unwrap();
+    ic_cdk::println!("\x1b[31m SAVING THE PAYLOAD INTO STABLE STUCTURE: \x1b[0m  \n {}", json);
+    let mut memory = get_upgrades_memory();
+    let mut writer = get_writer(&mut memory);
+    let ret = writer.write_all(json.as_bytes());
+    ret.expect("Failed to write to writer");
+
+  });
+}
+
+#[post_upgrade]
+#[trace]
+fn post_upgrade() {
+
+  let mut buf = Vec::new();
+  let memory = get_upgrades_memory();
+  let mut reader = get_reader(&memory);
+  reader.read_to_end(&mut buf).expect("Failed to read from reader");
+  let json=String::from_utf8_lossy(&buf);
+  ic_cdk::println!("\x1b[31m WHAT GET FROM stable mem:  \x1b[0m  {}",json);
+
+  let data =&json;
+  let ret=serde_json::from_str::<CanisterDB>(data);
+  if ret.is_err() {
+    ic_cdk::println!("deserialize err: {:?}",  ret.as_ref().err());
+  }
+  let payload: CanisterDB = ret.ok().unwrap();
+
+  let stable_state = CanisterContext::from(payload);
+  CONTEXT.with(|s| {
+    let mut state = s.borrow_mut();
+    *state = stable_state;
+  });
+}
+
+// the whole update canister procedure: ( on a IC node program running on a
+// ubuntu server.) 1.(ser DB)save current thread local datas in to a binary
+// file. 2.(update code logic)replace .wasm file with new .wasm file
+// 3.(de DB) load TL data into memory with that running .wasm file process addr
+// space.
+
+// TODO : in step1 how to save the DB to dev machine?(contains user data and
+// running logs) and (the reverse step:) how dev machine upload DB file to IC
+// node machine ?
+
+#[query]
+fn get_payload() -> String {
+  let mut json: String = String::new();
   CONTEXT.with(|c| {
     let context = c.borrow();
     let id = context.id;
@@ -77,54 +147,14 @@ fn pre_upgrade() {
     // serde lib . ic_cdk::storage::stable_save((state, permit, users,
     // roles)).unwrap();
 
-    // let json=serde_json::to_string_pretty(&payload).unwrap();
-    // println!("{}", json);
-    // save canister fs to ic-replica.
-    let mut memory = get_upgrades_memory();
-    {
-      let writer = get_writer(&mut memory);
-      let ret = serializer::serialize(payload, writer);
-      if ret.is_err() {
-        info!("serialize err: {:?}", ret.err());
-      } else {
-        info!("serialize ok,old data saved to ic-fs.");
-      }
-    }
-    {
-      let mut reader = get_reader(&mut memory);
-      let mut payload_json = String::new();
-      reader
-        .read_to_string(&mut payload_json)
-        .expect("Failed to read from reader");
-
-      // Parse the JSON string into a serde_json::Value
-      let v: serde_json::Value =
-        serde_json::from_str(&payload_json).expect("Failed to parse JSON");
-
-      // Serialize the serde_json::Value into a pretty-printed JSON string
-      let pretty_json = serde_json::to_string_pretty(&v)
-        .expect("Failed to generate pretty JSON");
-
-      ic_cdk::println!("json: {}", pretty_json); // this print debug info to
-    }
-    // ic_cdk::println!("json: {}", json);    // this print debug info to
-    // ic-replica node console.
-
-    // IMPORTANT erase db in running canister.(ic or local)
-    // dfx deploy backend  -m reinstall
+    // json = serde_json::to_string(&payload).unwrap();
+    json = format!(r#"{}"#, serde_json::to_string(&payload).unwrap());
   });
+  return json;
 }
 
-#[post_upgrade]
-#[trace]
-fn post_upgrade() {
-  // use reader  make the whole serde process become a Volcano/Pipeline Model
-  // process procedure use string as a whole file is a Materialization Model
-  // process procedure
-
-  // IMPORTANT
-  // load canister fs from ic-replica
-  // () means retrieve multiple db. a collection of tuples
+#[update]
+fn set_payload() {
   let memory = get_upgrades_memory();
   let mut reader = get_reader(&memory);
 
@@ -137,8 +167,8 @@ fn post_upgrade() {
   // TODO this maybe danger. is serialize format not good enough.
   // TODO should do data backup data to ic-VM-slot(2) ...
 
-  let end_of_json = payload_json.rfind('}').unwrap_or(0) + 1;
-  payload_json = payload_json[..end_of_json].to_string();
+  // let end_of_json = payload_json.rfind('}').unwrap_or(0) + 1;
+  // payload_json = payload_json[..end_of_json].to_string();
 
   // TODO this way to fix deserialize err. type force casting here.
   // find the old version data structure. and then do deserialize. find old data
@@ -172,12 +202,49 @@ fn post_upgrade() {
   });
 }
 
-// the whole update canister procedure: ( on a IC node program running on a
-// ubuntu server.) 1.(ser DB)save current thread local datas in to a binary
-// file. 2.(update code logic)replace .wasm file with new .wasm file
-// 3.(de DB) load TL data into memory with that running .wasm file process addr
-// space.
+#[update]
+/**
+ * TEST OK
+ */
+fn set_stable_mem_use_payload() {
+  CONTEXT.with(|c| {
+    let context = c.borrow();
+    let id = context.id;
+    let users = Vec::from_iter(context.user_service.users.values().cloned());
+    let wallets =
+      Vec::from_iter(context.wallet_service.wallets.values().cloned());
+    let records =
+      Vec::from_iter(context.wallet_record_service.records.values().cloned());
+    let neurons =
+      Vec::from_iter(context.neuron_service.neurons.values().cloned());
+    let payload = CanisterDB {
+      id,
+      users,
+      wallets,
+      records,
+      neurons,
+    };
 
-// TODO : in step1 how to save the DB to dev machine?(contains user data and
-// running logs) and (the reverse step:) how dev machine upload DB file to IC
-// node machine ?
+    let json = serde_json::to_string(&payload).unwrap();
+    ic_cdk::println!("\x1b[31m SAVING THE PAYLOAD INTO STABLE STUCTURE: \x1b[0m  \n {}", json);
+
+    let mut memory = get_upgrades_memory();
+    let mut writer = get_writer(&mut memory);
+    let ret = writer.write_all(json.as_bytes());
+    ret.expect("Failed to write to writer");
+  });
+}
+
+/**
+ * TEST OK
+ */
+#[query]
+fn get_payload_from_stable_mem()  {
+  let mut buf = Vec::new();
+
+  let memory = get_upgrades_memory();
+  let mut reader = get_reader(&memory);
+  reader.read_to_end(&mut buf).expect("Failed to read from reader");
+  let json=String::from_utf8_lossy(&buf);
+  ic_cdk::println!("\x1b[31m WHAT GET FROM stable mem:  \x1b[0m  {}",json);
+}
