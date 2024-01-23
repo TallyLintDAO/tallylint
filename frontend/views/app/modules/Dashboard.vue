@@ -6,29 +6,15 @@
       <div class="col-7" ref="echartsContainer" style="height: 400px"></div>
       <div class="col-4">
         <div class="q-pa-md" style="max-width: 300px">
-          <q-input filled v-model="date" mask="date" :rules="['date']">
-            <template v-slot:append>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy
-                  ref="qDateProxy"
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-date v-model="date">
-                    <div class="row items-center justify-end">
-                      <q-btn
-                        v-close-popup="true"
-                        label="Close"
-                        color="primary"
-                        flat
-                      />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
+          <el-date-picker
+            v-model="date"
+            type="daterange"
+            range-separator="To"
+            start-placeholder="Start date"
+            end-placeholder="End date"
+            :shortcuts="shortcuts"
+            value-format="x"
+          />
         </div>
         <q-card flat bordered>
           <q-item>
@@ -122,6 +108,7 @@
 </template>
 
 <script lang="ts" setup>
+import { getAllTransactionsICRC1 } from "@/api/icrc1"
 import { getICPBalance, getWalletHistory } from "@/api/rosetta"
 import { getAllSNSInfo } from "@/api/sns"
 import { getICPNowPrice } from "@/api/token"
@@ -129,17 +116,46 @@ import { getUserWallet } from "@/api/user"
 import Progress from "@/components/Progress.vue"
 import type { TableColumn } from "@/types/model"
 import type { Wallet, WalletHistory } from "@/types/user"
-import { getAllTransactionsICRC1 } from "@/api/icrc1"
 import { showMessageError } from "@/utils/message"
 import * as echarts from "echarts"
 import { onMounted, ref, watch } from "vue"
 
 const echartsContainer = ref<null>(null)
-const date = ref("2023/01/01")
+const date = ref("")
 const totalHistory = ref<WalletHistory[]>([])
 const received = ref(0)
 const sent = ref(0)
 const gains = ref(0)
+
+const shortcuts = [
+  {
+    text: "Last week",
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+      return [start, end]
+    },
+  },
+  {
+    text: "Last month",
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+      return [start, end]
+    },
+  },
+  {
+    text: "Last 3 months",
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+      return [start, end]
+    },
+  },
+]
 
 const columns: TableColumn[] = [
   {
@@ -199,24 +215,23 @@ onMounted(() => {
   initECharts()
   getWallet()
   getICPPrice()
-  // matchICRC1Price(1705310119170855649, "2ouva-viaaa-aaaaq-aaamq-cai")
-  getAllSNSInfo().then((snses) => {
-    const sns = snses.find((sns) => sns.symbol === "CHAT")
-    if (sns) {
-      // getICRC1Price(sns.canisters.ledger)
-      getAllTransactionsICRC1(
-        {
-          address:
-            "bcc6t-arcy7-qgvxt-v3ubw-6xndu-ld6nf-vwetx-so4q3-pyjlv-3udyi-nae",
-          name: "",
-          from: "",
-        },
-        sns.canisters.index,
-        sns.canisters.ledger,
-        { decimals: sns.decimals, symbol: sns.symbol },
-      )
-    }
-  })
+  // getAllSNSInfo().then((snses) => {
+  //   const sns = snses.find((sns) => sns.symbol === "CHAT")
+  //   if (sns) {
+  //     // getICRC1Price(sns.canisters.ledger)
+  //     getAllTransactionsICRC1(
+  //       {
+  //         address:
+  //           "bcc6t-arcy7-qgvxt-v3ubw-6xndu-ld6nf-vwetx-so4q3-pyjlv-3udyi-nae",
+  //         name: "",
+  //         from: "",
+  //       },
+  //       sns.canisters.index,
+  //       sns.canisters.ledger,
+  //       { decimals: sns.decimals, symbol: sns.symbol },
+  //     )
+  //   }
+  // })
 })
 
 const getBalance = async (address: string, walletName: string) => {

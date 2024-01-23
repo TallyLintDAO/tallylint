@@ -56,7 +56,7 @@ export function binarySearchClosestICPPrice(
 //二分法匹配ICRC1 TOken交易价格
 export function binarySearchClosestICRC1Price(
   array: IRCR1Price[],
-  targetTimestamp: bigint,
+  targetTimestamp: number,
 ): IRCR1Price {
   // icpswap的时间戳是unix时间戳，需要*1000来转换成js时间戳。
   let leftIndex = 0
@@ -66,7 +66,7 @@ export function binarySearchClosestICRC1Price(
   const isAscending = array[leftIndex].timestamp < array[rightIndex].timestamp
   while (leftIndex <= rightIndex) {
     const midIndex = Math.floor((leftIndex + rightIndex) / 2)
-    const midTimestamp = array[midIndex].timestamp
+    const midTimestamp = Number(array[midIndex].timestamp)
 
     if (midTimestamp === targetTimestamp) {
       return array[midIndex] // 找到完全匹配的时间戳
@@ -97,10 +97,10 @@ export function binarySearchClosestICRC1Price(
     return array[rightIndex]
   } else {
     const leftDifference = Math.abs(
-      Number(targetTimestamp - array[leftIndex].timestamp),
+      targetTimestamp - Number(array[leftIndex].timestamp),
     )
     const rightDifference = Math.abs(
-      Number(targetTimestamp - array[rightIndex].timestamp),
+      targetTimestamp - Number(array[rightIndex].timestamp),
     )
     return leftDifference < rightDifference
       ? array[leftIndex]

@@ -25,10 +25,10 @@ export interface Currency {
 }
 
 export interface IRCR1Price {
-  id: bigint
+  id: number
   low: number //最低价
   high: number
   close: number //收盘价
   open: number
-  timestamp: bigint
+  timestamp: number
 }

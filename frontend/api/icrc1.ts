@@ -128,7 +128,7 @@ export const matchICRC1Price = async (
   // 返回最接近时间戳对应的币价，如果没有找到则返回 undefined
   const price = binarySearchClosestICRC1Price(
     priceHistory,
-    BigInt(Math.floor(targetTimestamp / 1000)),
+    Math.floor(targetTimestamp / 1000),
   ).open
   return Number(price.toFixed(2))
 }
