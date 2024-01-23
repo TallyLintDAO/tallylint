@@ -277,7 +277,7 @@ const getWallet = async () => {
     // 绘制图表
     chart.setOption({
       title: {
-        text: `Total History (${res.Ok.length} wallets)`,
+        text: `Synchronized Total History (${res.Ok.length} wallets)`,
       },
       series: [
         {
