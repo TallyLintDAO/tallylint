@@ -135,7 +135,6 @@ const doInitAuth = () => {
 const getUserInfoFromServices = () => {
   getUserAutoRegister()
     .then((info) => {
-      console.log("APP get user info", info)
       if (info.Ok) {
         username.value = info.Ok.name
       } else if (info.Err) {

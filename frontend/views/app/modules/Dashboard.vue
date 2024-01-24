@@ -14,6 +14,7 @@
             end-placeholder="End date"
             :shortcuts="shortcuts"
             value-format="x"
+            @change="changeDate()"
           />
         </div>
         <q-card flat bordered>
@@ -108,9 +109,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getAllTransactionsICRC1 } from "@/api/icrc1"
 import { getICPBalance, getWalletHistory } from "@/api/rosetta"
-import { getAllSNSInfo } from "@/api/sns"
 import { getICPNowPrice } from "@/api/token"
 import { getUserWallet } from "@/api/user"
 import Progress from "@/components/Progress.vue"
@@ -121,6 +120,7 @@ import * as echarts from "echarts"
 import { onMounted, ref, watch } from "vue"
 
 const echartsContainer = ref<null>(null)
+const chart = ref()
 const date = ref("")
 const totalHistory = ref<WalletHistory[]>([])
 const received = ref(0)
@@ -279,6 +279,13 @@ const getWallet = async () => {
       totalHistory.value = totalHistory.value.concat(walletHistory.history)
     }
     // 按时间戳排序交易记录数组
+    if (date.value) {
+      totalHistory.value = totalHistory.value.filter(
+        (item) =>
+          item.timestamp >= Number(date.value[0]) &&
+          item.timestamp <= Number(date.value[1]),
+      )
+    }
     totalHistory.value.sort((a, b) => a.timestamp - b.timestamp)
     // console.log("totalHistory", totalHistory.value)
     const timestamps = totalHistory.value.map((record) =>
@@ -287,10 +294,10 @@ const getWallet = async () => {
     const balances = totalHistory.value.map((record) => record.walletValue)
     getDetail()
     // 基于准备好的dom，初始化echarts实例
-    var chart = echarts.init(echartsContainer.value)
-    chart.hideLoading()
+
+    chart.value.hideLoading()
     // 绘制图表
-    chart.setOption({
+    chart.value.setOption({
       title: {
         text: `Synchronized Total History (${res.Ok.length} wallets)`,
       },
@@ -343,7 +350,7 @@ const getDetail = () => {
 }
 // 初始化 ECharts 实例
 const initECharts = () => {
-  const chart = echarts.init(echartsContainer.value)
+  chart.value = echarts.init(echartsContainer.value)
   // 配置图表选项
   const option = {
     tooltip: {
@@ -361,7 +368,6 @@ const initECharts = () => {
         dataZoom: {
           yAxisIndex: "none",
         },
-        restore: {},
         saveAsImage: {},
       },
     },
@@ -389,8 +395,13 @@ const initECharts = () => {
   }
 
   // 使用 setOption 方法将配置应用到图表
-  chart.setOption(option)
-  chart.showLoading()
+  chart.value.setOption(option)
+  chart.value.showLoading()
+}
+const changeDate = () => {
+  console.log("date", date.value)
+  chart.value.showLoading()
+  getWallet()
 }
 </script>
 
