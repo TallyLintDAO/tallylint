@@ -16,7 +16,7 @@ export interface InferredTransaction {
   hash: string
   timestamp: number
   type: string
-  name: string
+  walletName: string
   details: {
     status: string
     fee: {
@@ -111,6 +111,7 @@ export const getAllTransactions = async (
       },
       { total: 0, transactions: [] },
     )
+    response.transactions.sort((a, b) => b.timestamp - a.timestamp)
 
     return response
   } catch (error) {
@@ -181,7 +182,7 @@ export const formatIcpTransaccion = async (
 
     transaction.type =
       transaction.details.to === wallet.address ? "RECEIVE" : "SEND"
-    transaction.name = wallet.name
+    transaction.walletName = wallet.name
     //直接输出真实的数量，不再使用浮点数
     transaction.details.amount = currencyCalculate(
       amount,

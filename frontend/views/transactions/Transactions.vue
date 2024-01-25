@@ -95,7 +95,7 @@
                       src="@/assets/dfinity.svg"
                       alt="NNS Icon"
                     />
-                    <span>{{ transaction.name }}</span>
+                    <span>{{ transaction.walletName }}</span>
                   </div>
                   {{ transaction.details.currency.symbol }}
                   {{ transaction.details.amount }}

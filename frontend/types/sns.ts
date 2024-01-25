@@ -23,3 +23,12 @@ export interface Currency {
   decimals: number
   symbol: string
 }
+
+export interface IRCR1Price {
+  id: number
+  low: number //最低价
+  high: number
+  close: number //收盘价
+  open: number
+  timestamp: number
+}
