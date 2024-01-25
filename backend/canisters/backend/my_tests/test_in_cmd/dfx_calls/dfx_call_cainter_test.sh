@@ -77,6 +77,8 @@ dfx canister call backend get_payload
 dfx canister call backend set_payload
 dfx canister call backend get_payload_from_stable_mem
 dfx canister call backend set_stable_mem_use_payload
+dfx canister call backend user_quantity
+dfx canister call backend store_paylaod_to_dropbox
 
 
 

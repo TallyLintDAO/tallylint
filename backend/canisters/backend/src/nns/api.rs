@@ -95,7 +95,7 @@ fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
       id: id,
       create_time: time,
       address: cmd.address,
-      // update_time: time,
+      update_time: time,
     };
     let ret = service.neurons.insert(addr, profile);
     ctx.id = id + 1;

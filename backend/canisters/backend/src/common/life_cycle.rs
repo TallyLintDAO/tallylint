@@ -1,6 +1,8 @@
 use std::borrow::Borrow;
 use std::io::{Read, Write};
+use std::str::FromStr;
 
+use candid::Principal;
 use ic_cdk_macros::*;
 
 use canister_tracing_macros::trace;
@@ -10,7 +12,8 @@ use tracing::info;
 use super::context::{CanisterContext, CanisterDB};
 use super::env::CanisterEnvironment;
 use super::memory::get_upgrades_memory;
-use crate::{CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
+use crate::common::constants::PROXY_CANISTER_ID;
+use crate::{http_init, http_post_upgrade, CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
 use stable_memory::*;
 #[init]
 fn init() {
@@ -23,6 +26,7 @@ fn init() {
   let _creator1 = GOVERNANCE_BTWL.with(|g| *g);
   let _creator2 = GOVERNANCE_ZHOU.with(|g| *g);
 
+  http_init(Principal::from_str(PROXY_CANISTER_ID).unwrap() );
   info!("canister initialization complete");
 }
 
@@ -48,7 +52,6 @@ fn pre_upgrade() {
   // or how do we check the *main-net* log on ic-os machine ? dfx local replica seeing log OK. also dfx::print ok .
   info!("Pre-upgrade starting");
   CONTEXT.with(|c| {
-
     // collecting data
     let context = c.borrow();
     let id = context.id;
@@ -69,33 +72,45 @@ fn pre_upgrade() {
 
     // save to db
     let json = serde_json::to_string(&payload).unwrap();
-    ic_cdk::println!("\x1b[31m SAVING THE PAYLOAD INTO STABLE STUCTURE: \x1b[0m  \n {}", json);
+    ic_cdk::println!(
+      "\x1b[31m SAVING THE PAYLOAD INTO STABLE STUCTURE: \x1b[0m  \n {}",
+      json
+    );
     let mut memory = get_upgrades_memory();
     let mut writer = get_writer(&mut memory);
     let ret = writer.write_all(json.as_bytes());
     ret.expect("Failed to write to writer");
-
   });
 }
 
 #[post_upgrade]
 #[trace]
 fn post_upgrade() {
-
+  http_post_upgrade(Principal::from_str(PROXY_CANISTER_ID).unwrap());
   let mut buf = Vec::new();
   let memory = get_upgrades_memory();
   let mut reader = get_reader(&memory);
-  reader.read_to_end(&mut buf).expect("Failed to read from reader");
-  let json=String::from_utf8_lossy(&buf);
-  ic_cdk::println!("\x1b[31m WHAT GET FROM stable mem:  \x1b[0m  {}",json);
+  reader
+    .read_to_end(&mut buf)
+    .expect("Failed to read from reader");
+  let mut json = String::from_utf8_lossy(&buf).to_string();
+  ic_cdk::println!("\x1b[31m WHAT GET FROM stable mem:  \x1b[0m  {}", json);
 
-  let data =&json;
-  let ret=serde_json::from_str::<CanisterDB>(data);
-  if ret.is_err() {
-    ic_cdk::println!("deserialize err: {:?}",  ret.as_ref().err());
-  }
-  let payload: CanisterDB = ret.ok().unwrap();
+  let end_of_json = json.rfind('}').unwrap_or(0) + 1;
+  json = json[..end_of_json].to_string();
+  ic_cdk::println!(
+    "\x1b[31m AFTER PROCESS of payload data:  \x1b[0m  {}",
+    json
+  );
 
+  let ret = serde_json::from_str::<CanisterDB>(&json);
+  let payload = match ret {
+    Ok(value) => value,
+    Err(e) => {
+      ic_cdk::println!("!!!! deserialize error: !!!! {:?}", e);
+      return;
+    }
+  };
   let stable_state = CanisterContext::from(payload);
   CONTEXT.with(|s| {
     let mut state = s.borrow_mut();
@@ -114,7 +129,7 @@ fn post_upgrade() {
 // node machine ?
 
 #[query]
-fn get_payload() -> String {
+pub fn get_payload() -> String {
   let mut json: String = String::new();
   CONTEXT.with(|c| {
     let context = c.borrow();
@@ -226,7 +241,10 @@ fn set_stable_mem_use_payload() {
     };
 
     let json = serde_json::to_string(&payload).unwrap();
-    ic_cdk::println!("\x1b[31m SAVING THE PAYLOAD INTO STABLE STUCTURE: \x1b[0m  \n {}", json);
+    ic_cdk::println!(
+      "\x1b[31m SAVING THE PAYLOAD INTO STABLE STUCTURE: \x1b[0m  \n {}",
+      json
+    );
 
     let mut memory = get_upgrades_memory();
     let mut writer = get_writer(&mut memory);
@@ -239,12 +257,14 @@ fn set_stable_mem_use_payload() {
  * TEST OK
  */
 #[query]
-fn get_payload_from_stable_mem()  {
+fn get_payload_from_stable_mem() {
   let mut buf = Vec::new();
 
   let memory = get_upgrades_memory();
   let mut reader = get_reader(&memory);
-  reader.read_to_end(&mut buf).expect("Failed to read from reader");
-  let json=String::from_utf8_lossy(&buf);
-  ic_cdk::println!("\x1b[31m WHAT GET FROM stable mem:  \x1b[0m  {}",json);
+  reader
+    .read_to_end(&mut buf)
+    .expect("Failed to read from reader");
+  let json = String::from_utf8_lossy(&buf);
+  ic_cdk::println!("\x1b[31m WHAT GET FROM stable mem:  \x1b[0m  {}", json);
 }

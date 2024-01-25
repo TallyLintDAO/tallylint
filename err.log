@@ -1,0 +1,192 @@
+    Checking http_over_ws v0.0.1 (https://github.com/omnia-network/ic-http-proxy#959e2154)
+error[E0432]: unresolved import `crate::http_connection::HttpRequestId`
+ --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/state.rs:5:9
+  |
+5 |         HttpRequestId, HttpRequestTimeoutMs,
+  |         ^^^^^^^^^^^^^
+  |         |
+  |         no `HttpRequestId` in `http_connection`
+  |         help: a similar name exists in the module: `HttpRequest`
+
+error[E0432]: unresolved import `crate::http_connection::HttpRequestId`
+ --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/client_proxy.rs:2:39
+  |
+2 |     http_connection::{HttpConnection, HttpRequestId},
+  |                                       ^^^^^^^^^^^^^
+  |                                       |
+  |                                       no `HttpRequestId` in `http_connection`
+  |                                       help: a similar name exists in the module: `HttpRequest`
+
+error[E0412]: cannot find type `HttpRequestId` in this scope
+  --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/handlers.rs:52:17
+   |
+52 |     request_id: HttpRequestId,
+   |                 ^^^^^^^^^^^^^ help: a struct with a similar name exists: `HttpRequest`
+   |
+  ::: /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/http_connection.rs:26:1
+   |
+26 | pub struct HttpRequest {
+   | ---------------------- similarly named struct `HttpRequest` defined here
+
+error[E0412]: cannot find type `HttpRequestId` in this scope
+  --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/handlers.rs:74:17
+   |
+74 |     request_id: HttpRequestId,
+   |                 ^^^^^^^^^^^^^ help: a struct with a similar name exists: `HttpRequest`
+   |
+  ::: /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/http_connection.rs:26:1
+   |
+26 | pub struct HttpRequest {
+   | ---------------------- similarly named struct `HttpRequest` defined here
+
+error[E0412]: cannot find type `HttpRequestId` in this scope
+   --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/handlers.rs:131:40
+    |
+131 | pub fn get_http_connection(request_id: HttpRequestId) -> Option<HttpRequest> {
+    |                                        ^^^^^^^^^^^^^ help: a struct with a similar name exists: `HttpRequest`
+    |
+   ::: /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/http_connection.rs:26:1
+    |
+26  | pub struct HttpRequest {
+    | ---------------------- similarly named struct `HttpRequest` defined here
+
+error[E0412]: cannot find type `HttpRequestId` in this scope
+   --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/handlers.rs:135:38
+    |
+135 | pub fn get_http_response(request_id: HttpRequestId) -> GetHttpResponseResult {
+    |                                      ^^^^^^^^^^^^^ help: a struct with a similar name exists: `HttpRequest`
+    |
+   ::: /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/http_connection.rs:26:1
+    |
+26  | pub struct HttpRequest {
+    | ---------------------- similarly named struct `HttpRequest` defined here
+
+error[E0412]: cannot find type `HttpRequestId` in this scope
+  --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/http_connection.rs:11:44
+   |
+11 | pub type ExecuteHttpRequestResult = Result<HttpRequestId, HttpOverWsError>;
+   |                                            ^^^^^^^^^^^^^
+...
+26 | pub struct HttpRequest {
+   | ---------------------- similarly named struct `HttpRequest` defined here
+   |
+help: a struct with a similar name exists
+   |
+11 | pub type ExecuteHttpRequestResult = Result<HttpRequest, HttpOverWsError>;
+   |                                            ~~~~~~~~~~~
+help: you might be missing a type parameter
+   |
+11 | pub type ExecuteHttpRequestResult<HttpRequestId> = Result<HttpRequestId, HttpOverWsError>;
+   |                                  +++++++++++++++
+
+error[E0412]: cannot find type `HttpRequestId` in this scope
+  --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/http_connection.rs:58:35
+   |
+26 | pub struct HttpRequest {
+   | ---------------------- similarly named struct `HttpRequest` defined here
+...
+58 | pub(crate) type HttpCallback = fn(HttpRequestId, HttpResult) -> Pin<Box<dyn Future<Output = ()>>>;
+   |                                   ^^^^^^^^^^^^^ help: a struct with a similar name exists: `HttpRequest`
+
+error[E0412]: cannot find type `HttpRequestId` in this scope
+  --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/http_connection.rs:65:17
+   |
+26 | pub struct HttpRequest {
+   | ---------------------- similarly named struct `HttpRequest` defined here
+...
+65 |     HttpRequest(HttpRequestId, HttpRequest),
+   |                 ^^^^^^^^^^^^^ help: a struct with a similar name exists: `HttpRequest`
+
+error[E0412]: cannot find type `HttpRequestId` in this scope
+  --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/http_connection.rs:66:18
+   |
+26 | pub struct HttpRequest {
+   | ---------------------- similarly named struct `HttpRequest` defined here
+...
+66 |     HttpResponse(HttpRequestId, HttpResponse),
+   |                  ^^^^^^^^^^^^^ help: a struct with a similar name exists: `HttpRequest`
+
+error[E0412]: cannot find type `HttpRequestId` in this scope
+  --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/http_connection.rs:67:18
+   |
+26 | pub struct HttpRequest {
+   | ---------------------- similarly named struct `HttpRequest` defined here
+...
+67 |     Error(Option<HttpRequestId>, String),
+   |                  ^^^^^^^^^^^^^
+   |
+help: a struct with a similar name exists
+   |
+67 |     Error(Option<HttpRequest>, String),
+   |                  ~~~~~~~~~~~
+help: you might be missing a type parameter
+   |
+63 | pub enum HttpOverWsMessage<HttpRequestId> {
+   |                           +++++++++++++++
+
+error[E0412]: cannot find type `HttpRequestId` in this scope
+  --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/http_connection.rs:67:18
+   |
+26 | pub struct HttpRequest {
+   | ---------------------- similarly named struct `HttpRequest` defined here
+...
+67 |     Error(Option<HttpRequestId>, String),
+   |                  ^^^^^^^^^^^^^
+   |
+help: a struct with a similar name exists
+   |
+67 |     Error(Option<HttpRequest>, String),
+   |                  ~~~~~~~~~~~
+help: you might be missing a type parameter
+   |
+62 | #[derive(CandidType<HttpRequestId>, Debug, Deserialize, PartialEq, Eq)]
+   |                    +++++++++++++++
+
+error[E0412]: cannot find type `HttpRequestId` in this scope
+  --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/http_connection.rs:67:18
+   |
+26 | pub struct HttpRequest {
+   | ---------------------- similarly named struct `HttpRequest` defined here
+...
+67 |     Error(Option<HttpRequestId>, String),
+   |                  ^^^^^^^^^^^^^ help: a struct with a similar name exists: `HttpRequest`
+
+error[E0412]: cannot find type `HttpRequestId` in this scope
+  --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/http_connection.rs:65:17
+   |
+26 | pub struct HttpRequest {
+   | ---------------------- similarly named struct `HttpRequest` defined here
+...
+65 |     HttpRequest(HttpRequestId, HttpRequest),
+   |                 ^^^^^^^^^^^^^
+   |
+help: a struct with a similar name exists
+   |
+65 |     HttpRequest(HttpRequest, HttpRequest),
+   |                 ~~~~~~~~~~~
+help: you might be missing a type parameter
+   |
+63 | pub enum HttpOverWsMessage<HttpRequestId> {
+   |                           +++++++++++++++
+
+error[E0412]: cannot find type `HttpRequestId` in this scope
+   --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/http_connection.rs:102:9
+    |
+26  | pub struct HttpRequest {
+    | ---------------------- similarly named struct `HttpRequest` defined here
+...
+102 |     id: HttpRequestId,
+    |         ^^^^^^^^^^^^^ help: a struct with a similar name exists: `HttpRequest`
+
+error[E0412]: cannot find type `HttpRequestId` in this scope
+   --> /home/btwl/.cargo/git/checkouts/ic-http-proxy-8bc9b03375a1ea78/959e215/src/http_over_ws/src/http_connection.rs:109:13
+    |
+26  | pub struct HttpRequest {
+    | ---------------------- similarly named struct `HttpRequest` defined here
+...
+109 |         id: HttpRequestId,
+    |             ^^^^^^^^^^^^^ help: a struct with a similar name exists: `HttpRequest`
+
+Some errors have detailed explanations: E0412, E0432.
+For more information about an error, try `rustc --explain E0412`.
+error: could not compile `http_over_ws` (lib) due to 17 previous errors

@@ -34,10 +34,10 @@ pub struct NeuronProfile {
   // find this field . shoud ignore it .
   // also : #[serde(default="a_function")] to give it a custom val.
 
-  // This attr will use default value(maybe 0) if missing during
-  // deserialization
-  // #[serde(default = "default_update_time")]
-  // pub update_time: u64,
+  // This attr will use default value(maybe 0) * if missing during
+  // deserialization*.
+  #[serde(default = "default_update_time")]
+  pub update_time: u64,
   /* TODO need let dfx deploy backend print deserialize err info ! in order
    * to */
 }

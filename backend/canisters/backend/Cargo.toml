@@ -52,8 +52,8 @@ ic-ledger-types = "0.8.0"
 # project itself declare. dont know its mechineism. but works - - 
 # backend = "0.1.0"
 
-
-
+# http call from cansiter 
+proxy_canister_types = { git = "https://github.com/omnia-network/ic-http-proxy", package = "proxy_canister_types" }
 
 # logging:
 tracing = "0.1.40"
@@ -61,6 +61,9 @@ tracing-attributes = "0.1.27"
 tracing-subscriber = "0.3.18"
 canister_tracing_macros = { path = "../../lib/canister_tracing_macros" } # this path ../ here is not so convinient for universal use. push the lib to crate.io(or any self hold lib) will be better ?
 canister_logger = { path = "../../lib/canister_logger" }
+
+
+
 serializer = { path = "../../lib/serializer" }
 stable_memory = { path = "../../lib/stable_memory" }
 

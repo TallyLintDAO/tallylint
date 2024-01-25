@@ -62,6 +62,8 @@ fn integer_part(value: &str) -> Result<u64, ParseIntError> {
 impl From<CanisterDB> for CanisterContext {
   /**
    * convert vec into bmap
+   * TODO: maybe we can somehow direct store bmap into vec<u8> ?
+   * todo this in order to decrease complexity and error prone.
    */
   fn from(payload: CanisterDB) -> Self {
     let users: BTreeMap<Principal, UserProfile> =
