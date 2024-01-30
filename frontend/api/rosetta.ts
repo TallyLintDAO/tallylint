@@ -6,7 +6,7 @@ import {
 } from "@/api/constants/ic"
 import { matchICPPrice } from "@/api/token"
 import type { Currency } from "@/types/sns"
-import type { WalletHistory, WalletTag } from "@/types/user"
+import type { WalletHistory, WalletInfo, WalletTag } from "@/types/user"
 import { currencyCalculate } from "@/utils/common"
 import { showMessageError } from "@/utils/message"
 
@@ -263,48 +263,76 @@ const initialWalletHistory = {
   history: [] as Array<WalletHistory>, // 交易历史记录
 }
 
-//根据交易历史，手动生成钱包历史
-export const getWalletHistory = async (accountAddress: string) => {
-  const res = await getICPTransactions(
-    { address: accountAddress, name: "", from: "" },
-    true,
-  )
-  // 倒序交易数组，以确保最早的交易在前面
-  const transactions = res.transactions.reverse()
-  // 初始化钱包历史
-  let walletHistory = { ...initialWalletHistory, accountAddress }
-  // 清空历史记录，以保证每次数组都重置
-  walletHistory.history = []
-  // 遍历每一笔交易并更新钱包历史
-  for (const transaction of transactions) {
-    // 解构交易信息
-    const { details, timestamp, type } = transaction
-    const { price, amount } = details
-
-    // 更新钱包余额
-    if (type === "SEND") {
-      walletHistory.amount -= amount
-    } else if (type === "RECEIVE") {
-      walletHistory.amount += amount
-    }
-    // 计算交易金额
-    const walletValue = parseFloat(
-      (price * walletHistory.amount).toFixed(radixNumber),
+//根据交易历史，手动生成钱包历史，以完成echarts图表中，展示用户所拥有的钱包余额变化历史
+export const getAllWalletHistory = async (wallets: WalletInfo[]) => {
+  //先获取所有历史记录，再统计钱包余额
+  const walletPromises = wallets.map(async (wallet) => {
+    const res = await getICPTransactions(
+      { address: wallet.address, name: wallet.name, from: wallet.from },
+      true,
     )
-    // 创建交易历史记录对象
-    const transactionRecord = {
-      price,
-      amount,
-      walletAmount: walletHistory.amount,
-      timestamp,
-      walletValue,
-      type,
-    }
+    return res.transactions
+  })
+  // allWalletHistories 包含了所有钱包的历史记录数组
+  const allWalletHistories: InferredTransaction[] = (
+    await Promise.all(walletPromises)
+  ).flat()
+  let dailyBalance = []
+  // 对所有历史记录按时间戳进行排序
+  allWalletHistories
+    .sort((a, b) => a.timestamp - b.timestamp)
+    .map((transaction, index) => {
+      const {
+        timestamp,
+        details: {
+          amount,
+          currency: { symbol },
+        },
+        type,
+      } = transaction
+      const currentDate = new Date(timestamp)
+      const currentDateStr = currentDate.toISOString().split("T")[0]
 
-    // 将交易历史记录添加到钱包历史
-    walletHistory.history.push(transactionRecord)
-  }
-  return walletHistory
+      // 初始化当天的余额记录
+      if (!dailyBalance[currentDateStr]) {
+        dailyBalance[currentDateStr] = {}
+      }
+
+      // 初始化代币余额
+      if (!dailyBalance[currentDateStr][symbol]) {
+        dailyBalance[currentDateStr][symbol] = 0
+      }
+      // 根据交易类型更新代币余额
+      if (type === "RECEIVE") {
+        dailyBalance[currentDateStr][symbol] += amount
+      } else {
+        // 假设其他类型是支出，这里可以根据实际情况修改
+        dailyBalance[currentDateStr][symbol] -= amount
+      }
+
+      // 填充日期之间的缺失
+      const nextTransaction = allWalletHistories[index + 1]
+      if (nextTransaction) {
+        const nextDate = new Date(nextTransaction.timestamp)
+        const daysDifference =
+          (nextDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
+
+        if (daysDifference > 1) {
+          for (let i = 1; i < daysDifference; i++) {
+            const missingDate = new Date(
+              currentDate.getTime() + i * 24 * 60 * 60 * 1000,
+            )
+            const missingDateString = missingDate.toISOString().split("T")[0]
+            // 复制上一个交易日的代币余额
+            dailyBalance[missingDateString] = {
+              ...dailyBalance[currentDateStr],
+            }
+          }
+        }
+      }
+    })
+  console.log("allTimeHistory", dailyBalance, allWalletHistories)
+  return dailyBalance
 }
 
 interface Balance {
