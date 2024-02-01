@@ -67,7 +67,6 @@ async fn get_icp_usd_exchange() -> String {
 
   let cycles = 230_949_972_000;
 
-
   match http_request(request, cycles).await {
     //4. DECODE AND RETURN THE RESPONSE
 
@@ -163,9 +162,14 @@ fn transform(raw: TransformArgs) -> HttpResponse {
 }
 
 //https://internetcomputer.org/docs/current/developer-docs/gas-cost
-pub fn calculate_cost(node_num: u32, send_bytes: u64, receive_bytes: u64) -> u128 {
-    let base_fee = (3_000_000 + 60_000 * node_num as u64) as u128 * node_num as u128;
-    let request_cost = 400 * node_num as u64 as u128 * send_bytes as u128;
-    let response_cost = 800 * node_num as u64 as u128 * receive_bytes as u128;
-    base_fee + request_cost + response_cost
+pub fn calculate_cost(
+  node_num: u32,
+  send_bytes: u64,
+  receive_bytes: u64,
+) -> u128 {
+  let base_fee =
+    (3_000_000 + 60_000 * node_num as u64) as u128 * node_num as u128;
+  let request_cost = 400 * node_num as u64 as u128 * send_bytes as u128;
+  let response_cost = 800 * node_num as u64 as u128 * receive_bytes as u128;
+  base_fee + request_cost + response_cost
 }
