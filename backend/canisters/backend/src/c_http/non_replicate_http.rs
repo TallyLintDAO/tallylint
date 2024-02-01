@@ -107,35 +107,38 @@ pub async fn store_paylaod_to_dropbox() -> String {
   };
 
   //send http call 
-  // way1
+  // way1. this must using main-net ic chain. 
   let ret = http_request_via_proxy(request.clone(), None, true).await;
   if ret.is_err() {
     return String::from("http request error");
   }
   let request_id = ret.unwrap();
-
-  // way2
-  let cycles = 230_949_972_000; //0.2T
-  let ret2=http_request(expand_to_canister_http_request(request,None,None), cycles).await;
-  if ret2.is_err() {
-    return String::from("http request error");
-  }
-  let response= ret2.unwrap().0;
-  return response.body.to_ascii_lowercase();
   //get ret: 
   get_http_result_by_id(request_id);
+
+
+  // //  send http call  : way2
+  // let cycles = 230_949_972_000; //0.2T
+  // let ret2=http_request(expand_to_canister_http_request(request,None,None), cycles).await;
+  // if ret2.is_err() {
+  //   return String::from("http request error");
+  // }
+  // let response= ret2.unwrap().0;
+  // return response.body.to_ascii_lowercase();
+
+
   return String::from("ok");
 }
 
 
 
-pub fn expand_to_canister_http_request(req: HttpRequest, max_response_bytes: Option<u64>, transform: Option<TransformContext>) -> CanisterHttpRequestArgument {
-    CanisterHttpRequestArgument {
-        url: req.url,
-        max_response_bytes: max_response_bytes,
-        method: req.method,
-        headers: req.headers,
-        body: req.body,
-        transform: transform,
-    }
-}
+// pub fn expand_to_canister_http_request(req: HttpRequest, max_response_bytes: Option<u64>, transform: Option<TransformContext>) -> CanisterHttpRequestArgument {
+//     CanisterHttpRequestArgument {
+//         url: req.url,
+//         max_response_bytes: max_response_bytes,
+//         method: req.method,
+//         headers: req.headers,
+//         body: req.body,
+//         transform: transform,
+//     }
+// }

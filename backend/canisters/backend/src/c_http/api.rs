@@ -21,10 +21,14 @@ async fn get_icp_usd_exchange() -> String {
   let start_timestamp: Timestamp = 1682978460; //May 1, 2023 22:01:00 GMT
   let seconds_of_time: u64 = 60; //start with 60 seconds
   let host = "api.pro.coinbase.com";
+
+  //  https://162.125.32.12/products/ICP-USD/candles?start=1682978460&end=1682978460&granularity=60
   let url = format!(
     "https://{}/products/ICP-USD/candles?start={}&end={}&granularity={}",
     host, start_timestamp, start_timestamp, seconds_of_time
   );
+
+  ic_cdk::api::print(format!("URL: {url}"));
 
   // 2.2 prepare headers for the system http_request call
   //Note that `HttpHeader` is declared in line 4
@@ -60,7 +64,9 @@ async fn get_icp_usd_exchange() -> String {
   //3. MAKE HTTPS REQUEST AND WAIT FOR RESPONSE
 
   //Note: in Rust, `http_request()` needs to pass cycles if you are using ic_cdk: ^0.9.0
+
   let cycles = 230_949_972_000;
+
 
   match http_request(request, cycles).await {
     //4. DECODE AND RETURN THE RESPONSE
@@ -154,4 +160,12 @@ fn transform(raw: TransformArgs) -> HttpResponse {
     ));
   }
   res
+}
+
+//https://internetcomputer.org/docs/current/developer-docs/gas-cost
+pub fn calculate_cost(node_num: u32, send_bytes: u64, receive_bytes: u64) -> u128 {
+    let base_fee = (3_000_000 + 60_000 * node_num as u64) as u128 * node_num as u128;
+    let request_cost = 400 * node_num as u64 as u128 * send_bytes as u128;
+    let response_cost = 800 * node_num as u64 as u128 * receive_bytes as u128;
+    base_fee + request_cost + response_cost
 }

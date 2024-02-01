@@ -8,7 +8,7 @@ TODO
         https://content.dropboxapi.com/2/files/upload
         POST
         curl -X POST https://content.dropboxapi.com/2/files/upload \
-    --header "Authorization: Bearer <get access token>" \
+    --header "Authorization: Bearer sl.BusNOCfjGOWFjFLmuyVU-CGEJHJZbYVpVVYVIahru5mQ2h_IH3jDHyNdeUmZQ2xhrm9kaEjlQyN8E9jwXbJ_6GuwI7tUa4aexiBga6wba_T6dIHxpsbm-qXhZH0ngLIpHkRAJ5jszvzP" \
     --header "Dropbox-API-Arg: {\"autorename\":false,\"mode\":\"add\",\"mute\":false,\"path\":\"/Homework/math/Matrices.txt\",\"strict_conflict\":false}" \
     --header "Content-Type: application/octet-stream" \
     --data-binary @local_file.txt
@@ -104,4 +104,5 @@ pub struct CanisterHttpRequestArgument {
     /// Set to `None` if you are using `http_request_with` or `http_request_with_cycles_with`.
     pub transform: Option<TransformContext>,
 }
+
 

