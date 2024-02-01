@@ -56,3 +56,7 @@ export interface Wallet {
   name: string
   tokens: Token[]
 }
+
+export interface DailyBalance {
+  [date: string]: { [symbol: string]: { amount: number; value: number } }
+}

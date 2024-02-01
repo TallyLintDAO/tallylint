@@ -110,12 +110,17 @@
 </template>
 
 <script lang="ts" setup>
-import { getICPBalance, getAllWalletHistory } from "@/api/rosetta"
+import {
+  getAllWalletDailyBalance,
+  getDailyBalanceValue,
+  getICPBalance,
+  getWalletHistory,
+} from "@/api/rosetta"
 import { getICPNowPrice } from "@/api/token"
 import { getUserWallet } from "@/api/user"
 import Progress from "@/components/Progress.vue"
 import type { TableColumn } from "@/types/model"
-import type { Wallet, WalletHistory } from "@/types/user"
+import type { Wallet } from "@/types/user"
 import { showMessageError } from "@/utils/message"
 import type { EChartsType } from "echarts"
 import * as echarts from "echarts"
@@ -282,13 +287,14 @@ const getWallet = async () => {
     console.log("getWallet", res.Ok)
     //TODO 有bug，多个钱包的资产总值没有计算。
     //将用户的每个钱包地址下的交易记录查出来，并总和到一起
-    const walletHistory = await getAllWalletHistory(res.Ok)
-    totalHistory.value = walletHistory.history
     for (const walletInfo of res.Ok) {
-      //获取钱包当前代币数量，用于展示holding
+      //TODO 有bug，多个钱包的资产总值没有计算。
+      //将用户的每个钱包地址下的交易记录查出来，并总和到一起
+      const walletHistory = await getWalletHistory(walletInfo.address)
       getBalance(walletInfo.address, walletInfo.name)
+      totalHistory.value = totalHistory.value.concat(walletHistory.history)
     }
-    // 按时间戳排序交易记录数组
+    // 按选定的日期区间过滤记录
     if (date.value) {
       totalHistory.value = totalHistory.value.filter(
         (item) =>
@@ -296,12 +302,11 @@ const getWallet = async () => {
           item.timestamp <= Number(date.value[1]),
       )
     }
-    totalHistory.value.sort((a, b) => a.timestamp - b.timestamp)
     // console.log("totalHistory", totalHistory.value)
-    const timestamps = totalHistory.value.map((record) =>
-      new Date(Number(record.timestamp)).toLocaleString(),
-    )
-    const balances = totalHistory.value.map((record) => record.walletValue)
+    const walletDailyBalance = await getAllWalletDailyBalance(res.Ok)
+    const timestamps = Object.keys(walletDailyBalance)
+    const balances = getDailyBalanceValue(walletDailyBalance)
+    console.log("echats", totalHistory.value, balances)
     getDetail()
     // 基于准备好的dom，初始化echarts实例
 
