@@ -6,7 +6,7 @@ use candid::Principal;
 use ic_cdk_macros::*;
 
 use canister_tracing_macros::trace;
-use ic_stable_structures::{Memory, Storable};
+
 use tracing::info;
 
 use super::context::{CanisterContext, CanisterDB};

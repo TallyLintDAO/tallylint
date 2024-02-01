@@ -3,7 +3,7 @@ use std::io::Read;
 
 use ic_cdk_macros::*;
 
-use canister_tracing_macros::trace;
+
 use tracing::info;
 
 use super::context::{CanisterContext, CanisterDB};
@@ -73,7 +73,7 @@ fn do_pre_upgrade_and_print_db() -> String {
       }
     }
     {
-      let reader = get_reader(&mut memory);
+      let _reader = get_reader(&mut memory);
     }
 
     let json = serde_json::to_string(&payload).unwrap();

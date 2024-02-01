@@ -2,12 +2,11 @@
 //This includes all methods and types needed
 use ic_cdk::api::management_canister::http_request::{
   http_request, CanisterHttpRequestArgument, HttpHeader, HttpMethod,
-  HttpResponse, TransformArgs, TransformContext,
 };
 
-use ic_cdk_macros::{self, query, update};
+
 use serde::{Deserialize, Serialize};
-use serde_json::{self, Value};
+
 
 use crate::{calculate_cost, common::life_cycle::get_payload};
 
@@ -107,7 +106,7 @@ pub async fn save_payload_to_dropbox() -> String {
   // The "TransformContext" function does need a CONTEXT parameter, but this implementation is not necessary
   // the TransformContext(transform, context) below accepts this "context", but it does nothing with it in this implementation.
   // bucket_start_time_index and closing_price_index are meaninglesss
-  let context = Context {
+  let _context = Context {
     bucket_start_time_index: 0,
     closing_price_index: 4,
   };
