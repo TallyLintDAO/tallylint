@@ -120,7 +120,7 @@ import { getICPNowPrice } from "@/api/token"
 import { getUserWallet } from "@/api/user"
 import Progress from "@/components/Progress.vue"
 import type { TableColumn } from "@/types/model"
-import type { Wallet } from "@/types/user"
+import type { Wallet, WalletHistory } from "@/types/user"
 import { showMessageError } from "@/utils/message"
 import type { EChartsType } from "echarts"
 import * as echarts from "echarts"
@@ -302,11 +302,10 @@ const getWallet = async () => {
           item.timestamp <= Number(date.value[1]),
       )
     }
-    // console.log("totalHistory", totalHistory.value)
     const walletDailyBalance = await getAllWalletDailyBalance(res.Ok)
-    const timestamps = Object.keys(walletDailyBalance)
+    const timestamps = Object.keys(walletDailyBalance).sort()
     const balances = getDailyBalanceValue(walletDailyBalance)
-    console.log("echats", totalHistory.value, balances)
+    console.log("echarts", timestamps, balances)
     getDetail()
     // 基于准备好的dom，初始化echarts实例
 

@@ -378,6 +378,9 @@ export const getAllWalletDailyBalance = async (
       const daysDifference =
         (nextDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
 
+      dailyBalance[nextDate.toISOString().split("T")[0]] = JSON.parse(
+        JSON.stringify(dailyBalance[currentDateStr]),
+      )
       if (daysDifference > 1) {
         //如果交易记录之间间隔大于1天，则需要手动填充缺失的每天交易记录
         for (let i = 1; i < daysDifference; i++) {
@@ -385,10 +388,10 @@ export const getAllWalletDailyBalance = async (
             currentDate.getTime() + i * 24 * 60 * 60 * 1000,
           )
           const missingDateString = missingDate.toISOString().split("T")[0]
-          // 复制上一个交易日的代币余额
-          dailyBalance[missingDateString] = {
-            ...dailyBalance[currentDateStr],
-          }
+          // 复制上一个交易日的代币余额，注意使用深拷贝
+          dailyBalance[missingDateString] = JSON.parse(
+            JSON.stringify(dailyBalance[currentDateStr]),
+          )
         }
       }
     }
