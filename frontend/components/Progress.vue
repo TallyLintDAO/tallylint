@@ -23,10 +23,18 @@
         <q-td :props="props">
           <div>
             {{ props.value }}
-            <q-icon
-              name="font_download"
-              :style="{ color: getBackgroundColor(props.rowIndex) }"
-            />
+            <div
+              :style="{
+                color: getBackgroundColor(props.rowIndex),
+                'background-color': getBackgroundColor(props.rowIndex),
+              }"
+              style="
+                width: 15px;
+                height: 15px;
+                display: inline-block;
+                border-radius: 0.25rem;
+              "
+            ></div>
           </div>
         </q-td>
       </template>
@@ -46,6 +54,10 @@ const props = defineProps({
   },
   symbol: {
     type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
     required: true,
   },
   totalBalance: {
@@ -98,9 +110,9 @@ const computedBalancePercent = computed(() => {
     const token = wallet.tokens.find((t) => t.symbol === props.symbol)
     const balance = token ? token.balance : 0
     // totalBalance.value += balance
-
+    const value = balance * props.price
     const percentage = calculatePercent(balance, props.totalBalance)
-    return { name: wallet.name, balance, percentage }
+    return { name: wallet.name, balance, value, percentage }
   })
   console.log("computedBalancePercent", res)
   console.log("totalBalance", props.totalBalance)

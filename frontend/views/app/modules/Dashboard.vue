@@ -95,6 +95,7 @@
                       <Progress
                         :wallets="wallets"
                         :symbol="props.row.token"
+                        :price="props.row.price"
                         :totalBalance="icpBalance"
                       />
                     </div>
@@ -283,10 +284,9 @@ const getICPPrice = () => {
 const getWallet = async () => {
   const res = await getUserWallet(false)
   if (res.Ok && res.Ok[0]) {
-    // let totalHistory: Array<WalletHistory> = []
+    //清空钱包，以免出现重复的问题
+    wallets.value.length = 0
     console.log("getWallet", res.Ok)
-    //TODO 有bug，多个钱包的资产总值没有计算。
-    //将用户的每个钱包地址下的交易记录查出来，并总和到一起
     for (const walletInfo of res.Ok) {
       //TODO 有bug，多个钱包的资产总值没有计算。
       //将用户的每个钱包地址下的交易记录查出来，并总和到一起

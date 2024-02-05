@@ -332,7 +332,6 @@ export const getAllWalletDailyBalance = async (
   let dailyBalance: DailyBalance = {}
   // 对所有历史记录按时间戳进行排序
   allWalletHistories.sort((a, b) => a.timestamp - b.timestamp)
-  // await Promise.all(
   allWalletHistories.map(async (transaction, index) => {
     const {
       timestamp,
@@ -417,7 +416,6 @@ export const getDailyBalanceValue = async (
     }
     balances.push(value)
   }
-  console.log("blaan", balances)
   return balances
 }
 
