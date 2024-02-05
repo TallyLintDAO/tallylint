@@ -114,7 +114,7 @@ export const getICRC1Price = async (
 export const matchICRC1Price = async (
   timestamp: number,
   ledgerCanisterId: string,
-): Promise<number | undefined> => {
+): Promise<number> => {
   //将小数点的时间戳转为整数时间戳
   const targetTimestamp = Math.floor(timestamp)
   //获取ICP的所有价格历史数据，并通过getCache保存到本地缓存中，ttl为1天，方便调用。

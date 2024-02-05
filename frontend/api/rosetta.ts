@@ -14,6 +14,7 @@ import type {
 } from "@/types/user"
 import { currencyCalculate } from "@/utils/common"
 import { showMessageError } from "@/utils/message"
+import { matchICRC1Price } from "./icrc1"
 
 const radixNumber = 4 //保留4位小数
 
@@ -353,16 +354,6 @@ export const getAllWalletDailyBalance = async (
     if (!dailyBalance[currentDateStr][symbol]) {
       dailyBalance[currentDateStr][symbol] = { amount: 0, value: 0 }
     }
-    let test = dailyBalance[currentDateStr][symbol].amount
-    console.log(
-      "dailyBalance",
-      currentDateStr,
-      dailyBalance[currentDateStr],
-      dailyBalance[currentDateStr][symbol].amount,
-      amount,
-      type,
-      (test -= amount),
-    )
     // 根据交易类型更新代币余额
     if (type === "RECEIVE") {
       dailyBalance[currentDateStr][symbol].amount += amount
@@ -384,9 +375,10 @@ export const getAllWalletDailyBalance = async (
       if (daysDifference > 1) {
         //如果交易记录之间间隔大于1天，则需要手动填充缺失的每天交易记录
         for (let i = 1; i < daysDifference; i++) {
-          const missingDate = new Date(
-            currentDate.getTime() + i * 24 * 60 * 60 * 1000,
-          )
+          const missingTimestamp =
+            currentDate.getTime() + i * 24 * 60 * 60 * 1000
+
+          const missingDate = new Date(missingTimestamp)
           const missingDateString = missingDate.toISOString().split("T")[0]
           // 复制上一个交易日的代币余额，注意使用深拷贝
           dailyBalance[missingDateString] = JSON.parse(
@@ -396,29 +388,36 @@ export const getAllWalletDailyBalance = async (
       }
     }
   }),
-    // )
-
     console.log("allTimeHistory", dailyBalance, allWalletHistories)
   return dailyBalance
 }
 
 // 获取dailyBalance对象的所有值
-export function getDailyBalanceValue(dailyBalance: DailyBalance): number[] {
+export const getDailyBalanceValue = async (
+  dailyBalance: DailyBalance,
+): Promise<number[]> => {
   const dates = Object.keys(dailyBalance)
   let balances: number[] = []
   for (const day of dates) {
     const balanceInfo = dailyBalance[day]
+    const date = new Date(day)
     //这一天的钱包价值
     let value = 0
     // 遍历每个代币
     const tokens = Object.keys(dailyBalance[day])
     // 将每个代币的价值添加进来
-    tokens.map((token) => {
-      //TODO 由于没有匹配价格，先用amount代替
-      value += balanceInfo[token].amount
-    })
+    for (const token of tokens) {
+      let tokenPrice = 0
+      if (token === "ICP") {
+        tokenPrice = await matchICPPrice(date.getTime())
+      } else {
+        //ICRC1 token
+      }
+      value += balanceInfo[token].amount * tokenPrice
+    }
     balances.push(value)
   }
+  console.log("blaan", balances)
   return balances
 }
 

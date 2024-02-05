@@ -304,7 +304,7 @@ const getWallet = async () => {
     }
     const walletDailyBalance = await getAllWalletDailyBalance(res.Ok)
     const timestamps = Object.keys(walletDailyBalance).sort()
-    const balances = getDailyBalanceValue(walletDailyBalance)
+    const balances = await getDailyBalanceValue(walletDailyBalance)
     console.log("echarts", timestamps, balances)
     getDetail()
     // 基于准备好的dom，初始化echarts实例
