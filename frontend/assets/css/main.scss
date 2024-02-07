@@ -2,14 +2,14 @@ html,
 body {
   height: 100%;
 }
-a{
+a {
   color: #007bff;
   text-decoration: none;
   background-color: transparent;
 }
 
 /*垂直居中*/
-.flex-y-center{
+.flex-y-center {
   display: flex;
   align-items: center;
 }
@@ -18,11 +18,11 @@ a{
 .q-table__grid-item-value {
   word-wrap: break-word;
 }
-.q-item__label{
+.q-item__label {
   word-wrap: break-word;
 }
 
-.head-icon{
+.head-icon {
   width: 32px;
 }
 
@@ -63,4 +63,8 @@ a{
 /* 点击效果 */
 .clickable {
   cursor: pointer;
+}
+
+.el-picker-panel__body-wrapper .el-picker-panel__sidebar {
+  width: 120px;
 }

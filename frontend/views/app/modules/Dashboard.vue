@@ -15,6 +15,7 @@
             :shortcuts="shortcuts"
             value-format="x"
             @change="changeDate()"
+            size="large"
           />
         </div>
         <q-card flat bordered>
@@ -94,6 +95,7 @@
                       <Progress
                         :wallets="wallets"
                         :symbol="props.row.token"
+                        :price="props.row.price"
                         :totalBalance="icpBalance"
                       />
                     </div>
@@ -109,18 +111,24 @@
 </template>
 
 <script lang="ts" setup>
-import { getICPBalance, getWalletHistory } from "@/api/rosetta"
+import {
+  getAllWalletDailyBalance,
+  getDailyBalanceValue,
+  getICPBalance,
+  getWalletHistory,
+} from "@/api/rosetta"
 import { getICPNowPrice } from "@/api/token"
 import { getUserWallet } from "@/api/user"
 import Progress from "@/components/Progress.vue"
 import type { TableColumn } from "@/types/model"
 import type { Wallet, WalletHistory } from "@/types/user"
 import { showMessageError } from "@/utils/message"
+import type { EChartsType } from "echarts"
 import * as echarts from "echarts"
 import { onMounted, ref, watch } from "vue"
 
 const echartsContainer = ref<null>(null)
-const chart = ref()
+let chart = <EChartsType>{} // 如果使用ref会导致无法显示tooltip，例如数据不会显示。
 const date = ref("")
 const totalHistory = ref<WalletHistory[]>([])
 const received = ref(0)
@@ -129,29 +137,35 @@ const gains = ref(0)
 
 const shortcuts = [
   {
-    text: "Last week",
+    text: "Last 12 months",
     value: () => {
       const end = new Date()
       const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+      start.setMonth(end.getMonth() - 12)
       return [start, end]
     },
   },
   {
-    text: "Last month",
+    text: new Date().getFullYear().toString(),
     value: () => {
       const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+      const start = new Date(end.getFullYear(), 0, 1)
       return [start, end]
     },
   },
   {
-    text: "Last 3 months",
+    text: (new Date().getFullYear() - 1).toString(),
     value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+      const end = new Date(new Date().getFullYear() - 1, 11, 31)
+      const start = new Date(new Date().getFullYear() - 1, 0, 1)
+      return [start, end]
+    },
+  },
+  {
+    text: (new Date().getFullYear() - 2).toString(),
+    value: () => {
+      const end = new Date(new Date().getFullYear() - 2, 11, 31)
+      const start = new Date(new Date().getFullYear() - 2, 0, 1)
       return [start, end]
     },
   },
@@ -270,7 +284,9 @@ const getICPPrice = () => {
 const getWallet = async () => {
   const res = await getUserWallet(false)
   if (res.Ok && res.Ok[0]) {
-    // let totalHistory: Array<WalletHistory> = []
+    //清空钱包，以免出现重复的问题
+    wallets.value.length = 0
+    console.log("getWallet", res.Ok)
     for (const walletInfo of res.Ok) {
       //TODO 有bug，多个钱包的资产总值没有计算。
       //将用户的每个钱包地址下的交易记录查出来，并总和到一起
@@ -278,7 +294,7 @@ const getWallet = async () => {
       getBalance(walletInfo.address, walletInfo.name)
       totalHistory.value = totalHistory.value.concat(walletHistory.history)
     }
-    // 按时间戳排序交易记录数组
+    // 按选定的日期区间过滤记录
     if (date.value) {
       totalHistory.value = totalHistory.value.filter(
         (item) =>
@@ -286,18 +302,16 @@ const getWallet = async () => {
           item.timestamp <= Number(date.value[1]),
       )
     }
-    totalHistory.value.sort((a, b) => a.timestamp - b.timestamp)
-    // console.log("totalHistory", totalHistory.value)
-    const timestamps = totalHistory.value.map((record) =>
-      new Date(Number(record.timestamp)).toLocaleString(),
-    )
-    const balances = totalHistory.value.map((record) => record.walletValue)
+    const walletDailyBalance = await getAllWalletDailyBalance(res.Ok)
+    const timestamps = Object.keys(walletDailyBalance).sort()
+    const balances = await getDailyBalanceValue(walletDailyBalance)
+    console.log("echarts", timestamps, balances)
     getDetail()
     // 基于准备好的dom，初始化echarts实例
 
-    chart.value.hideLoading()
+    chart.hideLoading()
     // 绘制图表
-    chart.value.setOption({
+    chart.setOption({
       title: {
         text: `Synchronized Total History (${res.Ok.length} wallets)`,
       },
@@ -350,7 +364,7 @@ const getDetail = () => {
 }
 // 初始化 ECharts 实例
 const initECharts = () => {
-  chart.value = echarts.init(echartsContainer.value)
+  chart = echarts.init(echartsContainer.value)
   // 配置图表选项
   const option = {
     tooltip: {
@@ -395,12 +409,12 @@ const initECharts = () => {
   }
 
   // 使用 setOption 方法将配置应用到图表
-  chart.value.setOption(option)
-  chart.value.showLoading()
+  chart.setOption(option)
+  chart.showLoading()
 }
 const changeDate = () => {
   console.log("date", date.value)
-  chart.value.showLoading()
+  chart.showLoading()
   getWallet()
 }
 </script>

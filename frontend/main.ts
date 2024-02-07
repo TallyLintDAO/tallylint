@@ -3,6 +3,7 @@ import App from "./App.vue"
 import router from "./router"
 import { Quasar, Notify, Dialog } from "quasar"
 
+import "@/assets/css/main.scss"
 // Import icon libraries
 import "@quasar/extras/material-icons/material-icons.css"
 import "@quasar/extras/roboto-font-latin-ext/roboto-font-latin-ext.css"

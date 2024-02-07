@@ -4,9 +4,7 @@ import { binarySearchClosestICPPrice } from "@/utils/math"
 import { showMessageError } from "@/utils/message"
 import axios from "axios"
 
-export const matchICPPrice = async (
-  timestamp: number,
-): Promise<number | undefined> => {
+export const matchICPPrice = async (timestamp: number): Promise<number> => {
   //将小数点的时间戳转为整数时间戳
   timestamp = Math.floor(timestamp)
   //获取ICP的所有价格历史数据，并通过getCache保存到本地缓存中，ttl为1天，方便调用。

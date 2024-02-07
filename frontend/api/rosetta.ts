@@ -6,9 +6,15 @@ import {
 } from "@/api/constants/ic"
 import { matchICPPrice } from "@/api/token"
 import type { Currency } from "@/types/sns"
-import type { WalletHistory, WalletTag } from "@/types/user"
+import type {
+  DailyBalance,
+  WalletHistory,
+  WalletInfo,
+  WalletTag,
+} from "@/types/user"
 import { currencyCalculate } from "@/utils/common"
 import { showMessageError } from "@/utils/message"
+import { matchICRC1Price } from "./icrc1"
 
 const radixNumber = 4 //保留4位小数
 
@@ -307,10 +313,110 @@ export const getWalletHistory = async (accountAddress: string) => {
   return walletHistory
 }
 
-interface Balance {
-  value: string
-  decimals: number
-  error?: string
+//根据交易历史，手动生成钱包历史，以完成echarts图表中，展示用户所拥有的钱包余额变化历史
+export const getAllWalletDailyBalance = async (
+  wallets: WalletInfo[],
+): Promise<DailyBalance> => {
+  //先获取所有历史记录，再统计钱包余额
+  const walletPromises = wallets.map(async (wallet) => {
+    const res = await getICPTransactions(
+      { address: wallet.address, name: wallet.name, from: wallet.from },
+      true,
+    )
+    return res.transactions
+  })
+  // allWalletHistories 包含了所有钱包的历史记录数组
+  const allWalletHistories: InferredTransaction[] = (
+    await Promise.all(walletPromises)
+  ).flat()
+  let dailyBalance: DailyBalance = {}
+  // 对所有历史记录按时间戳进行排序
+  allWalletHistories.sort((a, b) => a.timestamp - b.timestamp)
+  allWalletHistories.map(async (transaction, index) => {
+    const {
+      timestamp,
+      details: {
+        amount,
+        currency: { symbol },
+      },
+      type,
+    } = transaction
+    const currentDate = new Date(timestamp)
+    const currentDateStr = currentDate.toISOString().split("T")[0]
+
+    // 初始化当天的余额记录
+    if (!dailyBalance[currentDateStr]) {
+      dailyBalance[currentDateStr] = {}
+    }
+
+    // 初始化代币余额
+    if (!dailyBalance[currentDateStr][symbol]) {
+      dailyBalance[currentDateStr][symbol] = { amount: 0, value: 0 }
+    }
+    // 根据交易类型更新代币余额
+    if (type === "RECEIVE") {
+      dailyBalance[currentDateStr][symbol].amount += amount
+    } else {
+      // 假设其他类型是支出，这里可以根据实际情况修改
+      dailyBalance[currentDateStr][symbol].amount -= amount
+    }
+
+    // 填充每个交易记录之间的缺失每日日期
+    const nextTransaction = allWalletHistories[index + 1]
+    if (nextTransaction) {
+      const nextDate = new Date(nextTransaction.timestamp)
+      const daysDifference =
+        (nextDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
+
+      dailyBalance[nextDate.toISOString().split("T")[0]] = JSON.parse(
+        JSON.stringify(dailyBalance[currentDateStr]),
+      )
+      if (daysDifference > 1) {
+        //如果交易记录之间间隔大于1天，则需要手动填充缺失的每天交易记录
+        for (let i = 1; i < daysDifference; i++) {
+          const missingTimestamp =
+            currentDate.getTime() + i * 24 * 60 * 60 * 1000
+
+          const missingDate = new Date(missingTimestamp)
+          const missingDateString = missingDate.toISOString().split("T")[0]
+          // 复制上一个交易日的代币余额，注意使用深拷贝
+          dailyBalance[missingDateString] = JSON.parse(
+            JSON.stringify(dailyBalance[currentDateStr]),
+          )
+        }
+      }
+    }
+  }),
+    console.log("allTimeHistory", dailyBalance, allWalletHistories)
+  return dailyBalance
+}
+
+// 获取dailyBalance对象的所有值
+export const getDailyBalanceValue = async (
+  dailyBalance: DailyBalance,
+): Promise<number[]> => {
+  const dates = Object.keys(dailyBalance)
+  let balances: number[] = []
+  for (const day of dates) {
+    const balanceInfo = dailyBalance[day]
+    const date = new Date(day)
+    //这一天的钱包价值
+    let value = 0
+    // 遍历每个代币
+    const tokens = Object.keys(dailyBalance[day])
+    // 将每个代币的价值添加进来
+    for (const token of tokens) {
+      let tokenPrice = 0
+      if (token === "ICP") {
+        tokenPrice = await matchICPPrice(date.getTime())
+      } else {
+        //ICRC1 token
+      }
+      value += balanceInfo[token].amount * tokenPrice
+    }
+    balances.push(value)
+  }
+  return balances
 }
 
 export const getICPBalance = async (accountId: string): Promise<number> => {
