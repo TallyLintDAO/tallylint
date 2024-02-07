@@ -3,7 +3,6 @@ use std::io::Read;
 
 use ic_cdk_macros::*;
 
-
 use tracing::info;
 
 use super::context::{CanisterContext, CanisterDB};
@@ -38,7 +37,7 @@ fn init() {
  * any step go wrong.
  * will revert to last version.
  */
-// #[pre_upgrade] is a hook. everytime update canister will auto call this.
+// #[pre_upgrade] is a hook(funtion pointer). everytime update canister will auto call this.
 
 // old version . last version exec.
 #[query]

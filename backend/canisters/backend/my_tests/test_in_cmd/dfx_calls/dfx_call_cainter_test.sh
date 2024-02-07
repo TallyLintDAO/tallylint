@@ -85,6 +85,7 @@ dfx canister call backend store_paylaod_to_dropbox
 # test http 
 dfx canister call backend get_icp_usd_exchange 
 dfx canister call backend save_payload_to_dropbox 
+dfx canister call backend save_payload_to_dropbox_blocking 
 
 # dropbox test:
 ```
@@ -93,7 +94,7 @@ curl -X POST https://content.dropboxapi.com/2/files/upload_session/append_v2 \
     --header "Dropbox-API-Arg: {\"close\":false,\"cursor\":{\"offset\":0,\"session_id\":\"1234faaf0678bcde\"}}" \
     --header "Content-Type: application/octet-stream" \
     --data-binary @local_file.txt
-
+ sl.BuyKjfKtkY5uYGS0Rpgcsf48_EsXHSldu1jYObvkAPfXzLxaMYBRHTFboyymcWd5cncBsD1sXE5HlnSc0h6lsmtBwSVQXypYPfysA-P9PhfwLKrjUHkuOYlzf2QzGxrv1dUaoimjLYib-btGmCWYdus
 ```
 
 

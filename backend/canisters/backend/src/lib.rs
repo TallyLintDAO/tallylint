@@ -1,4 +1,5 @@
 use candid::Principal;
+use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use std::cell::RefCell;
 
 pub mod c2c;
@@ -15,6 +16,8 @@ thread_local! {
   static GOVERNANCE_ZHOU : Principal = Principal::from_text("ck7ij-a5lub-pklz3-xrpmk-hifoi-xikak-va7ss-hxvqo-5paw2-zx2bw-lae").unwrap();
   static GOVERNANCE_BTWL : Principal = Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap();
   static BACKEND_CANISTER_ID : Principal = Principal::from_text("bkyz2-fmaaa-aaaaa-qaaaq-cai").unwrap();
+
+  // static RECORDS: RefCell<StableBTreeMap<WalletId, Vec<RecordProfile>, DefaultMemoryImpl>> =RefCell::new(StableBTreeMap::init(DefaultMemoryImpl::default()));
 
 }
 

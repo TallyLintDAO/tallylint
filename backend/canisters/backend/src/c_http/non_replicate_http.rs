@@ -1,9 +1,7 @@
 use std::{borrow::Borrow, cell::RefCell, collections::HashMap};
 
 use candid::Principal;
-use ic_cdk::{
-  caller, trap,
-};
+use ic_cdk::{caller, trap};
 use ic_cdk_macros::{query, update};
 use proxy_canister_types::{
   HttpHeader, HttpMethod, HttpRequest, HttpRequestEndpointArgs,
