@@ -20,22 +20,18 @@
       flat
     >
       <template v-slot:body-cell-percentage="props">
-        <q-td :props="props">
+        <q-td :props="props" class="flex-y-center">
           <div>
             {{ props.value }}
-            <div
-              :style="{
-                color: getBackgroundColor(props.rowIndex),
-                'background-color': getBackgroundColor(props.rowIndex),
-              }"
-              style="
-                width: 15px;
-                height: 15px;
-                display: inline-block;
-                border-radius: 0.25rem;
-              "
-            ></div>
           </div>
+          <div
+            :style="{
+              color: getBackgroundColor(props.rowIndex),
+              'background-color': getBackgroundColor(props.rowIndex),
+            }"
+            class="rounded-borders q-ml-sm"
+            style="width: 15px; height: 15px; display: inline-block"
+          ></div>
         </q-td>
       </template>
     </q-table>
