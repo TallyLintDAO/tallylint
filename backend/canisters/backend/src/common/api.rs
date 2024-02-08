@@ -3,7 +3,6 @@ use std::io::Read;
 
 use ic_cdk_macros::*;
 
-use canister_tracing_macros::trace;
 use tracing::info;
 
 use super::context::{CanisterContext, CanisterDB};
@@ -38,7 +37,7 @@ fn init() {
  * any step go wrong.
  * will revert to last version.
  */
-// #[pre_upgrade] is a hook. everytime update canister will auto call this.
+// #[pre_upgrade] is a hook(funtion pointer). everytime update canister will auto call this.
 
 // old version . last version exec.
 #[query]
@@ -73,7 +72,7 @@ fn do_pre_upgrade_and_print_db() -> String {
       }
     }
     {
-      let reader = get_reader(&mut memory);
+      let _reader = get_reader(&mut memory);
     }
 
     let json = serde_json::to_string(&payload).unwrap();

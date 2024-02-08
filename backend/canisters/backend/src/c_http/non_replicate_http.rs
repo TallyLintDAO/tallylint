@@ -1,8 +1,8 @@
 use std::{borrow::Borrow, cell::RefCell, collections::HashMap};
 
 use candid::Principal;
-use ic_cdk::{ api::management_canister::http_request::{http_request, CanisterHttpRequestArgument, TransformContext}, caller, trap};
-use ic_cdk_macros::{init, post_upgrade, query, update};
+use ic_cdk::{caller, trap};
+use ic_cdk_macros::{query, update};
 use proxy_canister_types::{
   HttpHeader, HttpMethod, HttpRequest, HttpRequestEndpointArgs,
   HttpRequestEndpointResult, HttpRequestId, HttpRequestTimeoutMs, HttpResult,
@@ -20,7 +20,6 @@ pub fn http_init(proxy_canister_id: Principal) {
     id.replace(proxy_canister_id);
   });
 }
-
 
 pub fn http_post_upgrade(proxy_canister_id: Principal) {
   http_init(proxy_canister_id);
@@ -78,8 +77,7 @@ fn get_http_result_by_id(request_id: HttpRequestId) -> Option<HttpResult> {
 
 #[update]
 pub async fn store_paylaod_to_dropbox() -> String {
-
-  //construct request 
+  //construct request
   let url = String::from("https://content.dropboxapi.com/2/files/upload");
   let method = HttpMethod::POST;
   let headers = vec![
@@ -97,7 +95,7 @@ pub async fn store_paylaod_to_dropbox() -> String {
         value: String::from("application/octet-stream"),
     },
 ];
-  let data=get_payload().into_bytes();
+  let data = get_payload().into_bytes();
   let body = Some(data);
   let request = HttpRequest {
     url,
@@ -106,36 +104,35 @@ pub async fn store_paylaod_to_dropbox() -> String {
     body,
   };
 
-  //send http call 
-  // way1
+  //send http call
+  // way1. this must using main-net ic chain.
   let ret = http_request_via_proxy(request.clone(), None, true).await;
   if ret.is_err() {
     return String::from("http request error");
   }
   let request_id = ret.unwrap();
-
-  // way2
-  let cycles = 230_949_972_000; //0.2T
-  let ret2=http_request(expand_to_canister_http_request(request,None,None), cycles).await;
-  if ret2.is_err() {
-    return String::from("http request error");
-  }
-  let response= ret2.unwrap().0;
-  return response.body.to_ascii_lowercase();
-  //get ret: 
+  //get ret:
   get_http_result_by_id(request_id);
+
+  // //  send http call  : way2
+  // let cycles = 230_949_972_000; //0.2T
+  // let ret2=http_request(expand_to_canister_http_request(request,None,None), cycles).await;
+  // if ret2.is_err() {
+  //   return String::from("http request error");
+  // }
+  // let response= ret2.unwrap().0;
+  // return response.body.to_ascii_lowercase();
+
   return String::from("ok");
 }
 
-
-
-pub fn expand_to_canister_http_request(req: HttpRequest, max_response_bytes: Option<u64>, transform: Option<TransformContext>) -> CanisterHttpRequestArgument {
-    CanisterHttpRequestArgument {
-        url: req.url,
-        max_response_bytes: max_response_bytes,
-        method: req.method,
-        headers: req.headers,
-        body: req.body,
-        transform: transform,
-    }
-}
+// pub fn expand_to_canister_http_request(req: HttpRequest, max_response_bytes: Option<u64>, transform: Option<TransformContext>) -> CanisterHttpRequestArgument {
+//     CanisterHttpRequestArgument {
+//         url: req.url,
+//         max_response_bytes: max_response_bytes,
+//         method: req.method,
+//         headers: req.headers,
+//         body: req.body,
+//         transform: transform,
+//     }
+// }

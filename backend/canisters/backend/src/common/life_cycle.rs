@@ -3,17 +3,23 @@ use std::io::{Read, Write};
 use std::str::FromStr;
 
 use candid::Principal;
+use ic_cdk::storage;
 use ic_cdk_macros::*;
 
 use canister_tracing_macros::trace;
-use ic_stable_structures::{Memory, Storable};
+
 use tracing::info;
 
 use super::context::{CanisterContext, CanisterDB};
 use super::env::CanisterEnvironment;
 use super::memory::get_upgrades_memory;
+use crate::c_http::post::{
+  save_payload_to_dropbox, save_payload_to_dropbox_blocking,
+};
 use crate::common::constants::PROXY_CANISTER_ID;
-use crate::{http_init, http_post_upgrade, CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
+use crate::{
+  http_init, http_post_upgrade, CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU,
+};
 use stable_memory::*;
 #[init]
 fn init() {
@@ -26,7 +32,7 @@ fn init() {
   let _creator1 = GOVERNANCE_BTWL.with(|g| *g);
   let _creator2 = GOVERNANCE_ZHOU.with(|g| *g);
 
-  http_init(Principal::from_str(PROXY_CANISTER_ID).unwrap() );
+  http_init(Principal::from_str(PROXY_CANISTER_ID).unwrap());
   info!("canister initialization complete");
 }
 
@@ -47,10 +53,20 @@ fn init() {
 #[pre_upgrade]
 #[trace]
 fn pre_upgrade() {
+  // TODO try this.
+  // storage::stable_save();
+  // storage::stable_restore();
+
   // TODO
   // this log send to ic-os machine. maybe we can send log to a private web2 server ?
-  // or how do we check the *main-net* log on ic-os machine ? dfx local replica seeing log OK. also dfx::print ok .
+  // or how do we check the *main-net* log on ic-os machine ? dfx local replica seeing log OK. also dfx::print ok . :::: ANSWER: no way to see main net ic_cdk print yet.
   info!("Pre-upgrade starting");
+  // use tokio::runtime::Runtime;
+  // let rt = Runtime::new().unwrap();
+  // rt.block_on(async {
+  //   save_payload_to_dropbox();
+  // });
+  // save_payload_to_dropbox_no_ret_no_wait();
   CONTEXT.with(|c| {
     // collecting data
     let context = c.borrow();

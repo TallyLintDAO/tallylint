@@ -187,3 +187,32 @@ pub struct AddRecordCommand {
   pub manual: bool,
   pub comment: String,
 }
+
+// trait Storable {
+//     type StorageType; // Associated type
+
+//     fn store(&self) -> Self::StorageType;
+//     fn retrieve(storage: Self::StorageType) -> Self;
+// }
+
+// impl Storable for RecordProfile {
+//     type StorageType = Vec<u8>;
+
+//     fn store(&self) -> Vec<u8> {
+//         // Serialize the RecordProfile into bytes using serde_json
+//         serde_json::to_vec(self).unwrap_or_else(|err| {
+//             eprintln!("Error serializing RecordProfile: {}", err);
+//             Vec::new()
+//         })
+//     }
+
+//   fn retrieve(storage: Vec<u8>) -> RecordProfile {
+//         // Deserialize the stored data (e.g., using serde_json or bincode)
+//         // Replace the following line with your actual deserialization logic:
+//         let deserialized_profile: RecordProfile = serde_json::from_slice(&storage).unwrap();
+
+//         // Additional processing or validation if needed...
+
+//         // Ok(deserialized_profile)
+//     }
+// }

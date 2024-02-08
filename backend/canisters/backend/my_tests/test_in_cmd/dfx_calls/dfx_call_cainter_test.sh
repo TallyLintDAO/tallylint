@@ -78,7 +78,27 @@ dfx canister call backend set_payload
 dfx canister call backend get_payload_from_stable_mem
 dfx canister call backend set_stable_mem_use_payload
 dfx canister call backend user_quantity
-dfx canister call backend store_paylaod_to_dropbox
+
+# save to web2 using http
+dfx canister call backend store_paylaod_to_dropbox 
+
+# test http 
+dfx canister call backend get_icp_usd_exchange 
+dfx canister call backend save_payload_to_dropbox 
+dfx canister call backend save_payload_to_dropbox_blocking 
+
+# dropbox test:
+```
+curl -X POST https://content.dropboxapi.com/2/files/upload_session/append_v2 \
+    --header "Authorization: Bearer sl.BuuId_E7l6mc-bxLmS06Tp6LfSr7MZKwnGP9QOYbrCVMZUpGVkthA0ZOPickGyFgW4R-5yP8M2c_R48rie99nmaEP_DsMTOwI52S8kmzR4cWwTbF5D-U5V73uzkrw1f2hlzB9D723MkIvgIz_vnbrvE" \
+    --header "Dropbox-API-Arg: {\"close\":false,\"cursor\":{\"offset\":0,\"session_id\":\"1234faaf0678bcde\"}}" \
+    --header "Content-Type: application/octet-stream" \
+    --data-binary @local_file.txt
+ sl.BuyKjfKtkY5uYGS0Rpgcsf48_EsXHSldu1jYObvkAPfXzLxaMYBRHTFboyymcWd5cncBsD1sXE5HlnSc0h6lsmtBwSVQXypYPfysA-P9PhfwLKrjUHkuOYlzf2QzGxrv1dUaoimjLYib-btGmCWYdus
+```
+
+
+
 
 
 
