@@ -14,7 +14,6 @@ import type {
 } from "@/types/user"
 import { currencyCalculate } from "@/utils/common"
 import { showMessageError } from "@/utils/message"
-import { matchICRC1Price } from "./icrc1"
 
 const radixNumber = 4 //保留4位小数
 
@@ -386,8 +385,8 @@ export const getAllWalletDailyBalance = async (
         }
       }
     }
-  }),
-    console.log("allTimeHistory", dailyBalance, allWalletHistories)
+  })
+
   return dailyBalance
 }
 

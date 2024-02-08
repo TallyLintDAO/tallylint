@@ -1,6 +1,5 @@
 <template>
   <div class="dashboard-container">
-    DashBoard
     <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
     <div class="row q-gutter-md">
       <div class="col-7" ref="echartsContainer" style="height: 400px"></div>
@@ -74,7 +73,7 @@
                   <q-td auto-width>
                     <q-btn
                       size="sm"
-                      color="accent"
+                      color="primary"
                       round
                       dense
                       @click="props.expand = !props.expand"
@@ -187,14 +186,14 @@ const columns: TableColumn[] = [
     field: "balance",
     align: "left",
   },
-  {
-    name: "cost",
-    required: true,
-    label: "Cost",
-    sortable: true,
-    field: "cost",
-    align: "left",
-  },
+  // {
+  //   name: "cost",
+  //   required: true,
+  //   label: "Cost",
+  //   sortable: true,
+  //   field: "cost",
+  //   align: "left",
+  // },
   {
     name: "price",
     required: true,
@@ -268,8 +267,10 @@ watch(
       (total, wallet) => total + wallet.tokens[0].balance,
       0,
     )
-    rows.value[0].balance = icpBalance.value
-    rows.value[0].value = rows.value[0].balance * rows.value[0].price
+    rows.value[0].balance = icpBalance.value.toFixed(8)
+    rows.value[0].value = (rows.value[0].balance * rows.value[0].price).toFixed(
+      2,
+    )
     console.log("icpBalance", icpBalance.value)
     console.log("rows", rows.value)
   },
@@ -305,7 +306,6 @@ const getWallet = async () => {
     const walletDailyBalance = await getAllWalletDailyBalance(res.Ok)
     const timestamps = Object.keys(walletDailyBalance).sort()
     const balances = await getDailyBalanceValue(walletDailyBalance)
-    console.log("echarts", timestamps, balances)
     getDetail()
     // 基于准备好的dom，初始化echarts实例
 

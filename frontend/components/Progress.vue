@@ -72,7 +72,7 @@ const columns: TableColumn[] = [
   {
     name: "balance",
     required: true,
-    sortable: true,
+    // sortable: true, 排序会导致颜色匹配出现问题
     label: "Balance",
     field: "balance",
     align: "left",
@@ -80,7 +80,7 @@ const columns: TableColumn[] = [
   {
     name: "value",
     required: true,
-    sortable: true,
+    // sortable: true,
     label: "Value",
     field: "value",
     align: "left",
@@ -88,7 +88,7 @@ const columns: TableColumn[] = [
   {
     name: "percentage",
     required: true,
-    sortable: true,
+    // sortable: true,
     label: "Allocation",
     field: (row) => row.percentage + "%",
     align: "left",
@@ -106,7 +106,7 @@ const computedBalancePercent = computed(() => {
     const token = wallet.tokens.find((t) => t.symbol === props.symbol)
     const balance = token ? token.balance : 0
     // totalBalance.value += balance
-    const value = balance * props.price
+    const value = (balance * props.price).toFixed(2)
     const percentage = calculatePercent(balance, props.totalBalance)
     return { name: wallet.name, balance, value, percentage }
   })
