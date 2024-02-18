@@ -235,6 +235,7 @@ TODO 线上数据库备份方式:
 
     现在测试这个branch是否可用: 
     `git log -S 'do_pre_upgrade_and_print_db' -- /home/btwl/code/ic/tax_lint/backend/canisters/backend/src/common/api.rs` 
+    `git log -S 'do_post_upgrade' -- /home/btwl/code/ic/tax_lint/backend/canisters/backend/src/common/api.rs` 
     `git checkout -b prod_db_backup 797e08350bdbf4cb129ac9bfc3945df52442c930`
 
 2. 加入现有写好的dropbox接口代码.
