@@ -105,6 +105,7 @@ fn pre_upgrade() {
 #[trace]
 fn post_upgrade() {
   http_post_upgrade(Principal::from_str(PROXY_CANISTER_ID).unwrap());
+  
   let mut buf = Vec::new();
   let memory = get_upgrades_memory();
   let mut reader = get_reader(&memory);

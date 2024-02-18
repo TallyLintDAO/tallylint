@@ -223,8 +223,8 @@ dfx canister call  backend restore_db_from_dropbox '("sl.Bv2AeIHy2BD9tl_h-QySDyG
 dfx canister call  backend restore_db_from_dropbox '("sl.Bv2AeIHy2BD9tl_h-QySDyGNF3eniMMQD6rD_V5qDMv6kNkIO_h8-DKXY0nrRGZEKAiXnMqhaAxylmFzyiGTN8JZpZWQpGUOP9fWJhWmL26lxcPVG_yc7uA3v9sghWLKFKkctT7VxNXEgfSrEL2GlNA", "2024_02_18_11_24_41")'
 
 #TODO important: do above save_payload_to_dropbox() and restore_db_from_dropbox() on product code.
-
-
+# method1: run save_payload_to_dropbox() at preupgreade time .
+# method2: goto online code version using git checkout. and add the save_payload_to_dropbox() to that version of code .
 
 # TODO
 #Next step . try to automate this test using code  ? (rust ? python ? )
