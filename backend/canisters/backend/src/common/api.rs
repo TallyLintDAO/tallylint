@@ -170,6 +170,7 @@ pub async fn do_post_upgrade(
 
 #[update]
 pub async fn restore_db_from_dropbox(
+  // get short-term token : https://www.dropbox.com/developers/apps/info/qi2656n62bhls4u
   token: String,
   timestamp_as_version_tag: String,
 ) -> bool {
