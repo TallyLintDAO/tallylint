@@ -221,5 +221,11 @@ dfx canister call  backend do_post_upgrade '("sl.Bv2AeIHy2BD9tl_h-QySDyGNF3eniMM
 # registered user db  
 dfx canister call  backend do_post_upgrade '("sl.Bv2AeIHy2BD9tl_h-QySDyGNF3eniMMQD6rD_V5qDMv6kNkIO_h8-DKXY0nrRGZEKAiXnMqhaAxylmFzyiGTN8JZpZWQpGUOP9fWJhWmL26lxcPVG_yc7uA3v9sghWLKFKkctT7VxNXEgfSrEL2GlNA", "2024_02_18_11_24_41")'
 
+# TODO
+#Next step . try to automate this test using code  ? (rust ? python ? )
+# pocket ic ? ic agent ?  
+
+
+
 
 
