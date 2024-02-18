@@ -1,5 +1,4 @@
 use candid::Principal;
-use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use std::cell::RefCell;
 
 pub mod c2c;

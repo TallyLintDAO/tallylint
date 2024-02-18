@@ -1,4 +1,3 @@
-use std::borrow::Borrow;
 use std::io::Read;
 
 use ic_cdk_macros::*;
@@ -13,6 +12,7 @@ use crate::{CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
 
 use stable_memory::*;
 
+#[allow(dead_code)]
 fn init() {
   ic_cdk::setup();
   let context = CanisterContext {

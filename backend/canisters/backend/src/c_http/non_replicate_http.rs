@@ -1,4 +1,4 @@
-use std::{borrow::Borrow, cell::RefCell, collections::HashMap};
+use std::{cell::RefCell, collections::HashMap};
 
 use candid::Principal;
 use ic_cdk::{caller, trap};
@@ -21,6 +21,7 @@ pub fn http_init(proxy_canister_id: Principal) {
   });
 }
 
+#[allow(dead_code)]
 pub fn http_post_upgrade(proxy_canister_id: Principal) {
   http_init(proxy_canister_id);
 }

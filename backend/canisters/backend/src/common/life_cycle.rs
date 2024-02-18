@@ -1,9 +1,7 @@
-use std::borrow::Borrow;
 use std::io::{Read, Write};
 use std::str::FromStr;
 
 use candid::Principal;
-use ic_cdk::storage;
 use ic_cdk_macros::*;
 
 use canister_tracing_macros::trace;
@@ -13,9 +11,7 @@ use tracing::info;
 use super::context::{CanisterContext, CanisterDB};
 use super::env::CanisterEnvironment;
 use super::memory::get_upgrades_memory;
-use crate::c_http::post::{
-  save_payload_to_dropbox, save_payload_to_dropbox_blocking,
-};
+
 use crate::common::constants::PROXY_CANISTER_ID;
 use crate::{
   http_init, http_post_upgrade, CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU,
@@ -103,6 +99,7 @@ fn pre_upgrade() {
   });
 }
 
+#[allow(dead_code)]
 // #[post_upgrade]
 #[trace]
 fn post_upgrade() {
