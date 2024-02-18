@@ -12,6 +12,7 @@ use super::context::{CanisterContext, CanisterDB};
 use super::env::CanisterEnvironment;
 use super::memory::get_upgrades_memory;
 
+use crate::c_http::post::get_payload_from_dropbox;
 use crate::common::constants::PROXY_CANISTER_ID;
 use crate::{
   http_init, http_post_upgrade, CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU,
@@ -284,4 +285,26 @@ fn get_payload_from_stable_mem() {
     .expect("Failed to read from reader");
   let json = String::from_utf8_lossy(&buf);
   ic_cdk::println!("\x1b[31m WHAT GET FROM stable mem:  \x1b[0m  {}", json);
+}
+
+#[update]
+pub async fn restore_db_from_dropbox(
+  // get short-term token : https://www.dropbox.com/developers/apps/info/qi2656n62bhls4u
+  token: String,
+  date_time_version_tag: String,
+) -> bool {
+
+  let db_json = get_payload_from_dropbox(token, date_time_version_tag).await;
+  
+  // ic_cdk::println!("json: {}", db_json); // this print debug info to ic-replica node console.
+  // TODO any possible to set log level and detect dev-env or prod-env to optional log ?
+
+  let payload: CanisterDB = serde_json::from_str(&db_json).unwrap();
+
+  let stable_state = CanisterContext::from(payload);
+  CONTEXT.with(|s| {
+    let mut state = s.borrow_mut();
+    *state = stable_state;
+    return true;
+  })
 }
