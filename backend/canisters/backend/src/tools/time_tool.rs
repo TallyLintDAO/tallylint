@@ -5,7 +5,7 @@ pub fn timestamp_to_date(timestamp_ns: u64) -> String {
   format!(
     "{:04}_{:02}_{:02}_{:02}_{:02}_{:02}",
     date.year(),
-    date.month()as u32,
+    date.month() as u32,
     date.day(),
     date.hour(),
     date.minute(),

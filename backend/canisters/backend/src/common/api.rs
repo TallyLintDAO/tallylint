@@ -104,7 +104,10 @@ fn clean_db() -> String {
     if no db_json input as first para. get db from ic-fs.
 */
 #[update]
-pub async fn do_post_upgrade(token:String,date_time_version_tag: String) -> bool {
+pub async fn do_post_upgrade(
+  token: String,
+  date_time_version_tag: String,
+) -> bool {
   // use reader  make the whole serde process become a Volcano/Pipeline Model
   // process procedure use string as a whole file is a Materialization Model
   // process procedure
@@ -112,7 +115,7 @@ pub async fn do_post_upgrade(token:String,date_time_version_tag: String) -> bool
   // IMPORTANT
   // load canister fs from ic-replica
   // () means retrieve multiple db. a collection of tuples
-  let db_json = get_payload_from_dropbox(token,date_time_version_tag).await;
+  let db_json = get_payload_from_dropbox(token, date_time_version_tag).await;
   ic_cdk::println!("json: {}", db_json); // this print debug info to ic-replica node console.
 
   // if db_json.len() == 0 {
@@ -166,7 +169,10 @@ pub async fn do_post_upgrade(token:String,date_time_version_tag: String) -> bool
 }
 
 #[update]
-pub async fn restore_db_from_dropbox(token:String,timestamp_as_version_tag: String) -> bool {
+pub async fn restore_db_from_dropbox(
+  token: String,
+  timestamp_as_version_tag: String,
+) -> bool {
   // use reader  make the whole serde process become a Volcano/Pipeline Model
   // process procedure use string as a whole file is a Materialization Model
   // process procedure
@@ -174,7 +180,8 @@ pub async fn restore_db_from_dropbox(token:String,timestamp_as_version_tag: Stri
   // IMPORTANT
   // load canister fs from ic-replica
   // () means retrieve multiple db. a collection of tuples
-  let mut db_json = get_payload_from_dropbox(token,timestamp_as_version_tag).await;
+  let mut db_json =
+    get_payload_from_dropbox(token, timestamp_as_version_tag).await;
   if db_json.len() == 0 {
     let memory = get_upgrades_memory();
     let mut reader = get_reader(&memory);

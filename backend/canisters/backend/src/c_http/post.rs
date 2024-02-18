@@ -31,7 +31,7 @@ struct Context {
 // need to make this function blocking . cant be async.
 // need to dive deeper in this programming.
 #[ic_cdk::update]
-pub async fn save_payload_to_dropbox(token:String) -> String {
+pub async fn save_payload_to_dropbox(token: String) -> String {
   // 2. SETUP ARGUMENTS FOR HTTP GET request
 
   // 2.1 Setup the URL
@@ -270,7 +270,10 @@ pub fn save_payload_to_dropbox_blocking() -> String {
 }
 
 #[ic_cdk::update]
-pub async fn get_payload_from_dropbox(token:String,timestamp: String) -> String {
+pub async fn get_payload_from_dropbox(
+  token: String,
+  timestamp: String,
+) -> String {
   // 2. SETUP ARGUMENTS FOR HTTP GET request
 
   // 2.1 Setup the URL
@@ -281,22 +284,23 @@ pub async fn get_payload_from_dropbox(token:String,timestamp: String) -> String 
   //Note that `HttpHeader` is declared in line 4
 
   let request_headers = vec![
-        HttpHeader {
-            name: "Host".to_string(),
-            value: format!("{host}:443"),
-        },
-        HttpHeader {
-            name: "Authorization".to_string(),
-            value: format!("Bearer {}",token).to_string(),
-        },
-        //For the purposes of this exercise, Idempotency-Key" is hard coded, but in practice
-        //it should be generated via code and unique to each POST request. Common to create helper methods for this
-        HttpHeader {
-        name: "Dropbox-API-Arg".to_string(),
-        // path: dst from dropbox folder.
-        value: format!("{{\"path\":\"/taxlint/payload_{}.json\"}}", timestamp),
-        },
-    ];
+    HttpHeader {
+      name: "Host".to_string(),
+      value: format!("{host}:443"),
+    },
+    HttpHeader {
+      name: "Authorization".to_string(),
+      value: format!("Bearer {}", token).to_string(),
+    },
+    //For the purposes of this exercise, Idempotency-Key" is hard coded, but
+    // in practice it should be generated via code and unique to each POST
+    // request. Common to create helper methods for this
+    HttpHeader {
+      name: "Dropbox-API-Arg".to_string(),
+      // path: dst from dropbox folder.
+      value: format!("{{\"path\":\"/taxlint/payload_{}.json\"}}", timestamp),
+    },
+  ];
 
   //note "CanisterHttpRequestArgument" and "HttpMethod" are declared in line 4.
   //CanisterHttpRequestArgument has the following types:
