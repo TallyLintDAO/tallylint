@@ -31,7 +31,7 @@ struct Context {
 // need to make this function blocking . cant be async.
 // need to dive deeper in this programming.
 #[ic_cdk::update]
-pub async fn save_payload_to_dropbox() -> String {
+pub async fn save_payload_to_dropbox(token:String) -> String {
   // 2. SETUP ARGUMENTS FOR HTTP GET request
 
   // 2.1 Setup the URL
@@ -52,7 +52,7 @@ pub async fn save_payload_to_dropbox() -> String {
         },
         HttpHeader {
             name: "Authorization".to_string(),
-            value: "Bearer sl.Bv37s812HWeKYX-BMUf9RgSci2voKDRiBRDDoFdpBBKZ7owjmK2Lgm8ZpBm2ehHKim9b1m7qQuDRLZj4RKILREX117jTFxNK9lrwFTBKOXtRMxiA04InrcyTSKqd8Zp2qxc3J2Bq1Buio-cPAzluJwg".to_string(),
+            value: format!("Bearer {}",token).to_string(),
         },
         //For the purposes of this exercise, Idempotency-Key" is hard coded, but in practice
         //it should be generated via code and unique to each POST request. Common to create helper methods for this
@@ -270,7 +270,7 @@ pub fn save_payload_to_dropbox_blocking() -> String {
 }
 
 #[ic_cdk::update]
-pub async fn get_payload_from_dropbox(timestamp: u64) -> String {
+pub async fn get_payload_from_dropbox(token:String,timestamp: String) -> String {
   // 2. SETUP ARGUMENTS FOR HTTP GET request
 
   // 2.1 Setup the URL
@@ -287,7 +287,7 @@ pub async fn get_payload_from_dropbox(timestamp: u64) -> String {
         },
         HttpHeader {
             name: "Authorization".to_string(),
-            value: "Bearer sl.Bv37s812HWeKYX-BMUf9RgSci2voKDRiBRDDoFdpBBKZ7owjmK2Lgm8ZpBm2ehHKim9b1m7qQuDRLZj4RKILREX117jTFxNK9lrwFTBKOXtRMxiA04InrcyTSKqd8Zp2qxc3J2Bq1Buio-cPAzluJwg".to_string(),
+            value: format!("Bearer {}",token).to_string(),
         },
         //For the purposes of this exercise, Idempotency-Key" is hard coded, but in practice
         //it should be generated via code and unique to each POST request. Common to create helper methods for this
@@ -387,13 +387,7 @@ pub async fn get_payload_from_dropbox(timestamp: u64) -> String {
 
       //The API response will looks like this:
       // { successful: true }
-
-      //Return the body as a string and end the method
-      let result: String = format!(
-        "{}. See more info of the request sent at: {}/inspect ",
-        str_body, url
-      );
-      result
+      str_body
     }
     Err((r, m)) => {
       let message =

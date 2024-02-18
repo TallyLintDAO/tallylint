@@ -104,7 +104,7 @@ fn clean_db() -> String {
     if no db_json input as first para. get db from ic-fs.
 */
 #[update]
-pub async fn do_post_upgrade(timestamp_as_version_tag: u64) -> bool {
+pub async fn do_post_upgrade(token:String,date_time_version_tag: String) -> bool {
   // use reader  make the whole serde process become a Volcano/Pipeline Model
   // process procedure use string as a whole file is a Materialization Model
   // process procedure
@@ -112,21 +112,23 @@ pub async fn do_post_upgrade(timestamp_as_version_tag: u64) -> bool {
   // IMPORTANT
   // load canister fs from ic-replica
   // () means retrieve multiple db. a collection of tuples
-  let mut db_json = get_payload_from_dropbox(timestamp_as_version_tag).await;
-  if db_json.len() == 0 {
-    let memory = get_upgrades_memory();
-    let mut reader = get_reader(&memory);
-    reader
-      .read_to_string(&mut db_json)
-      .expect("Failed to read from reader");
-  }
+  let db_json = get_payload_from_dropbox(token,date_time_version_tag).await;
+  ic_cdk::println!("json: {}", db_json); // this print debug info to ic-replica node console.
+
+  // if db_json.len() == 0 {
+  //   let memory = get_upgrades_memory();
+  //   let mut reader = get_reader(&memory);
+  //   reader
+  //     .read_to_string(&mut db_json)
+  //     .expect("Failed to read from reader");
+  // }
 
   // Handle trailing characters
   // TODO this maybe danger. is serialize format not good enough.
   // TODO should do data backup data to ic-VM-slot(2) ...
 
-  let end_of_json = db_json.rfind('}').unwrap_or(0) + 1;
-  db_json = db_json[..end_of_json].to_string();
+  // let end_of_json = db_json.rfind('}').unwrap_or(0) + 1;
+  // db_json = db_json[..end_of_json].to_string();
 
   // TODO this way to fix deserialize err. type force casting here.
   // find the old version data structure. and then do deserialize. find old data
@@ -146,7 +148,9 @@ pub async fn do_post_upgrade(timestamp_as_version_tag: u64) -> bool {
   //     let trailing_json = format!("{} extra characters", json); // add
   // trailing characters
 
+  ic_cdk::println!("json: {}", db_json); // this print debug info to ic-replica node console.
   let payload: CanisterDB = serde_json::from_str(&db_json).unwrap();
+
   info!("deserialize ok,old data loaded from ic-fs.");
 
   // this deserialize procedure is open an ic replica node local file . and then
@@ -162,7 +166,7 @@ pub async fn do_post_upgrade(timestamp_as_version_tag: u64) -> bool {
 }
 
 #[update]
-pub async fn restore_db_from_dropbox(timestamp_as_version_tag: u64) -> bool {
+pub async fn restore_db_from_dropbox(token:String,timestamp_as_version_tag: String) -> bool {
   // use reader  make the whole serde process become a Volcano/Pipeline Model
   // process procedure use string as a whole file is a Materialization Model
   // process procedure
@@ -170,7 +174,7 @@ pub async fn restore_db_from_dropbox(timestamp_as_version_tag: u64) -> bool {
   // IMPORTANT
   // load canister fs from ic-replica
   // () means retrieve multiple db. a collection of tuples
-  let mut db_json = get_payload_from_dropbox(timestamp_as_version_tag).await;
+  let mut db_json = get_payload_from_dropbox(token,timestamp_as_version_tag).await;
   if db_json.len() == 0 {
     let memory = get_upgrades_memory();
     let mut reader = get_reader(&memory);

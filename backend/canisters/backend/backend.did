@@ -52,6 +52,39 @@ type HistoryQueryCommand = record {
   sort_method : text;
   address : opt text;
 };
+type HttpFailureReason = variant { ProxyError : text; RequestTimeout };
+type HttpHeader = record { value : text; name : text };
+type HttpMethod = variant { GET; PUT; DELETE; HEAD; POST };
+type HttpOverWsError = variant {
+  NotHttpOverWsType : text;
+  ProxyNotFound;
+  NotYetReceived;
+  ConnectionNotAssignedToProxy;
+  RequestIdNotFound;
+  NoProxiesConnected;
+  InvalidHttpMessage;
+  RequestFailed : HttpFailureReason;
+};
+type HttpRequest = record {
+  url : text;
+  method : HttpMethod;
+  body : opt vec nat8;
+  headers : vec HttpHeader;
+};
+type HttpResponse = record {
+  status : nat;
+  body : vec nat8;
+  headers : vec HttpHeader;
+};
+type HttpResult = variant {
+  Success : HttpResponse;
+  Failure : HttpFailureReason;
+};
+type InvalidRequest = variant {
+  TooManyHeaders;
+  InvalidTimeout;
+  InvalidUrl : text;
+};
 type KnownNeuronData = record { name : text; description : opt text };
 type NeuronAddCommand = record { from : text; name : text; address : text };
 type NeuronId = record { id : vec nat8 };
@@ -71,10 +104,15 @@ type NeuronProfile = record {
   id : nat64;
   owner : principal;
   name : text;
+  update_time : nat64;
   create_time : nat64;
   address : text;
 };
 type NeuronUpdateCommand = record { id : nat64; name : text };
+type ProxyCanisterError = variant {
+  HttpOverWs : HttpOverWsError;
+  InvalidRequest : InvalidRequest;
+};
 type RecordProfile = record {
   id : nat64;
   to : text;
@@ -113,14 +151,16 @@ type Result_3 = variant {
   Ok : record { CustomResult1 };
   Err : record { RejectionCode; text };
 };
-type Result_4 = variant { Ok : NeuronProfile; Err : text };
-type Result_5 = variant { Ok : WalletProfile; Err : text };
-type Result_6 = variant { Ok : vec NeuronProfile; Err : vec NeuronProfile };
-type Result_7 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
-type Result_8 = variant {
+type Result_4 = variant { Ok : nat64; Err : ProxyCanisterError };
+type Result_5 = variant { Ok : NeuronProfile; Err : text };
+type Result_6 = variant { Ok : WalletProfile; Err : text };
+type Result_7 = variant { Ok : vec NeuronProfile; Err : vec NeuronProfile };
+type Result_8 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
+type Result_9 = variant {
   Ok : vec record { text; vec RecordProfile };
   Err : text;
 };
+type TransformArgs = record { context : vec nat8; response : HttpResponse };
 type UserProfile = record {
   owner : principal;
   name : text;
@@ -145,7 +185,7 @@ type WalletProfile = record {
   transactions : nat64;
 };
 type WalletUpdateCommand = record { id : nat64; from : text; name : text };
-service : {
+service : () -> {
   add_neuron_wallet : (NeuronAddCommand) -> (Result);
   add_transaction_record : (AddRecordCommand) -> (Result_1);
   add_wallet : (WalletAddCommand) -> (Result);
@@ -154,21 +194,36 @@ service : {
   delete_neuron_wallet : (nat64) -> (Result);
   delete_transaction_record : (nat64) -> (Result_1);
   delete_wallet : (nat64) -> (Result);
-  do_post_upgrade : (text) -> (bool);
+  do_post_upgrade : (text, text) -> (bool);
   do_pre_upgrade_and_print_db : () -> (text) query;
   edit_transaction_record : (EditHistoryCommand) -> (Result);
   get_balance : () -> (nat64);
+  get_http_result_by_id : (nat64) -> (opt HttpResult) query;
+  get_http_results : () -> (vec record { nat64; HttpResult }) query;
+  get_icp_usd_exchange : () -> (text);
   get_neuron_info : (nat64) -> (Result_3);
+  get_payload : () -> (text) query;
+  get_payload_from_dropbox : (text, text) -> (text);
+  get_payload_from_stable_mem : () -> () query;
+  http_request_via_proxy : (HttpRequest, opt nat64, bool) -> (Result_4);
+  http_response_callback : (nat64, HttpResult) -> ();
   list_all_user : () -> (vec UserProfile);
-  query_a_neuron_wallet : (nat64) -> (Result_4) query;
-  query_a_wallet : (nat64) -> (Result_5) query;
-  query_all_neuron_wallet : () -> (Result_6) query;
-  query_all_wallets : () -> (Result_7) query;
+  query_a_neuron_wallet : (nat64) -> (Result_5) query;
+  query_a_wallet : (nat64) -> (Result_6) query;
+  query_all_neuron_wallet : () -> (Result_7) query;
+  query_all_wallets : () -> (Result_8) query;
+  restore_db_from_dropbox : (text, text) -> (bool);
+  save_payload_to_dropbox : (text) -> (text);
+  save_payload_to_dropbox_blocking : () -> (text);
+  set_payload : () -> ();
+  set_stable_mem_use_payload : () -> ();
+  store_paylaod_to_dropbox : () -> (text);
   sync_transaction_record : (vec record { nat64; vec RecordProfile }) -> (
       Result,
     );
+  transform : (TransformArgs) -> (HttpResponse) query;
   update_neuron_wallet : (NeuronUpdateCommand) -> (Result);
   update_wallet : (WalletUpdateCommand) -> (Result);
   user_quantity : () -> (nat32);
-  wallet_history : (HistoryQueryCommand) -> (Result_8) query;
+  wallet_history : (HistoryQueryCommand) -> (Result_9) query;
 }
