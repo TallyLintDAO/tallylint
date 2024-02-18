@@ -8,6 +8,7 @@ use tracing::info;
 use super::context::{CanisterContext, CanisterDB};
 use super::env::CanisterEnvironment;
 use super::memory::get_upgrades_memory;
+use crate::c_http::post::get_payload_from_dropbox;
 use crate::{CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
 
 use stable_memory::*;
@@ -24,7 +25,6 @@ fn init() {
 
   info!("canister initialization complete");
 }
-
 
 #[query]
 fn do_pre_upgrade_and_print_db() -> String {
@@ -104,7 +104,7 @@ fn clean_db() -> String {
     if no db_json input as first para. get db from ic-fs.
 */
 #[update]
-fn do_post_upgrade(mut db_json: String) -> bool {
+pub async fn do_post_upgrade(timestamp_as_version_tag: u64) -> bool {
   // use reader  make the whole serde process become a Volcano/Pipeline Model
   // process procedure use string as a whole file is a Materialization Model
   // process procedure
@@ -112,7 +112,65 @@ fn do_post_upgrade(mut db_json: String) -> bool {
   // IMPORTANT
   // load canister fs from ic-replica
   // () means retrieve multiple db. a collection of tuples
+  let mut db_json = get_payload_from_dropbox(timestamp_as_version_tag).await;
+  if db_json.len() == 0 {
+    let memory = get_upgrades_memory();
+    let mut reader = get_reader(&memory);
+    reader
+      .read_to_string(&mut db_json)
+      .expect("Failed to read from reader");
+  }
 
+  // Handle trailing characters
+  // TODO this maybe danger. is serialize format not good enough.
+  // TODO should do data backup data to ic-VM-slot(2) ...
+
+  let end_of_json = db_json.rfind('}').unwrap_or(0) + 1;
+  db_json = db_json[..end_of_json].to_string();
+
+  // TODO this way to fix deserialize err. type force casting here.
+  // find the old version data structure. and then do deserialize. find old data
+  // structure and then mannuly do it
+  // let ret_json = serializer::deserialize(reader);
+  // if ret_json.as_ref().is_err() {
+  //   info!("deserialize err: {:?}", ret_json.as_ref().err());
+  //   println!("deserialize err: {:?}", ret_json.as_ref().err());
+
+  //   // Handle trailing characters
+  //   // let end_of_json = ret_json.rfind('}').unwrap_or(0) + 1;
+  //   // ret_json = ret_json[..end_of_json].to_string();
+  // }
+
+  // somehow when serialized add this kind of stuff.
+  // TODO . need to print the serialized data to programmer check it .
+  //     let trailing_json = format!("{} extra characters", json); // add
+  // trailing characters
+
+  let payload: CanisterDB = serde_json::from_str(&db_json).unwrap();
+  info!("deserialize ok,old data loaded from ic-fs.");
+
+  // this deserialize procedure is open an ic replica node local file . and then
+  // use a reader to read its local disk file and then load it into memory.
+  // and deserialize it .
+
+  let stable_state = CanisterContext::from(payload);
+  CONTEXT.with(|s| {
+    let mut state = s.borrow_mut();
+    *state = stable_state;
+    return true;
+  })
+}
+
+#[update]
+pub async fn restore_db_from_dropbox(timestamp_as_version_tag: u64) -> bool {
+  // use reader  make the whole serde process become a Volcano/Pipeline Model
+  // process procedure use string as a whole file is a Materialization Model
+  // process procedure
+
+  // IMPORTANT
+  // load canister fs from ic-replica
+  // () means retrieve multiple db. a collection of tuples
+  let mut db_json = get_payload_from_dropbox(timestamp_as_version_tag).await;
   if db_json.len() == 0 {
     let memory = get_upgrades_memory();
     let mut reader = get_reader(&memory);

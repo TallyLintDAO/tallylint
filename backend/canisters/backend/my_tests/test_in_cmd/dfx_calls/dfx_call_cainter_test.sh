@@ -17,7 +17,9 @@ https://internetcomputer.org/docs/current/developer-docs/backend/rust/candid
 
 #! local deploy steps:
 dfx start --background
-cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did
+# cargo build --target wasm32-unknown-unknown --release -p backend --locked
+# deprecated:
+# cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did
 dfx deploy backend 
 
 #TODO: effiency: maybe use makefile or bash can auto this process.
@@ -95,6 +97,20 @@ curl -X POST https://content.dropboxapi.com/2/files/upload_session/append_v2 \
     --header "Content-Type: application/octet-stream" \
     --data-binary @local_file.txt
  sl.BuyKjfKtkY5uYGS0Rpgcsf48_EsXHSldu1jYObvkAPfXzLxaMYBRHTFboyymcWd5cncBsD1sXE5HlnSc0h6lsmtBwSVQXypYPfysA-P9PhfwLKrjUHkuOYlzf2QzGxrv1dUaoimjLYib-btGmCWYdus
+
+# below test ok . if auth no expire. and file not name conflict same .
+curl -X POST https://content.dropboxapi.com/2/files/upload \
+    --header "Authorization: Bearer sl.Bv39QbKVzSxOkNxeII8sGQ4Sk_TgBn9njNWxwRdOjxZ-rnd0GTc0LJEKZWOIxCm5tSsttw3c7o-yxenyahHVA2T6ZzflHiOrVjFAGjwRF64iNwW35KQlyaUG1Cj80LXLtJynWBooOv9FYM26FeZq0js" \
+    --header "Dropbox-API-Arg: {\"autorename\":false,\"mode\":\"add\",\"mute\":false,\"path\":\"/Homework/math/Matrices3.txt\",\"strict_conflict\":false}" \
+    --header "Content-Type: application/octet-stream" \
+    --data-binary @/home/btwl/code/ic/tax_lint/test.json
+
+curl -X POST https://content.dropboxapi.com/2/files/download \
+    --header "Authorization: Bearer sl.Bv39QbKVzSxOkNxeII8sGQ4Sk_TgBn9njNWxwRdOjxZ-rnd0GTc0LJEKZWOIxCm5tSsttw3c7o-yxenyahHVA2T6ZzflHiOrVjFAGjwRF64iNwW35KQlyaUG1Cj80LXLtJynWBooOv9FYM26FeZq0js" \
+    --header "Dropbox-API-Arg: {\"path\":\"/Homework/math/Matrices3.txt\"}"
+
+
+
 ```
 
 
@@ -188,6 +204,13 @@ allets\":[],\"records\":[],\"neurons\":[{\"owner\":\"b76rz-axcfs-swjig-bzzpx-yt5
 7749341550806,\"update_time\":1703247749341550806}]}asd"
 
 
+
+
+
+dfx canister call  backend save_payload_to_dropbox 
+
+# 
+dfx canister call  backend do_post_upgrade 123456
 
 
 

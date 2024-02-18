@@ -116,8 +116,8 @@ pub async fn store_paylaod_to_dropbox() -> String {
 
   // //  send http call  : way2
   // let cycles = 230_949_972_000; //0.2T
-  // let ret2=http_request(expand_to_canister_http_request(request,None,None), cycles).await;
-  // if ret2.is_err() {
+  // let ret2=http_request(expand_to_canister_http_request(request,None,None),
+  // cycles).await; if ret2.is_err() {
   //   return String::from("http request error");
   // }
   // let response= ret2.unwrap().0;
@@ -126,8 +126,9 @@ pub async fn store_paylaod_to_dropbox() -> String {
   return String::from("ok");
 }
 
-// pub fn expand_to_canister_http_request(req: HttpRequest, max_response_bytes: Option<u64>, transform: Option<TransformContext>) -> CanisterHttpRequestArgument {
-//     CanisterHttpRequestArgument {
+// pub fn expand_to_canister_http_request(req: HttpRequest, max_response_bytes:
+// Option<u64>, transform: Option<TransformContext>) ->
+// CanisterHttpRequestArgument {     CanisterHttpRequestArgument {
 //         url: req.url,
 //         max_response_bytes: max_response_bytes,
 //         method: req.method,

@@ -1,6 +1,6 @@
 // c_http stands for canister send http calls.
 
-//1. IMPORT MANAGEMENT CANISTER
+// 1. IMPORT MANAGEMENT CANISTER
 //This includes all methods and types needed
 use ic_cdk::api::management_canister::http_request::{
   http_request, CanisterHttpRequestArgument, HttpHeader, HttpMethod,
@@ -14,7 +14,7 @@ use ic_cdk_macros::{query, update};
 //Update method using the HTTPS outcalls feature
 #[update]
 async fn get_icp_usd_exchange() -> String {
-  //2. SETUP ARGUMENTS FOR HTTP GET request
+  // 2. SETUP ARGUMENTS FOR HTTP GET request
 
   // 2.1 Setup the URL and its query parameters
   type Timestamp = u64;
@@ -50,25 +50,28 @@ async fn get_icp_usd_exchange() -> String {
     body: None,               //optional for request
     max_response_bytes: None, //optional for request
     transform: Some(TransformContext {
-      // The "method" parameter needs to the same name as the function name of your transform function
+      // The "method" parameter needs to the same name as the function name of
+      // your transform function
       function: TransformFunc(candid::Func {
         principal: ic_cdk::api::id(),
         method: "transform".to_string(),
       }),
-      // The "TransformContext" function does need a context parameter, it can be empty
+      // The "TransformContext" function does need a context parameter, it can
+      // be empty
       context: vec![],
     }),
     headers: request_headers,
   };
 
-  //3. MAKE HTTPS REQUEST AND WAIT FOR RESPONSE
+  // 3. MAKE HTTPS REQUEST AND WAIT FOR RESPONSE
 
-  //Note: in Rust, `http_request()` needs to pass cycles if you are using ic_cdk: ^0.9.0
+  //Note: in Rust, `http_request()` needs to pass cycles if you are using
+  // ic_cdk: ^0.9.0
 
   let cycles = 230_949_972_000;
 
   match http_request(request, cycles).await {
-    //4. DECODE AND RETURN THE RESPONSE
+    // 4. DECODE AND RETURN THE RESPONSE
 
     //See:https://docs.rs/ic-cdk/latest/ic_cdk/api/management_canister/http_request/struct.HttpResponse.html
     Ok((response,)) => {
@@ -82,7 +85,8 @@ async fn get_icp_usd_exchange() -> String {
       //You need to decode that Vec<u8> that is the body into readable text.
       //To do this:
       //  1. Call `String::from_utf8()` on response.body
-      //  3. You use a switch to explicitly call out both cases of decoding the Blob into ?Text
+      //  3. You use a switch to explicitly call out both cases of decoding the
+      //     Blob into ?Text
 
       //The API response will looks like this:
 

@@ -7,6 +7,7 @@ pub mod c_http;
 pub mod common;
 pub mod lifecycle;
 pub mod nns;
+pub mod tools;
 pub mod user;
 pub mod wallet;
 

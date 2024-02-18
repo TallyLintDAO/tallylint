@@ -209,7 +209,8 @@ pub struct AddRecordCommand {
 //   fn retrieve(storage: Vec<u8>) -> RecordProfile {
 //         // Deserialize the stored data (e.g., using serde_json or bincode)
 //         // Replace the following line with your actual deserialization logic:
-//         let deserialized_profile: RecordProfile = serde_json::from_slice(&storage).unwrap();
+//         let deserialized_profile: RecordProfile =
+// serde_json::from_slice(&storage).unwrap();
 
 //         // Additional processing or validation if needed...
 

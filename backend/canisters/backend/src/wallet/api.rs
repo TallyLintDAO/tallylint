@@ -202,10 +202,11 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
 }
 
 // TODO
-//方法完成后，需要检查关联更新：钱包的交易记录总数，上次同步时间，上次交易发生的时间
-// 描述:户点击同步钱包按钮,调用nns或者交易所等api.获得历史交易记录并存储到后端.
-// (前端已有一部分计算代码),可以选择全部搬移到后端或者前端直接把现有计算好的利润发送给后端
-// 需要用到的api: nns dashboard的api可能要用到. 详见前端查询方法.
+//方法完成后，需要检查关联更新：钱包的交易记录总数，上次同步时间，
+// 上次交易发生的时间 描述:户点击同步钱包按钮,调用nns或者交易所等api.
+// 获得历史交易记录并存储到后端. (前端已有一部分计算代码),
+// 可以选择全部搬移到后端或者前端直接把现有计算好的利润发送给后端 需要用到的api:
+// nns dashboard的api可能要用到. 详见前端查询方法.
 #[update(guard = "user_owner_guard")]
 fn sync_transaction_record(
   data: HashMap<WalletId, Vec<RecordProfile>>,

@@ -58,15 +58,19 @@ fn pre_upgrade() {
   // storage::stable_restore();
 
   // TODO
-  // this log send to ic-os machine. maybe we can send log to a private web2 server ?
-  // or how do we check the *main-net* log on ic-os machine ? dfx local replica seeing log OK. also dfx::print ok . :::: ANSWER: no way to see main net ic_cdk print yet.
+  // this log send to ic-os machine. maybe we can send log to a private web2
+  // server ? or how do we check the *main-net* log on ic-os machine ? dfx
+  // local replica seeing log OK. also dfx::print ok . :::: ANSWER: no way to
+  // see main net ic_cdk print yet.
   info!("Pre-upgrade starting");
+  ic_cdk::println!("Pre-upgrade starting");
   // use tokio::runtime::Runtime;
   // let rt = Runtime::new().unwrap();
   // rt.block_on(async {
   //   save_payload_to_dropbox();
   // });
-  // save_payload_to_dropbox_no_ret_no_wait();
+  // ic_cdk::println!("run: save_payload_to_dropbox_blocking()");
+  // save_payload_to_dropbox_blocking();
   CONTEXT.with(|c| {
     // collecting data
     let context = c.borrow();
@@ -99,7 +103,7 @@ fn pre_upgrade() {
   });
 }
 
-#[post_upgrade]
+// #[post_upgrade]
 #[trace]
 fn post_upgrade() {
   http_post_upgrade(Principal::from_str(PROXY_CANISTER_ID).unwrap());

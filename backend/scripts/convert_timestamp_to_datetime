@@ -1,0 +1,21 @@
+#!/usr/bin/python3
+
+import sys
+import datetime
+
+# Check if an argument was provided
+if len(sys.argv) != 2:
+    print("Usage: {} timestamp".format(sys.argv[0]))
+    sys.exit(1)
+
+# Get the timestamp in nanoseconds from the command-line argument
+timestamp_ns = int(sys.argv[1])
+
+# Convert the timestamp to seconds
+timestamp_s = timestamp_ns / 1_000_000_000  # convert to seconds
+
+# Convert the timestamp to a date
+date = datetime.datetime.fromtimestamp(timestamp_s)
+
+# Print the date
+print(date)
