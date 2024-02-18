@@ -25,21 +25,7 @@ fn init() {
   info!("canister initialization complete");
 }
 
-/**
- * 1. each time upgrade(such as CLI-cmd : dfx deploy ),
- * will *erase* all ic-DB (canister stable memory)
- * so we can:
- *      1.manually erase all,
- *      2.or , restore from a in memory data.(such as a
- * hashmap)ca
- * 2. transactional upgrade:
- * if pre_upgrade, upgrade ,post_upgrade
- * any step go wrong.
- * will revert to last version.
- */
-// #[pre_upgrade] is a hook(funtion pointer). everytime update canister will auto call this.
 
-// old version . last version exec.
 #[query]
 fn do_pre_upgrade_and_print_db() -> String {
   CONTEXT.with(|c| {

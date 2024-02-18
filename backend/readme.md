@@ -225,3 +225,23 @@ input:
  
  output:
   coin price at transaction time.
+
+
+
+TODO 线上数据库备份方式:
+1. 开一个新的git分支,分支为上次部署ic的后端代码版本.并切换到这个分支 **如何找到这个时间点分支还不知道**
+    使用` dfx canister status backend --network ic ` 没有看到版本信息.
+    TODO 最好有一个手动的tag指示当前代码版本和日期. 此处可以参考openchat.
+
+    现在测试这个branch是否可用: 
+    `git log -S 'do_pre_upgrade_and_print_db' -- /home/btwl/code/ic/tax_lint/backend/canisters/backend/src/common/api.rs` 
+    `git checkout -b prod_db_backup 797e08350bdbf4cb129ac9bfc3945df52442c930`
+
+2. 加入现有写好的dropbox接口代码.
+3. 升级ic线上版本.
+4. 执行备份stable data的操作到dropbox去
+
+5. 切换回到main分支
+6. 升级ic上的后端代码.并清空ic上的stable data
+7. 调用dropbox api来复原线上数据.
+
