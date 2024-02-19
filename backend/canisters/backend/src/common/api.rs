@@ -1,4 +1,3 @@
-
 use ic_cdk_macros::*;
 
 use tracing::info;
@@ -97,4 +96,3 @@ fn clean_db() -> String {
     return json;
   })
 }
-

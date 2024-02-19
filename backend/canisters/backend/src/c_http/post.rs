@@ -6,7 +6,7 @@ use ic_cdk::api::management_canister::http_request::{
 
 use serde::{Deserialize, Serialize};
 
-use crate::{calculate_cost, common::life_cycle::get_payload};
+use crate::{calculate_cost, common::life_cycle::{get_payload, get_payload_from_stable_mem}};
 
 // This struct is legacy code and is not really used in the code.
 #[derive(Serialize, Deserialize)]
@@ -30,15 +30,19 @@ struct Context {
 // now work ok. but cant use in pre_upgrade in ic canister.
 // need to make this function blocking . cant be async.
 // need to dive deeper in this programming.
+/**
+ * if from is 0 use running payload.
+ * if not 0 use stable mem
+ */
 #[ic_cdk::update]
-pub async fn save_payload_to_dropbox(token: String) -> String {
-
+pub async fn save_payload_to_dropbox(token: String, from: u32) -> String {
   let host = "content.dropboxapi.com";
   let url = "https://content.dropboxapi.com/2/files/upload";
 
   let timestamp = ic_cdk::api::time();
   use crate::tools::time_tool::timestamp_to_date;
   let time = timestamp_to_date(timestamp);
+
   let request_headers = vec![
         HttpHeader {
             name: "Host".to_string(),
@@ -60,8 +64,13 @@ pub async fn save_payload_to_dropbox(token: String) -> String {
             value: "application/octet-stream".to_string(),
         },
     ];
+  let json_string: String ;
+  if from == 0 {
+    json_string = get_payload();
+  } else {
+    json_string = get_payload_from_stable_mem();
+  }
 
-  let json_string: String = get_payload();
   let json_utf8: Vec<u8> = json_string.into_bytes();
   let json_length = json_utf8.len() as u64;
   let request_body: Option<Vec<u8>> = Some(json_utf8);
@@ -80,13 +89,10 @@ pub async fn save_payload_to_dropbox(token: String) -> String {
     transform: None, //optional for request
   };
 
-
   let cycles = calculate_cost(16, json_length, 1000);
 
   match http_request(request, cycles).await {
-
     Ok((response,)) => {
-    
       let str_body = String::from_utf8(response.body)
         .expect("Transformed response is not UTF-8 encoded.");
       ic_cdk::api::print(format!("{:?}", str_body));
@@ -204,7 +210,6 @@ pub async fn get_payload_from_dropbox(
   token: String,
   timestamp: String,
 ) -> String {
-
   let host = "content.dropboxapi.com";
   let url = "https://content.dropboxapi.com/2/files/download";
 
@@ -241,7 +246,6 @@ pub async fn get_payload_from_dropbox(
   let cycles = calculate_cost(16, json_length, 1000);
 
   match http_request(request, cycles).await {
-
     Ok((response,)) => {
       let str_body = String::from_utf8(response.body)
         .expect("Transformed response is not UTF-8 encoded.");

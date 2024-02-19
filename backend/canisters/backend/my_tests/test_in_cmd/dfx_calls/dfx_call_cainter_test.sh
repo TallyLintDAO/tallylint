@@ -230,6 +230,7 @@ dfx canister call  backend restore_db_from_dropbox '("sl.Bv2AeIHy2BD9tl_h-QySDyG
 #Next step . try to automate this test using code  ? (rust ? python ? )
 # pocket-ic ? ic-agent ?  
 
+#TODO need version control of prod-code running on ic.
 
 
 

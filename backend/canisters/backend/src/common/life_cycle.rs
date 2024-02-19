@@ -105,7 +105,7 @@ fn pre_upgrade() {
 #[trace]
 fn post_upgrade() {
   http_post_upgrade(Principal::from_str(PROXY_CANISTER_ID).unwrap());
-  
+
   let mut buf = Vec::new();
   let memory = get_upgrades_memory();
   let mut reader = get_reader(&memory);
@@ -276,9 +276,8 @@ fn set_stable_mem_use_payload() {
  * TEST OK
  */
 #[query]
-fn get_payload_from_stable_mem() {
+pub fn get_payload_from_stable_mem() -> String {
   let mut buf = Vec::new();
-
   let memory = get_upgrades_memory();
   let mut reader = get_reader(&memory);
   reader
@@ -286,6 +285,7 @@ fn get_payload_from_stable_mem() {
     .expect("Failed to read from reader");
   let json = String::from_utf8_lossy(&buf);
   ic_cdk::println!("\x1b[31m WHAT GET FROM stable mem:  \x1b[0m  {}", json);
+  return json.to_string();
 }
 
 #[update]
@@ -294,11 +294,11 @@ pub async fn restore_db_from_dropbox(
   token: String,
   date_time_version_tag: String,
 ) -> bool {
-
   let db_json = get_payload_from_dropbox(token, date_time_version_tag).await;
-  
-  // ic_cdk::println!("json: {}", db_json); // this print debug info to ic-replica node console.
-  // TODO any possible to set log level and detect dev-env or prod-env to optional log ?
+
+  // ic_cdk::println!("json: {}", db_json); // this print debug info to
+  // ic-replica node console. TODO any possible to set log level and detect
+  // dev-env or prod-env to optional log ?
 
   let payload: CanisterDB = serde_json::from_str(&db_json).unwrap();
 
