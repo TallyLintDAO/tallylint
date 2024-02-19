@@ -209,7 +209,7 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
 // nns dashboard的api可能要用到. 详见前端查询方法.
 #[update(guard = "user_owner_guard")]
 fn sync_transaction_record(
-  data: HashMap<WalletId, Vec<TransactionB>>,
+  data: HashMap<WalletId, Vec<TransactionF>>,
 ) -> Result<bool, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
