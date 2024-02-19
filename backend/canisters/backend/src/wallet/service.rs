@@ -38,10 +38,7 @@ pub struct TransactionRecord {
   pub comment: String,
 }
 
-#[derive(Debug, Default)]
-pub struct WalletRecordService {
-  pub records: BTreeMap<RecordId, TransactionB>,
-}
+
 
 
 impl WalletService {
@@ -144,88 +141,5 @@ impl WalletService {
     WalletService {
       wallets: BTreeMap::new(),
     }
-  }
-}
-
-impl WalletRecordService {
-  // TODO
-  pub fn add_transaction_record(
-    &mut self,
-    profile: TransactionB,
-  ) -> Result<bool, String> {
-    let id = profile.id;
-    if self.records.contains_key(&id) {
-      return Err("transaction record already exsit".to_string());
-    }
-
-    self.records.insert(profile.id, profile);
-
-    if self.records.contains_key(&id) {
-      return Ok(true);
-    } else {
-      return Err("Insert fail. may heap overflow".to_string());
-    }
-  }
-  pub fn delete_transaction_record(
-    &mut self,
-    id: RecordId,
-  ) -> Result<bool, String> {
-    if !self.records.contains_key(&id) {
-      return Err("transaction record not exsit".to_string());
-    }
-
-    self.records.remove(&id);
-
-    if !self.records.contains_key(&id) {
-      return Ok(true);
-    } else {
-      return Err("remove fail. still exsit".to_string());
-    }
-  }
-  pub fn get_addr_from_id(&self, id: RecordId) -> WalletAddress {
-    self.records.get(&id).unwrap().address.clone()
-  }
-  pub fn wallet_history(
-    &self,
-    cmd: HistoryQueryCommand,
-  ) -> Result<HashMap<WalletAddress, Vec<TransactionB>>, String> {
-    if cmd.address.is_some() {
-      // query one
-      let res = self.query_one(cmd);
-      return Ok(res);
-    } else { //query all
-       // let wallets=WalletService::query_wallet_array(self,caller());
-       // from ctx or ?
-    }
-    return Err("nothing".to_string());
-  }
-
-  // TODO make sort method work.
-  //
-  pub fn query_one(
-    &self,
-    cmd: HistoryQueryCommand,
-  ) -> HashMap<String, Vec<TransactionB>> {
-    let addr = cmd.address.unwrap().clone();
-    let records = self.query_a_wallet_history_records(addr.clone());
-    if records.is_empty() {
-      return HashMap::new();
-    }
-    let mut res = HashMap::new();
-    res.insert(addr.clone(), records);
-    res
-  }
-
-  pub fn query_a_wallet_history_records(
-    &self,
-    addr: WalletAddress,
-  ) -> Vec<TransactionB> {
-    let records = self
-      .records
-      .values()
-      .filter(|record| record.address == addr)
-      .cloned()
-      .collect();
-    return records;
   }
 }

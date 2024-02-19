@@ -5,7 +5,7 @@ use ic_cdk::caller;
 use ic_cdk_macros::{query, update};
 
 use super::domain::*;
-use super::service::{AddRecordCommand, EditHistoryCommand, RecordId, WalletAddress, WalletId};
+use super::service::{AddRecordCommand, EditHistoryCommand, HistoryQueryCommand, RecordId, WalletAddress, WalletId};
 use crate::common::guard::user_owner_guard;
 use crate::{TransactionB, CONTEXT};
 
