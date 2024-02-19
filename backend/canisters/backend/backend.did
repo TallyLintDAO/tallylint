@@ -20,7 +20,21 @@ type AddRecordCommand = record {
   amount : nat32;
 };
 type BallotInfo = record { vote : int32; proposal_id : opt NeuronId };
+type Currency = record { decimals : nat64; symbol : text };
 type CustomResult1 = variant { Ok : NeuronInfo; Err : GovernanceError };
+type Details = record {
+  to : text;
+  fee : float64;
+  status : text;
+  ledgerCanisterId : text;
+  value : float64;
+  cost : float64;
+  from : text;
+  currency : Currency;
+  profit : float64;
+  price : float64;
+  amount : float64;
+};
 type EditHistoryCommand = record {
   id : nat64;
   to : text;
@@ -113,28 +127,6 @@ type ProxyCanisterError = variant {
   HttpOverWs : HttpOverWsError;
   InvalidRequest : InvalidRequest;
 };
-type RecordProfile = record {
-  id : nat64;
-  to : text;
-  fee : float64;
-  tag : text;
-  status : text;
-  cost : float64;
-  from : text;
-  hash : text;
-  memo : text;
-  time : nat64;
-  t_type : text;
-  coin_type : text;
-  comment : text;
-  income : float64;
-  address : text;
-  profit : float64;
-  manual : bool;
-  principal_id : opt text;
-  price : float64;
-  amount : nat32;
-};
 type RejectionCode = variant {
   NoError;
   CanisterError;
@@ -157,8 +149,37 @@ type Result_6 = variant { Ok : WalletProfile; Err : text };
 type Result_7 = variant { Ok : vec NeuronProfile; Err : vec NeuronProfile };
 type Result_8 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
 type Result_9 = variant {
-  Ok : vec record { text; vec RecordProfile };
+  Ok : vec record { text; vec TransactionB };
   Err : text;
+};
+type TransactionB = record {
+  id : nat64;
+  to : text;
+  fee : float64;
+  tag : text;
+  status : text;
+  cost : float64;
+  from : text;
+  hash : text;
+  memo : text;
+  t_type : text;
+  coin_type : text;
+  comment : text;
+  income : float64;
+  address : text;
+  timestamp : nat64;
+  profit : float64;
+  manual : bool;
+  principal_id : opt text;
+  price : float64;
+  amount : nat32;
+};
+type TransactionF = record {
+  hash : text;
+  walletName : text;
+  t_type : text;
+  timestamp : nat64;
+  details : Details;
 };
 type TransformArgs = record { context : vec nat8; response : HttpResponse };
 type UserProfile = record {
@@ -203,7 +224,7 @@ service : () -> {
   get_neuron_info : (nat64) -> (Result_3);
   get_payload : () -> (text) query;
   get_payload_from_dropbox : (text, text) -> (text);
-  get_payload_from_stable_mem : () -> () query;
+  get_payload_from_stable_mem : () -> (text) query;
   http_request_via_proxy : (HttpRequest, opt nat64, bool) -> (Result_4);
   http_response_callback : (nat64, HttpResult) -> ();
   list_all_user : () -> (vec UserProfile);
@@ -212,12 +233,12 @@ service : () -> {
   query_all_neuron_wallet : () -> (Result_7) query;
   query_all_wallets : () -> (Result_8) query;
   restore_db_from_dropbox : (text, text) -> (bool);
-  save_payload_to_dropbox : (text) -> (text);
+  save_payload_to_dropbox : (text, nat32) -> (text);
   save_payload_to_dropbox_blocking : () -> (text);
   set_payload : () -> ();
   set_stable_mem_use_payload : () -> ();
   store_paylaod_to_dropbox : () -> (text);
-  sync_transaction_record : (vec record { nat64; vec RecordProfile }) -> (
+  sync_transaction_record : (vec record { nat64; vec TransactionF }) -> (
       Result,
     );
   transform : (TransformArgs) -> (HttpResponse) query;
