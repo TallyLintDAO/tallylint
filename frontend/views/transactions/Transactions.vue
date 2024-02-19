@@ -4,7 +4,7 @@
       <div class="header q-gutter-md row q-mb-md items-end">
         <q-select
           v-model="selectedWallet"
-          @update:model-value="getWalletHistory(selectedWallet)"
+          @update:model-value="getSelectedWalletHistory(selectedWallet)"
           use-chips
           multiple
           option-label="name"
@@ -68,18 +68,18 @@
               <div class="row items-center" style="width: 100%">
                 <div class="col">
                   <q-icon
-                    v-if="transaction.type === 'SEND'"
+                    v-if="transaction.t_type === 'SEND'"
                     class="text-red-5"
                     size="md"
                     name="arrow_upward"
                   />
                   <q-icon
-                    v-if="transaction.type === 'RECEIVE'"
+                    v-if="transaction.t_type === 'RECEIVE'"
                     class="text-green-6"
                     size="md"
                     name="arrow_downward"
                   />
-                  {{ transaction.type }}
+                  {{ transaction.t_type }}
                   <br />
                   {{
                     new Date(transaction.timestamp).toLocaleTimeString(
@@ -100,7 +100,7 @@
                   {{ transaction.details.currency.symbol }}
                   {{ transaction.details.amount }}
                   <br />
-                  <span v-if="transaction.type === 'SEND'">
+                  <span v-if="transaction.t_type === 'SEND'">
                     {{ "$" + transaction.details.cost + " cost basis" }}
                   </span>
                 </div>
@@ -128,7 +128,7 @@
                     </q-tooltip>
                   </span>
                   <b
-                    v-if="transaction.type === 'SEND'"
+                    v-if="transaction.t_type === 'SEND'"
                     :class="{
                       'text-green-6': transaction.details.profit > 0,
                       'text-red-5': transaction.details.profit < 0,
@@ -157,8 +157,9 @@
 </template>
 
 <script lang="ts" setup>
-import { InferredTransaction, getAllTransactions } from "@/api/rosetta"
+import { getAllTransactions } from "@/api/rosetta"
 import { getUserNeuron, getUserWallet } from "@/api/user"
+import type { InferredTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
 import { getNNS } from "@/utils/nns"
@@ -214,7 +215,7 @@ onMounted(() => {
     if (address) {
       if (Array.isArray(address)) {
         // 如果route是数组，传递整个数组
-        getWalletHistory(
+        getSelectedWalletHistory(
           address.map((addr) => ({
             address: addr,
             name: "",
@@ -223,7 +224,7 @@ onMounted(() => {
         )
       } else {
         // 如果route是字符串，构造包含单个地址的数组
-        getWalletHistory([
+        getSelectedWalletHistory([
           {
             address: address,
             name: "",
@@ -233,7 +234,7 @@ onMounted(() => {
       }
     } else {
       // 如果route不存在，默认查询所有地址
-      getWalletHistory(wallets.value)
+      getSelectedWalletHistory(wallets.value)
     }
   })
 })
@@ -246,7 +247,7 @@ const getWallets = async () => {
     getNNS(),
   ])
   if (userWallets.Ok && neuronWallets.Ok) {
-    const mapToWallet = (wallet) => ({
+    const mapToWallet = (wallet: { name: any; address: any; from: any }) => ({
       name: wallet.name,
       address: wallet.address,
       from: wallet.from,
@@ -263,8 +264,13 @@ const getWallets = async () => {
   }
 }
 
-const getWalletHistory = async (targetWallets: WalletTag[]) => {
+const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
   showLoading.value = true
+  let targetWallets: WalletTag[]
+  //如果没有选择任何钱包，则查询所有钱包
+  selectedWallets.length !== 0
+    ? (targetWallets = selectedWallets)
+    : (targetWallets = wallets.value)
   getAllTransactions(targetWallets)
     .then((res) => {
       console.log("getWalletHistory", res)
@@ -300,7 +306,7 @@ const exportToCSV = async () => {
     columnNames,
     ...walletList.value.map((transaction) => [
       transaction.hash,
-      transaction.type,
+      transaction.t_type,
       transaction.details.status,
       //Time format fixed to Switzerland
       new Date(Number(transaction.timestamp)).toLocaleString("fr-CH"),
