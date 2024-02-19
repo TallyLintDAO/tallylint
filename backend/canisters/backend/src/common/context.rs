@@ -1,8 +1,5 @@
 use crate::{
-  common::env::Environment, transaction::service::WalletRecordService, wallet::{
-    domain::TransactionB,
-    service::{RecordId, WalletId,},
-  }
+  common::env::Environment, transaction::{domain::TransactionB, service::WalletRecordService}, wallet::service::{RecordId, WalletId,}
 };
 use candid::{CandidType, Principal};
 use std::collections::BTreeMap;

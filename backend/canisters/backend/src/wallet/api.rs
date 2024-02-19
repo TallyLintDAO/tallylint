@@ -8,6 +8,7 @@ use ic_ledger_types::AccountIdentifier;
 use super::domain::*;
 use super::service::{RecordId, WalletAddress, WalletId};
 use crate::common::guard::user_owner_guard;
+use crate::transaction::domain::TransactionB;
 use crate::CONTEXT;
 
 const MAX_WALLET_NAME_LENGTH: usize = 64;

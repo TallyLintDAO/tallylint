@@ -1,6 +1,6 @@
 pub(crate) use candid::{CandidType, Principal};
 
-use crate::common::context::TimeStamp;
+use crate::{common::context::TimeStamp, transaction::domain::TransactionB};
 
 use super::service::{RecordId, WalletAddress, WalletId};
 use serde::{Deserialize, Serialize};
@@ -77,47 +77,6 @@ impl Default for WalletAddCommand {
       name: String::new(),
     }
   }
-}
-
-#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
-pub struct TransactionB {
-  //
-  // backend autogen:
-  pub id: RecordId,
-  //
-
-  //
-  //  frontend pass in:
-  pub hash: String,
-  pub timestamp: TimeStamp, //transaction_time
-  pub t_type: String,       //transaction_type SEND or RECEIVE
-  pub coin_type: String,
-  pub principal_id: Option<String>, /* Plug use , need
-                                     * to convert to
-                                     * opt_account_id_hex for use. */
-  pub address: WalletAddress, // same as account_id_hex
-  pub status: String,
-  pub fee: f64,
-  pub to: String,
-  pub from: String,
-  pub amount: u32,
-  pub price: f64,
-  pub memo: String,
-  pub cost: f64,
-  pub income: f64,
-  pub profit: f64,
-  pub tag: String,
-  pub manual: bool,
-  pub comment: String,
-  // TODO , considering wallet_amount :
-  // pub wallet_amount:u32,
-  // pub warning:String,
-  // TODO: Warning（用户是否标记某些记录为missing cost,
-  // missing rates）这条字段先只做出来，不用,
-  // 解释：比如missing
-  // rates是标记某个交易历史找不到对应的价格记录，
-  // 例如某个NFT的交易价格查不到，
-  // 就会被自动标记为missing rates
 }
 
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]

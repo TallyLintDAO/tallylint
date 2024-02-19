@@ -46,6 +46,10 @@ use crate::wallet::service::WalletAddress;
 #[allow(unused_imports)]
 use crate::wallet::service::WalletId;
 #[allow(unused_imports)]
+use crate::transaction::domain::TransactionB;
+#[allow(unused_imports)]
+use crate::transaction::domain::TransactionF;
+#[allow(unused_imports)]
 use ic_cdk::api::call::CallResult;
 #[allow(unused_imports)]
 use ic_cdk::api::management_canister::http_request::*;
