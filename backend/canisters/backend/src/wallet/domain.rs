@@ -78,13 +78,9 @@ impl Default for WalletAddCommand {
     }
   }
 }
-/**
- * B stands for backend data
- * F stands for frontend data type
- * 
- */
+
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
-pub struct TransactionF {
+pub struct TransactionB {
   //
   // backend autogen:
   pub id: RecordId,
@@ -94,7 +90,7 @@ pub struct TransactionF {
   //  frontend pass in:
   pub hash: String,
   pub timestamp: TimeStamp, //transaction_time
-  pub t_type: String, //transaction_type SEND or RECEIVE
+  pub t_type: String,       //transaction_type SEND or RECEIVE
   pub coin_type: String,
   pub principal_id: Option<String>, /* Plug use , need
                                      * to convert to
@@ -222,41 +218,48 @@ pub struct AddRecordCommand {
 //     }
 // }
 
-
-
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct Wallet {
-    walletid: u64,
-    wallet_history: Vec<TransactionF>,
+  walletid: u64,
+  wallet_history: Vec<TransactionB>,
 }
 
 /**
- * FIXED DATA TYPE, use by frontend. dont change easily
+ * FIXED DATA TYPE, use by frontend. dont change easily.
+ *
+ * B stands for backend data
+ * F stands for frontend data type
+ *
  */
 #[allow(non_snake_case)]
-pub struct TransactionF_ {
-    hash: String,
-    timestamp: u64, // TODO check ns or ms as unit
-    type_: String, // "SEND", "RECEIVE"
-    walletName: String,
-    details: Details,
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct TransactionF {
+  hash: String,
+  timestamp: u64, // TODO check ns or ms as unit
+  t_type: String,  //  transaction type : "SEND", "RECEIVE"
+  walletName: String,
+  details: Details,
 }
 
 #[allow(non_snake_case)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct Details {
-    status: String, //交易状态，表示交易成功与否，暂时先要着
-    fee: f64,
-    to: String,
-    from: String,
-    amount: f64,
-    price: f64,
-    currency: Currency,
-    ledgerCanisterId: String,
-    cost: f64,//由后端计算，以下几个属性，理论上应该是不要持久化储存的，只有调用方法的时候由后端计算，组装
-    profit: f64,
-    value: f64,
+  amount: f64,
+  cost: f64, /* 由后端计算，理论上应该是不要持久化储存的，
+              * 只有调用方法的时候由后端计算，组装 */
+  currency: Currency,
+  fee: f64,
+  from: String,
+  to: String,
+  price: f64,
+  value: f64,     //此笔交易价值
+  status: String, //交易状态，表示交易成功与否，暂时先要着
+  ledgerCanisterId: String,
+  profit: f64,
 }
 
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct Currency {
-    decimals: u64, //代币精度
-    symbol: String, //代币符号，例如'ICP'，'CHAT'
+  decimals: u64,  //代币精度
+  symbol: String, //代币符号，例如'ICP'，'CHAT'
 }

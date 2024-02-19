@@ -25,7 +25,7 @@ pub struct WalletService {
 
 #[derive(Debug, Default)]
 pub struct WalletRecordService {
-  pub records: BTreeMap<RecordId, TransactionF>,
+  pub records: BTreeMap<RecordId, TransactionB>,
 }
 
 #[derive(Debug, Default)]
@@ -151,7 +151,7 @@ impl WalletRecordService {
   // TODO
   pub fn add_transaction_record(
     &mut self,
-    profile: TransactionF,
+    profile: TransactionB,
   ) -> Result<bool, String> {
     let id = profile.id;
     if self.records.contains_key(&id) {
@@ -188,7 +188,7 @@ impl WalletRecordService {
   pub fn wallet_history(
     &self,
     cmd: HistoryQueryCommand,
-  ) -> Result<HashMap<WalletAddress, Vec<TransactionF>>, String> {
+  ) -> Result<HashMap<WalletAddress, Vec<TransactionB>>, String> {
     if cmd.address.is_some() {
       // query one
       let res = self.query_one(cmd);
@@ -205,7 +205,7 @@ impl WalletRecordService {
   pub fn query_one(
     &self,
     cmd: HistoryQueryCommand,
-  ) -> HashMap<String, Vec<TransactionF>> {
+  ) -> HashMap<String, Vec<TransactionB>> {
     let addr = cmd.address.unwrap().clone();
     let records = self.query_a_wallet_history_records(addr.clone());
     if records.is_empty() {
@@ -219,7 +219,7 @@ impl WalletRecordService {
   pub fn query_a_wallet_history_records(
     &self,
     addr: WalletAddress,
-  ) -> Vec<TransactionF> {
+  ) -> Vec<TransactionB> {
     let records = self
       .records
       .values()

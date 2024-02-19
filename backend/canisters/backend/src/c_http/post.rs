@@ -6,7 +6,10 @@ use ic_cdk::api::management_canister::http_request::{
 
 use serde::{Deserialize, Serialize};
 
-use crate::{calculate_cost, common::life_cycle::{get_payload, get_payload_from_stable_mem}};
+use crate::{
+  calculate_cost,
+  common::life_cycle::{get_payload, get_payload_from_stable_mem},
+};
 
 // This struct is legacy code and is not really used in the code.
 #[derive(Serialize, Deserialize)]
@@ -64,7 +67,7 @@ pub async fn save_payload_to_dropbox(token: String, from: u32) -> String {
             value: "application/octet-stream".to_string(),
         },
     ];
-  let json_string: String ;
+  let json_string: String;
   if from == 0 {
     json_string = get_payload();
   } else {

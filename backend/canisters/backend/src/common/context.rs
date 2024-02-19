@@ -1,7 +1,7 @@
 use crate::{
   common::env::Environment,
   wallet::{
-    domain::TransactionF,
+    domain::TransactionB,
     service::{RecordId, WalletId, WalletRecordService},
   },
 };
@@ -35,7 +35,7 @@ pub struct CanisterDB {
   pub id: u64,
   pub users: Vec<UserProfile>,
   pub wallets: Vec<WalletProfile>,
-  pub records: Vec<TransactionF>,
+  pub records: Vec<TransactionB>,
   pub neurons: Vec<NeuronProfile>,
 }
 
@@ -71,7 +71,7 @@ impl From<CanisterDB> for CanisterContext {
     let wallets: BTreeMap<WalletId, WalletProfile> =
       payload.wallets.into_iter().map(|p| (p.id, p)).collect();
 
-    let records: BTreeMap<RecordId, TransactionF> = payload
+    let records: BTreeMap<RecordId, TransactionB> = payload
       .records
       .into_iter() //traverse each element in the Map instance
       //manipulate each element iterator gives

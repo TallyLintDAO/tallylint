@@ -137,7 +137,7 @@ fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     let id = ctx.id;
-    let profile = TransactionF {
+    let profile = TransactionB {
       id: id,
 
       coin_type: cmd.coin_type,
@@ -209,7 +209,7 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
 // nns dashboard的api可能要用到. 详见前端查询方法.
 #[update(guard = "user_owner_guard")]
 fn sync_transaction_record(
-  data: HashMap<WalletId, Vec<TransactionF>>,
+  data: HashMap<WalletId, Vec<TransactionB>>,
 ) -> Result<bool, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
@@ -229,10 +229,10 @@ fn sync_transaction_record(
 #[query(guard = "user_owner_guard")]
 fn wallet_history(
   mut cmd: HistoryQueryCommand,
-) -> Result<HashMap<WalletAddress, Vec<TransactionF>>, String> {
+) -> Result<HashMap<WalletAddress, Vec<TransactionB>>, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    let mut history: HashMap<WalletAddress, Vec<TransactionF>> =
+    let mut history: HashMap<WalletAddress, Vec<TransactionB>> =
       HashMap::new();
     // query one
     if cmd.address.is_some() {
@@ -279,8 +279,8 @@ fn wallet_history(
 fn convert_edit_command_to_record_profile(
   cmd: EditHistoryCommand,
   addr: WalletAddress,
-) -> TransactionF {
-  TransactionF {
+) -> TransactionB {
+  TransactionB {
     id: cmd.id,
     coin_type: cmd.coin_type,
 
