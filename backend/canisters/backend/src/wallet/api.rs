@@ -232,8 +232,7 @@ fn wallet_history(
 ) -> Result<HashMap<WalletAddress, Vec<TransactionB>>, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    let mut history: HashMap<WalletAddress, Vec<TransactionB>> =
-      HashMap::new();
+    let mut history: HashMap<WalletAddress, Vec<TransactionB>> = HashMap::new();
     // query one
     if cmd.address.is_some() {
       let rec_srv = ctx.wallet_record_service.borrow_mut();

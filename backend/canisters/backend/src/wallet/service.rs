@@ -22,12 +22,6 @@ pub type WalletAddress = String;
 pub struct WalletService {
   pub wallets: BTreeMap<WalletId, WalletProfile>,
 }
-
-#[derive(Debug, Default)]
-pub struct WalletRecordService {
-  pub records: BTreeMap<RecordId, TransactionB>,
-}
-
 #[derive(Debug, Default)]
 pub struct TransactionRecord {
   // Primary Key
@@ -43,6 +37,12 @@ pub struct TransactionRecord {
   pub manual: bool,
   pub comment: String,
 }
+
+#[derive(Debug, Default)]
+pub struct WalletRecordService {
+  pub records: BTreeMap<RecordId, TransactionB>,
+}
+
 
 impl WalletService {
   pub fn add_wallet(
