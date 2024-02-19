@@ -5,6 +5,7 @@ use crate::{
     service::{TransactionService, WalletRecordService},
   },
   wallet::service::{RecordId, WalletId},
+  CONTEXT,
 };
 use candid::{CandidType, Principal};
 use std::collections::BTreeMap;
@@ -81,11 +82,18 @@ impl From<CanisterDB> for CanisterContext {
       //manipulate each element iterator gives
       .map(|v| (v.id, v))
       .collect();
-    let transactions: BTreeMap<RecordId, TransactionF> = payload
-      .transactions
-      .into_iter()
-      .map(|v| (v.id, v))
-      .collect();
+
+    let transactions: BTreeMap<RecordId, TransactionF> = CONTEXT.with(|c| {
+      let ctx = c.borrow_mut();
+      ctx
+        .transaction_service
+        .transactions
+        .clone()
+        .into_iter()
+        .map(|k| (k.0, k.1))
+        .collect()
+    });
+
     let neurons = payload
       .neurons
       .into_iter()
