@@ -130,99 +130,9 @@ fn delete_wallet(id: u64) -> Result<bool, String> {
   })
 }
 
-// TODO use: AddRecordCommand . front end dont need to input
-// id . id gen by backend. TODO 测试 id 正常生成且不冲突
-#[update(guard = "user_owner_guard")]
-fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
-  CONTEXT.with(|c| {
-    let mut ctx = c.borrow_mut();
-    let id = ctx.id;
-    let profile = TransactionB {
-      id: id,
 
-      coin_type: cmd.coin_type,
-      address: cmd.address,
-      price: cmd.price,
-      amount: cmd.amount,
-      timestamp: cmd.time,
-      t_type: cmd.t_type,
-      tag: cmd.tag,
-      manual: cmd.manual,
-      comment: cmd.comment,
-      principal_id: cmd.principal_id,
-      hash: cmd.hash,
-      status: cmd.status,
-      from: cmd.from,
-      to: cmd.to,
-      fee: cmd.fee,
-      memo: cmd.memo,
-      cost: cmd.cost,
-      income: cmd.income,
-      profit: cmd.profit,
-    };
-    let ret = ctx
-      .wallet_record_service
-      .add_transaction_record(profile.clone());
-    match ret {
-      Ok(_) => {
-        ctx.id += 1;
-        return Ok(profile.id);
-      }
-      Err(msg) => Err(msg),
-    }
-  })
-}
 
-#[update(guard = "user_owner_guard")]
-fn delete_transaction_record(id: RecordId) -> Result<RecordId, String> {
-  CONTEXT.with(|c| {
-    let mut ctx = c.borrow_mut();
-    let ret = ctx.wallet_record_service.delete_transaction_record(id);
-    match ret {
-      Ok(_) => Ok(id),
-      Err(msg) => Err(msg),
-    }
-  })
-}
 
-#[update(guard = "user_owner_guard")]
-fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
-  CONTEXT.with(|c| {
-    let mut ctx = c.borrow_mut();
-    let service = ctx.wallet_record_service.borrow_mut();
-    let addr = service.get_addr_from_id(cmd.id);
-    let ret = service.add_transaction_record(
-      convert_edit_command_to_record_profile(cmd, addr),
-    );
-    match ret {
-      Ok(_) => Ok(true),
-      Err(msg) => Err(msg),
-    }
-  })
-}
-
-// TODO
-//方法完成后，需要检查关联更新：钱包的交易记录总数，上次同步时间，
-// 上次交易发生的时间 描述:户点击同步钱包按钮,调用nns或者交易所等api.
-// 获得历史交易记录并存储到后端. (前端已有一部分计算代码),
-// 可以选择全部搬移到后端或者前端直接把现有计算好的利润发送给后端 需要用到的api:
-// nns dashboard的api可能要用到. 详见前端查询方法.
-#[update(guard = "user_owner_guard")]
-fn sync_transaction_record(
-  data: HashMap<WalletId, Vec<TransactionF>>,
-) -> Result<bool, String> {
-  CONTEXT.with(|c| {
-    let mut ctx = c.borrow_mut();
-    for (_, record_profiles) in data {
-      for record_profile in record_profiles {
-        let _ = ctx
-          .wallet_record_service
-          .add_transaction_record(record_profile);
-      }
-    }
-    Ok(true)
-  })
-}
 
 // TODO get all wallets of records info
 // 根据前端查询到的历史记录存到后端

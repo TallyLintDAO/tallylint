@@ -9,6 +9,7 @@ pub mod nns;
 pub mod tools;
 pub mod user;
 pub mod wallet;
+pub mod transaction;
 
 use crate::common::context::CanisterContext;
 thread_local! {
