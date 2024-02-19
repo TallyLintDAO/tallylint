@@ -71,6 +71,31 @@ pub struct EditHistoryCommand {
 pub struct WalletRecordService {
   pub records: BTreeMap<RecordId, TransactionB>,
 }
+#[derive(Debug, Default)]
+pub struct TransactionService {
+  pub transactions: BTreeMap<RecordId, TransactionF>,
+}
+impl TransactionService {
+  // TODO
+  pub fn add_transaction_record(
+    &mut self,
+    id: u64,
+    profile: TransactionF,
+  ) -> Result<bool, String> {
+    if self.transactions.contains_key(&id) {
+      return Err("transaction record already exsit".to_string());
+    }
+
+    self.transactions.insert(id, profile);
+
+    if self.transactions.contains_key(&id) {
+      return Ok(true);
+    } else {
+      return Err("Insert fail. may heap overflow".to_string());
+    }
+  }
+}
+
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct HistoryQueryCommand {
   // Primary key

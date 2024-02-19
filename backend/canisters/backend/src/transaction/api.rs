@@ -5,7 +5,10 @@ use ic_cdk::caller;
 use ic_cdk_macros::{query, update};
 
 use super::domain::*;
-use super::service::{AddRecordCommand, EditHistoryCommand, HistoryQueryCommand, RecordId, WalletAddress, WalletId};
+use super::service::{
+  AddRecordCommand, EditHistoryCommand, HistoryQueryCommand, RecordId,
+  WalletAddress, WalletId,
+};
 use crate::common::guard::user_owner_guard;
 use crate::{TransactionB, CONTEXT};
 
@@ -91,14 +94,18 @@ fn sync_transaction_record(
   data: HashMap<WalletId, Vec<TransactionF>>,
 ) -> Result<bool, String> {
   CONTEXT.with(|c| {
-    // let mut ctx = c.borrow_mut();
-    // for (_, record_profiles) in data {
-    //   for record_profile in record_profiles {
-    //     let _ = ctx
-    //       .wallet_record_service
-    //       .add_transaction_record(record_profile);
-    //   }
-    // }
+    let mut ctx = c.borrow_mut();
+    for (_, record_profiles) in data {
+      for record_profile in record_profiles {
+        let mut id = ctx.id;
+        let ret = ctx
+          .transaction_service
+          .add_transaction_record(id, record_profile);
+        if ret.is_ok() {
+          ctx.id += 1;
+        }
+      }
+    }
     Ok(true)
   })
 }
@@ -182,6 +189,3 @@ fn convert_edit_command_to_record_profile(
     profit: cmd.profit,
   }
 }
-
-
-

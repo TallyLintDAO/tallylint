@@ -38,9 +38,6 @@ pub struct TransactionRecord {
   pub comment: String,
 }
 
-
-
-
 impl WalletService {
   pub fn add_wallet(
     &mut self,

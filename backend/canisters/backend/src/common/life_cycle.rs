@@ -77,6 +77,9 @@ fn pre_upgrade() {
       Vec::from_iter(context.wallet_service.wallets.values().cloned());
     let records =
       Vec::from_iter(context.wallet_record_service.records.values().cloned());
+    let transactions = Vec::from_iter(
+      context.transaction_service.transactions.values().cloned(),
+    );
     let neurons =
       Vec::from_iter(context.neuron_service.neurons.values().cloned());
     let payload = CanisterDB {
@@ -85,6 +88,7 @@ fn pre_upgrade() {
       wallets,
       records,
       neurons,
+      transactions,
     };
 
     // save to db
@@ -158,6 +162,9 @@ pub fn get_payload() -> String {
       Vec::from_iter(context.wallet_service.wallets.values().cloned());
     let records =
       Vec::from_iter(context.wallet_record_service.records.values().cloned());
+    let transactions = Vec::from_iter(
+      context.transaction_service.transactions.values().cloned(),
+    );
     let neurons =
       Vec::from_iter(context.neuron_service.neurons.values().cloned());
 
@@ -175,6 +182,7 @@ pub fn get_payload() -> String {
       wallets,
       records,
       neurons,
+      transactions,
     };
 
     // this call candid serialization. custom impl of serialization diff to
@@ -249,6 +257,9 @@ fn set_stable_mem_use_payload() {
       Vec::from_iter(context.wallet_service.wallets.values().cloned());
     let records =
       Vec::from_iter(context.wallet_record_service.records.values().cloned());
+    let transactions = Vec::from_iter(
+      context.transaction_service.transactions.values().cloned(),
+    );
     let neurons =
       Vec::from_iter(context.neuron_service.neurons.values().cloned());
     let payload = CanisterDB {
@@ -257,6 +268,7 @@ fn set_stable_mem_use_payload() {
       wallets,
       records,
       neurons,
+      transactions,
     };
 
     let json = serde_json::to_string(&payload).unwrap();

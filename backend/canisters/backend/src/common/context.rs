@@ -1,5 +1,10 @@
 use crate::{
-  common::env::Environment, transaction::{domain::TransactionB, service::WalletRecordService}, wallet::service::{RecordId, WalletId,}
+  common::env::Environment,
+  transaction::{
+    domain::{TransactionB, TransactionF},
+    service::{TransactionService, WalletRecordService},
+  },
+  wallet::service::{RecordId, WalletId},
 };
 use candid::{CandidType, Principal};
 use std::collections::BTreeMap;
@@ -24,6 +29,7 @@ pub struct CanisterContext {
   pub wallet_service: WalletService,
   pub wallet_record_service: WalletRecordService,
   pub neuron_service: NeuronService,
+  pub transaction_service: TransactionService,
 }
 
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
@@ -33,6 +39,7 @@ pub struct CanisterDB {
   pub wallets: Vec<WalletProfile>,
   pub records: Vec<TransactionB>,
   pub neurons: Vec<NeuronProfile>,
+  pub transactions: Vec<TransactionF>,
 }
 
 impl Default for CanisterContext {
@@ -44,6 +51,7 @@ impl Default for CanisterContext {
       wallet_service: WalletService::default(),
       wallet_record_service: WalletRecordService::default(),
       neuron_service: NeuronService::default(),
+      transaction_service: TransactionService::default(),
     }
   }
 }
@@ -73,6 +81,11 @@ impl From<CanisterDB> for CanisterContext {
       //manipulate each element iterator gives
       .map(|v| (v.id, v))
       .collect();
+    let transactions: BTreeMap<RecordId, TransactionF> = payload
+      .transactions
+      .into_iter()
+      .map(|v| (v.id, v))
+      .collect();
     let neurons = payload
       .neurons
       .into_iter()
@@ -85,6 +98,7 @@ impl From<CanisterDB> for CanisterContext {
       wallet_service: WalletService { wallets },
       wallet_record_service: WalletRecordService { records },
       neuron_service: NeuronService { neurons },
+      transaction_service: TransactionService { transactions },
     }
   }
 }
@@ -97,6 +111,9 @@ impl From<CanisterContext> for CanisterDB {
       Vec::from_iter(context.wallet_service.wallets.values().cloned());
     let records =
       Vec::from_iter(context.wallet_record_service.records.values().cloned());
+    let transactions = Vec::from_iter(
+      context.transaction_service.transactions.values().cloned(),
+    );
     let neurons =
       Vec::from_iter(context.neuron_service.neurons.values().cloned());
     Self {
@@ -105,6 +122,7 @@ impl From<CanisterContext> for CanisterDB {
       wallets,
       records,
       neurons,
+      transactions,
     }
   }
 }

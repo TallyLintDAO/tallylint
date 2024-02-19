@@ -131,11 +131,6 @@ fn delete_wallet(id: u64) -> Result<bool, String> {
   })
 }
 
-
-
-
-
-
 fn convert_edit_command_to_record_profile(
   cmd: EditHistoryCommand,
   addr: WalletAddress,

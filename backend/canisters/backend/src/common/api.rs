@@ -33,6 +33,9 @@ fn do_pre_upgrade_and_print_db() -> String {
       Vec::from_iter(context.wallet_service.wallets.values().cloned());
     let records =
       Vec::from_iter(context.wallet_record_service.records.values().cloned());
+    let transactions = Vec::from_iter(
+      context.transaction_service.transactions.values().cloned(),
+    );
     let neurons =
       Vec::from_iter(context.neuron_service.neurons.values().cloned());
 
@@ -42,6 +45,7 @@ fn do_pre_upgrade_and_print_db() -> String {
       wallets,
       records,
       neurons,
+      transactions,
     };
 
     let mut memory = get_upgrades_memory();
@@ -74,6 +78,7 @@ fn clean_db() -> String {
     let users = Vec::new();
     let wallets = Vec::new();
     let records = Vec::new();
+    let transactions = Vec::new();
     let neurons = Vec::new();
     let payload = CanisterDB {
       id,
@@ -81,6 +86,7 @@ fn clean_db() -> String {
       wallets,
       records,
       neurons,
+      transactions,
     };
 
     let mut memory = get_upgrades_memory();

@@ -7,9 +7,9 @@ pub mod common;
 pub mod lifecycle;
 pub mod nns;
 pub mod tools;
+pub mod transaction;
 pub mod user;
 pub mod wallet;
-pub mod transaction;
 
 use crate::common::context::CanisterContext;
 thread_local! {
@@ -38,6 +38,10 @@ use crate::c_http::api::*;
 #[allow(unused_imports)]
 use crate::c_http::non_replicate_http::*;
 #[allow(unused_imports)]
+use crate::transaction::domain::TransactionB;
+#[allow(unused_imports)]
+use crate::transaction::domain::TransactionF;
+#[allow(unused_imports)]
 use crate::wallet::domain::*;
 #[allow(unused_imports)]
 use crate::wallet::service::RecordId;
@@ -45,10 +49,6 @@ use crate::wallet::service::RecordId;
 use crate::wallet::service::WalletAddress;
 #[allow(unused_imports)]
 use crate::wallet::service::WalletId;
-#[allow(unused_imports)]
-use crate::transaction::domain::TransactionB;
-#[allow(unused_imports)]
-use crate::transaction::domain::TransactionF;
 #[allow(unused_imports)]
 use ic_cdk::api::call::CallResult;
 #[allow(unused_imports)]

@@ -51,8 +51,6 @@ pub struct Currency {
   symbol: String, //代币符号，例如'ICP'，'CHAT'
 }
 
-
-
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct TransactionB {
   //
