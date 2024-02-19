@@ -1,0 +1,29 @@
+{
+  "walletid": "NUMBER",
+  "wallet_history": [
+    {
+      "transactionf": {
+        "hash": "STRING",
+        "timestamp": "NUMBER",
+        "type": "STRING",
+        "walletName": "STRING",
+        "details": {
+          "status": "STRING",
+          "fee": "NUMBER",
+          "to": "STRING",
+          "from": "STRING",
+          "amount": "NUMBER",
+          "price": "NUMBER",
+          "currency": {
+            "decimals": "NUMBER",
+            "symbol": "STRING"
+          },
+          "ledgerCanisterId": "STRING",
+          "cost": "NUMBER",
+          "profit": "NUMBER",
+          "value": "NUMBER"
+        }
+      }
+    }
+  ]
+}

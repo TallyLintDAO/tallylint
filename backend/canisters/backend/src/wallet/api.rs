@@ -137,14 +137,14 @@ fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     let id = ctx.id;
-    let profile = RecordProfile {
+    let profile = TransactionF {
       id: id,
 
       coin_type: cmd.coin_type,
       address: cmd.address,
       price: cmd.price,
       amount: cmd.amount,
-      time: cmd.time,
+      timestamp: cmd.time,
       t_type: cmd.t_type,
       tag: cmd.tag,
       manual: cmd.manual,
@@ -209,11 +209,11 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
 // nns dashboard的api可能要用到. 详见前端查询方法.
 #[update(guard = "user_owner_guard")]
 fn sync_transaction_record(
-  data: HashMap<WalletId, Vec<RecordProfile>>,
+  data: HashMap<WalletId, Vec<TransactionF>>,
 ) -> Result<bool, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    for (_wallet_id, record_profiles) in data {
+    for (_, record_profiles) in data {
       for record_profile in record_profiles {
         let _ = ctx
           .wallet_record_service
@@ -229,10 +229,10 @@ fn sync_transaction_record(
 #[query(guard = "user_owner_guard")]
 fn wallet_history(
   mut cmd: HistoryQueryCommand,
-) -> Result<HashMap<WalletAddress, Vec<RecordProfile>>, String> {
+) -> Result<HashMap<WalletAddress, Vec<TransactionF>>, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    let mut history: HashMap<WalletAddress, Vec<RecordProfile>> =
+    let mut history: HashMap<WalletAddress, Vec<TransactionF>> =
       HashMap::new();
     // query one
     if cmd.address.is_some() {
@@ -279,15 +279,15 @@ fn wallet_history(
 fn convert_edit_command_to_record_profile(
   cmd: EditHistoryCommand,
   addr: WalletAddress,
-) -> RecordProfile {
-  RecordProfile {
+) -> TransactionF {
+  TransactionF {
     id: cmd.id,
     coin_type: cmd.coin_type,
 
     address: addr,
     price: cmd.price,
     amount: cmd.amount,
-    time: cmd.time,
+    timestamp: cmd.time,
     t_type: cmd.t_type,
     tag: cmd.tag,
     manual: cmd.manual,

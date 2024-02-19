@@ -78,31 +78,35 @@ impl Default for WalletAddCommand {
     }
   }
 }
-
+/**
+ * B stands for backend data
+ * F stands for frontend data type
+ * 
+ */
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
-pub struct RecordProfile {
+pub struct TransactionF {
   //
   // backend autogen:
   pub id: RecordId,
   //
 
   //
-  //  frontend passin:
+  //  frontend pass in:
+  pub hash: String,
+  pub timestamp: TimeStamp, //transaction_time
+  pub t_type: String, //transaction_type SEND or RECEIVE
   pub coin_type: String,
   pub principal_id: Option<String>, /* Plug use , need
                                      * to convert to
                                      * opt_account_id_hex for use. */
   pub address: WalletAddress, // same as account_id_hex
-  pub hash: String,
-  pub t_type: String, //transaction_type
   pub status: String,
-  pub time: TimeStamp, //transaction_time
-  pub from: String,
-  pub to: String,
-  pub amount: u32,
   pub fee: f64,
-  pub memo: String,
+  pub to: String,
+  pub from: String,
+  pub amount: u32,
   pub price: f64,
+  pub memo: String,
   pub cost: f64,
   pub income: f64,
   pub profit: f64,
@@ -217,3 +221,42 @@ pub struct AddRecordCommand {
 //         // Ok(deserialized_profile)
 //     }
 // }
+
+
+
+pub struct Wallet {
+    walletid: u64,
+    wallet_history: Vec<TransactionF>,
+}
+
+/**
+ * FIXED DATA TYPE, use by frontend. dont change easily
+ */
+#[allow(non_snake_case)]
+pub struct TransactionF_ {
+    hash: String,
+    timestamp: u64, // TODO check ns or ms as unit
+    type_: String, // "SEND", "RECEIVE"
+    walletName: String,
+    details: Details,
+}
+
+#[allow(non_snake_case)]
+pub struct Details {
+    status: String, //交易状态，表示交易成功与否，暂时先要着
+    fee: f64,
+    to: String,
+    from: String,
+    amount: f64,
+    price: f64,
+    currency: Currency,
+    ledgerCanisterId: String,
+    cost: f64,//由后端计算，以下几个属性，理论上应该是不要持久化储存的，只有调用方法的时候由后端计算，组装
+    profit: f64,
+    value: f64,
+}
+
+pub struct Currency {
+    decimals: u64, //代币精度
+    symbol: String, //代币符号，例如'ICP'，'CHAT'
+}
