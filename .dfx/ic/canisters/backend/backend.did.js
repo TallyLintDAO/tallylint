@@ -85,7 +85,6 @@ export const idlFactory = ({ IDL }) => {
     'id' : IDL.Nat64,
     'owner' : IDL.Principal,
     'name' : IDL.Text,
-    'update_time' : IDL.Nat64,
     'create_time' : IDL.Nat64,
     'address' : IDL.Text,
   });
@@ -152,8 +151,6 @@ export const idlFactory = ({ IDL }) => {
     'delete_neuron_wallet' : IDL.Func([IDL.Nat64], [Result], []),
     'delete_transaction_record' : IDL.Func([IDL.Nat64], [Result_1], []),
     'delete_wallet' : IDL.Func([IDL.Nat64], [Result], []),
-    'do_post_upgrade' : IDL.Func([IDL.Text], [IDL.Bool], []),
-    'do_pre_upgrade_and_print_db' : IDL.Func([], [IDL.Text], ['query']),
     'edit_transaction_record' : IDL.Func([EditHistoryCommand], [Result], []),
     'get_balance' : IDL.Func([], [IDL.Nat64], []),
     'get_neuron_info' : IDL.Func([IDL.Nat64], [Result_3], []),

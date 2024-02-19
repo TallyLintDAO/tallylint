@@ -63,7 +63,6 @@ export interface NeuronProfile {
   'id' : bigint,
   'owner' : Principal,
   'name' : string,
-  'update_time' : bigint,
   'create_time' : bigint,
   'address' : string,
 }
@@ -141,8 +140,6 @@ export interface _SERVICE {
   'delete_neuron_wallet' : ActorMethod<[bigint], Result>,
   'delete_transaction_record' : ActorMethod<[bigint], Result_1>,
   'delete_wallet' : ActorMethod<[bigint], Result>,
-  'do_post_upgrade' : ActorMethod<[string], boolean>,
-  'do_pre_upgrade_and_print_db' : ActorMethod<[], string>,
   'edit_transaction_record' : ActorMethod<[EditHistoryCommand], Result>,
   'get_balance' : ActorMethod<[], bigint>,
   'get_neuron_info' : ActorMethod<[bigint], Result_3>,

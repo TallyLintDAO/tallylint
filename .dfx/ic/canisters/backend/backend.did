@@ -49,7 +49,6 @@ type NeuronProfile = record {
   id : nat64;
   owner : principal;
   name : text;
-  update_time : nat64;
   create_time : nat64;
   address : text;
 };
@@ -122,8 +121,6 @@ service : {
   delete_neuron_wallet : (nat64) -> (Result);
   delete_transaction_record : (nat64) -> (Result_1);
   delete_wallet : (nat64) -> (Result);
-  do_post_upgrade : (text) -> (bool);
-  do_pre_upgrade_and_print_db : () -> (text) query;
   edit_transaction_record : (EditHistoryCommand) -> (Result);
   get_balance : () -> (nat64);
   get_neuron_info : (nat64) -> (Result_3);
