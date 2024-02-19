@@ -9,3 +9,4 @@ edition = "2021"
 # ic-cdk = { workspace = true }
 # ic-stable-structures = { workspace = true }
 sha2 = "0.10.8"
+git2 = "0.13"
