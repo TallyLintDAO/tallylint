@@ -9,16 +9,6 @@ use super::service::{AddRecordCommand, EditHistoryCommand, HistoryQueryCommand, 
 use crate::common::guard::user_owner_guard;
 use crate::{TransactionB, CONTEXT};
 
-const MAX_WALLET_NAME_LENGTH: usize = 64;
-const ACCOUNT_ID_LENGTH: usize = 64;
-const PRINCIPAL_ID_LENGTH: usize = 63;
-
-
-
-
-
-
-
 // TODO use: AddRecordCommand . front end dont need to input
 // id . id gen by backend. TODO 测试 id 正常生成且不冲突
 #[update(guard = "user_owner_guard")]
