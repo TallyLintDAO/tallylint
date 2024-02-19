@@ -32,3 +32,25 @@ export interface IRCR1Price {
   open: number
   timestamp: number
 }
+
+export interface InferredTransaction {
+  hash: string
+  timestamp: number
+  t_type: string // rust中type为关键字，所以不能使用type作为字段名
+  walletName: string
+  details: {
+    status: string
+    fee: {
+      amount: number
+    }
+    to?: string
+    from?: string
+    amount: number
+    price: number // 发生交易时代币的单价
+    currency: Currency
+    ledgerCanisterId: string
+    cost: number
+    profit: number
+    value: number
+  }
+}

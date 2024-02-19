@@ -356,9 +356,9 @@ const getWallet = async () => {
 const getDetail = () => {
   if (totalHistory.value) {
     totalHistory.value.forEach((transaction) => {
-      if (transaction.type === "RECEIVE") {
+      if (transaction.t_type === "RECEIVE") {
         received.value += transaction.amount * transaction.price
-      } else if (transaction.type === "SEND") {
+      } else if (transaction.t_type === "SEND") {
         sent.value += transaction.amount * transaction.price
       }
     })

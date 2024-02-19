@@ -5,7 +5,7 @@ import {
   ROSETTA_URL,
 } from "@/api/constants/ic"
 import { matchICPPrice } from "@/api/token"
-import type { Currency } from "@/types/sns"
+import type { Currency, InferredTransaction } from "@/types/sns"
 import type {
   DailyBalance,
   WalletHistory,
@@ -16,28 +16,6 @@ import { currencyCalculate } from "@/utils/common"
 import { showMessageError } from "@/utils/message"
 
 const radixNumber = 4 //保留4位小数
-
-export interface InferredTransaction {
-  hash: string
-  timestamp: number
-  type: string
-  walletName: string
-  details: {
-    status: string
-    fee: {
-      amount: number
-    }
-    to?: string
-    from?: string
-    amount: number
-    price: number // 发生交易时代币的单价
-    currency: Currency
-    ledgerCanisterId: string
-    cost: number
-    profit: number
-    value: number
-  }
-}
 
 export interface GetTransactionsResponse {
   total: number
@@ -185,7 +163,7 @@ export const formatIcpTransaccion = async (
     )
       transaction.details.status = operation.status
 
-    transaction.type =
+    transaction.t_type =
       transaction.details.to === wallet.address ? "RECEIVE" : "SEND"
     transaction.walletName = wallet.name
     //直接输出真实的数量，不再使用浮点数
@@ -205,9 +183,9 @@ export const formatIcpTransaccion = async (
     //先入先出的成本计算法，以IC的精度，建议保留4位小数
     const cost = calculateCost(transaction)
     transaction.details.cost = parseFloat(cost.toFixed(radixNumber))
-    if (transaction.type === "RECEIVE") {
+    if (transaction.t_type === "RECEIVE") {
       transaction.details.profit = 0
-    } else if (transaction.type === "SEND") {
+    } else if (transaction.t_type === "SEND") {
       // const factor = 10 ** radixNumber; //进位10的n次方，扩大倍数将其变成整数，再在计算完成后除以倍数换回小数点
       //TODO 本意是计算精度更准确，但有点bug，先注释了，用简单粗暴的
       // transaction.details.profit =
@@ -229,12 +207,12 @@ const purchaseQueue: any[] = []
 
 // 计算FIFO成本
 const calculateCost = (transaction: InferredTransaction): number => {
-  if (transaction.type === "RECEIVE") {
+  if (transaction.t_type === "RECEIVE") {
     // 处理接收交易，保存价格和数量。
     const { price, amount } = transaction.details
     purchaseQueue.push({ price, amount })
     return 0
-  } else if (transaction.type === "SEND") {
+  } else if (transaction.t_type === "SEND") {
     let cost = 0
     let sendAmount = transaction.details.amount // 存储本次交易发送的代币数量
 
@@ -283,13 +261,13 @@ export const getWalletHistory = async (accountAddress: string) => {
   // 遍历每一笔交易并更新钱包历史
   for (const transaction of transactions) {
     // 解构交易信息
-    const { details, timestamp, type } = transaction
+    const { details, timestamp, t_type } = transaction
     const { price, amount } = details
 
     // 更新钱包余额
-    if (type === "SEND") {
+    if (t_type === "SEND") {
       walletHistory.amount -= amount
-    } else if (type === "RECEIVE") {
+    } else if (t_type === "RECEIVE") {
       walletHistory.amount += amount
     }
     // 计算交易金额
@@ -303,7 +281,7 @@ export const getWalletHistory = async (accountAddress: string) => {
       walletAmount: walletHistory.amount,
       timestamp,
       walletValue,
-      type,
+      t_type,
     }
 
     // 将交易历史记录添加到钱包历史
@@ -338,7 +316,7 @@ export const getAllWalletDailyBalance = async (
         amount,
         currency: { symbol },
       },
-      type,
+      t_type,
     } = transaction
     const currentDate = new Date(timestamp)
     const currentDateStr = currentDate.toISOString().split("T")[0]
@@ -353,7 +331,7 @@ export const getAllWalletDailyBalance = async (
       dailyBalance[currentDateStr][symbol] = { amount: 0, value: 0 }
     }
     // 根据交易类型更新代币余额
-    if (type === "RECEIVE") {
+    if (t_type === "RECEIVE") {
       dailyBalance[currentDateStr][symbol].amount += amount
     } else {
       // 假设其他类型是支出，这里可以根据实际情况修改
@@ -406,11 +384,13 @@ export const getDailyBalanceValue = async (
     // 将每个代币的价值添加进来
     for (const token of tokens) {
       let tokenPrice = 0
+      //获取token 单价
       if (token === "ICP") {
         tokenPrice = await matchICPPrice(date.getTime())
       } else {
         //ICRC1 token
       }
+      //计算价值
       value += balanceInfo[token].amount * tokenPrice
     }
     balances.push(Number(value.toFixed(2)))

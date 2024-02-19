@@ -14,7 +14,11 @@
       <template v-slot:top>
         <div class="q-gutter-sm">
           <q-btn color="primary" @click="openDialog('add')">Add Wallet</q-btn>
-          <q-btn color="secondary" @click="syncAllWallet()" icon="cached"
+          <q-btn
+            color="secondary"
+            @click="syncAllWallet()"
+            icon="cached"
+            :loading="syncLoading"
             >Sync All Wallet</q-btn
           >
         </div>
@@ -199,6 +203,7 @@ const froms = ["NNS", "Plug", "Stoic", "AstorMe"]
 const walletDialogVisible = ref(false)
 const loading = ref(false)
 const tableLoading = ref(false)
+const syncLoading = ref(false)
 const filter = ref("") // 搜索框
 const selected = ref([]) // 当前选中的对象们
 const address = ref("") // 当前用户输入的地址，可能是principal ID，也可能是account ID
@@ -233,16 +238,30 @@ onMounted(() => {
   getWallets(false)
 })
 
-const syncAllWallet = () => {
-  rows.value.forEach((row, index) => {
-    console.log(`Row ${index + 1}`, row)
-    getICPTransactions({ address: row.address, name: "", from: "" }, true).then(
-      (res) => {
-        //将钱包数据同步
-        syncWallet(row.id, res.transactions)
-      },
-    )
+const syncAllWallet = async () => {
+  syncLoading.value = true
+  // 创建一个 Promise 数组，用于存放每个 getICPTransactions() 的 Promise
+  const promises = rows.value.map((row, index) => {
+    return getICPTransactions(
+      { address: row.address, name: "", from: "" },
+      true,
+    ).then((res) => {
+      //将钱包数据同步
+      console.log(`getICPTransactions ${index + 1}`, res)
+      syncWallet(row.id, res.transactions)
+    })
   })
+  // 使用 Promise.all() 等待所有的请求完成
+  Promise.all(promises)
+    .then(() => {
+      console.log("Promise.all", promises)
+    })
+    .catch((error) => {
+      console.error("Error:", error)
+    })
+    .finally(() => {
+      syncLoading.value = false
+    })
 }
 
 // 识别用户输入的地址属于principal ID还是account ID

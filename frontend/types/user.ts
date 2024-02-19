@@ -29,7 +29,7 @@ export interface WalletHistory {
   walletAmount: number
   timestamp: number
   walletValue: number
-  type: string
+  t_type: string
 }
 
 export interface WalletTag {
