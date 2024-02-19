@@ -413,7 +413,7 @@ export const getDailyBalanceValue = async (
       }
       value += balanceInfo[token].amount * tokenPrice
     }
-    balances.push(value)
+    balances.push(Number(value.toFixed(2)))
   }
   return balances
 }

@@ -287,14 +287,16 @@ const getWallet = async () => {
   if (res.Ok && res.Ok[0]) {
     //清空钱包，以免出现重复的问题
     wallets.value.length = 0
-    console.log("getWallet", res.Ok)
     for (const walletInfo of res.Ok) {
-      //TODO 有bug，多个钱包的资产总值没有计算。
+      //TODO 这里作为BREAKDOWN的数值，有bug，多个钱包的资产总值没有计算，而下面的echarts图表没有bug，已经计算了。
       //将用户的每个钱包地址下的交易记录查出来，并总和到一起
       const walletHistory = await getWalletHistory(walletInfo.address)
       getBalance(walletInfo.address, walletInfo.name)
       totalHistory.value = totalHistory.value.concat(walletHistory.history)
     }
+    const walletDailyBalance = await getAllWalletDailyBalance(res.Ok)
+    let timestamps = Object.keys(walletDailyBalance).sort()
+    const balances = await getDailyBalanceValue(walletDailyBalance)
     // 按选定的日期区间过滤记录
     if (date.value) {
       totalHistory.value = totalHistory.value.filter(
@@ -302,10 +304,15 @@ const getWallet = async () => {
           item.timestamp >= Number(date.value[0]) &&
           item.timestamp <= Number(date.value[1]),
       )
+      //为echarts图表过滤
+      timestamps = timestamps.filter((timestamp) => {
+        const currentDate = Number(new Date(timestamp))
+        return (
+          currentDate >= Number(date.value[0]) &&
+          currentDate <= Number(date.value[1])
+        )
+      })
     }
-    const walletDailyBalance = await getAllWalletDailyBalance(res.Ok)
-    const timestamps = Object.keys(walletDailyBalance).sort()
-    const balances = await getDailyBalanceValue(walletDailyBalance)
     getDetail()
     // 基于准备好的dom，初始化echarts实例
 
