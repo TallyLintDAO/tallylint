@@ -48,7 +48,7 @@ fn init() {
  */
 // #[pre_upgrade] is a hook. everytime update canister will auto call this.
 // old version . last version exec.
-#[pre_upgrade]
+// #[pre_upgrade]
 #[trace]
 fn pre_upgrade() {
   // TODO try this.
@@ -94,14 +94,14 @@ fn pre_upgrade() {
 
     // save to db
     let json = serde_json::to_string(&payload).unwrap();
-    ic_cdk::println!(
-      "\x1b[31m SAVING THE PAYLOAD INTO STABLE STUCTURE: \x1b[0m  \n {}",
-      json
-    );
-    let mut memory = get_upgrades_memory();
-    let mut writer = get_writer(&mut memory);
-    let ret = writer.write_all(json.as_bytes());
-    ret.expect("Failed to write to writer");
+    // ic_cdk::println!(
+    //   "\x1b[31m SAVING THE PAYLOAD INTO STABLE STUCTURE: \x1b[0m  \n {}",
+    //   json
+    // );
+    // let mut memory = get_upgrades_memory();
+    // let mut writer = get_writer(&mut memory);
+    // let ret = writer.write_all(json.as_bytes());
+    // ret.expect("Failed to write to writer");
   });
 }
 
@@ -111,22 +111,22 @@ fn pre_upgrade() {
 fn post_upgrade() {
   http_post_upgrade(Principal::from_str(PROXY_CANISTER_ID).unwrap());
 
-  let mut buf = Vec::new();
-  let memory = get_upgrades_memory();
-  let mut reader = get_reader(&memory);
-  reader
-    .read_to_end(&mut buf)
-    .expect("Failed to read from reader");
-  let mut json = String::from_utf8_lossy(&buf).to_string();
-  ic_cdk::println!("\x1b[31m WHAT GET FROM stable mem:  \x1b[0m  {}", json);
+  // let mut buf = Vec::new();
+  // let memory = get_upgrades_memory();
+  // let mut reader = get_reader(&memory);
+  // reader
+  //   .read_to_end(&mut buf)
+  //   .expect("Failed to read from reader");
+  // let mut json = String::from_utf8_lossy(&buf).to_string();
+  // ic_cdk::println!("\x1b[31m WHAT GET FROM stable mem:  \x1b[0m  {}", json);
 
-  let end_of_json = json.rfind('}').unwrap_or(0) + 1;
-  json = json[..end_of_json].to_string();
-  ic_cdk::println!(
-    "\x1b[31m AFTER PROCESS of payload data:  \x1b[0m  {}",
-    json
-  );
-
+  // let end_of_json = json.rfind('}').unwrap_or(0) + 1;
+  // json = json[..end_of_json].to_string();
+  // ic_cdk::println!(
+  //   "\x1b[31m AFTER PROCESS of payload data:  \x1b[0m  {}",
+  //   json
+  // );
+  let json=get_payload_from_stable_mem_simple();
   let ret = serde_json::from_str::<CanisterDB>(&json);
   let payload = match ret {
     Ok(value) => value,
