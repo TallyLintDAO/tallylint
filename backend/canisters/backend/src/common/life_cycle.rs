@@ -16,7 +16,7 @@ use super::memory::get_upgrades_memory;
 use crate::c_http::post::get_payload_from_dropbox;
 use crate::common::constants::PROXY_CANISTER_ID;
 use crate::{
-  http_init, http_post_upgrade, CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU,
+   http_init, http_post_upgrade, CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU
 };
 use stable_memory::*;
 #[init]
@@ -153,7 +153,7 @@ fn post_upgrade() {
 // node machine ?
 
 #[query]
-pub fn collect_current_payload() -> String {
+pub fn collect_running_payload() -> String {
   let mut json: String = String::new();
   CONTEXT.with(|c| {
     let context = c.borrow();
@@ -374,4 +374,91 @@ pub async fn set_payload_using_dropbox(
     *state = stable_state;
     return true;
   })
+}
+
+
+use ic_cdk::api::management_canister::http_request::{
+  http_request, CanisterHttpRequestArgument, HttpHeader, HttpMethod,
+};
+// TODO
+// now work ok. but cant use in pre_upgrade in ic canister.
+// need to make this function blocking . cant be async.
+// need to dive deeper in this programming.
+/**
+ * if src is 0 use running payload.
+ * if NOT 0 use stable mem
+ */
+#[ic_cdk::update]
+pub async fn save_payload_to_dropbox(token: String, src: u32) -> String {
+  let host = "content.dropboxapi.com";
+  let url = "https://content.dropboxapi.com/2/files/upload";
+
+  let timestamp = ic_cdk::api::time();
+  use crate::tools::time_tool::timestamp_to_date;
+  let time = timestamp_to_date(timestamp);
+
+  let request_headers = vec![
+        HttpHeader {
+            name: "Host".to_string(),
+            value: format!("{host}:443"),
+        },
+        HttpHeader {
+            name: "Authorization".to_string(),
+            value: format!("Bearer {}",token).to_string(),
+        },
+
+        HttpHeader {
+        name: "Dropbox-API-Arg".to_string(),
+        // path: dst to dropbox folder.
+        value: format!("{{\"autorename\":false,\"mode\":\"add\",\"mute\":false,\"path\":\"/taxlint/payload_{}.json\",\"strict_conflict\":false}}", time),
+        },
+        HttpHeader {
+            name: "Content-Type".to_string(),
+            // value: "application/json".to_string(),
+            value: "application/octet-stream".to_string(),
+        },
+    ];
+  let json_string: String;
+  if src == 0 {
+    json_string = collect_running_payload();
+  } else {
+    json_string = get_payload_from_stable_mem();
+  }
+
+  let json_utf8: Vec<u8> = json_string.into_bytes();
+  let json_length = json_utf8.len() as u64;
+  let request_body: Option<Vec<u8>> = Some(json_utf8);
+
+
+
+  let request = CanisterHttpRequestArgument {
+    url: url.to_string(),
+    max_response_bytes: None, //optional for request
+    method: HttpMethod::POST,
+    headers: request_headers,
+    body: request_body,
+    transform: None, //optional for request
+  };
+
+  use crate::calculate_cost;
+  let cycles = calculate_cost(16, json_length, 1000);
+
+  match http_request(request, cycles).await {
+    Ok((response,)) => {
+      let str_body = String::from_utf8(response.body)
+        .expect("Transformed response is not UTF-8 encoded.");
+      ic_cdk::api::print(format!("{:?}", str_body));
+
+      let result: String = format!(
+        "{}. See more info of the request sent at: {}/inspect \n timestamp as version number: {}",
+        str_body, url,time
+      );
+      result
+    }
+    Err((r, m)) => {
+      let message =
+                format!("The http_request resulted into error. RejectionCode: {r:?}, Error: {m}");
+      message
+    }
+  }
 }
