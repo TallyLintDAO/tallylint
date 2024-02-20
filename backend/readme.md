@@ -255,4 +255,14 @@ TODO: 了解uninstall_code 的api是否会导致stable mem 被删除. 如果不�
   rust层: 做一些简单的stable_save 和 stable_restore接口. 
   rust或者dfx层: uninstall 和install 接口
 
+# 备份线上数据库和还原
+这个分支是距离最近线上代码的上一次代码. 表示这个代码的pre_upgrade是执行完成了的.
+git checkout -b prod_db_backup_3_dec_22 56b89a70eb70ad51ed2ba2b2d46f6d4886e5911e
+现在手动选择跳过pre_install来install当前最新后端代码.
+再使用dropbox的 to dropbox api 和from dropbox api 来尝试复原heap数据.
+如果都执行成功.再升级一次代码启用 pre 和 post的2个hook
+
+
+
+
   

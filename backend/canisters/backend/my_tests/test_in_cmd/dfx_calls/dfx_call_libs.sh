@@ -244,7 +244,6 @@ There should be a list of the recent changes to the wasm included in the respons
 # right commit spot:
 git checkout -b prod_db_backup_2 6643435906e4fc1fc9868df1829069c14159fa9c
 
-git checkout -b prod_db_backup_3_dec_22 56b89a70eb70ad51ed2ba2b2d46f6d4886e5911e
 
 git checkout -b did_file 53220e360764695a334bd08b23267e99ef66a3a2
 
