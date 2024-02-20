@@ -40,7 +40,7 @@ change_name.sh
 
 # TODO : only want to uplaod / download but never track history? how ?
 
-.env
+/.env
 
 Cargo.lock
 
