@@ -10,13 +10,14 @@ members = [
     "backend/lib/candid_gen",
     "backend/lib/serializer",
     "backend/lib/stable_memory",
-    "backend/lib/canister_upgrader",
     "backend/lib/canister_agent_utils",
     "backend/lib/my_types",
+    # "backend/lib/canister_upgrader",
     # "backend/lib/sha256_versions",
 
-    # test
-    "backend/integration_tests",
+    # test to mock a ic-repica local and exec wasm canister code .
+    # FIXME candid version conlflict with cansiter_upgrader.
+    # "backend/integration_tests",
 ]
 resolver = "2"
 
@@ -30,6 +31,7 @@ proc-macro2 = "1.0.69"
 quote = "1.0.33"
 syn = "2.0.39"
 candid = "0.9.11"
+# candid_derive ="0.6.4"
 serde = "1.0.192"
 serde_bytes = "0.11.12"
 serde_cbor = "0.11.2"
