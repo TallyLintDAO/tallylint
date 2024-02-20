@@ -212,6 +212,7 @@ service : () -> {
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_2);
   clean_db : () -> (text);
+  collect_running_payload : () -> (text) query;
   delete_neuron_wallet : (nat64) -> (Result);
   delete_transaction_record : (nat64) -> (Result_1);
   delete_wallet : (nat64) -> (Result);
@@ -222,9 +223,9 @@ service : () -> {
   get_http_results : () -> (vec record { nat64; HttpResult }) query;
   get_icp_usd_exchange : () -> (text);
   get_neuron_info : (nat64) -> (Result_3);
-  get_payload : () -> (text) query;
   get_payload_from_dropbox : (text, text) -> (text);
   get_payload_from_stable_mem : () -> (text) query;
+  get_payload_from_stable_mem_simple : () -> (text) query;
   http_request_via_proxy : (HttpRequest, opt nat64, bool) -> (Result_4);
   http_response_callback : (nat64, HttpResult) -> ();
   list_all_user : () -> (vec UserProfile);
@@ -232,11 +233,12 @@ service : () -> {
   query_a_wallet : (nat64) -> (Result_6) query;
   query_all_neuron_wallet : () -> (Result_7) query;
   query_all_wallets : () -> (Result_8) query;
-  restore_db_from_dropbox : (text, text) -> (bool);
   save_payload_to_dropbox : (text, nat32) -> (text);
   save_payload_to_dropbox_blocking : () -> (text);
-  set_payload : () -> ();
+  set_payload_using_dropbox : (text, text) -> (bool);
+  set_payload_using_stable_mem : () -> ();
   set_stable_mem_use_payload : () -> ();
+  set_stable_mem_use_payload_simple : () -> ();
   store_paylaod_to_dropbox : () -> (text);
   sync_transaction_record : (vec record { nat64; vec TransactionF }) -> (
       Result,
