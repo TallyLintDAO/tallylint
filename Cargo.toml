@@ -10,6 +10,7 @@ members = [
     "backend/lib/candid_gen",
     "backend/lib/serializer",
     "backend/lib/stable_memory",
+    "backend/lib/canister_upgrader",
     # "backend/lib/sha256_versions",
 
     # test

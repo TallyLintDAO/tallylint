@@ -217,12 +217,12 @@ dfx canister call backend add_neuron_wallet '(record { address = "307b116d3afaeb
 
 
 # empty db
-dfx canister call  backend set_payload_using_dropbox '("sl.Bv2AeIHy2BD9tl_h-QySDyGNF3eniMMQD6rD_V5qDMv6kNkIO_h8-DKXY0nrRGZEKAiXnMqhaAxylmFzyiGTN8JZpZWQpGUOP9fWJhWmL26lxcPVG_yc7uA3v9sghWLKFKkctT7VxNXEgfSrEL2GlNA", "2024_02_18_10_57_24")'
+dfx canister call  backend save_payload_to_dropbox '("sl.Bv2AeIHy2BD9tl_h-QySDyGNF3eniMMQD6rD_V5qDMv6kNkIO_h8-DKXY0nrRGZEKAiXnMqhaAxylmFzyiGTN8JZpZWQpGUOP9fWJhWmL26lxcPVG_yc7uA3v9sghWLKFKkctT7VxNXEgfSrEL2GlNA", 1 )'
 
 # registered user db  
-dfx canister call  backend set_payload_using_dropbox '("sl.Bv2AeIHy2BD9tl_h-QySDyGNF3eniMMQD6rD_V5qDMv6kNkIO_h8-DKXY0nrRGZEKAiXnMqhaAxylmFzyiGTN8JZpZWQpGUOP9fWJhWmL26lxcPVG_yc7uA3v9sghWLKFKkctT7VxNXEgfSrEL2GlNA", "2024_02_18_11_24_41")'
+dfx canister call  backend save_payload_to_dropbox '("sl.Bv2AeIHy2BD9tl_h-QySDyGNF3eniMMQD6rD_V5qDMv6kNkIO_h8-DKXY0nrRGZEKAiXnMqhaAxylmFzyiGTN8JZpZWQpGUOP9fWJhWmL26lxcPVG_yc7uA3v9sghWLKFKkctT7VxNXEgfSrEL2GlNA", 1 )'
 
-#TODO important: do above save_payload_to_dropbox() and set_payload_using_dropbox() on product code.
+#TODO important: do above save_payload_to_dropbox() and save_payload_to_dropbox() on product code.
 # method1: run save_payload_to_dropbox() at preupgreade time .
 # method2: goto online code version using git checkout. and add the save_payload_to_dropbox() to that version of code .
 
@@ -285,10 +285,6 @@ call aaaaa-aa canister_info\
   })'\
   --wallet $(dfx identity  get-wallet) \
   --candid /home/btwl/code/ic/tax_lint/backend/canisters/backend/my_tests/test_in_cmd/dfx_calls/manage_can.did
-
-
-
-
 
 
 ```

@@ -259,9 +259,87 @@ TODO: 了解uninstall_code 的api是否会导致stable mem 被删除. 如果不�
 目前的线上代码执行过一次pre_upgrade. 那个pre_upgrade代码就是上上次的代码,即下面的commit,检查了是ok的.也必定是执行成功才能部署到目前的线上代码.
 这个分支是距离最近线上代码的上一次代码. 表示这个代码的pre_upgrade是执行完成了的.
 git checkout -b prod_db_backup_3_dec_22 56b89a70eb70ad51ed2ba2b2d46f6d4886e5911e
-现在手动选择跳过pre_install来install当前最新后端代码.
-再使用dropbox的 to dropbox api 和from dropbox api 来尝试复原heap数据.
-如果都执行成功.再升级一次代码启用 pre 和 post的2个hook
+
+1. 现在手动选择skip_pre_install来install当前最新后端代码.
+```bash
+# skip_pre_upgrade flag on the install_code method, it will skip the pre_upgrade method on the canister. It only works to save the stable-memory. Any global variables in the main canister memory (wasm heap) will be lost.
+dfx canister \
+--ic \ 
+call aaaaa-aa canister_info\
+ '(record {
+  canister_id = principal "v7g7o-oiaaa-aaaag-qcj3q-cai"; 
+  num_requested_changes = opt 5 : opt nat64
+  })'\
+  --wallet $(dfx identity --ic get-wallet) \
+  --candid /home/btwl/code/ic/tax_lint/backend/canisters/backend/my_tests/test_in_cmd/dfx_calls/manage_can.did
+
+(record {
+      canister_id : canister_id;
+      num_requested_changes : opt nat64;
+  })
+
+
+
+dfx canister \
+--ic \ 
+call aaaaa-aa install_code\
+ '(record {
+  canister_id = principal "v7g7o-oiaaa-aaaag-qcj3q-cai"; 
+  mode = variant { upgrade = opt record { skip_pre_upgrade = opt true} };
+  wasm_module = /home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm;
+  arg =  "xxx"
+    })'\
+  --wallet $(dfx identity --ic get-wallet) \
+  --candid /home/btwl/code/ic/tax_lint/backend/canisters/backend/my_tests/test_in_cmd/dfx_calls/manage_can.did
+
+dfx canister \
+call aaaaa-aa install_code\
+ '(record {
+  canister_id = principal "be2us-64aaa-aaaaa-qaabq-cai"; 
+  mode = variant { upgrade = opt record { skip_pre_upgrade = opt true} };
+  wasm_module = "/home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm";
+  arg =  1
+    })'\
+  --wallet $(dfx identity  get-wallet) \
+  --candid /home/btwl/code/ic/tax_lint/backend/canisters/backend/my_tests/test_in_cmd/dfx_calls/manage_can.did
+
+record {
+  arg : vec nat8;
+  wasm_module : vec nat8;
+  mode : variant {
+    reinstall;
+    upgrade : record { skip_pre_upgrade : bool };
+    install;
+  };
+  canister_id : principal;
+} 
+
+(record {
+    mode : variant {
+      install;
+      reinstall;
+      upgrade : opt record {
+        skip_pre_upgrade: opt bool;
+      }
+    };
+    canister_id = principal "v7g7o-oiaaa-aaaag-qcj3q-cai";
+    wasm_module : wasm_module;
+    arg : blob;
+    sender_canister_version : opt nat64;
+  })
+```
+2. 再使用dropbox的 to dropbox api 和from dropbox api 来尝试复原heap数据.
+```bash
+# 
+dfx canister call  backend save_payload_to_dropbox '("sl.Bv2AeIHy2BD9tl_h-QySDyGNF3eniMMQD6rD_V5qDMv6kNkIO_h8-DKXY0nrRGZEKAiXnMqhaAxylmFzyiGTN8JZpZWQpGUOP9fWJhWmL26lxcPVG_yc7uA3v9sghWLKFKkctT7VxNXEgfSrEL2GlNA", 1 )' --ic
+
+dfx canister call  backend set_payload_using_dropbox --ic
+
+dfx canister call  backend set_stable_mem_use_payload_simple --ic
+```
+
+3. 如果都执行成功.再升级一次代码启用 pre 和 post的2个hook
+
 
 
 
