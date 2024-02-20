@@ -246,3 +246,9 @@ TODO 线上数据库备份方式:
 6. 升级ic上的后端代码.并清空ic上的stable data
 7. 调用dropbox api来复原线上数据.
 
+
+
+TODO: 逻辑上死亡卡住了在当前线上版本的preupgrade环节.  可能尝试management canister 等api 来获取当前 ic 上面的罐子的stable mem.
+https://forum.dfinity.org/t/any-possibility-to-check-the-latest-wasm-code-install-time-on-main-ic-net/27682
+TODO: 了解uninstall_code 的api是否会导致stable mem 被删除. 如果不会. 则选择force uninstall 然后install最新版本代码. **尤其注意install这个地方一定不要有对stable mem的任何写入**!
+
