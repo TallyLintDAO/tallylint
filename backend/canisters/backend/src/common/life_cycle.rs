@@ -2,6 +2,7 @@ use std::io::{Read, Write};
 use std::str::FromStr;
 
 use candid::Principal;
+use ic_cdk::storage::{stable_restore, stable_save};
 use ic_cdk_macros::*;
 
 use canister_tracing_macros::trace;
@@ -272,15 +273,51 @@ fn set_stable_mem_use_payload() {
     };
 
     let json = serde_json::to_string(&payload).unwrap();
-    ic_cdk::println!(
-      "\x1b[31m SAVING THE PAYLOAD INTO STABLE STUCTURE: \x1b[0m  \n {}",
-      json
-    );
+    // ic_cdk::println!(
+    //   "\x1b[31m SAVING THE PAYLOAD INTO STABLE STUCTURE: \x1b[0m  \n {}",
+    //   json
+    // );
 
     let mut memory = get_upgrades_memory();
     let mut writer = get_writer(&mut memory);
     let ret = writer.write_all(json.as_bytes());
     ret.expect("Failed to write to writer");
+  });
+}
+
+#[update]
+/**
+ * TEST OK!!! no trailing chars!
+ */
+fn set_stable_mem_use_payload_simple() {
+  CONTEXT.with(|c| {
+    let context = c.borrow();
+    let id = context.id;
+    let users = Vec::from_iter(context.user_service.users.values().cloned());
+    let wallets =
+      Vec::from_iter(context.wallet_service.wallets.values().cloned());
+    let records =
+      Vec::from_iter(context.wallet_record_service.records.values().cloned());
+    let transactions = Vec::from_iter(
+      context.transaction_service.transactions.values().cloned(),
+    );
+    let neurons =
+      Vec::from_iter(context.neuron_service.neurons.values().cloned());
+    let payload = CanisterDB {
+      id,
+      users,
+      wallets,
+      records,
+      neurons,
+      transactions,
+    };
+
+    let json = serde_json::to_string(&payload).unwrap();
+    // ic_cdk::println!(
+    //   "\x1b[31m SAVING THE PAYLOAD INTO STABLE STUCTURE: \x1b[0m  \n {}",
+    //   json
+    // );
+    stable_save((json,)).expect("stable_save() faile");
   });
 }
 
@@ -290,13 +327,27 @@ fn set_stable_mem_use_payload() {
 #[query]
 pub fn get_payload_from_stable_mem() -> String {
   let mut buf = Vec::new();
-  let memory = get_upgrades_memory();
-  let mut reader = get_reader(&memory);
+  let mem_0 = get_upgrades_memory();
+  let mut reader = get_reader(&mem_0);
   reader
     .read_to_end(&mut buf)
     .expect("Failed to read from reader");
   let json = String::from_utf8_lossy(&buf);
-  ic_cdk::println!("\x1b[31m WHAT GET FROM stable mem:  \x1b[0m  {}", json);
+  let json = json.trim_end_matches(char::from(0)); // Trim trailing zeros
+
+  // ic_cdk::println!("\x1b[31m WHAT GET FROM stable mem:  \x1b[0m  {}", json);
+  return json.to_string();
+}
+
+/**
+ * TEST OK!!! no trailing chars!
+ */
+#[query]
+pub fn get_payload_from_stable_mem_simple() -> String {
+
+  let (json,):(String,) = stable_restore().expect("failed to exec stable_restore()");
+
+  // ic_cdk::println!("\x1b[31m WHAT GET FROM stable mem:  \x1b[0m  {}", json);
   return json.to_string();
 }
 
@@ -304,6 +355,7 @@ pub fn get_payload_from_stable_mem() -> String {
 pub async fn restore_db_from_dropbox(
   // get short-term token : https://www.dropbox.com/developers/apps/info/qi2656n62bhls4u
   token: String,
+  // get from save_payload_to_dropbox fuction output
   date_time_version_tag: String,
 ) -> bool {
   let db_json = get_payload_from_dropbox(token, date_time_version_tag).await;

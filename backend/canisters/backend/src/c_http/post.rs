@@ -114,6 +114,7 @@ pub async fn save_payload_to_dropbox(token: String, from: u32) -> String {
   }
 }
 
+// BUG blocking will cause exec too long . fail to exec. dont know fix way yet
 #[ic_cdk::update]
 pub fn save_payload_to_dropbox_blocking() -> String {
   let host = "content.dropboxapi.com";
