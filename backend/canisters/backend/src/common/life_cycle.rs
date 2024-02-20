@@ -48,84 +48,19 @@ fn init() {
  */
 // #[pre_upgrade] is a hook. everytime update canister will auto call this.
 // old version . last version exec.
+#[allow(dead_code)]
 // #[pre_upgrade]
 #[trace]
 fn pre_upgrade() {
-  // TODO try this.
-  // storage::stable_save();
-  // storage::stable_restore();
-
-  // TODO
-  // this log send to ic-os machine. maybe we can send log to a private web2
-  // server ? or how do we check the *main-net* log on ic-os machine ? dfx
-  // local replica seeing log OK. also dfx::print ok . :::: ANSWER: no way to
-  // see main net ic_cdk print yet.
-  info!("Pre-upgrade starting");
-  ic_cdk::println!("Pre-upgrade starting");
-  // use tokio::runtime::Runtime;
-  // let rt = Runtime::new().unwrap();
-  // rt.block_on(async {
-  //   save_payload_to_dropbox();
-  // });
-  // ic_cdk::println!("run: save_payload_to_dropbox_blocking()");
-  // save_payload_to_dropbox_blocking();
-  CONTEXT.with(|c| {
-    // collecting data
-    let context = c.borrow();
-    let id = context.id;
-    let users = Vec::from_iter(context.user_service.users.values().cloned());
-    let wallets =
-      Vec::from_iter(context.wallet_service.wallets.values().cloned());
-    let records =
-      Vec::from_iter(context.wallet_record_service.records.values().cloned());
-    let transactions = Vec::from_iter(
-      context.transaction_service.transactions.values().cloned(),
-    );
-    let neurons =
-      Vec::from_iter(context.neuron_service.neurons.values().cloned());
-    let payload = CanisterDB {
-      id,
-      users,
-      wallets,
-      records,
-      neurons,
-      transactions,
-    };
-
-    // save to db
-    let json = serde_json::to_string(&payload).unwrap();
-    // ic_cdk::println!(
-    //   "\x1b[31m SAVING THE PAYLOAD INTO STABLE STUCTURE: \x1b[0m  \n {}",
-    //   json
-    // );
-    // let mut memory = get_upgrades_memory();
-    // let mut writer = get_writer(&mut memory);
-    // let ret = writer.write_all(json.as_bytes());
-    // ret.expect("Failed to write to writer");
-  });
+  set_stable_mem_use_payload_simple();
 }
+
 
 #[allow(dead_code)]
 // #[post_upgrade]
 #[trace]
 fn post_upgrade() {
   http_post_upgrade(Principal::from_str(PROXY_CANISTER_ID).unwrap());
-
-  // let mut buf = Vec::new();
-  // let memory = get_upgrades_memory();
-  // let mut reader = get_reader(&memory);
-  // reader
-  //   .read_to_end(&mut buf)
-  //   .expect("Failed to read from reader");
-  // let mut json = String::from_utf8_lossy(&buf).to_string();
-  // ic_cdk::println!("\x1b[31m WHAT GET FROM stable mem:  \x1b[0m  {}", json);
-
-  // let end_of_json = json.rfind('}').unwrap_or(0) + 1;
-  // json = json[..end_of_json].to_string();
-  // ic_cdk::println!(
-  //   "\x1b[31m AFTER PROCESS of payload data:  \x1b[0m  {}",
-  //   json
-  // );
   let json=get_payload_from_stable_mem_simple();
   let ret = serde_json::from_str::<CanisterDB>(&json);
   let payload = match ret {
