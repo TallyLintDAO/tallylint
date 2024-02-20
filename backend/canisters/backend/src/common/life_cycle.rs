@@ -153,7 +153,7 @@ fn post_upgrade() {
 // node machine ?
 
 #[query]
-pub fn get_payload() -> String {
+pub fn collect_current_payload() -> String {
   let mut json: String = String::new();
   CONTEXT.with(|c| {
     let context = c.borrow();
@@ -197,7 +197,7 @@ pub fn get_payload() -> String {
 }
 
 #[update]
-fn set_payload() {
+fn set_payload_using_stable_mem() {
   let memory = get_upgrades_memory();
   let mut reader = get_reader(&memory);
 
@@ -317,6 +317,8 @@ fn set_stable_mem_use_payload_simple() {
     //   "\x1b[31m SAVING THE PAYLOAD INTO STABLE STUCTURE: \x1b[0m  \n {}",
     //   json
     // );
+
+    // `(json,)`  is tuple syntax in rust ,creates a tuple with one element
     stable_save((json,)).expect("stable_save() faile");
   });
 }
@@ -352,7 +354,7 @@ pub fn get_payload_from_stable_mem_simple() -> String {
 }
 
 #[update]
-pub async fn restore_db_from_dropbox(
+pub async fn set_payload_using_dropbox(
   // get short-term token : https://www.dropbox.com/developers/apps/info/qi2656n62bhls4u
   token: String,
   // get from save_payload_to_dropbox fuction output

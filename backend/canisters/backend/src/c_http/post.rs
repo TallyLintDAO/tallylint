@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
   calculate_cost,
-  common::life_cycle::{get_payload, get_payload_from_stable_mem},
+  common::life_cycle::{collect_current_payload, get_payload_from_stable_mem},
 };
 
 // This struct is legacy code and is not really used in the code.
@@ -69,7 +69,7 @@ pub async fn save_payload_to_dropbox(token: String, from: u32) -> String {
     ];
   let json_string: String;
   if from == 0 {
-    json_string = get_payload();
+    json_string = collect_current_payload();
   } else {
     json_string = get_payload_from_stable_mem();
   }
@@ -144,7 +144,7 @@ pub fn save_payload_to_dropbox_blocking() -> String {
         },
     ];
 
-  let json_string: String = get_payload();
+  let json_string: String = collect_current_payload();
 
   let json_utf8: Vec<u8> = json_string.into_bytes();
   let json_length = json_utf8.len() as u64;
@@ -233,7 +233,7 @@ pub async fn get_payload_from_dropbox(
     },
   ];
 
-  let json_string: String = get_payload();
+  let json_string: String = collect_current_payload();
 
   let json_utf8: Vec<u8> = json_string.into_bytes();
   let json_length = json_utf8.len() as u64;

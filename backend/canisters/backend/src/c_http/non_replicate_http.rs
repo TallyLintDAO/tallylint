@@ -8,7 +8,7 @@ use proxy_canister_types::{
   HttpRequestEndpointResult, HttpRequestId, HttpRequestTimeoutMs, HttpResult,
 };
 
-use crate::common::life_cycle::get_payload;
+use crate::common::life_cycle::collect_current_payload;
 
 thread_local! {
     /* flexible */ static PROXY_CANISTER_ID: RefCell<Principal> = RefCell::new(Principal::anonymous());
@@ -96,7 +96,7 @@ pub async fn store_paylaod_to_dropbox() -> String {
         value: String::from("application/octet-stream"),
     },
 ];
-  let data = get_payload().into_bytes();
+  let data = collect_current_payload().into_bytes();
   let body = Some(data);
   let request = HttpRequest {
     url,
