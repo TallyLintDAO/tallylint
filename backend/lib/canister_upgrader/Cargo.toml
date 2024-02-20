@@ -7,4 +7,6 @@ edition = "2021"
 
 [dependencies]
 ic-utils = "0.29.0"
-tokio = { version = "1.35.1", features = ["full"] }
+tokio = { version = "1", features = ["full"] }
+candid ="0.9.11"
+canister_agent_utils = { path = "../canister_agent_utils" }

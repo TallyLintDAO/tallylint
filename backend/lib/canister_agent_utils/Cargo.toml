@@ -1,0 +1,15 @@
+[package]
+name = "canister_agent_utils"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+candid = { workspace = true }
+dfx-core = { git = "https://github.com/dfinity/sdk", rev = "5f256854b1bdf77f2c83bfb039d68f46b1f791eb" }
+ic-agent = { version = "0.29.0", default-features = false }
+ic-utils = "0.29.0"
+itertools = "0.11.0"
+slog = "2.7.0"
+my_types = { path = "../my_types" }

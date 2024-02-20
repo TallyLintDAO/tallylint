@@ -1,0 +1,15 @@
+[package]
+name = "my_types"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+candid = "0.9.11"
+ic-ledger-types = "0.8.0"
+icrc-ledger-types = "0.1.4"
+rand = "0.8.5"
+range-set = "0.0.10"
+serde = "1.0.192"
+serde_bytes = "0.11.12"
