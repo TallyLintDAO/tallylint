@@ -6,7 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ic-utils = "0.29.0"
+ic-utils =  { git = "https://github.com/dfinity/agent-rs.git", rev = "b74445e1da0a6afefc3a08372f74e8ea416cd1ba" }
+
 tokio = { version = "1", features = ["full"] }
 candid ="0.9.11"
 canister_agent_utils = { path = "../canister_agent_utils" }

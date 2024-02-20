@@ -13,16 +13,20 @@ async fn main(){
     install().await;
 }
 async fn install(){
-    // TODO what is local replica run by dfx start ?
-    let url=String::from("xx.com");
+    // FIXME this local  url says not valid. but i can run `dfx deploy xx`in any new terminal.
+    let url_local=String::from("127.0.0.1:40010");
+    
+    let url_ic=String::from("https://ic0.app/");
     let controller=String::from("btwlz");
+
+    // INFO this need use input passwd in terminal if have passwd.
     let identity = get_dfx_identity(&controller);
-    let agent = build_ic_agent(url, identity).await;
+    let agent = build_ic_agent(url_local, identity).await;
     let management_canister = ManagementCanister::create(&agent);
 
-    // TODO this is local or ic canister_id
+    // INFO this is local or ic canister_id
     let canister_id=Principal::from_text("be2us-64aaa-aaaaa-qaabq-cai").unwrap();
-    // TODO how to achive this goal ?
+    // FIXME how to achive this goal ?
     let args= "skip_pre_upgrade = true" ;
 
     let wasm_file_path = "/home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm";
@@ -39,3 +43,5 @@ async fn install(){
             Err(error) => println!("Upgrade failed: {error:?}"),
         };
 }
+
+// ic_utils lib hot fix patch : git commit: b74445e1da0a6afefc3a08372f74e8ea416cd1ba

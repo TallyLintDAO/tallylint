@@ -9,7 +9,7 @@ edition = "2021"
 candid = { workspace = true }
 dfx-core = { git = "https://github.com/dfinity/sdk", rev = "5f256854b1bdf77f2c83bfb039d68f46b1f791eb" }
 ic-agent = { version = "0.29.0", default-features = false }
-ic-utils = "0.29.0"
+ic-utils =  { git = "https://github.com/dfinity/agent-rs.git", rev = "b74445e1da0a6afefc3a08372f74e8ea416cd1ba" }
 itertools = "0.11.0"
 slog = "2.7.0"
 my_types = { path = "../my_types" }
