@@ -246,6 +246,8 @@ git checkout -b prod_db_backup_2 6643435906e4fc1fc9868df1829069c14159fa9c
 
 git checkout -b prod_db_backup_3_dec_22 56b89a70eb70ad51ed2ba2b2d46f6d4886e5911e
 
+git checkout -b did_file 53220e360764695a334bd08b23267e99ef66a3a2
+
 
 TODO: 逻辑上死亡卡住了在当前线上版本的preupgrade环节.  可能尝试management canister 等api 来获取当前 ic 上面的罐子的stable mem.
 https://forum.dfinity.org/t/any-possibility-to-check-the-latest-wasm-code-install-time-on-main-ic-net/27682
