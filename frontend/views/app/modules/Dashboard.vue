@@ -110,12 +110,14 @@
 </template>
 
 <script lang="ts" setup>
+import { getAllTransactionsICRC1 } from "@/api/icrc1"
 import {
   getAllWalletDailyBalance,
   getDailyBalanceValue,
   getICPBalance,
   getWalletHistory,
 } from "@/api/rosetta"
+import { getAllSNSInfo } from "@/api/sns"
 import { getICPNowPrice } from "@/api/token"
 import { getUserWallet } from "@/api/user"
 import Progress from "@/components/Progress.vue"
@@ -228,23 +230,23 @@ onMounted(() => {
   initECharts()
   getWallet()
   getICPPrice()
-  // getAllSNSInfo().then((snses) => {
-  //   const sns = snses.find((sns) => sns.symbol === "CHAT")
-  //   if (sns) {
-  //     // getICRC1Price(sns.canisters.ledger)
-  //     getAllTransactionsICRC1(
-  //       {
-  //         address:
-  //           "bcc6t-arcy7-qgvxt-v3ubw-6xndu-ld6nf-vwetx-so4q3-pyjlv-3udyi-nae",
-  //         name: "",
-  //         from: "",
-  //       },
-  //       sns.canisters.index,
-  //       sns.canisters.ledger,
-  //       { decimals: sns.decimals, symbol: sns.symbol },
-  //     )
-  //   }
-  // })
+  getAllSNSInfo().then((snses) => {
+    const sns = snses.find((sns) => sns.symbol === "CHAT")
+    if (sns) {
+      // getICRC1Price(sns.canisters.ledger)
+      getAllTransactionsICRC1(
+        {
+          address:
+            "bcc6t-arcy7-qgvxt-v3ubw-6xndu-ld6nf-vwetx-so4q3-pyjlv-3udyi-nae",
+          name: "",
+          from: "",
+        },
+        sns.canisters.index,
+        sns.canisters.ledger,
+        { decimals: sns.decimals, symbol: sns.symbol },
+      )
+    }
+  })
 })
 
 const getBalance = async (address: string, walletName: string) => {
@@ -261,7 +263,6 @@ const getBalance = async (address: string, walletName: string) => {
 watch(
   () => wallets.value.length,
   () => {
-    console.log("watch", wallets.value)
     icpBalance.value = wallets.value.reduce(
       // token[0] 目前暂为ICP
       (total, wallet) => total + wallet.tokens[0].balance,
@@ -271,8 +272,6 @@ watch(
     rows.value[0].value = (rows.value[0].balance * rows.value[0].price).toFixed(
       2,
     )
-    console.log("icpBalance", icpBalance.value)
-    console.log("rows", rows.value)
   },
 )
 

@@ -68,6 +68,7 @@ const formatICRC1Transaction = async (
   delete detail.created_at_time
 
   if (transaction.kind === "transfer") {
+    // icrc1的代币中的fee必定为自身代币。
     detail.fee = currencyCalculate(detail.fee[0], currency.decimals)
     detail.from = detail.from.owner.toString()
   } else if (transaction.kind === "mint") {
@@ -76,7 +77,7 @@ const formatICRC1Transaction = async (
     detail.from = "Minting Account"
     detail.tag = "mint"
   } else {
-    //kind == burn || approve
+    //TODO kind == burn || approve 这两种类型还没有写
   }
   const t_type = detail.to === wallet.address ? "RECEIVE" : "SEND"
   return {

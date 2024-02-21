@@ -243,7 +243,7 @@ const syncAllWallet = async () => {
   // 创建一个 Promise 数组，用于存放每个 getICPTransactions() 的 Promise
   const promises = rows.value.map((row, index) => {
     return getICPTransactions(
-      { address: row.address, name: "", from: "" },
+      { address: row.address, name: "test", from: "" },
       true,
     ).then((res) => {
       //将钱包数据同步
@@ -253,8 +253,8 @@ const syncAllWallet = async () => {
   })
   // 使用 Promise.all() 等待所有的请求完成
   Promise.all(promises)
-    .then(() => {
-      console.log("Promise.all", promises)
+    .then((res) => {
+      console.log("Promise.all", res)
     })
     .catch((error) => {
       console.error("Error:", error)

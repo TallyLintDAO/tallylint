@@ -5,7 +5,7 @@ import {
   ROSETTA_URL,
 } from "@/api/constants/ic"
 import { matchICPPrice } from "@/api/token"
-import type { Currency, InferredTransaction } from "@/types/sns"
+import type { InferredTransaction } from "@/types/sns"
 import type {
   DailyBalance,
   WalletHistory,
@@ -145,10 +145,9 @@ export const formatIcpTransaccion = async (
     const value = BigInt(operation.amount.value)
     const amount = value.toString()
     if (operation.type === "FEE") {
-      //直接输出真实的数量，不再使用浮点数
-      transaction.details.fee.amount = currencyCalculate(
-        amount,
-        operation.amount.currency.decimals,
+      //直接输出具体多少个代币，并且不用负数
+      transaction.details.fee = Math.abs(
+        currencyCalculate(amount, operation.amount.currency.decimals),
       )
       // transaction.details.fee.currency = operation.amount.currency
       return
@@ -191,9 +190,11 @@ export const formatIcpTransaccion = async (
       // transaction.details.profit =
       //     (transaction.details.value * factor
       //         - transaction.details.cost * factor) / factor;
-      transaction.details.profit = (
-        transaction.details.value - transaction.details.cost
-      ).toFixed(radixNumber)
+      transaction.details.profit = Number(
+        (transaction.details.value - transaction.details.cost).toFixed(
+          radixNumber,
+        ),
+      )
     }
   })
   return {

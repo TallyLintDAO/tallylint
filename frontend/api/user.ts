@@ -2,6 +2,7 @@ import type { ApiResult, ApiUserInfo } from "@/types/types"
 import type { WalletInfo } from "@/types/user"
 import { TTL, getCache } from "@/utils/cache"
 import { getBackend, getCurrentPrincipal } from "./canister_pool"
+import type { InferredTransaction } from "@/types/sns"
 
 //TODO demo阶段用户字段修改频繁，暂时用短缓存时间。
 const userTTL = TTL.minute1 //用户自身信息缓存时长。
@@ -68,7 +69,7 @@ export async function deleteUserWallet(
 // 同步钱包交易记录到后端
 export async function syncWallet(
   walletId: bigint,
-  history: any,
+  history: InferredTransaction[],
 ): Promise<ApiResult<boolean>> {
   return getBackend().sync_transaction_record({ walletId, history })
 }
