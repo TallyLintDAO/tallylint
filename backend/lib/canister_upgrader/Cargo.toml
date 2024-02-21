@@ -7,8 +7,11 @@ edition = "2021"
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
-candid ="0.9.11"
-canister_agent_utils = { path = "../canister_agent_utils" }
 # candid_derive ="0.6.5"
 # this commit tag is : skip_pre_upgrade hot fix 
-ic-utils =  { git = "https://github.com/dfinity/agent-rs.git", rev = "b74445e1da0a6afefc3a08372f74e8ea416cd1ba" }
+# ic-utils =  { git = "https://github.com/dfinity/agent-rs.git", rev = "b74445e1da0a6afefc3a08372f74e8ea416cd1ba" }
+# ic-utils = "0.29.0"
+# candid = "0.10.3"
+# candid_derive = "0.6.5"
+ic-utils =  { git = "https://github.com/dfinity/agent-rs.git"}
+canister_agent_utils = { path = "../canister_agent_utils" }

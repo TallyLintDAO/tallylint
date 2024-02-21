@@ -16,7 +16,7 @@ path = "src/lib.rs"
 
 [dependencies]
 # 099 or 096 confilct with nns goveranance.
-candid = "0.9.11" # for abstraction from backend language . some kind of middle language . decoupling 
+candid = { workspace = true } # for abstraction from backend language . some kind of middle language . decoupling 
 # example : rust-backend -> did code  ; python-backend -> did code .
 # 099 for rustc nightly version: rustup update nightly
 # back to stable: rustup default stable   or: rustup default nightly 

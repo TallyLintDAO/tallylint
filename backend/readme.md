@@ -287,7 +287,7 @@ call aaaaa-aa install_code\
   canister_id = principal "v7g7o-oiaaa-aaaag-qcj3q-cai"; 
   mode = variant { upgrade = opt record { skip_pre_upgrade = opt true} };
   wasm_module = /home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm;
-  arg =  "xxx"
+  arg =  "???"
     })'\
   --wallet $(dfx identity --ic get-wallet) \
   --candid /home/btwl/code/ic/tax_lint/backend/canisters/backend/my_tests/test_in_cmd/dfx_calls/manage_can.did
@@ -298,7 +298,7 @@ call aaaaa-aa install_code\
   canister_id = principal "be2us-64aaa-aaaaa-qaabq-cai"; 
   mode = variant { upgrade = opt record { skip_pre_upgrade = opt true} };
   wasm_module = "/home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm";
-  arg =  1
+  arg =  ??
     })'\
   --wallet $(dfx identity  get-wallet) \
   --candid /home/btwl/code/ic/tax_lint/backend/canisters/backend/my_tests/test_in_cmd/dfx_calls/manage_can.did
