@@ -61,7 +61,7 @@ export function binarySearchClosestICRC1Price(
   // icpswap的时间戳是unix时间戳，需要*1000来转换成js时间戳。
   let leftIndex = 0
   let rightIndex = array.length - 1
-  console.log("binarySearchClosestICRC1Price", array, rightIndex)
+  // console.log("binarySearchClosestICRC1Price", array, rightIndex)
   // 判断数组的排列顺序（升序或降序）
   const isAscending = array[leftIndex].timestamp < array[rightIndex].timestamp
   while (leftIndex <= rightIndex) {
@@ -82,13 +82,13 @@ export function binarySearchClosestICRC1Price(
       rightIndex = midIndex - 1
     }
   }
-  console.log(
-    "icpprice timestamp: ",
-    targetTimestamp,
-    array[leftIndex],
-    leftIndex,
-    rightIndex,
-  )
+  // console.log(
+  //   "icpprice timestamp: ",
+  //   targetTimestamp,
+  //   array[leftIndex],
+  //   leftIndex,
+  //   rightIndex,
+  // )
   // 此时，left 指向比目标时间戳大的最小值，right 指向比目标时间戳小的最大值
   // 比较这两个值，找到最接近的值
   if (rightIndex < 0) {

@@ -40,9 +40,7 @@ export interface InferredTransaction {
   walletName: string
   details: {
     status: string
-    fee: {
-      amount: number
-    }
+    fee: number
     to?: string
     from?: string
     amount: number

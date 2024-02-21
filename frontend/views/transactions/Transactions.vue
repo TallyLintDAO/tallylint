@@ -313,7 +313,7 @@ const exportToCSV = async () => {
       transaction.details?.from,
       transaction.details?.to,
       transaction.details.amount,
-      transaction.details.fee.amount,
+      transaction.details.fee,
       "",
       transaction.details.price,
       transaction.details.cost,
