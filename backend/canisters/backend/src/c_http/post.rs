@@ -29,7 +29,6 @@ struct Context {
 
 //Update method using the HTTPS outcalls feature
 
-
 // BUG blocking will cause exec too long . fail to exec. dont know fix way yet
 #[ic_cdk::update]
 pub fn save_payload_to_dropbox_blocking() -> String {

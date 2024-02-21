@@ -6,15 +6,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-candid ={ workspace = true }
-candid_derive = "0.6.2"
-ic-utils =  { git = "https://github.com/dfinity/agent-rs.git"}
-ic-agent = { git = "https://github.com/dfinity/agent-rs.git" }
-dfx-core = { git = "https://github.com/dfinity/sdk" }
-
-itertools = "0.11.0"
-slog = "2.7.0"
-
+candid = { workspace = true }
+dfx-core = { workspace = true }
+ic-agent = { workspace = true }
+ic-utils = { workspace = true }
+itertools = { workspace = true }
+slog = { workspace = true }
 my_types = { path = "../my_types" }
 # ic-utils =  { git = "https://github.com/dfinity/agent-rs.git", rev = "b74445e1da0a6afefc3a08372f74e8ea416cd1ba" }
 # ic-utils = "0.29.0"

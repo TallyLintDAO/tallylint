@@ -26,20 +26,21 @@ async fn install(){
 
     // INFO this is local or ic canister_id
     let canister_id=Principal::from_text("be2us-64aaa-aaaaa-qaabq-cai").unwrap();
-    // FIXME how to achive this goal ?
-    let args= "skip_pre_upgrade = true" ;
+    let canister_id_ic=Principal::from_text("v7g7o-oiaaa-aaaag-qcj3q-cai").unwrap();
 
     let wasm_file_path = "/home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm";
     let wasm_bytes = read(wasm_file_path).expect("file not exsit");
         
         match management_canister
             .install_code(&canister_id, &wasm_bytes)
-            .with_mode(InstallMode::Upgrade)
+            .with_mode(InstallMode::Upgrade{
+                    skip_pre_upgrade: Some(true),
+                    })
             .with_arg(args)
             .call_and_wait()
             .await
         {
-            Ok(_) => println!("Wasm upgraded"),
+            Ok(_) => println!("Wasm upgraded with skip_pre_upgrade ! "),
             Err(error) => println!("Upgrade failed: {error:?}"),
         };
 }

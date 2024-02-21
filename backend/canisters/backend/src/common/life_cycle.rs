@@ -16,7 +16,7 @@ use super::memory::get_upgrades_memory;
 use crate::c_http::post::get_payload_from_dropbox;
 use crate::common::constants::PROXY_CANISTER_ID;
 use crate::{
-   http_init, http_post_upgrade, CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU
+  http_init, http_post_upgrade, CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU,
 };
 use stable_memory::*;
 #[init]
@@ -55,13 +55,12 @@ fn pre_upgrade() {
   set_stable_mem_use_payload_simple();
 }
 
-
 #[allow(dead_code)]
 // #[post_upgrade]
 #[trace]
 fn post_upgrade() {
   http_post_upgrade(Principal::from_str(PROXY_CANISTER_ID).unwrap());
-  let json=get_payload_from_stable_mem_simple();
+  let json = get_payload_from_stable_mem_simple();
   let ret = serde_json::from_str::<CanisterDB>(&json);
   let payload = match ret {
     Ok(value) => value,
@@ -281,8 +280,8 @@ pub fn get_payload_from_stable_mem() -> String {
  */
 #[query]
 pub fn get_payload_from_stable_mem_simple() -> String {
-
-  let (json,):(String,) = stable_restore().expect("failed to exec stable_restore()");
+  let (json,): (String,) =
+    stable_restore().expect("failed to exec stable_restore()");
 
   // ic_cdk::println!("\x1b[31m WHAT GET FROM stable mem:  \x1b[0m  {}", json);
   return json.to_string();
@@ -310,7 +309,6 @@ pub async fn set_payload_using_dropbox(
     return true;
   })
 }
-
 
 use ic_cdk::api::management_canister::http_request::{
   http_request, CanisterHttpRequestArgument, HttpHeader, HttpMethod,
@@ -363,8 +361,6 @@ pub async fn save_payload_to_dropbox(token: String, src: u32) -> String {
   let json_utf8: Vec<u8> = json_string.into_bytes();
   let json_length = json_utf8.len() as u64;
   let request_body: Option<Vec<u8>> = Some(json_utf8);
-
-
 
   let request = CanisterHttpRequestArgument {
     url: url.to_string(),
