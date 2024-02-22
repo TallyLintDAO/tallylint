@@ -1,11 +1,11 @@
+#[allow(unused_imports)]
 use ic_utils::call::AsyncCall;
 use ic_utils::interfaces::management_canister::builders::InstallMode;
-use ic_utils::interfaces::management_canister::CanisterStatus;
 use ic_utils::interfaces::ManagementCanister;
 use std::fs::read;
-use std::io::Error;
-use candid::{encode_one, Principal};
-use canister_agent_utils::{build_ic_agent, get_canister_wasm, get_dfx_identity, CanisterName};
+use candid::Principal;
+use canister_agent_utils::{build_ic_agent, get_dfx_identity};
+#[allow(unused_imports)]
 use ic_agent::{Agent, Identity};
 
 #[tokio::main]
@@ -15,8 +15,12 @@ async fn main(){
 async fn install(){
     // FIXME this local  url says not valid. but i can run `dfx deploy xx`in any new terminal. maybe the port not match ?
     let url_local=String::from("127.0.0.1:40010");
-    
     let url_ic=String::from("https://ic0.app/");
+    // INFO this is local or ic canister_id
+    let canister_id_local=Principal::from_text("be2us-64aaa-aaaaa-qaabq-cai").unwrap();
+    let canister_id_ic=Principal::from_text("v7g7o-oiaaa-aaaag-qcj3q-cai").unwrap();
+   
+   
     let controller=String::from("btwlz");
 
     // INFO this need use input passwd in terminal if have passwd.
@@ -24,15 +28,12 @@ async fn install(){
     let agent = build_ic_agent(url_local, identity).await;
     let management_canister = ManagementCanister::create(&agent);
 
-    // INFO this is local or ic canister_id
-    let canister_id=Principal::from_text("be2us-64aaa-aaaaa-qaabq-cai").unwrap();
-    let canister_id_ic=Principal::from_text("v7g7o-oiaaa-aaaag-qcj3q-cai").unwrap();
 
     let wasm_file_path = "/home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm";
     let wasm_bytes = read(wasm_file_path).expect("file not exsit");
         
         match management_canister
-            .install_code(&canister_id, &wasm_bytes)
+            .install_code(&canister_id_local, &wasm_bytes)
             .with_mode(InstallMode::Upgrade{
                     skip_pre_upgrade: true,
                     })
