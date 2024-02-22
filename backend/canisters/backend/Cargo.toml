@@ -21,9 +21,10 @@ candid = { workspace = true } # for abstraction from backend language . some kin
 # 099 for rustc nightly version: rustup update nightly
 # back to stable: rustup default stable   or: rustup default nightly 
 # The core of Rust CDK :
-ic-cdk = "0.11.3"
+ic-cdk = { workspace = true }
 
-ic-cdk-timers = "0.5.1" # Feel free to remove this dependency if you don't need timers
+ic-cdk-timers = { workspace = true }
+
 ic-cdk-macros = "0.8.1"
 
 # ic-DB : called "stable memory" 
@@ -47,13 +48,13 @@ serde_bytes = "0.11.12"
 # only need to use in terminal 
 
 # use for plug 
-ic-ledger-types = "0.8.0"
+ic-ledger-types = { workspace = true }
 
 # project itself declare. dont know its mechineism. but works - - 
 # backend = "0.1.0"
 
-# http call from cansiter 
-proxy_canister_types = { git = "https://github.com/omnia-network/ic-http-proxy", package = "proxy_canister_types" }
+# non-replicate http call from cansiter 
+# proxy_canister_types = { git = "https://github.com/omnia-network/ic-http-proxy", package = "proxy_canister_types" }
 
 # logging:
 tracing = "0.1.40"
@@ -90,8 +91,9 @@ time = "0.3"
 # testing:
 pocket-ic = "2.0.1"
 
-# simulate  CLI call ic-replica (dfx) using rust code .
-ic-agent = "0.30.2"
+# using rust code to interact with ic-replica 
+# also means  like simulate  CLI dfx calls .
+ic-agent = { workspace = true }
 
 candid_gen = { path = "../../lib/candid_gen" }
 

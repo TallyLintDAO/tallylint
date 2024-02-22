@@ -16,7 +16,7 @@ use super::memory::get_upgrades_memory;
 use crate::c_http::post::get_payload_from_dropbox;
 use crate::common::constants::PROXY_CANISTER_ID;
 use crate::{
-  http_init, http_post_upgrade, CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU,
+   CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU,
 };
 use stable_memory::*;
 #[init]
@@ -30,7 +30,6 @@ fn init() {
   let _creator1 = GOVERNANCE_BTWL.with(|g| *g);
   let _creator2 = GOVERNANCE_ZHOU.with(|g| *g);
 
-  http_init(Principal::from_str(PROXY_CANISTER_ID).unwrap());
   info!("canister initialization complete");
 }
 
@@ -59,7 +58,6 @@ fn pre_upgrade() {
 // #[post_upgrade]
 #[trace]
 fn post_upgrade() {
-  http_post_upgrade(Principal::from_str(PROXY_CANISTER_ID).unwrap());
   let json = get_payload_from_stable_mem_simple();
   let ret = serde_json::from_str::<CanisterDB>(&json);
   let payload = match ret {

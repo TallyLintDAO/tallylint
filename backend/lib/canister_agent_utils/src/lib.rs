@@ -1,5 +1,5 @@
 use candid::{CandidType, Principal};
-use ic_agent::agent::http_transport::ReqwestHttpReplicaV2Transport;
+use ic_agent::agent::http_transport::reqwest_transport::ReqwestHttpReplicaV2Transport;
 use ic_agent::{Agent, Identity};
 use ic_utils::interfaces::ManagementCanister;
 use itertools::Itertools;
@@ -14,8 +14,11 @@ use my_types::{BuildVersion, CanisterId, CanisterWasm};
 pub enum CanisterName {
     Community,
     CyclesDispenser,
+    Escrow,
+    EventRelay,
     Group,
     GroupIndex,
+    Identity,
     LocalGroupIndex,
     LocalUserIndex,
     MarketMaker,
@@ -27,6 +30,7 @@ pub enum CanisterName {
     Registry,
     StorageBucket,
     StorageIndex,
+    Translations,
     User,
     UserIndex,
 }
@@ -38,8 +42,11 @@ impl FromStr for CanisterName {
         match s {
             "community" => Ok(CanisterName::Community),
             "cycles_dispenser" => Ok(CanisterName::CyclesDispenser),
+            "escrow" => Ok(CanisterName::Escrow),
+            "event_relay" => Ok(CanisterName::EventRelay),
             "group" => Ok(CanisterName::Group),
             "group_index" => Ok(CanisterName::GroupIndex),
+            "identity" => Ok(CanisterName::Identity),
             "local_group_index" => Ok(CanisterName::LocalGroupIndex),
             "local_user_index" => Ok(CanisterName::LocalUserIndex),
             "market_maker" => Ok(CanisterName::MarketMaker),
@@ -51,6 +58,7 @@ impl FromStr for CanisterName {
             "registry" => Ok(CanisterName::Registry),
             "storage_bucket" => Ok(CanisterName::StorageBucket),
             "storage_index" => Ok(CanisterName::StorageIndex),
+            "translations" => Ok(CanisterName::Translations),
             "user" => Ok(CanisterName::User),
             "user_index" => Ok(CanisterName::UserIndex),
             _ => Err(format!("Unrecognised canister name: {s}")),
@@ -63,8 +71,11 @@ impl Display for CanisterName {
         let name = match self {
             CanisterName::Community => "community",
             CanisterName::CyclesDispenser => "cycles_dispenser",
+            CanisterName::Escrow => "escrow",
+            CanisterName::EventRelay => "event_relay",
             CanisterName::Group => "group",
             CanisterName::GroupIndex => "group_index",
+            CanisterName::Identity => "identity",
             CanisterName::LocalGroupIndex => "local_group_index",
             CanisterName::LocalUserIndex => "local_user_index",
             CanisterName::MarketMaker => "market_maker",
@@ -76,6 +87,7 @@ impl Display for CanisterName {
             CanisterName::Registry => "registry",
             CanisterName::StorageBucket => "storage_bucket",
             CanisterName::StorageIndex => "storage_index",
+            CanisterName::Translations => "translations",
             CanisterName::User => "user",
             CanisterName::UserIndex => "user_index",
         };
@@ -92,6 +104,7 @@ pub struct CanisterIds {
     pub local_user_index: CanisterId,
     pub local_group_index: CanisterId,
     pub notifications: CanisterId,
+    pub identity: CanisterId,
     pub online_users: CanisterId,
     pub proposals_bot: CanisterId,
     pub storage_index: CanisterId,
@@ -99,6 +112,9 @@ pub struct CanisterIds {
     pub registry: CanisterId,
     pub market_maker: CanisterId,
     pub neuron_controller: CanisterId,
+    pub escrow: CanisterId,
+    pub translations: CanisterId,
+    pub event_relay: CanisterId,
     pub nns_root: CanisterId,
     pub nns_governance: CanisterId,
     pub nns_internet_identity: CanisterId,
@@ -111,15 +127,12 @@ pub struct CanisterIds {
 pub fn get_dfx_identity(name: &str) -> Box<dyn Identity> {
     let logger = slog::Logger::root(slog::Discard, slog::o!());
     let mut identity_manager = dfx_core::identity::IdentityManager::new(&logger, &None).unwrap();
-    identity_manager
-        .instantiate_identity_from_name(name, &logger)
-        .unwrap()
+    identity_manager.instantiate_identity_from_name(name, &logger).unwrap()
 }
 
 pub async fn build_ic_agent(url: String, identity: Box<dyn Identity>) -> Agent {
     let mainnet = is_mainnet(&url);
-    let transport =
-        ReqwestHttpReplicaV2Transport::create(url).expect("Failed to create Reqwest transport");
+    let transport = ReqwestHttpReplicaV2Transport::create(url).expect("Failed to create Reqwest transport");
     let timeout = std::time::Duration::from_secs(60 * 5);
 
     let agent = Agent::builder()
@@ -130,10 +143,7 @@ pub async fn build_ic_agent(url: String, identity: Box<dyn Identity>) -> Agent {
         .expect("Failed to build IC agent");
 
     if !mainnet {
-        agent
-            .fetch_root_key()
-            .await
-            .expect("Couldn't fetch root key");
+        agent.fetch_root_key().await.expect("Couldn't fetch root key");
     }
 
     agent
@@ -148,10 +158,7 @@ pub async fn set_controllers(
     for controller in controllers {
         request = request.with_controller(controller);
     }
-    request
-        .call_and_wait()
-        .await
-        .expect("Failed to set controllers");
+    request.call_and_wait().await.expect("Failed to set controllers");
 }
 
 pub async fn install_wasm<A: CandidType + Sync + Send>(
@@ -169,32 +176,21 @@ pub async fn install_wasm<A: CandidType + Sync + Send>(
 }
 
 pub fn get_canister_wasm(canister_name: impl ToString, version: BuildVersion) -> CanisterWasm {
-    let mut local_bin_path = PathBuf::from(
-        std::env::var("CARGO_MANIFEST_DIR")
-            .expect("Failed to read CARGO_MANIFEST_DIR env variable"),
-    );
+    let mut local_bin_path =
+        PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("Failed to read CARGO_MANIFEST_DIR env variable"));
     local_bin_path.push("wasms");
 
-    let file_name =
-        file_by_prefix(&canister_name.to_string(), &local_bin_path).unwrap_or_else(|| {
-            panic!(
-                "Couldn't find file for canister '{}'",
-                canister_name.to_string()
-            )
-        });
+    let file_name = file_by_prefix(&canister_name.to_string(), &local_bin_path)
+        .unwrap_or_else(|| panic!("Couldn't find file for canister '{}'", canister_name.to_string()));
 
     let file_path = local_bin_path.join(file_name);
     let bytes = read_file(file_path);
 
-    CanisterWasm {
-        module: bytes,
-        version,
-    }
+    CanisterWasm { module: bytes, version }
 }
 
 pub fn read_file(file_path: PathBuf) -> Vec<u8> {
-    let mut file = File::open(&file_path)
-        .unwrap_or_else(|_| panic!("Failed to open file: {}", file_path.to_str().unwrap()));
+    let mut file = File::open(&file_path).unwrap_or_else(|_| panic!("Failed to open file: {}", file_path.to_str().unwrap()));
     let mut bytes = Vec::new();
     file.read_to_end(&mut bytes).expect("Failed to read file");
     bytes

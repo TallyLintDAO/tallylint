@@ -11,7 +11,7 @@ tokio = { version = "1", features = ["full"] }
 # this commit tag is : skip_pre_upgrade hot fix 
 # ic-utils =  { git = "https://github.com/dfinity/agent-rs.git", rev = "b74445e1da0a6afefc3a08372f74e8ea416cd1ba" }
 # ic-utils = "0.29.0"
-# candid = "0.10.3"
+candid = { workspace = true } # for abstraction from backend language . some kind of middle language . decoupling 
 # candid_derive = "0.6.5"
 ic-utils =  { git = "https://github.com/dfinity/agent-rs.git"}
 canister_agent_utils = { path = "../canister_agent_utils" }

@@ -22,7 +22,7 @@ members = [
 resolver = "2"
 
 [workspace.dependencies]
-ic-cdk = "0.11.3"
+ic-cdk = "0.12.0"
 ic-stable-structures = "0.6.0"
 
 
@@ -36,8 +36,8 @@ ic-agent = "0.33.0"
 ic-utils = "0.33.0"
 itertools = "0.12.1"
 slog = "2.7.0"
-
-# candid_derive ="0.6.4"
+ic-ledger-types = "0.9.0"
+ic-cdk-timers = "0.6.0"
 serde = "1.0.192"
 serde_bytes = "0.11.12"
 serde_cbor = "0.11.2"
@@ -54,7 +54,7 @@ lazy_static = "1.4.0"
 
 # testing:
 # some times compile fail. need to mention. and fix .
-pocket-ic = "2.0.1"
+pocket-ic = "2.1.0"
 rand = "0.8.5"
 
 rmp-serde = "1.1.2"

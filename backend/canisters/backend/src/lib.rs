@@ -36,8 +36,6 @@ use crate::user::domain::*;
 #[allow(unused_imports)]
 use crate::c_http::api::*;
 #[allow(unused_imports)]
-use crate::c_http::non_replicate_http::*;
-#[allow(unused_imports)]
 use crate::transaction::domain::TransactionB;
 #[allow(unused_imports)]
 use crate::transaction::domain::TransactionF;
@@ -62,11 +60,7 @@ use ic_cdk::api::management_canister::{
   },
   provisional::{CanisterIdRecord, CanisterSettings},
 };
-#[allow(unused_imports)]
-use proxy_canister_types::{
-  HttpRequest, HttpRequestEndpointArgs, HttpRequestEndpointResult,
-  HttpRequestId, HttpRequestTimeoutMs, HttpResult,
-};
+
 #[allow(unused_imports)]
 use std::collections::HashMap;
 
