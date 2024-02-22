@@ -9,6 +9,7 @@ use ic_utils::interfaces::ManagementCanister;
 use std::env;
 use std::fs::read;
 
+// sometime debug cache err: cargo clean -p canister_upgrader && cargo build --package canister_upgrader
 #[tokio::main]
 async fn main() {
   let args: Vec<String> = env::args().collect();
@@ -28,11 +29,14 @@ async fn main() {
     println!("local network mode");
     url = url_local;
     canister_id = canister_id_local;
-  } else {
+  } else if online_mode == "1" {
     println!("ic network mode");
     url = url_ic;
     canister_id = canister_id_ic;
+  } else {
+      panic!("args input err!");
   }
+
 
   let controller = String::from("btwlz");
 
@@ -59,3 +63,7 @@ async fn main() {
 
 // ic_utils lib hot fix patch : git commit:
 // b74445e1da0a6afefc3a08372f74e8ea416cd1ba
+
+
+
+
