@@ -1,5 +1,4 @@
 use candid::Principal;
-use canister_agent_utils::{build_ic_agent, get_dfx_identity};
 #[allow(unused_imports)]
 // use ic_agent::{ Identity};
 #[allow(unused_imports)]
@@ -8,7 +7,16 @@ use ic_utils::interfaces::management_canister::builders::InstallMode;
 use ic_utils::interfaces::ManagementCanister;
 use std::env;
 use std::fs::read;
+use std::ops::Deref;
 
+use ic_agent::agent::http_transport::reqwest_transport::ReqwestHttpReplicaV2Transport;
+use ic_agent::{Agent, Identity};
+use itertools::Itertools;
+use std::fmt::{Display, Formatter};
+use std::fs::File;
+use std::io::Read;
+use std::path::PathBuf;
+use std::str::FromStr;
 // sometime debug cache err:
 // cargo clean -p canister_upgrader && cargo build --package canister_upgrader
 #[tokio::main]
@@ -54,13 +62,49 @@ async fn main() {
       skip_pre_upgrade: Some(true), // Some(true)
     })
     .call_and_wait()
-    .awaitcle
+    .await
   {
     Ok(_) => println!("Wasm upgraded with skip_pre_upgrade ! "),
     Err(error) => println!("Upgrade failed: {error:?}"),
   };
 }
 
+pub fn get_dfx_identity(name: &str) -> Box<dyn Identity> {
+  let logger = slog::Logger::root(slog::Discard, slog::o!());
+  let mut identity_manager =
+    dfx_core::identity::IdentityManager::new(&logger, &None).unwrap();
+  let ret = identity_manager
+    .instantiate_identity_from_name(name, &logger)
+    .unwrap();
+  return ret;
+}
+
+pub fn is_mainnet(url: &str) -> bool {
+  url.contains("ic0.app")
+}
+
+pub async fn build_ic_agent(url: String, identity: Box<dyn Identity>) -> Agent {
+  let mainnet = is_mainnet(&url);
+  let transport = ReqwestHttpReplicaV2Transport::create(url)
+    .expect("Failed to create Reqwest transport");
+  let timeout = std::time::Duration::from_secs(60 * 5);
+
+  let agent = Agent::builder()
+    .with_transport(transport)
+    .with_boxed_identity(identity)
+    .with_ingress_expiry(Some(timeout))
+    .build()
+    .expect("Failed to build IC agent");
+
+  if !mainnet {
+    agent
+      .fetch_root_key()
+      .await
+      .expect("Couldn't fetch root key");
+  }
+
+  agent
+}
 // ic_utils lib hot fix patch : git commit:
 // b74445e1da0a6afefc3a08372f74e8ea416cd1ba
 

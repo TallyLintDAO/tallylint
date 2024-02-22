@@ -11,8 +11,8 @@ members = [
     "backend/lib/serializer",
     "backend/lib/stable_memory",
     
-    "backend/lib/canister_agent_utils",
-    "backend/lib/my_types",
+    # "backend/lib/canister_agent_utils",
+    # "backend/lib/my_types",
     "backend/lib/canister_upgrader",
     # "backend/lib/sha256_versions",
 

@@ -12,6 +12,11 @@ tokio = { version = "1", features = ["full"] }
 # TODO maybe need to mannually go into local src code of ic-utils and change the src code base thsi commit.
 # ic-utils =  { git = "https://github.com/dfinity/agent-rs.git", rev = "b74445e1da0a6afefc3a08372f74e8ea416cd1ba" }
 candid = { workspace = true } # for abstraction from backend language . some kind of middle language . decoupling 
-ic-utils = { workspace = true }
 
-canister_agent_utils = { path = "../canister_agent_utils" }
+dfx-core = { workspace = true }
+ic-utils = { workspace = true }
+ic-agent = { workspace = true }
+itertools  = { workspace = true }
+slog  = { workspace = true }
+
+# canister_agent_utils = { path = "../canister_agent_utils" }
