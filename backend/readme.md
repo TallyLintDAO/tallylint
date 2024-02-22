@@ -1,3 +1,9 @@
+REMAINDER:
+in CN work time : AM9-PM5 corresponding below 
+Switzerland  -> PM4-12AM(midnight00:00 )
+Singapore -> same time zone 
+USA-LA  -> 1AM-9AM
+USA-Washington DC  -> 10PM-6AM
 TODO list:
 now do:
 fixed, 1. query_all_neuron_wallet err.
@@ -273,60 +279,6 @@ call aaaaa-aa canister_info\
   --wallet $(dfx identity --ic get-wallet) \
   --candid /home/btwl/code/ic/tax_lint/backend/canisters/backend/my_tests/test_in_cmd/dfx_calls/manage_can.did
 
-(record {
-      canister_id : canister_id;
-      num_requested_changes : opt nat64;
-  })
-
-
-
-dfx canister \
---ic \ 
-call aaaaa-aa install_code\
- '(record {
-  canister_id = principal "v7g7o-oiaaa-aaaag-qcj3q-cai"; 
-  mode = variant { upgrade = opt record { skip_pre_upgrade = opt true} };
-  wasm_module = /home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm;
-  arg =  "???"
-    })'\
-  --wallet $(dfx identity --ic get-wallet) \
-  --candid /home/btwl/code/ic/tax_lint/backend/canisters/backend/my_tests/test_in_cmd/dfx_calls/manage_can.did
-
-dfx canister \
-call aaaaa-aa install_code\
- '(record {
-  canister_id = principal "be2us-64aaa-aaaaa-qaabq-cai"; 
-  mode = variant { upgrade = opt record { skip_pre_upgrade = opt true} };
-  wasm_module = "/home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm";
-  arg =  ??
-    })'\
-  --wallet $(dfx identity  get-wallet) \
-  --candid /home/btwl/code/ic/tax_lint/backend/canisters/backend/my_tests/test_in_cmd/dfx_calls/manage_can.did
-
-record {
-  arg : vec nat8;
-  wasm_module : vec nat8;
-  mode : variant {
-    reinstall;
-    upgrade : record { skip_pre_upgrade : bool };
-    install;
-  };
-  canister_id : principal;
-} 
-
-(record {
-    mode : variant {
-      install;
-      reinstall;
-      upgrade : opt record {
-        skip_pre_upgrade: opt bool;
-      }
-    };
-    canister_id = principal "v7g7o-oiaaa-aaaag-qcj3q-cai";
-    wasm_module : wasm_module;
-    arg : blob;
-    sender_canister_version : opt nat64;
-  })
 ```
 2. 再使用dropbox的 to dropbox api 和from dropbox api 来尝试复原heap数据.
 ```bash

@@ -1,4 +1,4 @@
-## Summary
+## Summary on  canister backup/restore problem
 We would like to announce that we started looking into the canister backup/restore problem. We are currently in the design phase and are looking for your input on:
 
 Importance of the problem for you and your use cases. This would help us to prioritise this relative to other problems.
