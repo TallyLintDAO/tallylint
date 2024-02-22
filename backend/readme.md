@@ -263,7 +263,8 @@ TODO: 了解uninstall_code 的api是否会导致stable mem 被删除. 如果不�
 
 # 备份线上数据库和还原
 目前的线上代码执行过一次pre_upgrade. 那个pre_upgrade代码就是上上次的代码,即下面的commit,检查了是ok的.也必定是执行成功才能部署到目前的线上代码.
-这个分支是距离最近线上代码的上一次代码. 表示这个代码的pre_upgrade是执行完成了的.
+这个分支是距离最近线上代码的上一次代码. 表示这个代码的pre_upgrade是执行完成了的. 这个commit是从dfx命令查询canister_info得到的. 这个pre_upgrade正确得存储了paylaod到stable里面.
+只执行过一次. 那就是最近一次成功部署后端的时候. 因此目前线上的stable数据是ok的.
 git checkout -b prod_db_backup_3_dec_22 56b89a70eb70ad51ed2ba2b2d46f6d4886e5911e
 
 1. 现在手动选择skip_pre_install来install当前最新后端代码.
