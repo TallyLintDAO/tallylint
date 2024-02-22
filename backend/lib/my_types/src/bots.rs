@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(CandidType, Serialize, Deserialize, Debug)]
 pub struct BotMessage {
-    pub content: MessageContentInitial,
-    #[serde(default)]
-    pub message_id: Option<MessageId>,
+  pub content: MessageContentInitial,
+  #[serde(default)]
+  pub message_id: Option<MessageId>,
 }

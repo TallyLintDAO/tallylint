@@ -1,7 +1,5 @@
 use std::io::{Read, Write};
 
-
-
 use ic_cdk::storage::{stable_restore, stable_save};
 use ic_cdk_macros::*;
 
@@ -15,9 +13,7 @@ use super::memory::get_upgrades_memory;
 
 use crate::c_http::post::get_payload_from_dropbox;
 
-use crate::{
-   CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU,
-};
+use crate::{CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
 use stable_memory::*;
 #[init]
 fn init() {

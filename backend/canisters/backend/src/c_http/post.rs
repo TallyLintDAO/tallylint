@@ -6,10 +6,7 @@ use ic_cdk::api::management_canister::http_request::{
 
 use serde::{Deserialize, Serialize};
 
-use crate::{
-  calculate_cost,
-  common::life_cycle::collect_running_payload,
-};
+use crate::{calculate_cost, common::life_cycle::collect_running_payload};
 
 // This struct is legacy code and is not really used in the code.
 #[derive(Serialize, Deserialize)]

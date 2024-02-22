@@ -1,4 +1,4 @@
-pub(crate) use candid::{CandidType};
+pub(crate) use candid::CandidType;
 
 use crate::common::context::TimeStamp;
 

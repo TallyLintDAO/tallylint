@@ -144,44 +144,44 @@ pub type TimestampNanos = u64;
 pub struct Empty {}
 
 pub trait PushIfNotContains<T> {
-    fn push_if_not_contains(&mut self, item: T) -> bool;
+  fn push_if_not_contains(&mut self, item: T) -> bool;
 }
 
 impl<T: PartialEq> PushIfNotContains<T> for Vec<T> {
-    fn push_if_not_contains(&mut self, item: T) -> bool {
-        if !self.contains(&item) {
-            self.push(item);
-            true
-        } else {
-            false
-        }
+  fn push_if_not_contains(&mut self, item: T) -> bool {
+    if !self.contains(&item) {
+      self.push(item);
+      true
+    } else {
+      false
     }
+  }
 }
 
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
 pub enum ResultLowercase<T, E> {
-    #[serde(rename = "ok")]
-    Ok(T),
-    #[serde(rename = "err")]
-    Err(E),
+  #[serde(rename = "ok")]
+  Ok(T),
+  #[serde(rename = "err")]
+  Err(E),
 }
 
 pub fn is_empty_slice<T>(value: &[T]) -> bool {
-    value.is_empty()
+  value.is_empty()
 }
 
 pub fn is_empty_hashmap<K, V>(value: &HashMap<K, V>) -> bool {
-    value.is_empty()
+  value.is_empty()
 }
 
 pub fn is_empty_hashset<T>(value: &HashSet<T>) -> bool {
-    value.is_empty()
+  value.is_empty()
 }
 
 pub fn is_empty_btreemap<K, V>(value: &BTreeMap<K, V>) -> bool {
-    value.is_empty()
+  value.is_empty()
 }
 
 pub fn is_default<T: Default + Eq>(value: &T) -> bool {
-    *value == Default::default()
+  *value == Default::default()
 }
