@@ -6,14 +6,14 @@ use std::fs::read;
 use std::io::Error;
 use candid::{encode_one, Principal};
 use canister_agent_utils::{build_ic_agent, get_canister_wasm, get_dfx_identity, CanisterName};
-
+use ic_agent::{Agent, Identity};
 
 #[tokio::main]
 async fn main(){
     install().await;
 }
 async fn install(){
-    // FIXME this local  url says not valid. but i can run `dfx deploy xx`in any new terminal.
+    // FIXME this local  url says not valid. but i can run `dfx deploy xx`in any new terminal. maybe the port not match ?
     let url_local=String::from("127.0.0.1:40010");
     
     let url_ic=String::from("https://ic0.app/");
@@ -34,9 +34,8 @@ async fn install(){
         match management_canister
             .install_code(&canister_id, &wasm_bytes)
             .with_mode(InstallMode::Upgrade{
-                    skip_pre_upgrade: Some(true),
+                    skip_pre_upgrade: true,
                     })
-            .with_arg(args)
             .call_and_wait()
             .await
         {
