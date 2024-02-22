@@ -1,7 +1,3 @@
-use std::borrow::BorrowMut;
-
-
-
 use ic_cdk_macros::{query, update};
 use ic_ledger_types::AccountIdentifier;
 
@@ -131,6 +127,7 @@ fn delete_wallet(id: u64) -> Result<bool, String> {
   })
 }
 
+#[allow(dead_code)]
 fn convert_edit_command_to_record_profile(
   cmd: EditHistoryCommand,
   addr: WalletAddress,
