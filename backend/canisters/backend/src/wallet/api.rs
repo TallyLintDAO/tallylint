@@ -1,12 +1,12 @@
 use std::borrow::BorrowMut;
-use std::collections::HashMap;
 
-use ic_cdk::caller;
+
+
 use ic_cdk_macros::{query, update};
 use ic_ledger_types::AccountIdentifier;
 
 use super::domain::*;
-use super::service::{RecordId, WalletAddress, WalletId};
+use super::service::WalletAddress;
 use crate::common::guard::user_owner_guard;
 use crate::transaction::domain::TransactionB;
 use crate::CONTEXT;

@@ -1,7 +1,7 @@
 use std::io::{Read, Write};
-use std::str::FromStr;
 
-use candid::Principal;
+
+
 use ic_cdk::storage::{stable_restore, stable_save};
 use ic_cdk_macros::*;
 
@@ -14,7 +14,7 @@ use super::env::CanisterEnvironment;
 use super::memory::get_upgrades_memory;
 
 use crate::c_http::post::get_payload_from_dropbox;
-use crate::common::constants::PROXY_CANISTER_ID;
+
 use crate::{
    CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU,
 };

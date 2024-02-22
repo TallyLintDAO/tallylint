@@ -1,8 +1,8 @@
-pub(crate) use candid::{CandidType, Principal};
+pub(crate) use candid::{CandidType};
 
 use crate::common::context::TimeStamp;
 
-use super::service::{RecordId, WalletAddress, WalletId};
+use super::service::{RecordId, WalletAddress};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]

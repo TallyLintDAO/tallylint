@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use candid::{CandidType, Principal};
 
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap};
 
 use super::domain::*;
 

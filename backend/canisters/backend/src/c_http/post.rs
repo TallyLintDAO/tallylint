@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
   calculate_cost,
-  common::life_cycle::{collect_running_payload, get_payload_from_stable_mem},
+  common::life_cycle::collect_running_payload,
 };
 
 // This struct is legacy code and is not really used in the code.

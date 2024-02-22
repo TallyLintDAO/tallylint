@@ -97,7 +97,7 @@ fn sync_transaction_record(
     let mut ctx = c.borrow_mut();
     for (_, record_profiles) in data {
       for record_profile in record_profiles {
-        let mut id = ctx.id;
+        let id = ctx.id;
         let ret = ctx
           .transaction_service
           .add_transaction_record(id, record_profile);
