@@ -1,7 +1,7 @@
 use candid::Principal;
 use canister_agent_utils::{build_ic_agent, get_dfx_identity};
 #[allow(unused_imports)]
-use ic_agent::{Agent, Identity};
+// use ic_agent::{ Identity};
 #[allow(unused_imports)]
 use ic_utils::call::AsyncCall;
 use ic_utils::interfaces::management_canister::builders::InstallMode;
@@ -9,7 +9,8 @@ use ic_utils::interfaces::ManagementCanister;
 use std::env;
 use std::fs::read;
 
-// sometime debug cache err: cargo clean -p canister_upgrader && cargo build --package canister_upgrader
+// sometime debug cache err:
+// cargo clean -p canister_upgrader && cargo build --package canister_upgrader
 #[tokio::main]
 async fn main() {
   let args: Vec<String> = env::args().collect();
@@ -34,9 +35,8 @@ async fn main() {
     url = url_ic;
     canister_id = canister_id_ic;
   } else {
-      panic!("args input err!");
+    panic!("args input err!");
   }
-
 
   let controller = String::from("btwlz");
 
@@ -51,10 +51,10 @@ async fn main() {
   match management_canister
     .install_code(&canister_id, &wasm_bytes)
     .with_mode(InstallMode::Upgrade {
-      skip_pre_upgrade: true, // Some(true)
+      skip_pre_upgrade: Some(true), // Some(true)
     })
     .call_and_wait()
-    .await
+    .awaitcle
   {
     Ok(_) => println!("Wasm upgraded with skip_pre_upgrade ! "),
     Err(error) => println!("Upgrade failed: {error:?}"),
@@ -64,6 +64,11 @@ async fn main() {
 // ic_utils lib hot fix patch : git commit:
 // b74445e1da0a6afefc3a08372f74e8ea416cd1ba
 
-
-
-
+#[cfg(test)]
+mod tests {
+  #[test]
+  fn it_works() {
+    let id1: dfx_core::identity::Identity;
+    let id2: ic_agent::Identity;
+  }
+}

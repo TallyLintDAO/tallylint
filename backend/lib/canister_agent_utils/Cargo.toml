@@ -14,4 +14,3 @@ itertools = { workspace = true }
 slog = { workspace = true }
 my_types = { path = "../my_types" }
 # ic-utils =  { git = "https://github.com/dfinity/agent-rs.git", rev = "b74445e1da0a6afefc3a08372f74e8ea416cd1ba" }
-# ic-utils = "0.29.0"
