@@ -20,6 +20,8 @@ npm install
 npm build
 cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did
 dfx start --background
+# TODO sha256::Digest in rust function to handle the wasm file can gen hash. 
+# i have write a lib about it . so dont need this compicate wasm verification.
 dfx deploy
 touch local_module_hashes.txt
 dfx canister status --all | grep "Module hash" | awk '{ print $3 }' >local_module_hashes.txt
@@ -34,7 +36,7 @@ diff ./Reproducible/ic_module_hashes.txt ./local_module_hashes.txt
 #!/bin/bash
 # apt update && apt install git curl  vim -y
 git clone https://github.com/TaxLintDAO/taxlint.git --depth=1
-sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
+# sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
 curl https://sh.rustup.rs -sSf | sh -s -- -y
 
 dfx --version
@@ -42,5 +44,15 @@ which curl
 
 
 cd taxlint 
-dfx start --background
-dfx deploy backend
+# dfx start --background
+apt-get install build-essential cmake -y
+clear && cargo check && cargo build --target wasm32-unknown-unknown --release -p backend --locked
+# dfx deploy backendcc
+
+
+# steps:
+# 1. download taxlint
+# 2. compile backend code to wasm 
+#     can gen wasm hash now  using my tool 
+# 3. install wasm into replica
+#     to test dev_env ok for other user.
