@@ -1,5 +1,22 @@
 <template>
   <div class="dashboard-container">
+    <!-- 由于IC一次只能查一千条交易记录，暂时先搞个提示 -->
+    <q-banner
+      inline-actions
+      class="text-white bg-red q-mb-md"
+      v-if="isTransactionTooMany"
+    >
+      Your single wallet transaction record is greater than 1000, can not be
+      properly queried
+      <template v-slot:action>
+        <q-btn
+          flat
+          color="white"
+          label="Close"
+          @click="isTransactionTooMany = false"
+        />
+      </template>
+    </q-banner>
     <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
     <div class="row q-gutter-md">
       <div class="col-7" ref="echartsContainer" style="height: 400px"></div>
@@ -135,6 +152,7 @@ const totalHistory = ref<WalletHistory[]>([])
 const received = ref(0)
 const sent = ref(0)
 const gains = ref(0)
+const isTransactionTooMany = ref(false)
 
 const shortcuts = [
   {
@@ -292,6 +310,8 @@ const getWallet = async () => {
       const walletHistory = await getWalletHistory(walletInfo.address)
       getBalance(walletInfo.address, walletInfo.name)
       totalHistory.value = totalHistory.value.concat(walletHistory.history)
+      //IC一次性查询不能超过一千条
+      isTransactionTooMany.value = walletInfo.transactions < 1000
     }
     const walletDailyBalance = await getAllWalletDailyBalance(res.Ok)
     let timestamps = Object.keys(walletDailyBalance).sort()
