@@ -33,21 +33,21 @@ diff ./Reproducible/ic_module_hashes.txt ./local_module_hashes.txt
 ####!!!! this proxy only work at current terminal everytime. 
 # docker run -it --name ubt2204 --network=host -e http_proxy=http://127.0.0.1:25526 -e https_proxy=http://127.0.0.1:25526 ubuntu:22.04
 
-#!/bin/bash
-# apt update && apt install git curl  vim -y
-git clone https://github.com/TaxLintDAO/taxlint.git --depth=1
-# sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
-curl https://sh.rustup.rs -sSf | sh -s -- -y
+# #!/bin/bash
+# # apt update && apt install git curl  vim -y
+# # sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
+# curl https://sh.rustup.rs -sSf | sh -s -- -y
+# git clone https://github.com/TaxLintDAO/taxlint.git --depth=1 && cd taxlint 
 
-dfx --version
-which curl 
+# # dfx --version
+# which curl 
 
+# # dfx start --background
+# apt-get install build-essential cmake -y
+# clear && cargo check && cargo build --target wasm32-unknown-unknown --release -p backend --locked
+# la ./target/wasm32-unknown-unknown/release/backend.wasm
 
-cd taxlint 
-# dfx start --background
-apt-get install build-essential cmake -y
-clear && cargo check && cargo build --target wasm32-unknown-unknown --release -p backend --locked
-# dfx deploy backendcc
+# dfx deploy backend
 
 
 # steps:
