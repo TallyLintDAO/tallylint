@@ -7,22 +7,14 @@ use ic_utils::interfaces::management_canister::builders::InstallMode;
 use ic_utils::interfaces::ManagementCanister;
 use std::env;
 use std::fs::read;
-use std::ops::Deref;
 
-use ic_agent::agent::http_transport::reqwest_transport::ReqwestHttpReplicaV2Transport;
-use ic_agent::{Agent, Identity};
-use itertools::Itertools;
-use std::fmt::{Display, Formatter};
-use std::fs::File;
-use std::io::Read;
-use std::path::PathBuf;
-use std::str::FromStr;
 // sometime debug cache err:
 // cargo clean -p canister_upgrader && cargo build --package canister_upgrader
 #[tokio::main]
 async fn main() {
   let args: Vec<String> = env::args().collect();
   let online_mode = &args[1];
+  let install_mode = &args[2];
 
   let url_local = String::from("https://127.0.0.1:40010");
   let url_ic = String::from("https://ic0.app/");
@@ -43,24 +35,36 @@ async fn main() {
     url = url_ic;
     canister_id = canister_id_ic;
   } else {
-    panic!("args input err!");
+    panic!("args input err!!");
   }
 
   let controller = String::from("btwlz");
+  
+  let mode;
+  if install_mode == "1" {
+    println!("skip_pre_upgrade mode");
 
-  // INFO this need use input passwd in terminal if have passwd.
+    mode = InstallMode::Upgrade {
+      skip_pre_upgrade: Some(false),
+    };
+  } else if install_mode == "0" {
+    mode = InstallMode::Reinstall;
+    println!("reinstall mode");
+  } else {
+    panic!("args input err!!");
+  }
+  // INFO this need use input passwd in terminal if have passwd. takes about 4s
+  // to run
   let identity = get_dfx_identity(&controller);
   let agent = build_ic_agent(url, identity).await;
   let management_canister = ManagementCanister::create(&agent);
 
   let wasm_file_path = "/home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm";
-  let wasm_bytes = read(wasm_file_path).expect("file not exsit");
+  let wasm_bytes = read(wasm_file_path).expect("wasm file not exsit");
 
   match management_canister
     .install_code(&canister_id, &wasm_bytes)
-    .with_mode(InstallMode::Upgrade {
-      skip_pre_upgrade: Some(true), // Some(true)
-    })
+    .with_mode(mode)
     .call_and_wait()
     .await
   {
@@ -69,19 +73,8 @@ async fn main() {
   };
 }
 
-pub fn get_dfx_identity(name: &str) -> Box<dyn Identity> {
-  let logger = slog::Logger::root(slog::Discard, slog::o!());
-  let mut identity_manager =
-    dfx_core::identity::IdentityManager::new(&logger, &None).unwrap();
-  let ret = identity_manager
-    .instantiate_identity_from_name(name, &logger)
-    .unwrap();
-  return ret;
-}
-
-pub fn is_mainnet(url: &str) -> bool {
-  url.contains("ic0.app")
-}
+use ic_agent::agent::http_transport::reqwest_transport::ReqwestHttpReplicaV2Transport;
+use ic_agent::{Agent, Identity};
 
 pub async fn build_ic_agent(url: String, identity: Box<dyn Identity>) -> Agent {
   let mainnet = is_mainnet(&url);
@@ -97,22 +90,24 @@ pub async fn build_ic_agent(url: String, identity: Box<dyn Identity>) -> Agent {
     .expect("Failed to build IC agent");
 
   if !mainnet {
-    agent
-      .fetch_root_key()
-      .await
-      .expect("Couldn't fetch root key");
+    let rk_path = "/home/btwl/code/canister_upgrader_independent2/btwlz_pk.pem";
+    let rk = read(rk_path).expect("file not exsit");
+    agent.set_root_key(rk);
   }
 
   agent
 }
+pub fn is_mainnet(url: &str) -> bool {
+  url.contains("ic0.app")
+}
+
+pub fn get_dfx_identity(name: &str) -> Box<dyn Identity> {
+  let logger = slog::Logger::root(slog::Discard, slog::o!());
+  let mut identity_manager =
+    dfx_core::identity::IdentityManager::new(&logger, &None).unwrap();
+  identity_manager
+    .instantiate_identity_from_name(name, &logger)
+    .unwrap()
+}
 // ic_utils lib hot fix patch : git commit:
 // b74445e1da0a6afefc3a08372f74e8ea416cd1ba
-
-#[cfg(test)]
-mod tests {
-  #[test]
-  fn it_works() {
-    let id1: dfx_core::identity::Identity;
-    let id2: ic_agent::Identity;
-  }
-}
