@@ -34,7 +34,7 @@ backend hash:
 `0x17ea3f0714b9df0316c73609dbad90827bb2d8359a683591fcc79844cab2530b`  
 
 ## Developer
-backend: by running the script  to prepare backend development enviroment and download taxlint source code for you.
+backend: by running the script  to download taxlint source code and prepare backend development enviroment and  for you.
 ```bash
 wget -O - https://github.com/TaxLintDAO/taxlint/raw/master/reproducible/prep_backend_dev_env.sh | sh
 ```
