@@ -70,6 +70,15 @@
                     </q-menu>
                   </q-btn>
                 </div>
+                <div class="sync">
+                  <div v-if="props.row.last_sync_time === 0n">
+                    <q-badge color="red"> NO SYNCED </q-badge>
+                  </div>
+                  <div v-else>
+                    <q-badge color="blue"> SYNCED </q-badge>
+                    {{ distanceFromCurrentDate(props.row.last_sync_time) }}
+                  </div>
+                </div>
               </q-card-section>
               <q-list>
                 <!-- principal只有有值才显示 -->
@@ -81,13 +90,25 @@
                     </q-item-label>
                   </q-item-section>
                 </q-item>
-                <q-item v-for="col in props.cols" :key="col.name">
+                <!-- 上面已经显示过wallet name，所以这里不需要再显示name -->
+                <q-item
+                  v-for="col in props.cols"
+                  :key="col.name"
+                  :class="{ 'hidden-row': col.name === 'name' }"
+                >
                   <q-item-section>
                     <q-item-label>{{ col.label }}</q-item-label>
                     <q-item-label v-if="col.name === 'address'" caption>
                       <router-link :to="'/app/transactions/' + col.value">
                         {{ col.value }}
                       </router-link>
+                    </q-item-label>
+                    <q-item-label
+                      v-else-if="col.name === 'lastTransaction'"
+                      caption
+                      >{{
+                        distanceFromCurrentDate(props.row.last_transaction_time)
+                      }}
                     </q-item-label>
                     <q-item-label v-else caption>{{ col.value }}</q-item-label>
                   </q-item-section>
@@ -183,6 +204,7 @@ import {
 } from "@/api/user"
 import type { WalletInfo } from "@/types/user"
 import { isPrincipal, p2a } from "@/utils/common"
+import { distanceFromCurrentDate } from "@/utils/date"
 import { confirmDialog } from "@/utils/dialog"
 import { showMessageSuccess, showResultError } from "@/utils/message"
 import type { QForm } from "quasar"
@@ -198,6 +220,11 @@ const columns = [
   { name: "from", label: "From", field: "from" },
   { name: "name", label: "Name", field: "name" },
   { name: "transactions", label: "Transactions", field: "transactions" },
+  {
+    name: "lastTransaction",
+    label: "Last Transaction",
+    field: "last_transaction_time",
+  },
 ]
 const froms = ["NNS", "Plug", "Stoic", "AstorMe"]
 const walletDialogVisible = ref(false)
@@ -293,14 +320,16 @@ const getWallets = (isRefresh: boolean) => {
             row.transactions = 0
             getICPTransactions(
               { address: row.address, name: "", from: "" },
-              false,
+              true,
             ).then((res) => {
               // 将查询得到的transactions绑定回原数组中的transactions
               row.transactions = res.total
+              row.last_transaction_time = res.transactions[0].timestamp
+              console.log("getUserWallet", res, row)
             })
           } catch (error) {
             // 处理错误情况
-            console.error(`查询地址 ${row.address} 的交易时出错:`, error)
+            console.error(`query ${row.address} transactons error: `, error)
           }
         }
       }
@@ -391,14 +420,24 @@ const deleteWallet = (walletId: bigint) => {
   .grid-style-transition {
     transition: transform 0.28s, background-color 0.28s;
   }
+  .q-card__section .q-card__section--vert {
+    padding-bottom: 0px;
+  }
   .head-icon {
     width: 32px !important;
   }
   .text-caption {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+  }
+  .sync {
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 13px;
   }
   .q-table__top {
     padding: 0;
+  }
+  .hidden-row {
+    display: none;
   }
 }
 </style>

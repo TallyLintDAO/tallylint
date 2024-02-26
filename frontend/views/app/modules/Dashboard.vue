@@ -311,7 +311,7 @@ const getWallet = async () => {
       getBalance(walletInfo.address, walletInfo.name)
       totalHistory.value = totalHistory.value.concat(walletHistory.history)
       //IC一次性查询不能超过一千条
-      isTransactionTooMany.value = walletInfo.transactions < 1000
+      isTransactionTooMany.value = walletInfo.transactions >= 1000
     }
     const walletDailyBalance = await getAllWalletDailyBalance(res.Ok)
     let timestamps = Object.keys(walletDailyBalance).sort()
