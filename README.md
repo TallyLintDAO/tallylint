@@ -33,3 +33,6 @@ frontend hash:
 backend hash:  
 `0x17ea3f0714b9df0316c73609dbad90827bb2d8359a683591fcc79844cab2530b`  
 
+## Developer
+backend: by running the [script](./Reproducible/prep_backend_dev_env.sh) to prepare backend development enviroment.
+

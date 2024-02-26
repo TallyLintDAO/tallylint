@@ -29,7 +29,6 @@ dfx canister status --all | grep "Module hash" | awk '{ print $3 }' >local_modul
 diff ./Reproducible/ic_module_hashes.txt ./local_module_hashes.txt
 
 # assume got http_proxy ok on host-machine : container can use it .
-# docker run -it --name ubt2204 --network=host ubuntu:22.04
 ####!!!! this proxy only work at current terminal everytime. 
 # docker run -it --name ubt2204 --network=host -e http_proxy=http://127.0.0.1:25526 -e https_proxy=http://127.0.0.1:25526 ubuntu:22.04
 
