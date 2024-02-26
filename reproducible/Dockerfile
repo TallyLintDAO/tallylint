@@ -4,13 +4,14 @@
 # or. use US azure server
 
 ####    1.set up env:
-# Use ubuntu 2204 lts as the base image ,jammy is ubuntu 2204 lts
+# Use ubuntu 2204 lts as the base image ,
+#! jammy is ubuntu 2204 lts
 FROM ubuntu:jammy
 # Copy the script file to the container
 COPY ./setup.sh ~/setup.sh
+# RUN chmod +x ./setup.sh
 # WORKDIR ~/taxlint
 # Make the script file executable
-# RUN chmod +x ./setup.sh
 
 #### 3.build the image and run
 # docker build -t taxlint:v1 . \
