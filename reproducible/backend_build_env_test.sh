@@ -1,5 +1,5 @@
 #!/bin/bash
-apt update && apt install git curl  vim -y
+apt update && apt install git curl  -y
 curl https://sh.rustup.rs -sSf | sh -s -- -y
 # sh -ci "$(curl -fsSL https://sdk.dfinity.org/install.sh)"
 # this downlaod master branch.
