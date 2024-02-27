@@ -1,6 +1,10 @@
 <template>
   <div class="transactions-container">
     <div class="column">
+      <div class="row items-center justify-between">
+        <div>Transaction {{ walletList.length }}</div>
+        <div><q-btn color="primary">Add Transaction</q-btn></div>
+      </div>
       <div class="header q-gutter-md row q-mb-md items-end">
         <q-select
           v-model="selectedWallet"
@@ -11,7 +15,6 @@
           option-value="address"
           :options="wallets"
           label="All Wallets"
-          style="width: 250px"
         >
           <template v-slot:option="scope">
             <q-item v-bind="scope.itemProps">
@@ -27,16 +30,35 @@
                 <q-item-label caption>Synced</q-item-label>
               </q-item-section>
             </q-item>
-          </template></q-select
-        >
+          </template>
+        </q-select>
         <q-select
           v-model="costMethod"
           :options="costMethodOptions"
           label="Cost Basis Method"
         />
-        <q-select v-model="model" :options="options" label="Type" />
-        <q-select v-model="model" :options="options" label="Tag" />
-        <q-select v-model="model" :options="options" label="Date" />
+        <q-select
+          use-chips
+          multiple
+          v-model="type"
+          :options="typeOptions"
+          label="Type"
+        />
+        <q-select
+          use-chips
+          multiple
+          v-model="tag"
+          :options="tagOptions"
+          label="Tag"
+        />
+        <q-select v-model="date" :options="typeOptions" label="Date" />
+        <q-select
+          multiple
+          use-chips
+          v-model="manual"
+          :options="manualOptions"
+          label="Manual"
+        />
         <q-btn
           v-if="walletList.length > 0"
           flat
@@ -100,6 +122,7 @@
                     />
                     <span>{{ transaction.walletName }}</span>
                   </div>
+                  <span v-if="transaction.t_type === 'SEND'">-</span>
                   {{ transaction.details.currency.symbol }}
                   {{ transaction.details.amount }}
                   <br />
@@ -176,6 +199,13 @@ const address = route.params.address
 const walletList = ref<InferredTransaction[]>([])
 const costMethodOptions = ["FIFO"]
 const costMethod = ref("FIFO")
+const type = ref([])
+const typeOptions = ["SEND", "RECEIVE"]
+const tag = ref([])
+const tagOptions = ["Reward", "Mining", "Gift"]
+const date = ref({ from: 0, to: 0 })
+const manual = ref([])
+const manualOptions = ["Manual"]
 const selectedWallet = ref<WalletTag[]>([])
 const wallets = ref<WalletTag[]>([])
 const showLoading = ref(true)
@@ -338,7 +368,7 @@ const exportToCSV = async () => {
 .transactions-container {
   .header {
     .q-select {
-      width: 150px;
+      min-width: 150px;
     }
   }
 }
