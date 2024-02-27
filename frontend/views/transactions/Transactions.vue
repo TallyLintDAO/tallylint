@@ -30,10 +30,13 @@
           </template></q-select
         >
         <q-select
-          v-model="model"
-          :options="options"
+          v-model="costMethod"
+          :options="costMethodOptions"
           label="Cost Basis Method"
         />
+        <q-select v-model="model" :options="options" label="Type" />
+        <q-select v-model="model" :options="options" label="Tag" />
+        <q-select v-model="model" :options="options" label="Date" />
         <q-btn
           v-if="walletList.length > 0"
           flat
@@ -171,8 +174,8 @@ const route = useRoute()
 
 const address = route.params.address
 const walletList = ref<InferredTransaction[]>([])
-const options = ["FIFO"]
-const model = ref("FIFO")
+const costMethodOptions = ["FIFO"]
+const costMethod = ref("FIFO")
 const selectedWallet = ref<WalletTag[]>([])
 const wallets = ref<WalletTag[]>([])
 const showLoading = ref(true)
