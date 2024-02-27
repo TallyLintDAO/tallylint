@@ -10,6 +10,9 @@ use std::fs::read;
 
 // sometime debug cache err:
 // cargo clean -p canister_upgrader && cargo build --package canister_upgrader
+
+// testing : 
+//  ./target/debug/canister_upgrader 0 1
 #[tokio::main]
 async fn main() {
   let args: Vec<String> = env::args().collect();
@@ -43,9 +46,9 @@ async fn main() {
   let mode;
   if install_mode == "1" {
     println!("skip_pre_upgrade mode");
-
     mode = InstallMode::Upgrade {
-      skip_pre_upgrade: Some(false),
+      skip_pre_upgrade: Some(true),
+      // skip_pre_upgrade: true,
     };
   } else if install_mode == "0" {
     mode = InstallMode::Reinstall;
