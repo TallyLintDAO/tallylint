@@ -1,77 +1,109 @@
 <template>
   <div class="transactions-container">
     <div class="column">
-      <div class="row items-center justify-between">
-        <div>Transaction {{ walletList.length }}</div>
+      <div class="row items-center justify-between q-mb-sm">
+        <div class="text-h4 row flex-y-center">
+          Transactions
+          <span class="transaction-number">
+            {{ walletList.length }}
+          </span>
+        </div>
         <div><q-btn color="primary">Add Transaction</q-btn></div>
       </div>
-      <div class="header q-gutter-md row q-mb-md items-end">
-        <q-select
-          v-model="selectedWallet"
-          @update:model-value="getSelectedWalletHistory(selectedWallet)"
-          use-chips
-          multiple
-          option-label="name"
-          option-value="address"
-          :options="wallets"
-          label="All Wallets"
-        >
-          <template v-slot:option="scope">
-            <q-item v-bind="scope.itemProps">
-              <q-item-section avatar>
-                <img
-                  class="head-icon"
-                  src="@/assets/dfinity.svg"
-                  alt="NNS Icon"
-                />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>{{ scope.opt.name }}</q-item-label>
-                <q-item-label caption>Synced</q-item-label>
-              </q-item-section>
-            </q-item>
-          </template>
-        </q-select>
-        <q-select
-          v-model="costMethod"
-          :options="costMethodOptions"
-          label="Cost Basis Method"
-        />
-        <q-select
-          use-chips
-          multiple
-          v-model="type"
-          :options="typeOptions"
-          label="Type"
-        />
-        <q-select
-          use-chips
-          multiple
-          v-model="tag"
-          :options="tagOptions"
-          label="Tag"
-        />
-        <q-select v-model="date" :options="typeOptions" label="Date" />
-        <q-select
-          multiple
-          use-chips
-          v-model="manual"
-          :options="manualOptions"
-          label="Manual"
-        />
-        <q-btn
-          v-if="walletList.length > 0"
-          flat
-          color="primary"
-          icon="file_download"
-          label="Export CSV"
-          @click="exportToCSV"
-        />
+      <div class="header row q-mb-md justify-between">
+        <div class="header-left row q-gutter-md">
+          <q-select
+            v-model="selectedWallet"
+            @update:model-value="getSelectedWalletHistory(selectedWallet)"
+            use-chips
+            multiple
+            option-label="name"
+            option-value="address"
+            :options="wallets"
+            label="All Wallets"
+          >
+            <template v-slot:option="scope">
+              <q-item v-bind="scope.itemProps">
+                <q-item-section avatar>
+                  <img
+                    class="head-icon"
+                    src="@/assets/dfinity.svg"
+                    alt="NNS Icon"
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ scope.opt.name }}</q-item-label>
+                  <q-item-label caption>Synced</q-item-label>
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+          <!-- <q-select
+            v-model="costMethod"
+            :options="costMethodOptions"
+            label="Cost Basis Method"
+          /> -->
+          <q-select
+            use-chips
+            multiple
+            v-model="type"
+            :options="typeOptions"
+            label="Type"
+          />
+          <q-select
+            use-chips
+            multiple
+            v-model="tag"
+            :options="tagOptions"
+            label="Tag"
+          />
+          <q-select
+            multiple
+            use-chips
+            v-model="manual"
+            :options="manualOptions"
+            label="Manual"
+          />
+        </div>
+        <div class="header-right row q-gutter-md">
+          <el-date-picker
+            v-model="date"
+            type="daterange"
+            range-separator="To"
+            start-placeholder="Start date"
+            end-placeholder="End date"
+            :shortcuts="shortcuts"
+            value-format="x"
+            size="large"
+          />
+          <q-select
+            rounded
+            outlined
+            v-model="sort"
+            :options="sortOptions"
+            label="Sort by"
+          />
+          <q-select
+            rounded
+            outlined
+            v-model="pageSize"
+            :options="pagesizeOptions"
+            label="Per page"
+          />
+        </div>
       </div>
+      <!-- <q-btn
+        v-if="walletList.length > 0"
+        flat
+        color="primary"
+        icon="file_download"
+        label="Export CSV"
+        @click="exportToCSV"
+      /> -->
       <div v-if="showLoading">
         <q-spinner-cube size="xl" color="primary" />
       </div>
-      <div v-else-if="wallets.length === 0">
+      <div v-else-if="walletList.length == 0">
         <span>No data available</span>
       </div>
       <div v-else>
@@ -206,6 +238,8 @@ const tagOptions = ["Reward", "Mining", "Gift"]
 const date = ref({ from: 0, to: 0 })
 const manual = ref([])
 const manualOptions = ["Manual"]
+const sort = ref("Recent")
+const sortOptions = ["Recent", "Oldest first", "Highest gains", "Lowest gains"]
 const selectedWallet = ref<WalletTag[]>([])
 const wallets = ref<WalletTag[]>([])
 const showLoading = ref(true)
@@ -213,6 +247,42 @@ const showLoading = ref(true)
 const currentPage = ref(1)
 const maxPage = ref(1)
 const pageSize = ref(10)
+const pagesizeOptions = ["5", "10", "25", "50"]
+const shortcuts = [
+  {
+    text: "Last 12 months",
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      start.setMonth(end.getMonth() - 12)
+      return [start, end]
+    },
+  },
+  {
+    text: new Date().getFullYear().toString(),
+    value: () => {
+      const end = new Date()
+      const start = new Date(end.getFullYear(), 0, 1)
+      return [start, end]
+    },
+  },
+  {
+    text: (new Date().getFullYear() - 1).toString(),
+    value: () => {
+      const end = new Date(new Date().getFullYear() - 1, 11, 31)
+      const start = new Date(new Date().getFullYear() - 1, 0, 1)
+      return [start, end]
+    },
+  },
+  {
+    text: (new Date().getFullYear() - 2).toString(),
+    value: () => {
+      const end = new Date(new Date().getFullYear() - 2, 11, 31)
+      const start = new Date(new Date().getFullYear() - 2, 0, 1)
+      return [start, end]
+    },
+  },
+]
 
 const groupedTransactions = (
   transactions: InferredTransaction[],
@@ -366,6 +436,15 @@ const exportToCSV = async () => {
 
 <style lang="scss">
 .transactions-container {
+  .transaction-number {
+    font-size: 14px;
+    line-height: 15px;
+    color: #6c757d;
+    border: 1px solid silver;
+    border-radius: 10px;
+    padding: 4px 8px;
+    margin-left: 10px;
+  }
   .header {
     .q-select {
       min-width: 150px;
