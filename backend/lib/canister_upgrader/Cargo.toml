@@ -1,0 +1,27 @@
+[package]
+name = "canister_upgrader"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+# this commit tag is : skip_pre_upgrade hot fix 
+
+# TODO maybe need to mannually go into local src code of ic-utils and change the src code base thsi commit.
+# ic-utils =  { git = "https://github.com/dfinity/agent-rs.git", rev = "b74445e1da0a6afefc3a08372f74e8ea416cd1ba" }
+candid = { workspace = true } # for abstraction from backend language . some kind of middle language . decoupling 
+
+# dfx-core = { workspace = true }
+# ic-utils = { workspace = true }
+# ic-agent = { workspace = true }
+# itertools  = { workspace = true }
+# slog  = { workspace = true }
+dfx-core ={ git = "https://github.com/dfinity/sdk", rev = "c7fa9267950836fb2e8af2f03a6531ead9289f81" }
+ic-utils = "0.33.0"
+ic-agent = "0.33.0"
+itertools = "0.12.1"
+slog = "2.7.0"
+
+# canister_agent_utils = { path = "../canister_agent_utils" }
