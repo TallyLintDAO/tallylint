@@ -100,9 +100,10 @@ const router = useRouter()
 
 const menuItems = [
   { icon: "drafts", label: "Dashboard", route: "/app" },
-  { icon: "inbox", label: "Wallet", route: "/app/wallet" },
+  { icon: "wallet", label: "Wallet", route: "/app/wallet" },
   { icon: "star", label: "NNS", route: "/app/nns" },
   { icon: "swap_horiz", label: "Transactions", route: "/app/transactions" },
+  { icon: "receipt_long", label: "TaxReport", route: "/app/taxReport" },
   // { icon: "send", label: "Email Set", route: "" },
 ]
 const leftDrawerOpen = ref(false)

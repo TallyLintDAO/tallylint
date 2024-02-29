@@ -5,7 +5,7 @@
         <div class="text-h4 row flex-y-center">
           Transactions
           <span class="transaction-number">
-            {{ walletList.length }}
+            {{ transactionAmount }}
           </span>
         </div>
         <div><q-btn color="primary">Add Transaction</q-btn></div>
@@ -65,7 +65,7 @@
             label="Manual"
           />
         </div>
-        <div class="header-right row q-gutter-md">
+        <div class="header-right row q-gutter-md flex-y-center">
           <el-date-picker
             v-model="date"
             type="daterange"
@@ -235,7 +235,7 @@ const type = ref([])
 const typeOptions = ["SEND", "RECEIVE"]
 const tag = ref([])
 const tagOptions = ["Reward", "Mining", "Gift"]
-const date = ref({ from: 0, to: 0 })
+const date = ref("") //采用这个方便判定为空
 const manual = ref([])
 const manualOptions = ["Manual"]
 const sort = ref("Recent")
@@ -247,6 +247,7 @@ const showLoading = ref(true)
 const currentPage = ref(1)
 const maxPage = ref(1)
 const pageSize = ref(10)
+const transactionAmount = ref(0)
 const pagesizeOptions = ["5", "10", "25", "50"]
 const shortcuts = [
   {
@@ -306,8 +307,19 @@ const paginatedGroups = computed(
   } => {
     const start = (currentPage.value - 1) * pageSize.value
     const end = start + pageSize.value
-    const paginatedData = walletList.value.slice(start, end)
-
+    let paginatedData = walletList.value
+    // 按选定的日期区间过滤记录
+    if (date.value) {
+      paginatedData = paginatedData.filter(
+        (item) =>
+          item.timestamp >= Number(date.value[0]) &&
+          item.timestamp <= Number(date.value[1]),
+      )
+    }
+    //在slice分页之前处理页码和数量
+    maxPage.value = Math.ceil(paginatedData.length / pageSize.value)
+    transactionAmount.value = paginatedData.length
+    paginatedData = paginatedData.slice(start, end)
     return groupedTransactions(paginatedData)
   },
 )
@@ -380,6 +392,7 @@ const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
       if (res.total && res.total != 0) {
         walletList.value = res.transactions
         maxPage.value = Math.ceil(res.total / pageSize.value)
+        transactionAmount.value = res.total
       }
     })
     .finally(() => {
