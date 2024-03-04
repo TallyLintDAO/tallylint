@@ -1,8 +1,6 @@
 #!/bin/bash
 #### the os running this script need: 
-# assume got http_proxy ok on host-machine : container can use it .
-####!!!! this proxy only work at current terminal everytime. 
-# docker run -it --name ubt2204 --network=host -e http_proxy=http://127.0.0.1:25526 -e https_proxy=http://127.0.0.1:25526 ubuntu:22.04
+# docker run -it --name ubt2204 --network=host ubuntu:22.04
 # apt update && apt install wget -y 
 
 apt update && apt install git curl  -y
