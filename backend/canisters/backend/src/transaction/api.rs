@@ -189,3 +189,9 @@ fn convert_edit_command_to_record_profile(
     profit: cmd.profit,
   }
 }
+
+
+#[query(guard = "user_owner_guard")]
+pub fn greet_test()->String{
+  String::from("hello world")
+}

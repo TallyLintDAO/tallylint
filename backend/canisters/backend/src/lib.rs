@@ -60,8 +60,6 @@ use ic_cdk::api::management_canister::{
   },
   provisional::{CanisterIdRecord, CanisterSettings},
 };
-
 #[allow(unused_imports)]
 use std::collections::HashMap;
-
 ic_cdk::export_candid!();
