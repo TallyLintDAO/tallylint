@@ -44,14 +44,14 @@ fn init() {
 // #[pre_upgrade] is a hook. everytime update canister will auto call this.
 // old version . last version exec.
 #[allow(dead_code)]
-// #[pre_upgrade]
+#[pre_upgrade]
 #[trace]
 fn pre_upgrade() {
   set_stable_mem_use_payload_simple();
 }
 
 #[allow(dead_code)]
-// #[post_upgrade]
+#[post_upgrade]
 #[trace]
 fn post_upgrade() {
   let json = get_payload_from_stable_mem_simple();

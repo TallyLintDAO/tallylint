@@ -25,13 +25,9 @@ dfx deploy backend
 #TODO: effiency: maybe use makefile or bash can auto this process.
 #! Continious Deploy on Main net :
 # step1: gen did
-# cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did 
-# above work for ic-cdk 0.10.0
-# 0.11.3 use this :
+# after ic-cdk v0.11.3 use this :
+# TODO how to do this in dfx.json to add this cmd before any dfx deploy ? 
 cargo build --release --target wasm32-unknown-unknown --package backend && candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/canisters/backend/backend.did
-# cargo build --target wasm32-unknown-unknown --release -p backend --locked
-
-# maybe almost the same stuff. just abstraction or simplfied 0.10.0 cmd.
 # step2:
 dfx deploy backend --network ic 
 # or  dfx deploy backend --network ic  -m reinstall  #this will empty the ic-DB 

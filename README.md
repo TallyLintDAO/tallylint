@@ -36,7 +36,11 @@ backend hash:
 ## Developer
 backend: by running the script  to download taxlint source code and prepare backend development enviroment and  for you.
 ```bash
-wget -O - https://github.com/TaxLintDAO/taxlint/raw/master/reproducible/prep_backend_dev_env.sh | sh
+wget  https://github.com/TaxLintDAO/taxlint/raw/master/reproducible/prep_backend_dev_env.sh 
+wget  https://github.com/TaxLintDAO/taxlint/raw/master/reproducible/continue_prep_env.sh 
+chmod 644 ./prep_backend_dev_env.sh 
+chmod 644 ./continue_prep_env.sh 
+./prep_backend_dev_env.sh
 ```
 (if you dont have `wget` in your terminal yet. please install it .if you use ubuntu would be `apt update && apt install wget -y `) 
 
