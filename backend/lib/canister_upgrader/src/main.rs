@@ -21,7 +21,7 @@ async fn main() {
 
   let url_local = String::from("https://127.0.0.1:40010");
   let url_ic = String::from("https://ic0.app/");
-  // INFO this is local or ic canister_id
+
   let canister_id_local =
     Principal::from_text("be2us-64aaa-aaaaa-qaabq-cai").unwrap();
   let canister_id_ic =
@@ -65,9 +65,11 @@ async fn main() {
   let wasm_file_path = "/home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm";
   let wasm_bytes = read(wasm_file_path).expect("wasm file not exsit");
 
+  let args="0";
   match management_canister
     .install_code(&canister_id, &wasm_bytes)
     .with_mode(mode)
+    // .with_arg(args)
     .call_and_wait()
     .await
   {
@@ -114,3 +116,14 @@ pub fn get_dfx_identity(name: &str) -> Box<dyn Identity> {
 }
 // ic_utils lib hot fix patch : git commit:
 // b74445e1da0a6afefc3a08372f74e8ea416cd1ba
+
+
+pub struct BuildVersion {
+    pub major: u32,
+    pub minor: u32,
+    pub patch: u32,
+}
+
+pub struct MyArgs {
+    pub wasm_version: BuildVersion,
+}

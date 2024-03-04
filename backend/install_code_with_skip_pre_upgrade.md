@@ -28,6 +28,17 @@ call aaaaa-aa install_code\
     })'\
   --wallet $(dfx identity  get-wallet) \
   --candid /home/btwl/code/ic/tax_lint/backend/canisters/backend/my_tests/test_in_cmd/dfx_calls/manage_can.did
+  
+dfx canister \
+call aaaaa-aa install_code\
+ '(record {
+  mode = variant { upgrade = opt record { skip_pre_upgrade = opt true} };
+  canister_id = principal "be2us-64aaa-aaaaa-qaabq-cai"; 
+  wasm_module =  blob "0x0061736d01000000";
+  arg =  blob "0x00";
+    })'\
+  --wallet $(dfx identity  get-wallet) \
+  --candid /home/btwl/code/ic/tax_lint/backend/canisters/backend/my_tests/test_in_cmd/dfx_calls/manage_can.did
 
   install_code : (record {
     mode : variant {
