@@ -74,38 +74,12 @@ export interface HistoryQueryCommand {
   'sort_method' : string,
   'address' : [] | [string],
 }
-export type HttpFailureReason = { 'ProxyError' : string } |
-  { 'RequestTimeout' : null };
 export interface HttpHeader { 'value' : string, 'name' : string }
-export type HttpMethod = { 'GET' : null } |
-  { 'PUT' : null } |
-  { 'DELETE' : null } |
-  { 'HEAD' : null } |
-  { 'POST' : null };
-export type HttpOverWsError = { 'NotHttpOverWsType' : string } |
-  { 'ProxyNotFound' : null } |
-  { 'NotYetReceived' : null } |
-  { 'ConnectionNotAssignedToProxy' : null } |
-  { 'RequestIdNotFound' : null } |
-  { 'NoProxiesConnected' : null } |
-  { 'InvalidHttpMessage' : null } |
-  { 'RequestFailed' : HttpFailureReason };
-export interface HttpRequest {
-  'url' : string,
-  'method' : HttpMethod,
-  'body' : [] | [Uint8Array | number[]],
-  'headers' : Array<HttpHeader>,
-}
 export interface HttpResponse {
   'status' : bigint,
   'body' : Uint8Array | number[],
   'headers' : Array<HttpHeader>,
 }
-export type HttpResult = { 'Success' : HttpResponse } |
-  { 'Failure' : HttpFailureReason };
-export type InvalidRequest = { 'TooManyHeaders' : null } |
-  { 'InvalidTimeout' : null } |
-  { 'InvalidUrl' : string };
 export interface KnownNeuronData {
   'name' : string,
   'description' : [] | [string],
@@ -137,8 +111,6 @@ export interface NeuronProfile {
   'address' : string,
 }
 export interface NeuronUpdateCommand { 'id' : bigint, 'name' : string }
-export type ProxyCanisterError = { 'HttpOverWs' : HttpOverWsError } |
-  { 'InvalidRequest' : InvalidRequest };
 export type RejectionCode = { 'NoError' : null } |
   { 'CanisterError' : null } |
   { 'SysTransient' : null } |
@@ -154,17 +126,15 @@ export type Result_2 = { 'Ok' : UserProfile } |
   { 'Err' : string };
 export type Result_3 = { 'Ok' : [CustomResult1] } |
   { 'Err' : [RejectionCode, string] };
-export type Result_4 = { 'Ok' : bigint } |
-  { 'Err' : ProxyCanisterError };
-export type Result_5 = { 'Ok' : NeuronProfile } |
+export type Result_4 = { 'Ok' : NeuronProfile } |
   { 'Err' : string };
-export type Result_6 = { 'Ok' : WalletProfile } |
+export type Result_5 = { 'Ok' : WalletProfile } |
   { 'Err' : string };
-export type Result_7 = { 'Ok' : Array<NeuronProfile> } |
+export type Result_6 = { 'Ok' : Array<NeuronProfile> } |
   { 'Err' : Array<NeuronProfile> };
-export type Result_8 = { 'Ok' : Array<WalletProfile> } |
+export type Result_7 = { 'Ok' : Array<WalletProfile> } |
   { 'Err' : Array<WalletProfile> };
-export type Result_9 = { 'Ok' : Array<[string, Array<TransactionB>]> } |
+export type Result_8 = { 'Ok' : Array<[string, Array<TransactionB>]> } |
   { 'Err' : string };
 export interface TransactionB {
   'id' : bigint,
@@ -240,30 +210,23 @@ export interface _SERVICE {
   'do_pre_upgrade_and_print_db' : ActorMethod<[], string>,
   'edit_transaction_record' : ActorMethod<[EditHistoryCommand], Result>,
   'get_balance' : ActorMethod<[], bigint>,
-  'get_http_result_by_id' : ActorMethod<[bigint], [] | [HttpResult]>,
-  'get_http_results' : ActorMethod<[], Array<[bigint, HttpResult]>>,
   'get_icp_usd_exchange' : ActorMethod<[], string>,
   'get_neuron_info' : ActorMethod<[bigint], Result_3>,
   'get_payload_from_dropbox' : ActorMethod<[string, string], string>,
   'get_payload_from_stable_mem' : ActorMethod<[], string>,
   'get_payload_from_stable_mem_simple' : ActorMethod<[], string>,
-  'http_request_via_proxy' : ActorMethod<
-    [HttpRequest, [] | [bigint], boolean],
-    Result_4
-  >,
-  'http_response_callback' : ActorMethod<[bigint, HttpResult], undefined>,
+  'greet_test' : ActorMethod<[], string>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
-  'query_a_neuron_wallet' : ActorMethod<[bigint], Result_5>,
-  'query_a_wallet' : ActorMethod<[bigint], Result_6>,
-  'query_all_neuron_wallet' : ActorMethod<[], Result_7>,
-  'query_all_wallets' : ActorMethod<[], Result_8>,
+  'query_a_neuron_wallet' : ActorMethod<[bigint], Result_4>,
+  'query_a_wallet' : ActorMethod<[bigint], Result_5>,
+  'query_all_neuron_wallet' : ActorMethod<[], Result_6>,
+  'query_all_wallets' : ActorMethod<[], Result_7>,
   'save_payload_to_dropbox' : ActorMethod<[string, number], string>,
   'save_payload_to_dropbox_blocking' : ActorMethod<[], string>,
   'set_payload_using_dropbox' : ActorMethod<[string, string], boolean>,
   'set_payload_using_stable_mem' : ActorMethod<[], undefined>,
   'set_stable_mem_use_payload' : ActorMethod<[], undefined>,
   'set_stable_mem_use_payload_simple' : ActorMethod<[], undefined>,
-  'store_paylaod_to_dropbox' : ActorMethod<[], string>,
   'sync_transaction_record' : ActorMethod<
     [Array<[bigint, Array<TransactionF>]>],
     Result
@@ -272,7 +235,7 @@ export interface _SERVICE {
   'update_neuron_wallet' : ActorMethod<[NeuronUpdateCommand], Result>,
   'update_wallet' : ActorMethod<[WalletUpdateCommand], Result>,
   'user_quantity' : ActorMethod<[], number>,
-  'wallet_history' : ActorMethod<[HistoryQueryCommand], Result_9>,
+  'wallet_history' : ActorMethod<[HistoryQueryCommand], Result_8>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
-export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];
+export declare const init: ({ IDL }: { IDL: IDL }) => IDL.Type[];
