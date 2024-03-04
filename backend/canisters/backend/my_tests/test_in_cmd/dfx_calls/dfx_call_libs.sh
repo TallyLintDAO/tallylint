@@ -8,9 +8,10 @@ dfx canister --network ic --wallet vwfus-yaaaa-aaaag-qcj2a-cai deposit-cycles 50
 ## generate rust backend canister did file :
 https://internetcomputer.org/docs/current/developer-docs/backend/rust/candid
 
+# add controller of a canister: 
+dfx canister update-settings backend --add-controller "gq66f-io24f-torxu-ftmfi-chzvv-umdni-3jkai-s734u-wdzps-jmlkk-2ae" --network ic 
 
-
-## check canister cycles balance:
+## check canister cycles balance and other info:
  dfx canister status backend --network ic 
 
 
