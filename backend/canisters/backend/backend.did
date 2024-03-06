@@ -193,6 +193,7 @@ service : () -> {
   get_payload_from_stable_mem : () -> (text) query;
   get_payload_from_stable_mem_simple : () -> (text) query;
   greet_test : () -> (text) query;
+  greet_test2 : () -> (text) query;
   list_all_user : () -> (vec UserProfile);
   query_a_neuron_wallet : (nat64) -> (Result_4) query;
   query_a_wallet : (nat64) -> (Result_5) query;

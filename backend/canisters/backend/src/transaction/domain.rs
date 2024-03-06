@@ -22,7 +22,7 @@ pub struct Wallet {
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct TransactionF {
   hash: String,
-  timestamp: u64, // TODO check ns or ms as unit
+  timestamp: f64, // TODO check ns or ms as unit
   t_type: String, //  transaction type : "SEND", "RECEIVE"
   walletName: String,
   details: Details,
