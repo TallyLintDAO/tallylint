@@ -7,12 +7,16 @@
         "entrypoint": "dist/index.html"
       },
       "source": ["dist/"],
-      "type": "assets"
+      "type": "assets",
+      "build": ["npm i"]
     },
     "backend": {
       "candid": "backend/canisters/backend/backend.did",
       "package": "backend",
-      "type": "rust"
+      "type": "rust",
+      "post_install": [
+        "./backend/scripts/post_install.sh"
+      ]
     }
   },
   "networks": {
