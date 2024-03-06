@@ -24,7 +24,7 @@
       <q-btn
         color="primary"
         class="login-button"
-        @click="onLogin"
+        @click="onLogin()"
         :loading="loading"
         no-caps
       >
@@ -44,11 +44,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue"
-import { initAuth, signIn } from "@/api/auth"
+import { IdentityInfo, initAuth, signIn } from "@/api/auth"
 import { setCurrentIdentity } from "@/api/canister_pool"
-import { useUserStore } from "@/stores/user"
 import { getUserAutoRegister } from "@/api/user"
+import { useUserStore } from "@/stores/user"
+import { ref } from "vue"
 import { useRouter } from "vue-router"
 
 const router = useRouter()
@@ -62,27 +62,38 @@ const loading = ref(false)
 
 const onLogin = async () => {
   const auth = await initAuth()
+  console.log("auh", auth)
   loading.value = true
-  signIn(auth.client) // 理论上有链接对象才会进入这个方法
-    .then((ii) => {
-      signedIn.value = true
-      auth.info = ii
-      // 保存登录状态到actor，方便调用
-      setCurrentIdentity(ii.identity, ii.principal)
-      // 保存 principal 到状态
-      userStore.setPrincipal(ii.principal).then(() => {
-        //直接跳转到应用中，在应用里获取userInfo，加快速度。
-        router.push({
-          path: "/app",
-        })
+  if (!auth.info) {
+    //检查用户是否已登录
+    signIn(auth.client) // 理论上有链接对象才会进入这个方法
+      .then((ii) => {
+        signedIn.value = true
+        auth.info = ii
+        loginSuccess(ii)
       })
+      .catch((e) => {
+        console.error("e", e)
+      })
+      .finally(() => {
+        loading.value = false
+      })
+  } else {
+    //存在auth.info，说明用户已登录，不需要再登录
+    loginSuccess(auth.info)
+  }
+}
+
+const loginSuccess = (ii: IdentityInfo) => {
+  // 保存登录状态到actor，方便调用
+  setCurrentIdentity(ii.identity, ii.principal)
+  // 保存 principal 到状态
+  userStore.setPrincipal(ii.principal).then(() => {
+    //直接跳转到应用中，在应用里获取userInfo，加快速度。
+    router.push({
+      path: "/app",
     })
-    .catch((e) => {
-      console.error("e", e)
-    })
-    .finally(() => {
-      loading.value = false
-    })
+  })
 }
 
 //从后台获取用户信息，并且设置
