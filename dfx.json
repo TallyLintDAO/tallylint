@@ -7,8 +7,7 @@
         "entrypoint": "dist/index.html"
       },
       "source": ["dist/"],
-      "type": "assets",
-      "build": ["npm i"]
+      "type": "assets"
     },
     "backend": {
       "candid": "backend/canisters/backend/backend.did",
