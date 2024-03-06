@@ -35,7 +35,7 @@ dfx deploy backend --network ic
 # step3 : run  at project root 
 ./change_name.sh
 # step4: git push did file to front dev. 
-./backend/scripts/sync_remote.sh "did uploading of sync records"
+./backend/scripts/sync_remote.sh "did uploading "
 
 dfx identity use btwl0
 dfx deploy backend --network ic

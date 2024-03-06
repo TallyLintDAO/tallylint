@@ -1,6 +1,5 @@
 use candid::Principal;
 #[allow(unused_imports)]
-// use ic_agent::{ Identity};
 #[allow(unused_imports)]
 use ic_utils::call::AsyncCall;
 use ic_utils::interfaces::management_canister::builders::InstallMode;
@@ -65,7 +64,7 @@ async fn main() {
   let wasm_file_path = "/home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm";
   let wasm_bytes = read(wasm_file_path).expect("wasm file not exsit");
 
-  let args="0";
+  // let args="0";
   match management_canister
     .install_code(&canister_id, &wasm_bytes)
     .with_mode(mode)

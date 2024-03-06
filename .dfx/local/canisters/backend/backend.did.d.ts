@@ -162,7 +162,7 @@ export interface TransactionF {
   'hash' : string,
   'walletName' : string,
   't_type' : string,
-  'timestamp' : number,
+  'timestamp' : bigint,
   'details' : Details,
 }
 export interface TransformArgs {

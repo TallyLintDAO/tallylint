@@ -151,7 +151,7 @@ export const idlFactory = ({ IDL }) => {
     'hash' : IDL.Text,
     'walletName' : IDL.Text,
     't_type' : IDL.Text,
-    'timestamp' : IDL.Float64,
+    'timestamp' : IDL.Nat64,
     'details' : Details,
   });
   const HttpHeader = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });

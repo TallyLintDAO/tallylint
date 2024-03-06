@@ -13,7 +13,7 @@ members = [
     
     # "backend/lib/canister_agent_utils",
     # "backend/lib/my_types",
-    "backend/lib/canister_upgrader",
+    # "backend/lib/canister_upgrader",
     # "backend/lib/sha256_versions",
 
     # test to mock a ic-repica local and exec wasm canister code .

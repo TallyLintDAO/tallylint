@@ -146,7 +146,7 @@ type TransactionF = record {
   hash : text;
   walletName : text;
   t_type : text;
-  timestamp : float64;
+  timestamp : nat64;
   details : Details;
 };
 type TransformArgs = record { context : vec nat8; response : HttpResponse };
