@@ -1,4 +1,7 @@
 // 统一用户信息的结构
+
+import type { InferredTransaction } from "./sns"
+
 // 注意和types.ts中的ApiUserInfo统一格式
 export class UserInfo {
   // id = 0; //用户id
@@ -30,6 +33,11 @@ export interface WalletHistory {
   timestamp: number
   walletValue: number
   t_type: string
+}
+
+export interface syncWalletParam {
+  walletId: bigint
+  history: InferredTransaction[]
 }
 
 export interface WalletTag {

@@ -19,7 +19,7 @@
             @click="syncAllWallet()"
             icon="cached"
             :loading="syncLoading"
-            >Sync All Wallet</q-btn
+            >Sync All Wallets</q-btn
           >
         </div>
         <q-space />
@@ -202,7 +202,7 @@ import {
   getUserWallet,
   syncWallet,
 } from "@/api/user"
-import type { WalletInfo } from "@/types/user"
+import type { WalletInfo, syncWalletParam } from "@/types/user"
 import { isPrincipal, p2a } from "@/utils/common"
 import { distanceFromCurrentDate } from "@/utils/date"
 import { confirmDialog } from "@/utils/dialog"
@@ -267,24 +267,31 @@ onMounted(() => {
 
 const syncAllWallet = async () => {
   syncLoading.value = true
+  let syncTransactionArray: syncWalletParam[] = []
   // 创建一个 Promise 数组，用于存放每个 getICPTransactions() 的 Promise
-  const promises = rows.value.map((row, index) => {
-    return getICPTransactions(
+  const promises = rows.value.map(async (row, index) => {
+    const res = await getICPTransactions(
       { address: row.address, name: "test", from: "" },
       true,
-    ).then((res) => {
-      //将钱包数据同步
-      console.log(`getICPTransactions ${index + 1}`, res)
-      syncWallet(row.id, res.transactions)
-    })
+    )
+    //将钱包数据同步
+    console.log(`getICPTransactions ${index + 1}`, res)
+    // syncTransactionArray.push({ walletId: row.id, history: res.transactions })
+    syncTransactionArray.push([row.id, res.transactions])
   })
   // 使用 Promise.all() 等待所有的请求完成
-  Promise.all(promises)
+  await Promise.all(promises)
+  console.log("transactionInfo", syncTransactionArray)
+  syncWallet(syncTransactionArray)
     .then((res) => {
-      console.log("Promise.all", res)
+      console.log("syncAllWallet:", res)
+      if (res.Ok) {
+        getWallets(true)
+        showMessageSuccess("Synchronize all wallets successfully")
+      }
     })
     .catch((error) => {
-      console.error("Error:", error)
+      console.error("syncAllWallet Error:", error)
     })
     .finally(() => {
       syncLoading.value = false
