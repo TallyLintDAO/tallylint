@@ -21,7 +21,7 @@ members = [
 
     #### test
     # "backend/test/pocket_ic_test",
-    "backend/lib/integration_tests",
+    "backend/integration_tests",
 
 ]
 resolver = "2"
