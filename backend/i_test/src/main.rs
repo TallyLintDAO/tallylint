@@ -1,3 +1,5 @@
+use client::setup::setup_new_env;
+
 pub fn add(left: usize, right: usize) -> usize {
   left + right
 }
@@ -12,9 +14,11 @@ mod tests {
     assert_eq!(result, 4);
   }
 }
-
-
-// #![cfg(test)]
 pub mod backend_test;
 pub mod client;
 
+
+fn main(){
+  setup_new_env(None);
+
+}
