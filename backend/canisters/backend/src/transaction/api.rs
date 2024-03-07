@@ -190,12 +190,11 @@ fn convert_edit_command_to_record_profile(
   }
 }
 
-
 #[query(guard = "user_owner_guard")]
-pub fn greet_test()->String{
+pub fn greet_test() -> String {
   String::from("hello world")
 }
 #[query(guard = "user_owner_guard")]
-pub fn greet_test2()->String{
+pub fn greet_test2() -> String {
   String::from("hello world")
 }

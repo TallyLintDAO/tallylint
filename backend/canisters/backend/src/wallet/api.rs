@@ -27,7 +27,7 @@ fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
         return Err(String::from("principal_id length need to be 63"));
       }
     }
-    let time=ic_cdk::api::time();
+    let time = ic_cdk::api::time();
     let mut ctx = c.borrow_mut();
     let caller = ctx.env.caller();
     let now = ctx.env.now();

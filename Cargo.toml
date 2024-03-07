@@ -10,7 +10,6 @@ members = [
     "backend/lib/candid_gen",
     "backend/lib/serializer",
     "backend/lib/stable_memory",
-    
     # "backend/lib/canister_agent_utils",
     # "backend/lib/my_types",
     # "backend/lib/canister_upgrader",
@@ -22,6 +21,7 @@ members = [
 
     #### test
     # "backend/test/pocket_ic_test",
+    "backend/lib/integration_tests",
 
 ]
 resolver = "2"
