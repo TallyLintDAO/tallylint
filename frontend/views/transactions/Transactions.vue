@@ -180,7 +180,7 @@
                   <span>
                     {{ "≈ $" + transaction.details.value }}
                     <q-tooltip>
-                      This is the market price of the sent coin by CoinGecko
+                      Market price by CoinGecko
                       <br />
                       ${{ transaction.details.price }} / ICP
                     </q-tooltip>

@@ -55,17 +55,15 @@ const router = useRouter()
 const userStore = useUserStore()
 
 // 与 II 认证相关的信息
-const clientReady = ref(false)
 const signedIn = ref(false) // 是否登录
 
 const loading = ref(false)
 
 const onLogin = async () => {
   const auth = await initAuth()
-  console.log("auh", auth)
   loading.value = true
   if (!auth.info) {
-    //检查用户是否已登录
+    //检查用户是否已登录，未登录就登录
     signIn(auth.client) // 理论上有链接对象才会进入这个方法
       .then((ii) => {
         signedIn.value = true

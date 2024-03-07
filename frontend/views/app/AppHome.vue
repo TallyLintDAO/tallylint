@@ -167,6 +167,7 @@ const onLogOut = async () => {
   signedIn.value = false
   clearCurrentIdentity()
   await signOut(auth.client)
+
   goHome(router)
 }
 
