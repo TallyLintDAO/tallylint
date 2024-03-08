@@ -1,8 +1,10 @@
+use std::collections::HashMap;
+
 pub(crate) use candid::CandidType;
 
 use crate::common::context::TimeStamp;
 
-use super::service::{RecordId, WalletAddress};
+use super::service::{RecordId, WalletAddress, WalletId};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
@@ -10,6 +12,13 @@ pub struct Wallet {
   walletid: u64,
   wallet_history: Vec<TransactionF>,
 }
+
+
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct SyncTransactionCommand {
+    pub data: HashMap<WalletId, Vec<TransactionF>>,
+}
+
 
 /**
  * FIXED DATA TYPE, use by frontend. dont change easily.

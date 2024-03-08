@@ -83,6 +83,7 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
   })
 }
 
+
 // TODO
 //方法完成后，需要检查关联更新：钱包的交易记录总数，上次同步时间，
 // 上次交易发生的时间 描述:户点击同步钱包按钮,调用nns或者交易所等api.
@@ -92,11 +93,11 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
 // #[update(guard = "user_owner_guard")]
 #[update]
 fn sync_transaction_record(
-  data: HashMap<WalletId, Vec<TransactionF>>,
+  cmd: SyncTransactionCommand
 ) -> Result<bool, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    for (_, record_profiles) in data {
+    for (_, record_profiles) in cmd.data {
       for record_profile in record_profiles {
         let id = ctx.id;
         let ret = ctx
