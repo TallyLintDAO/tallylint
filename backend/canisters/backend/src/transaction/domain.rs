@@ -13,12 +13,11 @@ pub struct Wallet {
   wallet_history: Vec<TransactionF>,
 }
 
-
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct SyncTransactionCommand {
-    pub data: HashMap<WalletId, Vec<TransactionF>>,
+  pub walletId: WalletId,
+  pub history: Vec<TransactionF>,
 }
-
 
 /**
  * FIXED DATA TYPE, use by frontend. dont change easily.
@@ -100,3 +99,4 @@ pub struct TransactionB {
   // 例如某个NFT的交易价格查不到，
   // 就会被自动标记为missing rates
 }
+

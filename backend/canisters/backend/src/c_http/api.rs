@@ -43,21 +43,21 @@ use ic_cdk_macros::{query, update};
 //     },
 //   ];
 
-//   //note "CanisterHttpRequestArgument" and "HttpMethod" are declared in line 4
-//   let request = CanisterHttpRequestArgument {
+//   //note "CanisterHttpRequestArgument" and "HttpMethod" are declared in line
+// 4   let request = CanisterHttpRequestArgument {
 //     url: url.to_string(),
 //     method: HttpMethod::GET,
 //     body: None,               //optional for request
 //     max_response_bytes: None, //optional for request
 //     transform: Some(TransformContext {
-//       // The "method" parameter needs to the same name as the function name of
-//       // your transform function
+//       // The "method" parameter needs to the same name as the function name
+// of       // your transform function
 //       function: TransformFunc(candid::Func {
 //         principal: ic_cdk::api::id(),
 //         method: "transform".to_string(),
 //       }),
-//       // The "TransformContext" function does need a context parameter, it can
-//       // be empty
+//       // The "TransformContext" function does need a context parameter, it
+// can       // be empty
 //       context: vec![],
 //     }),
 //     headers: request_headers,
@@ -85,8 +85,8 @@ use ic_cdk_macros::{query, update};
 //       //You need to decode that Vec<u8> that is the body into readable text.
 //       //To do this:
 //       //  1. Call `String::from_utf8()` on response.body
-//       //  3. You use a switch to explicitly call out both cases of decoding the
-//       //     Blob into ?Text
+//       //  3. You use a switch to explicitly call out both cases of decoding
+// the       //     Blob into ?Text
 
 //       //The API response will looks like this:
 
@@ -110,7 +110,8 @@ use ic_cdk_macros::{query, update};
 //     }
 //     Err((r, m)) => {
 //       let message =
-//                 format!("The http_request resulted into error. RejectionCode: {r:?}, Error: {m}");
+//                 format!("The http_request resulted into error. RejectionCode:
+// {r:?}, Error: {m}");
 
 //       //Return the error as a string and end the method
 //       message

@@ -36,6 +36,8 @@ use crate::user::domain::*;
 #[allow(unused_imports)]
 use crate::c_http::api::*;
 #[allow(unused_imports)]
+use crate::transaction::domain::SyncTransactionCommand;
+#[allow(unused_imports)]
 use crate::transaction::domain::TransactionB;
 #[allow(unused_imports)]
 use crate::transaction::domain::TransactionF;
@@ -47,8 +49,6 @@ use crate::wallet::service::RecordId;
 use crate::wallet::service::WalletAddress;
 #[allow(unused_imports)]
 use crate::wallet::service::WalletId;
-#[allow(unused_imports)]
-use crate::transaction::domain::SyncTransactionCommand;
 #[allow(unused_imports)]
 use ic_cdk::api::call::CallResult;
 #[allow(unused_imports)]
