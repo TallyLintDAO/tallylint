@@ -89,7 +89,8 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
 // 获得历史交易记录并存储到后端. (前端已有一部分计算代码),
 // 可以选择全部搬移到后端或者前端直接把现有计算好的利润发送给后端 需要用到的api:
 // nns dashboard的api可能要用到. 详见前端查询方法.
-#[update(guard = "user_owner_guard")]
+// #[update(guard = "user_owner_guard")]
+#[update]
 fn sync_transaction_record(
   data: HashMap<WalletId, Vec<TransactionF>>,
 ) -> Result<bool, String> {
@@ -190,11 +191,3 @@ fn convert_edit_command_to_record_profile(
   }
 }
 
-#[query(guard = "user_owner_guard")]
-pub fn greet_test() -> String {
-  String::from("hello world")
-}
-#[query(guard = "user_owner_guard")]
-pub fn greet_test2() -> String {
-  String::from("hello world")
-}

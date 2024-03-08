@@ -57,12 +57,14 @@ tracing-attributes = "0.1.27"
 tracing-subscriber = "0.3.18"
 ic0 = "0.21.1"
 lazy_static = "1.4.0"
+icrc-ledger-types = "0.1.5"
 
 # testing:
 # some times compile fail. need to mention. and fix .
 pocket-ic = "2.2.0"
 rand = "0.8.5"
 rmp-serde = "1.1.2"
+
 
 
 

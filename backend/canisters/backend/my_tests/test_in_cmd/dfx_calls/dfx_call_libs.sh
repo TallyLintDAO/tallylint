@@ -294,3 +294,7 @@ test stable_simple:
 dfx canister call backend get_payload_from_stable_mem_simple
 
 dfx canister call backend set_stable_mem_use_payload_simple
+
+
+dfx canister call backend add_neuron_wallet '(record { address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf755"; name = "A2"; from = "nns" })'
+dfx canister call backend sync_transaction_record '(vec {record {123; vec {record {hash="123"; walletName="asd"; t_type="asd"; timestamp=123.0; details=record {to="asd"; fee=123.8; status="asd"; ledgerCanisterId="asd"; value=1.0; cost=1.0; from="12"; currency=record {decimals=13; symbol="asd"}; profit=12.0; price=12.0; amount=12.0}}}}})'

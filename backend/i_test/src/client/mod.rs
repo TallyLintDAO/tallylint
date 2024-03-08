@@ -2,6 +2,7 @@ pub mod macros;
 pub mod rng;
 pub mod setup;
 pub mod utils;
+pub mod user;
 pub mod wasms;
 #[derive(Debug)]
 pub struct User {

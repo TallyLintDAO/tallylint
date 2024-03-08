@@ -97,7 +97,6 @@ pub fn random_user_principal() -> (Principal, ByteBuf) {
     (Principal::self_authenticating(&public_key), ByteBuf::from(public_key))
 }
 
-pub type CanisterId = Principal;
 #[derive(Debug)]
 pub struct CanisterIds {
     pub backend: CanisterId,
