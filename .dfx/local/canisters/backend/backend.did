@@ -114,6 +114,9 @@ type Result_8 = variant {
   Ok : vec record { text; vec TransactionB };
   Err : text;
 };
+type SyncTransactionCommand = record {
+  data : vec record { nat64; vec TransactionF };
+};
 type TransactionB = record {
   id : nat64;
   to : text;
@@ -195,9 +198,7 @@ service : {
   set_payload_using_stable_mem : () -> ();
   set_stable_mem_use_payload : () -> ();
   set_stable_mem_use_payload_simple : () -> ();
-  sync_transaction_record : (vec record { nat64; vec TransactionF }) -> (
-      Result,
-    );
+  sync_transaction_record : (SyncTransactionCommand) -> (Result);
   update_neuron_wallet : (NeuronUpdateCommand) -> (Result);
   update_wallet : (WalletUpdateCommand) -> (Result);
   user_quantity : () -> (nat32);
