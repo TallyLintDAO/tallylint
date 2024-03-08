@@ -155,7 +155,8 @@ export const idlFactory = ({ IDL }) => {
     'details' : Details,
   });
   const SyncTransactionCommand = IDL.Record({
-    'data' : IDL.Vec(IDL.Tuple(IDL.Nat64, IDL.Vec(TransactionF))),
+    'history' : IDL.Vec(TransactionF),
+    'walletId' : IDL.Nat64,
   });
   const NeuronUpdateCommand = IDL.Record({
     'id' : IDL.Nat64,
@@ -233,7 +234,7 @@ export const idlFactory = ({ IDL }) => {
     'set_stable_mem_use_payload' : IDL.Func([], [], []),
     'set_stable_mem_use_payload_simple' : IDL.Func([], [], []),
     'sync_transaction_record' : IDL.Func(
-        [SyncTransactionCommand],
+        [IDL.Vec(SyncTransactionCommand)],
         [Result],
         [],
       ),

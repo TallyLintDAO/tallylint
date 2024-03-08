@@ -131,7 +131,8 @@ export type Result_7 = { 'Ok' : Array<WalletProfile> } |
 export type Result_8 = { 'Ok' : Array<[string, Array<TransactionB>]> } |
   { 'Err' : string };
 export interface SyncTransactionCommand {
-  'data' : Array<[bigint, Array<TransactionF>]>,
+  'history' : Array<TransactionF>,
+  'walletId' : bigint,
 }
 export interface TransactionB {
   'id' : bigint,
@@ -218,7 +219,10 @@ export interface _SERVICE {
   'set_payload_using_stable_mem' : ActorMethod<[], undefined>,
   'set_stable_mem_use_payload' : ActorMethod<[], undefined>,
   'set_stable_mem_use_payload_simple' : ActorMethod<[], undefined>,
-  'sync_transaction_record' : ActorMethod<[SyncTransactionCommand], Result>,
+  'sync_transaction_record' : ActorMethod<
+    [Array<SyncTransactionCommand>],
+    Result
+  >,
   'update_neuron_wallet' : ActorMethod<[NeuronUpdateCommand], Result>,
   'update_wallet' : ActorMethod<[WalletUpdateCommand], Result>,
   'user_quantity' : ActorMethod<[], number>,
