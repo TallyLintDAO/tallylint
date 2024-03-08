@@ -9,7 +9,7 @@
         style="max-width: 200px; font-size: 2.125rem"
       />
     </div>
-    <div class="text-subtitle1 q-mb-md">
+    <div v-if="selectedYear !== 'All'" class="text-subtitle1 q-mb-md">
       {{ `Jan 1, ${selectedYear} to Dec 31, ${selectedYear}` }}
     </div>
     <div class="row">
@@ -77,8 +77,7 @@
               <template v-slot:avatar>
                 <q-icon name="warning" />
               </template>
-              You must have a tax plan for this year to download reports. View
-              plans
+              Free For Now
             </q-banner>
             <br />
             <q-btn
@@ -130,19 +129,92 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue"
+import { getAllTransactions } from "@/api/rosetta"
+import { getUserAllWallets } from "@/api/user"
+import type { InferredTransaction } from "@/types/sns"
+import { exportFile } from "quasar"
+import { onMounted, ref } from "vue"
 
+const walletLoading = ref(false)
 // 获取当前年份
 const currentYear = new Date().getFullYear()
-const selectedYear = ref<number>(currentYear)
-
+const selectedYear = ref<any>(currentYear)
 // 初始化日期选项数组，包含当前年份以及前三年的年份
 const dateOptions: string[] = [currentYear.toString()]
 for (let i = 1; currentYear - i >= 2021; i++) {
   dateOptions.push((currentYear - i).toString())
 }
+dateOptions.push("All")
 
-const exportToCSV = () => {}
+const walletList = ref<InferredTransaction[]>([])
+const transactionAmount = ref(0)
+
+onMounted(() => {
+  getWalletHistory()
+})
+
+const getWalletHistory = async () => {
+  walletLoading.value = true
+  const wallets = await getUserAllWallets()
+  getAllTransactions(wallets)
+    .then((res) => {
+      console.log("getWalletHistory", res)
+      if (res.total && res.total != 0) {
+        walletList.value = res.transactions
+
+        transactionAmount.value = res.total
+      }
+    })
+    .finally(() => {
+      walletLoading.value = false
+    })
+}
+
+const exportToCSV = async () => {
+  const columnNames = [
+    "Hash",
+    "Type",
+    "Status",
+    "Timestamp",
+    "From",
+    "To",
+    "Amount",
+    "Fee",
+    "Memo",
+    "Price",
+    "Cost",
+    "Income",
+    "Profit",
+  ]
+
+  // 生成包含列名和数据的数组
+  const data = [
+    columnNames,
+    ...walletList.value.map((transaction) => [
+      transaction.hash,
+      transaction.t_type,
+      transaction.details.status,
+      //Time format fixed to Switzerland
+      new Date(Number(transaction.timestamp)).toLocaleString("fr-CH"),
+      transaction.details?.from,
+      transaction.details?.to,
+      transaction.details.amount,
+      transaction.details.fee,
+      "",
+      transaction.details.price,
+      transaction.details.cost,
+      transaction.details.value,
+      transaction.details.profit,
+    ]),
+  ]
+
+  // 将数据转换为 CSV 格式的字符串
+  const csvContent = data.map((row) => row.join(",")).join("\n")
+  const todayDate = new Date().toLocaleDateString("fr-CH").replace(/\./g, "")
+  const fileName = "Tax_Data_All_Wallet"
+  // 使用 exportFile 函数导出 CSV 文件
+  exportFile(`${todayDate}_${fileName}.csv`, csvContent, "text/csv")
+}
 </script>
 
 <style lang="scss" scoped>

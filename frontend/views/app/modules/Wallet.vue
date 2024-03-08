@@ -276,8 +276,8 @@ const syncAllWallet = async () => {
     )
     //将钱包数据同步
     console.log(`getICPTransactions ${index + 1}`, res)
-    // syncTransactionArray.push({ walletId: row.id, history: res.transactions })
-    syncTransactionArray.push([row.id, res.transactions])
+    syncTransactionArray.push({ walletId: row.id, history: res.transactions })
+    // syncTransactionArray.push([row.id, res.transactions])
   })
   // 使用 Promise.all() 等待所有的请求完成
   await Promise.all(promises)
