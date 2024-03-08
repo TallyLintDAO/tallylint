@@ -74,12 +74,6 @@ export interface HistoryQueryCommand {
   'sort_method' : string,
   'address' : [] | [string],
 }
-export interface HttpHeader { 'value' : string, 'name' : string }
-export interface HttpResponse {
-  'status' : bigint,
-  'body' : Uint8Array | number[],
-  'headers' : Array<HttpHeader>,
-}
 export interface KnownNeuronData {
   'name' : string,
   'description' : [] | [string],
@@ -165,10 +159,6 @@ export interface TransactionF {
   'timestamp' : number,
   'details' : Details,
 }
-export interface TransformArgs {
-  'context' : Uint8Array | number[],
-  'response' : HttpResponse,
-}
 export interface UserProfile {
   'owner' : Principal,
   'name' : string,
@@ -210,13 +200,10 @@ export interface _SERVICE {
   'do_pre_upgrade_and_print_db' : ActorMethod<[], string>,
   'edit_transaction_record' : ActorMethod<[EditHistoryCommand], Result>,
   'get_balance' : ActorMethod<[], bigint>,
-  'get_icp_usd_exchange' : ActorMethod<[], string>,
   'get_neuron_info' : ActorMethod<[bigint], Result_3>,
   'get_payload_from_dropbox' : ActorMethod<[string, string], string>,
   'get_payload_from_stable_mem' : ActorMethod<[], string>,
   'get_payload_from_stable_mem_simple' : ActorMethod<[], string>,
-  'greet_test' : ActorMethod<[], string>,
-  'greet_test2' : ActorMethod<[], string>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
   'query_a_neuron_wallet' : ActorMethod<[bigint], Result_4>,
   'query_a_wallet' : ActorMethod<[bigint], Result_5>,
@@ -232,7 +219,6 @@ export interface _SERVICE {
     [Array<[bigint, Array<TransactionF>]>],
     Result
   >,
-  'transform' : ActorMethod<[TransformArgs], HttpResponse>,
   'update_neuron_wallet' : ActorMethod<[NeuronUpdateCommand], Result>,
   'update_wallet' : ActorMethod<[WalletUpdateCommand], Result>,
   'user_quantity' : ActorMethod<[], number>,

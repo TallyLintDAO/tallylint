@@ -154,16 +154,6 @@ export const idlFactory = ({ IDL }) => {
     'timestamp' : IDL.Float64,
     'details' : Details,
   });
-  const HttpHeader = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });
-  const HttpResponse = IDL.Record({
-    'status' : IDL.Nat,
-    'body' : IDL.Vec(IDL.Nat8),
-    'headers' : IDL.Vec(HttpHeader),
-  });
-  const TransformArgs = IDL.Record({
-    'context' : IDL.Vec(IDL.Nat8),
-    'response' : HttpResponse,
-  });
   const NeuronUpdateCommand = IDL.Record({
     'id' : IDL.Nat64,
     'name' : IDL.Text,
@@ -220,13 +210,10 @@ export const idlFactory = ({ IDL }) => {
     'do_pre_upgrade_and_print_db' : IDL.Func([], [IDL.Text], ['query']),
     'edit_transaction_record' : IDL.Func([EditHistoryCommand], [Result], []),
     'get_balance' : IDL.Func([], [IDL.Nat64], []),
-    'get_icp_usd_exchange' : IDL.Func([], [IDL.Text], []),
     'get_neuron_info' : IDL.Func([IDL.Nat64], [Result_3], []),
     'get_payload_from_dropbox' : IDL.Func([IDL.Text, IDL.Text], [IDL.Text], []),
     'get_payload_from_stable_mem' : IDL.Func([], [IDL.Text], ['query']),
     'get_payload_from_stable_mem_simple' : IDL.Func([], [IDL.Text], ['query']),
-    'greet_test' : IDL.Func([], [IDL.Text], ['query']),
-    'greet_test2' : IDL.Func([], [IDL.Text], ['query']),
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
     'query_a_neuron_wallet' : IDL.Func([IDL.Nat64], [Result_4], ['query']),
     'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_5], ['query']),
@@ -247,7 +234,6 @@ export const idlFactory = ({ IDL }) => {
         [Result],
         [],
       ),
-    'transform' : IDL.Func([TransformArgs], [HttpResponse], ['query']),
     'update_neuron_wallet' : IDL.Func([NeuronUpdateCommand], [Result], []),
     'update_wallet' : IDL.Func([WalletUpdateCommand], [Result], []),
     'user_quantity' : IDL.Func([], [IDL.Nat32], []),
