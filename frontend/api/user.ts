@@ -1,6 +1,8 @@
 import type { ApiResult, ApiUserInfo } from "@/types/types"
-import type { WalletInfo, syncWalletParam } from "@/types/user"
+import type { WalletInfo, WalletTag, syncWalletParam } from "@/types/user"
 import { TTL, getCache } from "@/utils/cache"
+import { showMessageError } from "@/utils/message"
+import { getNNS } from "@/utils/nns"
 import { getBackend, getCurrentPrincipal } from "./canister_pool"
 
 //TODO demo阶段用户字段修改频繁，暂时用短缓存时间。
@@ -43,6 +45,40 @@ export async function getUserWallet(
     // isLocal: true, //使用内存储存就够了
     refresh: refresh, //是否刷新缓存，用于执行增删改操作后的刷新。
   })
+}
+
+// 获得当前用户登记的钱包信息
+export async function getUserAllWallets(): Promise<WalletTag[]> {
+  try {
+    const [userWallets, neuronWallets, nnsWallets] = await Promise.all([
+      getUserWallet(false),
+      getUserNeuron(false),
+      getNNS(),
+    ])
+
+    if (userWallets.Ok && neuronWallets.Ok) {
+      const mapToWallet = (wallet: { name: any; address: any; from: any }) => ({
+        name: wallet.name,
+        address: wallet.address,
+        from: wallet.from,
+      })
+
+      const userWalletList = userWallets.Ok.map(mapToWallet)
+      const neuronWalletList = neuronWallets.Ok.map(mapToWallet)
+      const nnsWalletList = nnsWallets.map((wallet, index) => ({
+        name: "hotkey " + (index + 1),
+        address: wallet.address,
+        from: "hotkey",
+      }))
+
+      return [...userWalletList, ...neuronWalletList, ...nnsWalletList]
+    } else {
+      throw new Error("Failed to fetch user wallets or neuron wallets")
+    }
+  } catch (error) {
+    showMessageError(String(error))
+    throw error
+  }
 }
 
 // 编辑用户钱包

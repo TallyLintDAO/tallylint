@@ -38,11 +38,6 @@
               </q-item>
             </template>
           </q-select>
-          <!-- <q-select
-            v-model="costMethod"
-            :options="costMethodOptions"
-            label="Cost Basis Method"
-          /> -->
           <q-select
             use-chips
             multiple
@@ -216,11 +211,10 @@
 
 <script lang="ts" setup>
 import { getAllTransactions } from "@/api/rosetta"
-import { getUserNeuron, getUserWallet } from "@/api/user"
+import { getUserAllWallets } from "@/api/user"
 import type { InferredTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
-import { getNNS } from "@/utils/nns"
 import { exportFile } from "quasar"
 import { computed, onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
@@ -229,8 +223,6 @@ const route = useRoute()
 
 const address = route.params.address
 const walletList = ref<InferredTransaction[]>([])
-const costMethodOptions = ["FIFO"]
-const costMethod = ref("FIFO")
 const type = ref([])
 const typeOptions = ["SEND", "RECEIVE"]
 const tag = ref([])
@@ -327,60 +319,32 @@ const paginatedGroups = computed(
 onMounted(() => {
   console.log("route", address)
   getWallets().then(() => {
+    let walletsToQuery: WalletTag[]
+
     if (address) {
-      if (Array.isArray(address)) {
-        // 如果route是数组，传递整个数组
-        getSelectedWalletHistory(
-          address.map((addr) => ({
-            address: addr,
-            name: "",
-            from: "",
-          })),
-        )
-      } else {
-        // 如果route是字符串，构造包含单个地址的数组
-        getSelectedWalletHistory([
-          {
-            address: address,
-            name: "",
-            from: "",
-          },
-        ])
-      }
+      // 如果 address 存在
+      walletsToQuery = Array.isArray(address)
+        ? // 如果 address 是数组，则直接使用
+          address.map((addr) => ({ address: addr, name: "", from: "" }))
+        : // 如果 address 是字符串，则构造包含单个地址的数组
+          [{ address: address, name: "", from: "" }]
     } else {
-      // 如果route不存在，默认查询所有地址
-      getSelectedWalletHistory(wallets.value)
+      // 如果 address 不存在，则默认查询所有地址
+      walletsToQuery = wallets.value
     }
+
+    getSelectedWalletHistory(walletsToQuery)
   })
 })
 
 const getWallets = async () => {
   showLoading.value = true
-  const [userWallets, neuronWallets, nnsWallets] = await Promise.all([
-    getUserWallet(false),
-    getUserNeuron(false),
-    getNNS(),
-  ])
-  if (userWallets.Ok && neuronWallets.Ok) {
-    const mapToWallet = (wallet: { name: any; address: any; from: any }) => ({
-      name: wallet.name,
-      address: wallet.address,
-      from: wallet.from,
-    })
-    const userWalletList = userWallets.Ok.map(mapToWallet)
-    const neuronWalletList = neuronWallets.Ok.map(mapToWallet)
-    const nnsWalletList = nnsWallets.map((wallet, index) => ({
-      name: "hotkey " + index + 1,
-      address: wallet.address,
-      from: "hotkey",
-    }))
-
-    wallets.value.push(...userWalletList, ...neuronWalletList, ...nnsWalletList)
-  }
+  wallets.value = await getUserAllWallets()
 }
 
 const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
   showLoading.value = true
+  currentPage.value = 1
   let targetWallets: WalletTag[]
   //如果没有选择任何钱包，则查询所有钱包
   selectedWallets.length !== 0
