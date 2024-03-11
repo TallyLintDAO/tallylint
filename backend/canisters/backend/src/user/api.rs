@@ -1,5 +1,7 @@
+use crate::common::guard::admin_guard;
 use crate::CONTEXT;
 use candid::Principal;
+use ic_cdk::query;
 use ic_cdk_macros::update;
 /**
  * IMPORTANT INFO
@@ -44,7 +46,7 @@ fn list_all_user() -> Vec<UserProfile> {
   })
 }
 
-#[update(guard = "user_owner_guard")]
+#[query(guard = "admin_guard")]
 fn user_quantity() -> u32 {
   CONTEXT.with(|c| {
     let ctx = c.borrow_mut();

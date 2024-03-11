@@ -305,3 +305,4 @@ dfx canister call backend sync_transaction_record '(vec {record {123; vec {recor
  dfx canister call backend user_quantity --network ic 
 
  dfx canister call  backend do_pre_upgrade_and_print_db --network ic 
+ dfx canister call  backend get_payload_from_stable_mem 

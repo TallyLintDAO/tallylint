@@ -5,7 +5,7 @@ use tracing::info;
 use super::context::{CanisterContext, CanisterDB};
 use super::env::CanisterEnvironment;
 use super::memory::get_upgrades_memory;
-use crate::{CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
+use crate::CONTEXT;
 
 use stable_memory::*;
 
@@ -17,8 +17,8 @@ fn init() {
     ..CanisterContext::default()
   };
   let _now = context.env.now();
-  let _creator1 = GOVERNANCE_BTWL.with(|g| *g);
-  let _creator2 = GOVERNANCE_ZHOU.with(|g| *g);
+  // let _creator1 = GOVERNANCE_BTWL.with(|g| *g);
+  // let _creator2 = GOVERNANCE_ZHOU.with(|g| *g);
 
   info!("canister initialization complete");
 }

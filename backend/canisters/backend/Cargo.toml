@@ -78,7 +78,7 @@ futures = "0.3.30"
 # date time tool. maybe cant use in canister runtime
 # chrono = "0.4.34"
 time = "0.3"
-
+lazy_static ={ workspace = true }
 
 
 

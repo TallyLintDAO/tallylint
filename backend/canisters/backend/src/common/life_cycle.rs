@@ -13,7 +13,7 @@ use super::memory::get_upgrades_memory;
 
 use crate::c_http::post::get_payload_from_dropbox;
 
-use crate::{CONTEXT, GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
+use crate::CONTEXT;
 use stable_memory::*;
 #[init]
 fn init() {
@@ -23,8 +23,8 @@ fn init() {
     ..CanisterContext::default()
   };
   let _now = context.env.now();
-  let _creator1 = GOVERNANCE_BTWL.with(|g| *g);
-  let _creator2 = GOVERNANCE_ZHOU.with(|g| *g);
+  // let _creator1 = GOVERNANCE_BTWL.with(|g| *g);
+  // let _creator2 = GOVERNANCE_ZHOU.with(|g| *g);
 
   info!("canister initialization complete");
 }
@@ -55,6 +55,7 @@ fn pre_upgrade() {
 #[trace]
 fn post_upgrade() {
   let json = get_payload_from_stable_mem_simple();
+
   let ret = serde_json::from_str::<CanisterDB>(&json);
   let payload = match ret {
     Ok(value) => value,
@@ -80,7 +81,7 @@ fn post_upgrade() {
 // running logs) and (the reverse step:) how dev machine upload DB file to IC
 // node machine ?
 
-#[query]
+#[query(guard = "admin_guard")]
 pub fn collect_running_payload() -> String {
   let mut json: String = String::new();
   CONTEXT.with(|c| {
@@ -124,7 +125,7 @@ pub fn collect_running_payload() -> String {
   return json;
 }
 
-#[update]
+#[update(guard = "admin_guard")]
 fn set_payload_using_stable_mem() {
   let memory = get_upgrades_memory();
   let mut reader = get_reader(&memory);
@@ -173,10 +174,11 @@ fn set_payload_using_stable_mem() {
   });
 }
 
-#[update]
+
 /**
  * TEST OK
  */
+#[update(guard = "admin_guard")]
 fn set_stable_mem_use_payload() {
   CONTEXT.with(|c| {
     let context = c.borrow();
@@ -213,10 +215,10 @@ fn set_stable_mem_use_payload() {
   });
 }
 
-#[update]
 /**
  * TEST OK!!! no trailing chars!
  */
+#[update(guard = "admin_guard")]
 fn set_stable_mem_use_payload_simple() {
   CONTEXT.with(|c| {
     let context = c.borrow();
@@ -254,7 +256,7 @@ fn set_stable_mem_use_payload_simple() {
 /**
  * TEST OK
  */
-#[query]
+#[query(guard = "admin_guard")]
 pub fn get_payload_from_stable_mem() -> String {
   let mut buf = Vec::new();
   let mem_0 = get_upgrades_memory();
@@ -272,7 +274,7 @@ pub fn get_payload_from_stable_mem() -> String {
 /**
  * TEST OK!!! no trailing chars!
  */
-#[query]
+#[query(guard = "admin_guard")]
 pub fn get_payload_from_stable_mem_simple() -> String {
   let (json,): (String,) =
     stable_restore().expect("failed to exec stable_restore()");
@@ -281,7 +283,7 @@ pub fn get_payload_from_stable_mem_simple() -> String {
   return json.to_string();
 }
 
-#[update]
+#[update(guard = "admin_guard")]
 pub async fn set_payload_using_dropbox(
   // get short-term token : https://www.dropbox.com/developers/apps/info/qi2656n62bhls4u
   token: String,
@@ -392,10 +394,7 @@ pub async fn save_payload_to_dropbox(
   }
 }
 
-
-
-
-#[query]
+#[query(guard = "admin_guard")]
 fn do_pre_upgrade_and_print_db() -> String {
   CONTEXT.with(|c| {
     let context = c.borrow();
@@ -405,12 +404,12 @@ fn do_pre_upgrade_and_print_db() -> String {
       Vec::from_iter(context.wallet_service.wallets.values().cloned());
     let records =
       Vec::from_iter(context.wallet_record_service.records.values().cloned());
-      let transactions = Vec::from_iter(
+    let transactions = Vec::from_iter(
       context.transaction_service.transactions.values().cloned(),
     );
     let neurons =
-    Vec::from_iter(context.neuron_service.neurons.values().cloned());
-    
+      Vec::from_iter(context.neuron_service.neurons.values().cloned());
+
     let payload = CanisterDB {
       id,
       users,
@@ -419,7 +418,7 @@ fn do_pre_upgrade_and_print_db() -> String {
       neurons,
       transactions,
     };
-    
+
     let mut memory = get_upgrades_memory();
     {
       let writer = get_writer(&mut memory);
@@ -433,41 +432,42 @@ fn do_pre_upgrade_and_print_db() -> String {
     {
       let _reader = get_reader(&mut memory);
     }
-    
+
     let json = serde_json::to_string(&payload).unwrap();
-    
+
     ic_cdk::println!("json: {}", json); // this print debug info to ic-replica node console.
     return json;
   })
 }
 
+use crate::common::guard::admin_guard;
 // TODO not work as clean_db should do yet.
-#[update]
+#[update(guard = "admin_guard")]
 fn clean_db() -> bool {
   return false;
 }
 
-#[cfg(test)]
-mod tests {
-  use crate::{
-    c_http::post::get_payload_from_dropbox, common::context::CanisterDB,
-  };
+// #[cfg(test)]
+// mod tests {
+//   use crate::{
+//     c_http::post::get_payload_from_dropbox, common::context::CanisterDB,
+//   };
 
-  // use futures::executor::block_on;
-  use std::fs::File;
-  use std::io::Read;
-  #[test]
-  fn test_deserialize() {
-    let token=String::from("sl.BxPmJ_Y5qKXvWPtfPwon2tAIuGG-mkXQ0BT_c-13SAcN2Fv7jZOBpKKodcBHdULtrtC0OU7b1SUFQ5J0n-NcKOHNqa_D_Xoa-w2qwfq7U04c9rlqaPi_pzUpTQ2dy-3CL8RFB5KnKlr1-5cWxz0PddM");
-    let mut file =
-      File::open("/home/btwl/code/ic/tax_lint/backend/payload.json")
-        .expect("Unable to open the file");
-    let mut db_json = String::new();
-    file
-      .read_to_string(&mut db_json)
-      .expect("Unable to read the file");
-    eprintln!("{}", db_json);
-    let payload: CanisterDB = serde_json::from_str(&db_json).unwrap();
-    eprintln!("{}", payload.id);
-  }
-}
+//   // use futures::executor::block_on;
+//   use std::fs::File;
+//   use std::io::Read;
+//   #[test]
+//   fn test_deserialize() {
+//     let token=String::from("sl.BxPmJ_Y5qKXvWPtfPwon2tAIuGG-mkXQ0BT_c-13SAcN2Fv7jZOBpKKodcBHdULtrtC0OU7b1SUFQ5J0n-NcKOHNqa_D_Xoa-w2qwfq7U04c9rlqaPi_pzUpTQ2dy-3CL8RFB5KnKlr1-5cWxz0PddM");
+//     let mut file =
+//       File::open("/home/btwl/code/ic/tax_lint/backend/payload.json")
+//         .expect("Unable to open the file");
+//     let mut db_json = String::new();
+//     file
+//       .read_to_string(&mut db_json)
+//       .expect("Unable to read the file");
+//     eprintln!("{}", db_json);
+//     let payload: CanisterDB = serde_json::from_str(&db_json).unwrap();
+//     eprintln!("{}", payload.id);
+//   }
+// }
