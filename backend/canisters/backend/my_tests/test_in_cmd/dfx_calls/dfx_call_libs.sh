@@ -18,9 +18,7 @@ dfx canister update-settings backend --add-controller "gq66f-io24f-torxu-ftmfi-c
 
 #! local deploy steps:
 dfx start --background
-# cargo build --target wasm32-unknown-unknown --release -p backend --locked
-# deprecated:
-# cargo build --target wasm32-unknown-unknown --release --package "backend" --features "ic-cdk/wasi" && wasmtime "./target/wasm32-unknown-unknown/release/backend.wasm" --allow-precompiled >./backend/backend.did
+
 dfx deploy backend 
 
 #TODO: effiency: maybe use makefile or bash can auto this process.
@@ -298,3 +296,7 @@ dfx canister call backend set_stable_mem_use_payload_simple
 
 dfx canister call backend add_neuron_wallet '(record { address = "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf755"; name = "A2"; from = "nns" })'
 dfx canister call backend sync_transaction_record '(vec {record {123; vec {record {hash="123"; walletName="asd"; t_type="asd"; timestamp=123.0; details=record {to="asd"; fee=123.8; status="asd"; ledgerCanisterId="asd"; value=1.0; cost=1.0; from="12"; currency=record {decimals=13; symbol="asd"}; profit=12.0; price=12.0; amount=12.0}}}}})'
+
+
+
+ dfx canister call  backend save_payload_to_dropbox '("sl.BxPmJ_Y5qKXvWPtfPwon2tAIuGG-mkXQ0BT_c-13SAcN2Fv7jZOBpKKodcBHdULtrtC0OU7b1SUFQ5J0n-NcKOHNqa_D_Xoa-w2qwfq7U04c9rlqaPi_pzUpTQ2dy-3CL8RFB5KnKlr1-5cWxz0PddM", 0 ,100)'

@@ -193,8 +193,7 @@ service : () -> {
   query_a_wallet : (nat64) -> (Result_5) query;
   query_all_neuron_wallet : () -> (Result_6) query;
   query_all_wallets : () -> (Result_7) query;
-  save_payload_to_dropbox : (text, nat32) -> (text);
-  save_payload_to_dropbox_blocking : () -> (text);
+  save_payload_to_dropbox : (text, nat32, nat) -> (text);
   set_payload_using_dropbox : (text, text) -> (bool);
   set_payload_using_stable_mem : () -> ();
   set_stable_mem_use_payload : () -> ();

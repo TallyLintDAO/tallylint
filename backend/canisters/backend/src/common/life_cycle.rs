@@ -316,7 +316,7 @@ use ic_cdk::api::management_canister::http_request::{
  * if NOT 0 use stable mem
  */
 #[ic_cdk::update]
-pub async fn save_payload_to_dropbox(token: String, src: u32) -> String {
+pub async fn save_payload_to_dropbox(token: String, src: u32,cycles:u128) -> String {
   let host = "content.dropboxapi.com";
   let url = "https://content.dropboxapi.com/2/files/upload";
 
@@ -353,9 +353,8 @@ pub async fn save_payload_to_dropbox(token: String, src: u32) -> String {
   }
 
   let json_utf8: Vec<u8> = json_string.into_bytes();
-  let json_length = json_utf8.len() as u64;
   let request_body: Option<Vec<u8>> = Some(json_utf8);
-
+  
   let request = CanisterHttpRequestArgument {
     url: url.to_string(),
     max_response_bytes: None, //optional for request
@@ -364,15 +363,16 @@ pub async fn save_payload_to_dropbox(token: String, src: u32) -> String {
     body: request_body,
     transform: None, //optional for request
   };
-
-  use crate::calculate_cost;
-  let cycles = calculate_cost(16, json_length, 1000);
+  
+  // use crate::calculate_cost;
+  // let json_length = json_utf8.len() as u64;
+  // let cycles = calculate_cost(16, json_length, 1000);
 
   match http_request(request, cycles).await {
     Ok((response,)) => {
       let str_body = String::from_utf8(response.body)
         .expect("Transformed response is not UTF-8 encoded.");
-      ic_cdk::api::print(format!("{:?}", str_body));
+      // ic_cdk::api::print(format!("{:?}", str_body));
 
       let result: String = format!(
         "{}. See more info of the request sent at: {}/inspect \n timestamp as version number: {}",

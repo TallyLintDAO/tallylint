@@ -26,7 +26,6 @@ struct Context {
 
 //Update method using the HTTPS outcalls feature
 
-
 #[ic_cdk::update]
 pub async fn get_payload_from_dropbox(
   token: String,

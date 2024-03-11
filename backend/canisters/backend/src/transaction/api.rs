@@ -188,7 +188,8 @@ fn sync_transaction_record(
         .expect("no such wallet");
       wallet_profile.last_sync_time = now();
       wallet_profile.transactions = one_wallet.history.len() as u64;
-      wallet_profile.last_transaction_time = ms_float_to_ns(one_wallet.history.get(0).unwrap().clone().timestamp);
+      wallet_profile.last_transaction_time =
+        ms_float_to_ns(one_wallet.history.get(0).unwrap().clone().timestamp);
       ctx
         .wallet_service
         .update_wallet(wallet_profile, get_caller());
@@ -196,3 +197,5 @@ fn sync_transaction_record(
     Ok(true)
   })
 }
+// TODO:
+// fn filt_by_tag(
