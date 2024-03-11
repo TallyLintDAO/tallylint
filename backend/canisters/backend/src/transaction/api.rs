@@ -20,10 +20,8 @@ use crate::{TransactionB, CONTEXT};
 fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    let id = ctx.id;
     let profile = TransactionB {
-      id: id,
-
+      id: generate_id(),
       coin_type: cmd.coin_type,
       address: cmd.address,
       price: cmd.price,
@@ -49,7 +47,6 @@ fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
       .add_transaction_record(profile.clone());
     match ret {
       Ok(_) => {
-        ctx.id += 1;
         return Ok(profile.id);
       }
       Err(msg) => Err(msg),
@@ -64,22 +61,6 @@ fn delete_transaction_record(id: RecordId) -> Result<RecordId, String> {
     let ret = ctx.wallet_record_service.delete_transaction_record(id);
     match ret {
       Ok(_) => Ok(id),
-      Err(msg) => Err(msg),
-    }
-  })
-}
-
-#[update(guard = "user_owner_guard")]
-fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
-  CONTEXT.with(|c| {
-    let mut ctx = c.borrow_mut();
-    let service = ctx.wallet_record_service.borrow_mut();
-    let addr = service.get_addr_from_id(cmd.id);
-    let ret = service.add_transaction_record(
-      convert_edit_command_to_record_profile(cmd, addr),
-    );
-    match ret {
-      Ok(_) => Ok(true),
       Err(msg) => Err(msg),
     }
   })
@@ -132,6 +113,22 @@ fn wallet_history(
       return Err("no records stored!".to_string());
     } else {
       return Ok(history);
+    }
+  })
+}
+
+#[update(guard = "user_owner_guard")]
+fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
+  CONTEXT.with(|c| {
+    let mut ctx = c.borrow_mut();
+    let service = ctx.wallet_record_service.borrow_mut();
+    let addr = service.get_addr_from_id(cmd.id);
+    let ret = service.add_transaction_record(
+      convert_edit_command_to_record_profile(cmd, addr),
+    );
+    match ret {
+      Ok(_) => Ok(true),
+      Err(msg) => Err(msg),
     }
   })
 }

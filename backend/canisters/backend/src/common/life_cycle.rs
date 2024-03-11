@@ -316,7 +316,11 @@ use ic_cdk::api::management_canister::http_request::{
  * if NOT 0 use stable mem
  */
 #[ic_cdk::update]
-pub async fn save_payload_to_dropbox(token: String, src: u32,cycles:u128) -> String {
+pub async fn save_payload_to_dropbox(
+  token: String,
+  src: u32,
+  cycles: u128,
+) -> String {
   let host = "content.dropboxapi.com";
   let url = "https://content.dropboxapi.com/2/files/upload";
 
@@ -354,7 +358,7 @@ pub async fn save_payload_to_dropbox(token: String, src: u32,cycles:u128) -> Str
 
   let json_utf8: Vec<u8> = json_string.into_bytes();
   let request_body: Option<Vec<u8>> = Some(json_utf8);
-  
+
   let request = CanisterHttpRequestArgument {
     url: url.to_string(),
     max_response_bytes: None, //optional for request
@@ -363,7 +367,7 @@ pub async fn save_payload_to_dropbox(token: String, src: u32,cycles:u128) -> Str
     body: request_body,
     transform: None, //optional for request
   };
-  
+
   // use crate::calculate_cost;
   // let json_length = json_utf8.len() as u64;
   // let cycles = calculate_cost(16, json_length, 1000);
@@ -385,5 +389,85 @@ pub async fn save_payload_to_dropbox(token: String, src: u32,cycles:u128) -> Str
                 format!("The http_request resulted into error. RejectionCode: {r:?}, Error: {m}");
       message
     }
+  }
+}
+
+
+
+
+#[query]
+fn do_pre_upgrade_and_print_db() -> String {
+  CONTEXT.with(|c| {
+    let context = c.borrow();
+    let id = context.id; // global increamenter.
+    let users = Vec::from_iter(context.user_service.users.values().cloned());
+    let wallets =
+      Vec::from_iter(context.wallet_service.wallets.values().cloned());
+    let records =
+      Vec::from_iter(context.wallet_record_service.records.values().cloned());
+      let transactions = Vec::from_iter(
+      context.transaction_service.transactions.values().cloned(),
+    );
+    let neurons =
+    Vec::from_iter(context.neuron_service.neurons.values().cloned());
+    
+    let payload = CanisterDB {
+      id,
+      users,
+      wallets,
+      records,
+      neurons,
+      transactions,
+    };
+    
+    let mut memory = get_upgrades_memory();
+    {
+      let writer = get_writer(&mut memory);
+      let ret = serializer::serialize(payload.clone(), writer);
+      if ret.is_err() {
+        info!("serialize err: {:?}", ret.err());
+      } else {
+        info!("serialize ok,old data saved to ic-fs.");
+      }
+    }
+    {
+      let _reader = get_reader(&mut memory);
+    }
+    
+    let json = serde_json::to_string(&payload).unwrap();
+    
+    ic_cdk::println!("json: {}", json); // this print debug info to ic-replica node console.
+    return json;
+  })
+}
+
+// TODO not work as clean_db should do yet.
+#[update]
+fn clean_db() -> bool {
+  return false;
+}
+
+#[cfg(test)]
+mod tests {
+  use crate::{
+    c_http::post::get_payload_from_dropbox, common::context::CanisterDB,
+  };
+
+  // use futures::executor::block_on;
+  use std::fs::File;
+  use std::io::Read;
+  #[test]
+  fn test_deserialize() {
+    let token=String::from("sl.BxPmJ_Y5qKXvWPtfPwon2tAIuGG-mkXQ0BT_c-13SAcN2Fv7jZOBpKKodcBHdULtrtC0OU7b1SUFQ5J0n-NcKOHNqa_D_Xoa-w2qwfq7U04c9rlqaPi_pzUpTQ2dy-3CL8RFB5KnKlr1-5cWxz0PddM");
+    let mut file =
+      File::open("/home/btwl/code/ic/tax_lint/backend/payload.json")
+        .expect("Unable to open the file");
+    let mut db_json = String::new();
+    file
+      .read_to_string(&mut db_json)
+      .expect("Unable to read the file");
+    eprintln!("{}", db_json);
+    let payload: CanisterDB = serde_json::from_str(&db_json).unwrap();
+    eprintln!("{}", payload.id);
   }
 }

@@ -68,9 +68,10 @@ pub async fn get_payload_from_dropbox(
 
   match http_request(request, cycles).await {
     Ok((response,)) => {
-      let str_body = String::from_utf8(response.body)
+      let mut str_body = String::from_utf8(response.body)
         .expect("Transformed response is not UTF-8 encoded.");
-      ic_cdk::api::print(format!("{:?}", str_body));
+      // ic_cdk::api::print(format!("{:?}", str_body));
+      str_body=str_body.replace("\\", "");
       str_body
     }
     Err((r, m)) => {

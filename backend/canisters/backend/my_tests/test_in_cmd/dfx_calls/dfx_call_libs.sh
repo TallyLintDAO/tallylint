@@ -300,3 +300,8 @@ dfx canister call backend sync_transaction_record '(vec {record {123; vec {recor
 
 
  dfx canister call  backend save_payload_to_dropbox '("sl.BxPmJ_Y5qKXvWPtfPwon2tAIuGG-mkXQ0BT_c-13SAcN2Fv7jZOBpKKodcBHdULtrtC0OU7b1SUFQ5J0n-NcKOHNqa_D_Xoa-w2qwfq7U04c9rlqaPi_pzUpTQ2dy-3CL8RFB5KnKlr1-5cWxz0PddM", 0 ,100)'
+
+
+ dfx canister call backend user_quantity --network ic 
+
+ dfx canister call  backend do_pre_upgrade_and_print_db --network ic 

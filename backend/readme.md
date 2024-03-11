@@ -288,9 +288,14 @@ call aaaaa-aa canister_info\
 # 0: collect_running_payload.  1: use stable mem
 dfx canister call  backend save_payload_to_dropbox '("sl.BxPmJ_Y5qKXvWPtfPwon2tAIuGG-mkXQ0BT_c-13SAcN2Fv7jZOBpKKodcBHdULtrtC0OU7b1SUFQ5J0n-NcKOHNqa_D_Xoa-w2qwfq7U04c9rlqaPi_pzUpTQ2dy-3CL8RFB5KnKlr1-5cWxz0PddM", 0 )' --ic
 
-dfx canister call  backend set_payload_using_dropbox --ic
+dfx canister call  backend set_payload_using_dropbox  '("sl.BxPnQVC9NQX02VwYEU8Wc66SVoMpo4XFAplbULbLKaCVuiGl3jAeZawE0bw1z0XDhJtr36hji6lgfYfg_37t6zKrMyHAjfb3HGJ-AFhps8BunLPb6ndk2yTnnC05EBHBLRtLBkeUk_MWfTYgFkcXzJ8", "01")' --ic
+
+dfx canister call  backend get_payload_from_dropbox  '("sl.BxPmJ_Y5qKXvWPtfPwon2tAIuGG-mkXQ0BT_c-13SAcN2Fv7jZOBpKKodcBHdULtrtC0OU7b1SUFQ5J0n-NcKOHNqa_D_Xoa-w2qwfq7U04c9rlqaPi_pzUpTQ2dy-3CL8RFB5KnKlr1-5cWxz0PddM", "01")' --ic
+
+dfx canister call  backend get_payload_from_dropbox  '("sl.BxPnQVC9NQX02VwYEU8Wc66SVoMpo4XFAplbULbLKaCVuiGl3jAeZawE0bw1z0XDhJtr36hji6lgfYfg_37t6zKrMyHAjfb3HGJ-AFhps8BunLPb6ndk2yTnnC05EBHBLRtLBkeUk_MWfTYgFkcXzJ8", "01")'
 
 dfx canister call  backend set_stable_mem_use_payload_simple --ic
+dfx canister call  backend do_pre_upgrade_and_print_db --ic
 ```
 
 3. 如果都执行成功.再升级一次代码启用 pre 和 post的2个hook
