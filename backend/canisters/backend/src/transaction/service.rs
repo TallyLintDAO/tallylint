@@ -150,7 +150,7 @@ impl WalletRecordService {
     cmd: HistoryQueryCommand,
   ) -> Result<HashMap<WalletAddress, Vec<TransactionB>>, String> {
     if cmd.address.is_some() {
-      let res = self.query_one(cmd);
+      let res = self.query_one_wallet(cmd);
       return Ok(res);
     } else { //query all
        // let wallets=WalletService::query_wallet_array(self,caller());
@@ -161,12 +161,12 @@ impl WalletRecordService {
 
   // TODO make sort method work.
   //
-  pub fn query_one(
+  pub fn query_one_wallet(
     &self,
     cmd: HistoryQueryCommand,
   ) -> HashMap<String, Vec<TransactionB>> {
     let addr = cmd.address.unwrap().clone();
-    let records = self.query_a_wallet_history_records(addr.clone());
+    let records = self.query_a_wallet_transactions(addr.clone());
     if records.is_empty() {
       return HashMap::new();
     }
@@ -175,7 +175,7 @@ impl WalletRecordService {
     res
   }
 
-  pub fn query_a_wallet_history_records(
+  pub fn query_a_wallet_transactions(
     &self,
     addr: WalletAddress,
   ) -> Vec<TransactionB> {

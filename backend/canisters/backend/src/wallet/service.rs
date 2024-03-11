@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 
 use super::domain::*;
 
-use crate::common::context::TimeStamp;
+use crate::{common::context::TimeStamp, transaction::service::TransactionId};
 
 #[allow(unused_imports)]
 use crate::CONTEXT;
@@ -131,6 +131,10 @@ impl WalletService {
         .collect();
       return cloned_profiles;
     }
+  }
+
+  pub fn add_transaction_index(&self, id: TransactionId) {
+    // self.wallets
   }
 
   #[allow(dead_code)]

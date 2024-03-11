@@ -19,11 +19,14 @@ use crate::{TransactionB, CONTEXT};
 fn add_transaction(mut data: TransactionB) -> Result<TransactionId, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    data.id = generate_id();
+    data.id=generate_id();
+    let id =  data.id;
     let ret = ctx.wallet_record_service.add_transaction_impl(data.clone());
     match ret {
       Ok(_) => {
-        return Ok(data.id);
+        // TODO save the id as fast bmap index into the wallet struct.
+        // ctx.index_service.add_transaction_index(id);
+        return Ok(id);
       }
       Err(msg) => Err(msg),
     }
@@ -36,32 +39,38 @@ fn delete_transaction(id: TransactionId) -> Result<TransactionId, String> {
     let mut ctx = c.borrow_mut();
     let ret = ctx.wallet_record_service.delete_transaction_impl(id);
     match ret {
-      Ok(_) => Ok(id),
+      Ok(_) => {
+        // TODO delete the id as fast bmap index into the wallet struct.
+
+        Ok(id)
+      }
       Err(msg) => Err(msg),
     }
   })
 }
 
 // TODO get all wallets of records info
-// 根据前端查询到的历史记录存到后端
+// many work todo to different query
 #[query(guard = "user_owner_guard")]
-fn wallet_history(
+fn query_wallet_transactions(
   mut cmd: HistoryQueryCommand,
 ) -> Result<HashMap<WalletAddress, Vec<TransactionB>>, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     let mut history: HashMap<WalletAddress, Vec<TransactionB>> = HashMap::new();
-    // query one
+
+    //#### query one
     if cmd.address.is_some() {
       let rec_srv = ctx.wallet_record_service.borrow_mut();
-      history = rec_srv.query_one(cmd);
+      history = rec_srv.query_one_wallet(cmd);
       if history.is_empty() {
         return Err("no records stored!".to_string());
       } else {
         return Ok(history);
       }
     }
-    // query all
+
+    //#### query all
     // TODO . need test .
     // case1: wallet1 have addr and 3rec . w2 have 1 addr
     // and 0rec. w3 have no addr and rec. query all 3
@@ -76,7 +85,7 @@ fn wallet_history(
     while !addrs.is_empty() {
       let addr = addrs.pop().unwrap();
       cmd.address = Some(addr.clone());
-      let rec = rec_srv.query_one(cmd.clone());
+      let rec = rec_srv.query_one_wallet(cmd.clone());
       if rec.is_empty() {
         history.insert(addr, vec![]);
         continue;
@@ -98,10 +107,14 @@ fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     let service = ctx.wallet_record_service.borrow_mut();
-    data.id=generate_id();
+    data.id = generate_id();
     let ret = service.add_transaction_impl(data);
     match ret {
-      Ok(_) => Ok(true),
+      Ok(_) => {
+        // TODO update the id as fast bmap index into the wallet struct.
+
+        Ok(true)
+      }
       Err(msg) => Err(msg),
     }
   })
