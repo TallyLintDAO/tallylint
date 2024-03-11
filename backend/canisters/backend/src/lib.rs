@@ -1,4 +1,4 @@
-use candid::Principal;
+
 use std::cell::RefCell;
 
 pub mod c2c;

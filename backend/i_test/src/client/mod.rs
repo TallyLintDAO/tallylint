@@ -23,7 +23,7 @@ pub struct CanisterWasm {
   pub module: Vec<u8>,
 }
 
-use self::setup::{CanisterId, CanisterIds, UserId, TERA};
+use self::setup::{CanisterId, UserId, TERA};
 
 const INIT_CYCLES_BALANCE: u128 = 1_000 * TERA;
 

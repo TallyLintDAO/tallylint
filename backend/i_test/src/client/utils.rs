@@ -39,6 +39,7 @@ pub fn local_bin() -> PathBuf {
 fn test1() {
   generate_workout(5, 6);
 }
+ #[allow(dead_code)]
 fn generate_workout(intensity: u32, random_number: u32) {
   let expensive_closure = |num| {
     println!("calculating slowly ...");

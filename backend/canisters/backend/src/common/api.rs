@@ -1,13 +1,6 @@
-use ic_cdk_macros::*;
-
 use tracing::info;
-
-use super::context::{CanisterContext, CanisterDB};
+use super::context::CanisterContext;
 use super::env::CanisterEnvironment;
-use super::memory::get_upgrades_memory;
-use crate::CONTEXT;
-
-use stable_memory::*;
 
 #[allow(dead_code)]
 fn init() {
