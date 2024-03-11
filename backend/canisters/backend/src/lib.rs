@@ -1,4 +1,3 @@
-
 use std::cell::RefCell;
 
 pub mod c2c;
@@ -58,4 +57,6 @@ use ic_cdk::api::management_canister::{
 };
 #[allow(unused_imports)]
 use std::collections::HashMap;
+#[allow(unused_imports)]
+use crate::transaction::service::TransactionId;
 ic_cdk::export_candid!();

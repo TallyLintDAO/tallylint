@@ -12,7 +12,7 @@ use crate::{common::context::TimeStamp, TransactionB};
 use crate::CONTEXT;
 
 pub type WalletId = u64;
-pub type RecordId = u64;
+pub type TransactionId = u64;
 pub type WalletAddress = String;
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct AddRecordCommand {
@@ -44,10 +44,10 @@ pub struct AddRecordCommand {
 pub struct EditHistoryCommand {
   pub coin_type: String,
 
-  pub id: RecordId, //delete id here . dont need.
+  pub id: TransactionId, //delete id here . dont need.
   pub principal_id: Option<String>, /* Plug use , need
-                     * to convert to
-                     * opt_account_id_hex for use. */
+                          * to convert to
+                          * opt_account_id_hex for use. */
   pub address: WalletAddress, // same as account_id_hex
   pub hash: String,
   pub t_type: String, //transaction_type
@@ -69,11 +69,11 @@ pub struct EditHistoryCommand {
 
 #[derive(Debug, Default)]
 pub struct WalletRecordService {
-  pub records: BTreeMap<RecordId, TransactionB>,
+  pub records: BTreeMap<TransactionId, TransactionB>,
 }
 #[derive(Debug, Default)]
 pub struct TransactionService {
-  pub transactions: BTreeMap<RecordId, TransactionF>,
+  pub transactions: BTreeMap<TransactionId, TransactionF>,
 }
 impl TransactionService {
   // TODO
@@ -114,26 +114,21 @@ pub struct HistoryQueryCommand {
 }
 impl WalletRecordService {
   // TODO
-  pub fn add_transaction_record(
+  pub fn add_transaction_impl(
     &mut self,
     profile: TransactionB,
   ) -> Result<bool, String> {
     let id = profile.id;
-    if self.records.contains_key(&id) {
-      return Err("transaction record already exsit".to_string());
-    }
-
     self.records.insert(profile.id, profile);
-
     if self.records.contains_key(&id) {
       return Ok(true);
     } else {
       return Err("Insert fail. may heap overflow".to_string());
     }
   }
-  pub fn delete_transaction_record(
+  pub fn delete_transaction_impl(
     &mut self,
-    id: RecordId,
+    id: TransactionId,
   ) -> Result<bool, String> {
     if !self.records.contains_key(&id) {
       return Err("transaction record not exsit".to_string());
@@ -147,15 +142,14 @@ impl WalletRecordService {
       return Err("remove fail. still exsit".to_string());
     }
   }
-  pub fn get_addr_from_id(&self, id: RecordId) -> WalletAddress {
-    self.records.get(&id).unwrap().address.clone()
-  }
+  // pub fn get_addr_from_id(&self, id: TransactionId) -> WalletAddress {
+  //   self.records.get(&id).unwrap().address.clone()
+  // }
   pub fn wallet_history(
     &self,
     cmd: HistoryQueryCommand,
   ) -> Result<HashMap<WalletAddress, Vec<TransactionB>>, String> {
     if cmd.address.is_some() {
-      // query one
       let res = self.query_one(cmd);
       return Ok(res);
     } else { //query all
@@ -185,12 +179,12 @@ impl WalletRecordService {
     &self,
     addr: WalletAddress,
   ) -> Vec<TransactionB> {
-    let records = self
+    let transac = self
       .records
       .values()
       .filter(|record| record.address == addr)
       .cloned()
       .collect();
-    return records;
+    return transac;
   }
 }

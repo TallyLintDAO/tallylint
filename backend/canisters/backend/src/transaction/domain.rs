@@ -1,10 +1,8 @@
-
-
 pub(crate) use candid::CandidType;
 
 use crate::common::context::TimeStamp;
 
-use super::service::{RecordId, WalletAddress, WalletId};
+use super::service::{TransactionId, WalletAddress, WalletId};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
@@ -64,29 +62,31 @@ pub struct Currency {
 pub struct TransactionB {
   //
   // backend autogen:
-  pub id: RecordId,
+  pub id: TransactionId,
   //
 
   //
   //  frontend pass in:
-  pub hash: String,
-  pub timestamp: TimeStamp, //transaction_time
-  pub t_type: String,       //transaction_type SEND or RECEIVE
-  pub coin_type: String,
+  // pub hash: String,
+  // pub timestamp: TimeStamp, //transaction_time
+  // pub t_type: String,       //transaction_type SEND or RECEIVE
+  // pub coin_type: String,
+
+  // pub status: String,
+  // pub fee: f64,
+  // pub to: String,
+  // pub from: String,
+  // pub amount: u32,
+  // pub price: f64,
+  // pub cost: f64,
+  // pub profit: f64,
+  pub transaction_f: TransactionF,
   pub principal_id: Option<String>, /* Plug use , need
                                      * to convert to
                                      * opt_account_id_hex for use. */
-  pub address: WalletAddress, // same as account_id_hex
-  pub status: String,
-  pub fee: f64,
-  pub to: String,
-  pub from: String,
-  pub amount: u32,
-  pub price: f64,
   pub memo: String,
-  pub cost: f64,
+  pub address: WalletAddress, // same as account_id_hex
   pub income: f64,
-  pub profit: f64,
   pub tag: String,
   pub manual: bool,
   pub comment: String,

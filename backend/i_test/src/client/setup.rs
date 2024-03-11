@@ -3,7 +3,6 @@ use std::env;
 use std::fmt::{Debug, Display, Formatter};
 use std::path::Path;
 
-
 use candid::{CandidType, Principal};
 use pocket_ic::{PocketIc, PocketIcBuilder};
 
@@ -74,7 +73,7 @@ pub fn tick_many(env: &mut PocketIc, count: usize) {
   }
 }
 
- #[allow(dead_code)]
+#[allow(dead_code)]
 fn get_local_pocket_ic_bin() {
   // let path = match env::var_os("POCKET_IC_BIN") {
   //   None => {

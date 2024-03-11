@@ -128,36 +128,6 @@ fn delete_wallet(id: u64) -> Result<bool, String> {
 }
 
 #[allow(dead_code)]
-fn convert_edit_command_to_record_profile(
-  cmd: EditHistoryCommand,
-  addr: WalletAddress,
-) -> TransactionB {
-  TransactionB {
-    id: cmd.id,
-    coin_type: cmd.coin_type,
-
-    address: addr,
-    price: cmd.price,
-    amount: cmd.amount,
-    timestamp: cmd.time,
-    t_type: cmd.t_type,
-    tag: cmd.tag,
-    manual: cmd.manual,
-    comment: cmd.comment,
-    principal_id: None,
-    hash: cmd.hash,
-    status: cmd.status,
-    from: cmd.from,
-    to: cmd.to,
-    fee: cmd.fee,
-    memo: cmd.memo,
-    cost: cmd.cost,
-    income: cmd.income,
-    profit: cmd.profit,
-  }
-}
-
-#[allow(dead_code)]
 fn get_account_id(hex_str: String) -> AccountIdentifier {
   let account = AccountIdentifier::from_hex(&hex_str);
   if account.is_ok() {

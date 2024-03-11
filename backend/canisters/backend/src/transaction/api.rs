@@ -6,8 +6,7 @@ use ic_cdk_macros::{query, update};
 
 use super::domain::*;
 use super::service::{
-  AddRecordCommand, EditHistoryCommand, HistoryQueryCommand, RecordId,
-  WalletAddress,
+  EditHistoryCommand, HistoryQueryCommand, TransactionId, WalletAddress,
 };
 use crate::common::context::{generate_id, get_caller, now};
 use crate::common::guard::user_owner_guard;
@@ -17,37 +16,14 @@ use crate::{TransactionB, CONTEXT};
 // TODO use: AddRecordCommand . front end dont need to input
 // id . id gen by backend. TODO 测试 id 正常生成且不冲突
 #[update(guard = "user_owner_guard")]
-fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
+fn add_transaction(mut data: TransactionB) -> Result<TransactionId, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    let profile = TransactionB {
-      id: generate_id(),
-      coin_type: cmd.coin_type,
-      address: cmd.address,
-      price: cmd.price,
-      amount: cmd.amount,
-      timestamp: cmd.time,
-      t_type: cmd.t_type,
-      tag: cmd.tag,
-      manual: cmd.manual,
-      comment: cmd.comment,
-      principal_id: cmd.principal_id,
-      hash: cmd.hash,
-      status: cmd.status,
-      from: cmd.from,
-      to: cmd.to,
-      fee: cmd.fee,
-      memo: cmd.memo,
-      cost: cmd.cost,
-      income: cmd.income,
-      profit: cmd.profit,
-    };
-    let ret = ctx
-      .wallet_record_service
-      .add_transaction_record(profile.clone());
+    data.id = generate_id();
+    let ret = ctx.wallet_record_service.add_transaction_impl(data.clone());
     match ret {
       Ok(_) => {
-        return Ok(profile.id);
+        return Ok(data.id);
       }
       Err(msg) => Err(msg),
     }
@@ -55,10 +31,10 @@ fn add_transaction_record(cmd: AddRecordCommand) -> Result<RecordId, String> {
 }
 
 #[update(guard = "user_owner_guard")]
-fn delete_transaction_record(id: RecordId) -> Result<RecordId, String> {
+fn delete_transaction(id: TransactionId) -> Result<TransactionId, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    let ret = ctx.wallet_record_service.delete_transaction_record(id);
+    let ret = ctx.wallet_record_service.delete_transaction_impl(id);
     match ret {
       Ok(_) => Ok(id),
       Err(msg) => Err(msg),
@@ -118,48 +94,17 @@ fn wallet_history(
 }
 
 #[update(guard = "user_owner_guard")]
-fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
+fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     let service = ctx.wallet_record_service.borrow_mut();
-    let addr = service.get_addr_from_id(cmd.id);
-    let ret = service.add_transaction_record(
-      convert_edit_command_to_record_profile(cmd, addr),
-    );
+    data.id=generate_id();
+    let ret = service.add_transaction_impl(data);
     match ret {
       Ok(_) => Ok(true),
       Err(msg) => Err(msg),
     }
   })
-}
-
-fn convert_edit_command_to_record_profile(
-  cmd: EditHistoryCommand,
-  addr: WalletAddress,
-) -> TransactionB {
-  TransactionB {
-    id: cmd.id,
-    coin_type: cmd.coin_type,
-
-    address: addr,
-    price: cmd.price,
-    amount: cmd.amount,
-    timestamp: cmd.time,
-    t_type: cmd.t_type,
-    tag: cmd.tag,
-    manual: cmd.manual,
-    comment: cmd.comment,
-    principal_id: None,
-    hash: cmd.hash,
-    status: cmd.status,
-    from: cmd.from,
-    to: cmd.to,
-    fee: cmd.fee,
-    memo: cmd.memo,
-    cost: cmd.cost,
-    income: cmd.income,
-    profit: cmd.profit,
-  }
 }
 
 // TODO

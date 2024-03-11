@@ -174,7 +174,6 @@ fn set_payload_using_stable_mem() {
   });
 }
 
-
 /**
  * TEST OK
  */

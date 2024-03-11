@@ -1,24 +1,3 @@
-type AddRecordCommand = record {
-  to : text;
-  fee : float64;
-  tag : text;
-  status : text;
-  cost : float64;
-  from : text;
-  hash : text;
-  memo : text;
-  time : nat64;
-  t_type : text;
-  coin_type : text;
-  comment : text;
-  income : float64;
-  address : text;
-  profit : float64;
-  manual : bool;
-  principal_id : opt text;
-  price : float64;
-  amount : nat32;
-};
 type BallotInfo = record { vote : int32; proposal_id : opt NeuronId };
 type Currency = record { decimals : nat64; symbol : text };
 type CustomResult1 = variant { Ok : NeuronInfo; Err : GovernanceError };
@@ -34,28 +13,6 @@ type Details = record {
   profit : float64;
   price : float64;
   amount : float64;
-};
-type EditHistoryCommand = record {
-  id : nat64;
-  to : text;
-  fee : float64;
-  tag : text;
-  status : text;
-  cost : float64;
-  from : text;
-  hash : text;
-  memo : text;
-  time : nat64;
-  t_type : text;
-  coin_type : text;
-  comment : text;
-  income : float64;
-  address : text;
-  profit : float64;
-  manual : bool;
-  principal_id : opt text;
-  price : float64;
-  amount : nat32;
 };
 type GovernanceError = record { error_message : text; error_type : int32 };
 type HistoryQueryCommand = record {
@@ -120,25 +77,14 @@ type SyncTransactionCommand = record {
 };
 type TransactionB = record {
   id : nat64;
-  to : text;
-  fee : float64;
   tag : text;
-  status : text;
-  cost : float64;
-  from : text;
-  hash : text;
   memo : text;
-  t_type : text;
-  coin_type : text;
   comment : text;
   income : float64;
   address : text;
-  timestamp : nat64;
-  profit : float64;
   manual : bool;
   principal_id : opt text;
-  price : float64;
-  amount : nat32;
+  transaction_f : TransactionF;
 };
 type TransactionF = record {
   hash : text;
@@ -173,16 +119,15 @@ type WalletProfile = record {
 type WalletUpdateCommand = record { id : nat64; from : text; name : text };
 service : () -> {
   add_neuron_wallet : (NeuronAddCommand) -> (Result);
-  add_transaction_record : (AddRecordCommand) -> (Result_1);
+  add_transaction : (TransactionB) -> (Result_1);
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_2);
   clean_db : () -> (bool);
   collect_running_payload : () -> (text) query;
   delete_neuron_wallet : (nat64) -> (Result);
-  delete_transaction_record : (nat64) -> (Result_1);
+  delete_transaction : (nat64) -> (Result_1);
   delete_wallet : (nat64) -> (Result);
   do_pre_upgrade_and_print_db : () -> (text) query;
-  edit_transaction_record : (EditHistoryCommand) -> (Result);
   get_balance : () -> (nat64);
   get_neuron_info : (nat64) -> (Result_3);
   get_payload_from_dropbox : (text, text) -> (text);
@@ -200,6 +145,7 @@ service : () -> {
   set_stable_mem_use_payload_simple : () -> ();
   sync_transaction_record : (vec SyncTransactionCommand) -> (Result);
   update_neuron_wallet : (NeuronUpdateCommand) -> (Result);
+  update_transaction : (TransactionB) -> (Result);
   update_wallet : (WalletUpdateCommand) -> (Result);
   user_quantity : () -> (nat32) query;
   wallet_history : (HistoryQueryCommand) -> (Result_8) query;

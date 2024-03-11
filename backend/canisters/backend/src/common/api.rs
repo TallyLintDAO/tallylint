@@ -1,6 +1,6 @@
-use tracing::info;
 use super::context::CanisterContext;
 use super::env::CanisterEnvironment;
+use tracing::info;
 
 #[allow(dead_code)]
 fn init() {
