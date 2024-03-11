@@ -1,6 +1,6 @@
 use std::fs::read;
 
-use client::setup::{CanisterId};
+use client::setup::CanisterId;
 
 pub fn add(left: usize, right: usize) -> usize {
   left + right
@@ -40,7 +40,7 @@ use pocket_ic::{PocketIc, WasmResult};
 use rand::random;
 use serde_bytes::ByteBuf;
 
-use crate::client::setup::{TERA};
+use crate::client::setup::TERA;
 
 fn test_counter_canister() {
   let pic = PocketIc::new();

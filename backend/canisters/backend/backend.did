@@ -176,7 +176,7 @@ service : () -> {
   add_transaction_record : (AddRecordCommand) -> (Result_1);
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_2);
-  clean_db : () -> (text);
+  clean_db : () -> (bool);
   collect_running_payload : () -> (text) query;
   delete_neuron_wallet : (nat64) -> (Result);
   delete_transaction_record : (nat64) -> (Result_1);
@@ -201,6 +201,6 @@ service : () -> {
   sync_transaction_record : (vec SyncTransactionCommand) -> (Result);
   update_neuron_wallet : (NeuronUpdateCommand) -> (Result);
   update_wallet : (WalletUpdateCommand) -> (Result);
-  user_quantity : () -> (nat32);
+  user_quantity : () -> (nat32) query;
   wallet_history : (HistoryQueryCommand) -> (Result_8) query;
 }
