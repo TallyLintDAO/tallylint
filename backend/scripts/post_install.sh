@@ -1,9 +1,12 @@
 #!/bin/bash
 # TODO do this  and pre_install stage : 
-echo pre_install task: candid-extractor
+echo ====pre_install task: candid-extractor====
 candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/canisters/backend/backend.did
 
 
+dfx deploy backend --verbose
+DFXPASS_BTWLZ
+echo ====post_install task: change interface file name====
 base_dir=$(git rev-parse --show-toplevel)
 echo "The project root directory is ${base_dir}"
 

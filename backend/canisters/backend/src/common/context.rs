@@ -134,3 +134,18 @@ impl From<CanisterContext> for CanisterDB {
     }
   }
 }
+
+pub fn generate_id() -> u64 {
+  CONTEXT.with(|c| {
+    let mut ctx = c.borrow_mut();
+    ctx.id = ctx.id + 1;
+    ctx.id
+  })
+}
+pub fn get_caller() -> Principal {
+  return ic_cdk::caller();
+}
+
+pub fn now() -> u64 {
+  return ic_cdk::api::time();
+}

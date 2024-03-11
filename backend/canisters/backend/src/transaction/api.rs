@@ -9,7 +9,9 @@ use super::service::{
   AddRecordCommand, EditHistoryCommand, HistoryQueryCommand, RecordId,
   WalletAddress, WalletId,
 };
+use crate::common::context::{generate_id, get_caller, now};
 use crate::common::guard::user_owner_guard;
+use crate::common::times::ms_float_to_ns;
 use crate::{TransactionB, CONTEXT};
 
 // TODO use: AddRecordCommand . front end dont need to input
@@ -80,34 +82,6 @@ fn edit_transaction_record(cmd: EditHistoryCommand) -> Result<bool, String> {
       Ok(_) => Ok(true),
       Err(msg) => Err(msg),
     }
-  })
-}
-
-// TODO
-//方法完成后，需要检查关联更新：钱包的交易记录总数，上次同步时间，
-// 上次交易发生的时间 描述:户点击同步钱包按钮,调用nns或者交易所等api.
-// 获得历史交易记录并存储到后端. (前端已有一部分计算代码),
-// 可以选择全部搬移到后端或者前端直接把现有计算好的利润发送给后端 需要用到的api:
-// nns dashboard的api可能要用到. 详见前端查询方法.
-// #[update(guard = "user_owner_guard")]
-#[update]
-fn sync_transaction_record(
-  cmd: Vec<SyncTransactionCommand>,
-) -> Result<bool, String> {
-  CONTEXT.with(|c| {
-    let mut ctx = c.borrow_mut();
-    for record_profiles in cmd {
-      for one_rec in record_profiles.history {
-        let id = ctx.id;
-        let ret = ctx
-          .transaction_service
-          .add_transaction_record(id, one_rec);
-        if ret.is_ok() {
-          ctx.id += 1;
-        }
-      }
-    }
-    Ok(true)
   })
 }
 
@@ -189,4 +163,36 @@ fn convert_edit_command_to_record_profile(
     income: cmd.income,
     profit: cmd.profit,
   }
+}
+
+// TODO
+//方法完成后，需要检查关联更新：钱包的交易记录总数，上次同步时间，
+// 上次交易发生的时间 描述:户点击同步钱包按钮,调用nns或者交易所等api.
+// 获得历史交易记录并存储到后端. (前端已有一部分计算代码),
+// 可以选择全部搬移到后端或者前端直接把现有计算好的利润发送给后端 需要用到的api:
+// nns dashboard的api可能要用到. 详见前端查询方法.
+#[update(guard = "user_owner_guard")]
+fn sync_transaction_record(
+  cmd: Vec<SyncTransactionCommand>,
+) -> Result<bool, String> {
+  CONTEXT.with(|c| {
+    let mut ctx = c.borrow_mut();
+    for one_wallet in cmd {
+      for one_rec in one_wallet.history.clone() {
+        let id = generate_id();
+        let _ret = ctx.transaction_service.add_transaction_record(id, one_rec);
+      }
+      let mut wallet_profile = ctx
+        .wallet_service
+        .query_a_wallet(one_wallet.walletId)
+        .expect("no such wallet");
+      wallet_profile.last_sync_time = now();
+      wallet_profile.transactions = one_wallet.history.len() as u64;
+      wallet_profile.last_transaction_time = ms_float_to_ns(one_wallet.history.get(0).unwrap().clone().timestamp);
+      ctx
+        .wallet_service
+        .update_wallet(wallet_profile, get_caller());
+    }
+    Ok(true)
+  })
 }

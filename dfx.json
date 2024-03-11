@@ -12,10 +12,7 @@
     "backend": {
       "candid": "backend/canisters/backend/backend.did",
       "package": "backend",
-      "type": "rust",
-      "post_install": [
-        "./backend/scripts/post_install.sh"
-      ]
+      "type": "rust"
     }
   },
   "networks": {
