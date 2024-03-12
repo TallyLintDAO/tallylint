@@ -19,8 +19,10 @@ use crate::{TransactionB, CONTEXT};
 fn add_transaction(mut data: TransactionB) -> Result<TransactionId, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    data.id = generate_id();
-    let id = data.id;
+    ctx.id = ctx.id + 1;
+        let id = ctx.id;
+    data.id=id;
+    let id =  data.id;
     let ret = ctx.wallet_record_service.add_transaction_impl(data.clone());
     match ret {
       Ok(_) => {
@@ -106,13 +108,13 @@ fn query_wallet_transactions(
 fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    let service = ctx.wallet_record_service.borrow_mut();
-    data.id = generate_id();
-    let ret = service.add_transaction_impl(data);
+    ctx.id = ctx.id + 1;
+    let id = ctx.id;
+    data.id = id;
+    let ret = ctx.wallet_record_service.add_transaction_impl(data);
     match ret {
       Ok(_) => {
         // TODO update the id as fast bmap index into the wallet struct.
-
         Ok(true)
       }
       Err(msg) => Err(msg),
@@ -134,7 +136,8 @@ fn sync_transaction_record(
     let mut ctx = c.borrow_mut();
     for one_wallet in cmd {
       for one_rec in one_wallet.history.clone() {
-        let id = generate_id();
+        ctx.id = ctx.id + 1;
+        let id = ctx.id;
         let _ret = ctx.transaction_service.add_transaction_record(id, one_rec);
       }
       let mut wallet_profile = ctx
