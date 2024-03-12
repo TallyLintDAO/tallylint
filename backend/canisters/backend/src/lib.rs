@@ -61,10 +61,6 @@ use ic_cdk::api::management_canister::{
 use std::collections::HashMap;
 ic_cdk::export_candid!();
 
-
-
-
-
 // #[cfg(test)]
 // mod tests {
 //   use super::*;
@@ -75,14 +71,13 @@ ic_cdk::export_candid!();
 //     };
 //   }
 
-
 //   #[test]
 //   fn test2() {
 //     let ret = my_add!(1, 2);
 //     eprint!("{}", ret);
 //       extern crate proc_macro;
 //   use proc_macro::TokenStream;
-  
+
 //   #[proc_macro]
 //   pub fn my_macro1(_input: TokenStream) -> TokenStream {
 //     "println!(\"Hello, World!\");".parse().unwrap()
@@ -90,4 +85,3 @@ ic_cdk::export_candid!();
 //     my_macro1!();
 //   }
 // }
-
