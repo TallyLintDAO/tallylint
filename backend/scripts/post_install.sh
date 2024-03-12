@@ -1,7 +1,7 @@
 #!/bin/bash
 # TODO do this  and pre_install stage : 
 echo ====pre_install task: candid-extractor====
-candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/canisters/backend/backend.did
+cargo build --release --target wasm32-unknown-unknown --package backend && candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/canisters/backend/backend.did
 
 
 dfx deploy backend --verbose
