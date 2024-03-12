@@ -1,7 +1,5 @@
 pub(crate) use candid::CandidType;
 
-use crate::common::context::TimeStamp;
-
 use super::service::{TransactionId, WalletAddress, WalletId};
 use serde::{Deserialize, Serialize};
 

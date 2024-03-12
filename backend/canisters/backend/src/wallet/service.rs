@@ -133,7 +133,7 @@ impl WalletService {
     }
   }
 
-  pub fn add_transaction_index(&self, id: TransactionId) {
+  pub fn add_transaction_index(&self, _id: TransactionId) {
     // self.wallets
   }
 

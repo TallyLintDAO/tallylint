@@ -5,10 +5,8 @@ use ic_cdk::caller;
 use ic_cdk_macros::{query, update};
 
 use super::domain::*;
-use super::service::{
-  EditHistoryCommand, HistoryQueryCommand, TransactionId, WalletAddress,
-};
-use crate::common::context::{generate_id, get_caller, now};
+use super::service::{HistoryQueryCommand, TransactionId, WalletAddress};
+use crate::common::context::{get_caller, now};
 use crate::common::guard::user_owner_guard;
 use crate::common::times::ms_float_to_ns;
 use crate::{TransactionB, CONTEXT};
@@ -20,9 +18,9 @@ fn add_transaction(mut data: TransactionB) -> Result<TransactionId, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     ctx.id = ctx.id + 1;
-        let id = ctx.id;
-    data.id=id;
-    let id =  data.id;
+    let id = ctx.id;
+    data.id = id;
+    let id = data.id;
     let ret = ctx.wallet_record_service.add_transaction_impl(data.clone());
     match ret {
       Ok(_) => {
