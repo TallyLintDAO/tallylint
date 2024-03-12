@@ -301,11 +301,6 @@ dfx canister call  backend do_pre_upgrade_and_print_db --ic
 3. 如果都执行成功.再升级一次代码启用 pre 和 post的2个hook
 
 
-
-
-
-
-
 TODO
 查看b3wallet是如何做持久化和如何使用threadlocal代码的
 
