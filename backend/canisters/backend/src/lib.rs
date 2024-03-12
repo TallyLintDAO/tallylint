@@ -60,3 +60,34 @@ use ic_cdk::api::management_canister::{
 #[allow(unused_imports)]
 use std::collections::HashMap;
 ic_cdk::export_candid!();
+
+
+
+
+
+// #[cfg(test)]
+// mod tests {
+//   use super::*;
+
+//   macro_rules! my_add {
+//     ($a:expr, $b:expr) => {
+//       $a + $b
+//     };
+//   }
+
+
+//   #[test]
+//   fn test2() {
+//     let ret = my_add!(1, 2);
+//     eprint!("{}", ret);
+//       extern crate proc_macro;
+//   use proc_macro::TokenStream;
+  
+//   #[proc_macro]
+//   pub fn my_macro1(_input: TokenStream) -> TokenStream {
+//     "println!(\"Hello, World!\");".parse().unwrap()
+//   }
+//     my_macro1!();
+//   }
+// }
+

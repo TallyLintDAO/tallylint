@@ -19,8 +19,8 @@ use crate::{TransactionB, CONTEXT};
 fn add_transaction(mut data: TransactionB) -> Result<TransactionId, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    data.id=generate_id();
-    let id =  data.id;
+    data.id = generate_id();
+    let id = data.id;
     let ret = ctx.wallet_record_service.add_transaction_impl(data.clone());
     match ret {
       Ok(_) => {

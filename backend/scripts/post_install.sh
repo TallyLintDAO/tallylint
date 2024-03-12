@@ -5,7 +5,7 @@ candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/c
 
 
 dfx deploy backend --verbose
-DFXPASS_BTWLZ
+# DFXPASS_BTWLZ
 echo ====post_install task: change interface file name====
 base_dir=$(git rev-parse --show-toplevel)
 echo "The project root directory is ${base_dir}"

@@ -13,7 +13,7 @@ crate-type = [
 ] #  necessary to compile this Rust program into WebAssembly module.
 # cdy: "C Dynamic Library."
 path = "src/lib.rs"
-
+proc_macro = true
 [dependencies]
 # 099 or 096 confilct with nns goveranance.
 candid = { workspace = true } # for abstraction from backend language . some kind of middle language . decoupling 
@@ -79,6 +79,7 @@ futures = "0.3.30"
 # chrono = "0.4.34"
 time = "0.3"
 lazy_static ={ workspace = true }
+
 
 
 

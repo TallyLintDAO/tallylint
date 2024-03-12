@@ -304,4 +304,8 @@ dfx canister call  backend do_pre_upgrade_and_print_db --ic
 
 
 
-  
+
+
+TODO
+查看b3wallet是如何做持久化和如何使用threadlocal代码的
+
