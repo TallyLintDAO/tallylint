@@ -13,7 +13,8 @@ crate-type = [
 ] #  necessary to compile this Rust program into WebAssembly module.
 # cdy: "C Dynamic Library."
 path = "src/lib.rs"
-proc_macro = true
+# FIXME this cause cc compile error . dont know why yet. wasm with proc_marco error ?
+# proc_macro = true
 [dependencies]
 # 099 or 096 confilct with nns goveranance.
 candid = { workspace = true } # for abstraction from backend language . some kind of middle language . decoupling 
