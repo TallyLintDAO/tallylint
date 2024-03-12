@@ -2,27 +2,6 @@ import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 import type { IDL } from '@dfinity/candid';
 
-export interface AddRecordCommand {
-  'to' : string,
-  'fee' : number,
-  'tag' : string,
-  'status' : string,
-  'cost' : number,
-  'from' : string,
-  'hash' : string,
-  'memo' : string,
-  'time' : bigint,
-  't_type' : string,
-  'coin_type' : string,
-  'comment' : string,
-  'income' : number,
-  'address' : string,
-  'profit' : number,
-  'manual' : boolean,
-  'principal_id' : [] | [string],
-  'price' : number,
-  'amount' : number,
-}
 export interface BallotInfo { 'vote' : number, 'proposal_id' : [] | [NeuronId] }
 export interface Currency { 'decimals' : bigint, 'symbol' : string }
 export type CustomResult1 = { 'Ok' : NeuronInfo } |
@@ -40,28 +19,6 @@ export interface Details {
   'price' : number,
   'amount' : number,
 }
-export interface EditHistoryCommand {
-  'id' : bigint,
-  'to' : string,
-  'fee' : number,
-  'tag' : string,
-  'status' : string,
-  'cost' : number,
-  'from' : string,
-  'hash' : string,
-  'memo' : string,
-  'time' : bigint,
-  't_type' : string,
-  'coin_type' : string,
-  'comment' : string,
-  'income' : number,
-  'address' : string,
-  'profit' : number,
-  'manual' : boolean,
-  'principal_id' : [] | [string],
-  'price' : number,
-  'amount' : number,
-}
 export interface GovernanceError {
   'error_message' : string,
   'error_type' : number,
@@ -73,12 +30,6 @@ export interface HistoryQueryCommand {
   't_type' : string,
   'sort_method' : string,
   'address' : [] | [string],
-}
-export interface HttpHeader { 'value' : string, 'name' : string }
-export interface HttpResponse {
-  'status' : bigint,
-  'body' : Uint8Array | number[],
-  'headers' : Array<HttpHeader>,
 }
 export interface KnownNeuronData {
   'name' : string,
@@ -136,27 +87,20 @@ export type Result_7 = { 'Ok' : Array<WalletProfile> } |
   { 'Err' : Array<WalletProfile> };
 export type Result_8 = { 'Ok' : Array<[string, Array<TransactionB>]> } |
   { 'Err' : string };
+export interface SyncTransactionCommand {
+  'history' : Array<TransactionF>,
+  'walletId' : bigint,
+}
 export interface TransactionB {
   'id' : bigint,
-  'to' : string,
-  'fee' : number,
   'tag' : string,
-  'status' : string,
-  'cost' : number,
-  'from' : string,
-  'hash' : string,
   'memo' : string,
-  't_type' : string,
-  'coin_type' : string,
   'comment' : string,
   'income' : number,
   'address' : string,
-  'timestamp' : bigint,
-  'profit' : number,
   'manual' : boolean,
   'principal_id' : [] | [string],
-  'price' : number,
-  'amount' : number,
+  'transaction_f' : TransactionF,
 }
 export interface TransactionF {
   'hash' : string,
@@ -164,10 +108,6 @@ export interface TransactionF {
   't_type' : string,
   'timestamp' : number,
   'details' : Details,
-}
-export interface TransformArgs {
-  'context' : Uint8Array | number[],
-  'response' : HttpResponse,
 }
 export interface UserProfile {
   'owner' : Principal,
@@ -199,41 +139,36 @@ export interface WalletUpdateCommand {
 }
 export interface _SERVICE {
   'add_neuron_wallet' : ActorMethod<[NeuronAddCommand], Result>,
-  'add_transaction_record' : ActorMethod<[AddRecordCommand], Result_1>,
+  'add_transaction' : ActorMethod<[TransactionB], Result_1>,
   'add_wallet' : ActorMethod<[WalletAddCommand], Result>,
   'auto_register_user' : ActorMethod<[], Result_2>,
-  'clean_db' : ActorMethod<[], string>,
+  'clean_db' : ActorMethod<[], boolean>,
   'collect_running_payload' : ActorMethod<[], string>,
   'delete_neuron_wallet' : ActorMethod<[bigint], Result>,
-  'delete_transaction_record' : ActorMethod<[bigint], Result_1>,
+  'delete_transaction' : ActorMethod<[bigint], Result_1>,
   'delete_wallet' : ActorMethod<[bigint], Result>,
   'do_pre_upgrade_and_print_db' : ActorMethod<[], string>,
-  'edit_transaction_record' : ActorMethod<[EditHistoryCommand], Result>,
   'get_balance' : ActorMethod<[], bigint>,
-  'get_icp_usd_exchange' : ActorMethod<[], string>,
   'get_neuron_info' : ActorMethod<[bigint], Result_3>,
   'get_payload_from_dropbox' : ActorMethod<[string, string], string>,
   'get_payload_from_stable_mem' : ActorMethod<[], string>,
   'get_payload_from_stable_mem_simple' : ActorMethod<[], string>,
-  'greet_test' : ActorMethod<[], string>,
-  'greet_test2' : ActorMethod<[], string>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
   'query_a_neuron_wallet' : ActorMethod<[bigint], Result_4>,
   'query_a_wallet' : ActorMethod<[bigint], Result_5>,
   'query_all_neuron_wallet' : ActorMethod<[], Result_6>,
   'query_all_wallets' : ActorMethod<[], Result_7>,
-  'save_payload_to_dropbox' : ActorMethod<[string, number], string>,
-  'save_payload_to_dropbox_blocking' : ActorMethod<[], string>,
+  'save_payload_to_dropbox' : ActorMethod<[string, number, bigint], string>,
   'set_payload_using_dropbox' : ActorMethod<[string, string], boolean>,
   'set_payload_using_stable_mem' : ActorMethod<[], undefined>,
   'set_stable_mem_use_payload' : ActorMethod<[], undefined>,
   'set_stable_mem_use_payload_simple' : ActorMethod<[], undefined>,
   'sync_transaction_record' : ActorMethod<
-    [Array<[bigint, Array<TransactionF>]>],
+    [Array<SyncTransactionCommand>],
     Result
   >,
-  'transform' : ActorMethod<[TransformArgs], HttpResponse>,
   'update_neuron_wallet' : ActorMethod<[NeuronUpdateCommand], Result>,
+  'update_transaction' : ActorMethod<[TransactionB], Result>,
   'update_wallet' : ActorMethod<[WalletUpdateCommand], Result>,
   'user_quantity' : ActorMethod<[], number>,
   'wallet_history' : ActorMethod<[HistoryQueryCommand], Result_8>,

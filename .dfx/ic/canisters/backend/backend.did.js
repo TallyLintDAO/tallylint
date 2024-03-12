@@ -5,26 +5,37 @@ export const idlFactory = ({ IDL }) => {
     'address' : IDL.Text,
   });
   const Result = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : IDL.Text });
-  const AddRecordCommand = IDL.Record({
+  const Currency = IDL.Record({ 'decimals' : IDL.Nat64, 'symbol' : IDL.Text });
+  const Details = IDL.Record({
     'to' : IDL.Text,
     'fee' : IDL.Float64,
-    'tag' : IDL.Text,
     'status' : IDL.Text,
+    'ledgerCanisterId' : IDL.Text,
+    'value' : IDL.Float64,
     'cost' : IDL.Float64,
     'from' : IDL.Text,
+    'currency' : Currency,
+    'profit' : IDL.Float64,
+    'price' : IDL.Float64,
+    'amount' : IDL.Float64,
+  });
+  const TransactionF = IDL.Record({
     'hash' : IDL.Text,
-    'memo' : IDL.Text,
-    'time' : IDL.Nat64,
+    'walletName' : IDL.Text,
     't_type' : IDL.Text,
-    'coin_type' : IDL.Text,
+    'timestamp' : IDL.Float64,
+    'details' : Details,
+  });
+  const TransactionB = IDL.Record({
+    'id' : IDL.Nat64,
+    'tag' : IDL.Text,
+    'memo' : IDL.Text,
     'comment' : IDL.Text,
     'income' : IDL.Float64,
     'address' : IDL.Text,
-    'profit' : IDL.Float64,
     'manual' : IDL.Bool,
     'principal_id' : IDL.Opt(IDL.Text),
-    'price' : IDL.Float64,
-    'amount' : IDL.Nat32,
+    'transaction_f' : TransactionF,
   });
   const Result_1 = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : IDL.Text });
   const WalletAddCommand = IDL.Record({
@@ -39,28 +50,6 @@ export const idlFactory = ({ IDL }) => {
     'create_time' : IDL.Nat64,
   });
   const Result_2 = IDL.Variant({ 'Ok' : UserProfile, 'Err' : IDL.Text });
-  const EditHistoryCommand = IDL.Record({
-    'id' : IDL.Nat64,
-    'to' : IDL.Text,
-    'fee' : IDL.Float64,
-    'tag' : IDL.Text,
-    'status' : IDL.Text,
-    'cost' : IDL.Float64,
-    'from' : IDL.Text,
-    'hash' : IDL.Text,
-    'memo' : IDL.Text,
-    'time' : IDL.Nat64,
-    't_type' : IDL.Text,
-    'coin_type' : IDL.Text,
-    'comment' : IDL.Text,
-    'income' : IDL.Float64,
-    'address' : IDL.Text,
-    'profit' : IDL.Float64,
-    'manual' : IDL.Bool,
-    'principal_id' : IDL.Opt(IDL.Text),
-    'price' : IDL.Float64,
-    'amount' : IDL.Nat32,
-  });
   const NeuronId = IDL.Record({ 'id' : IDL.Vec(IDL.Nat8) });
   const BallotInfo = IDL.Record({
     'vote' : IDL.Int32,
@@ -133,36 +122,9 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Vec(WalletProfile),
     'Err' : IDL.Vec(WalletProfile),
   });
-  const Currency = IDL.Record({ 'decimals' : IDL.Nat64, 'symbol' : IDL.Text });
-  const Details = IDL.Record({
-    'to' : IDL.Text,
-    'fee' : IDL.Float64,
-    'status' : IDL.Text,
-    'ledgerCanisterId' : IDL.Text,
-    'value' : IDL.Float64,
-    'cost' : IDL.Float64,
-    'from' : IDL.Text,
-    'currency' : Currency,
-    'profit' : IDL.Float64,
-    'price' : IDL.Float64,
-    'amount' : IDL.Float64,
-  });
-  const TransactionF = IDL.Record({
-    'hash' : IDL.Text,
-    'walletName' : IDL.Text,
-    't_type' : IDL.Text,
-    'timestamp' : IDL.Float64,
-    'details' : Details,
-  });
-  const HttpHeader = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });
-  const HttpResponse = IDL.Record({
-    'status' : IDL.Nat,
-    'body' : IDL.Vec(IDL.Nat8),
-    'headers' : IDL.Vec(HttpHeader),
-  });
-  const TransformArgs = IDL.Record({
-    'context' : IDL.Vec(IDL.Nat8),
-    'response' : HttpResponse,
+  const SyncTransactionCommand = IDL.Record({
+    'history' : IDL.Vec(TransactionF),
+    'walletId' : IDL.Nat64,
   });
   const NeuronUpdateCommand = IDL.Record({
     'id' : IDL.Nat64,
@@ -181,59 +143,36 @@ export const idlFactory = ({ IDL }) => {
     'sort_method' : IDL.Text,
     'address' : IDL.Opt(IDL.Text),
   });
-  const TransactionB = IDL.Record({
-    'id' : IDL.Nat64,
-    'to' : IDL.Text,
-    'fee' : IDL.Float64,
-    'tag' : IDL.Text,
-    'status' : IDL.Text,
-    'cost' : IDL.Float64,
-    'from' : IDL.Text,
-    'hash' : IDL.Text,
-    'memo' : IDL.Text,
-    't_type' : IDL.Text,
-    'coin_type' : IDL.Text,
-    'comment' : IDL.Text,
-    'income' : IDL.Float64,
-    'address' : IDL.Text,
-    'timestamp' : IDL.Nat64,
-    'profit' : IDL.Float64,
-    'manual' : IDL.Bool,
-    'principal_id' : IDL.Opt(IDL.Text),
-    'price' : IDL.Float64,
-    'amount' : IDL.Nat32,
-  });
   const Result_8 = IDL.Variant({
     'Ok' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(TransactionB))),
     'Err' : IDL.Text,
   });
   return IDL.Service({
     'add_neuron_wallet' : IDL.Func([NeuronAddCommand], [Result], []),
-    'add_transaction_record' : IDL.Func([AddRecordCommand], [Result_1], []),
+    'add_transaction' : IDL.Func([TransactionB], [Result_1], []),
     'add_wallet' : IDL.Func([WalletAddCommand], [Result], []),
     'auto_register_user' : IDL.Func([], [Result_2], []),
-    'clean_db' : IDL.Func([], [IDL.Text], []),
+    'clean_db' : IDL.Func([], [IDL.Bool], []),
     'collect_running_payload' : IDL.Func([], [IDL.Text], ['query']),
     'delete_neuron_wallet' : IDL.Func([IDL.Nat64], [Result], []),
-    'delete_transaction_record' : IDL.Func([IDL.Nat64], [Result_1], []),
+    'delete_transaction' : IDL.Func([IDL.Nat64], [Result_1], []),
     'delete_wallet' : IDL.Func([IDL.Nat64], [Result], []),
     'do_pre_upgrade_and_print_db' : IDL.Func([], [IDL.Text], ['query']),
-    'edit_transaction_record' : IDL.Func([EditHistoryCommand], [Result], []),
     'get_balance' : IDL.Func([], [IDL.Nat64], []),
-    'get_icp_usd_exchange' : IDL.Func([], [IDL.Text], []),
     'get_neuron_info' : IDL.Func([IDL.Nat64], [Result_3], []),
     'get_payload_from_dropbox' : IDL.Func([IDL.Text, IDL.Text], [IDL.Text], []),
     'get_payload_from_stable_mem' : IDL.Func([], [IDL.Text], ['query']),
     'get_payload_from_stable_mem_simple' : IDL.Func([], [IDL.Text], ['query']),
-    'greet_test' : IDL.Func([], [IDL.Text], ['query']),
-    'greet_test2' : IDL.Func([], [IDL.Text], ['query']),
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
     'query_a_neuron_wallet' : IDL.Func([IDL.Nat64], [Result_4], ['query']),
     'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_5], ['query']),
     'query_all_neuron_wallet' : IDL.Func([], [Result_6], ['query']),
     'query_all_wallets' : IDL.Func([], [Result_7], ['query']),
-    'save_payload_to_dropbox' : IDL.Func([IDL.Text, IDL.Nat32], [IDL.Text], []),
-    'save_payload_to_dropbox_blocking' : IDL.Func([], [IDL.Text], []),
+    'save_payload_to_dropbox' : IDL.Func(
+        [IDL.Text, IDL.Nat32, IDL.Nat],
+        [IDL.Text],
+        [],
+      ),
     'set_payload_using_dropbox' : IDL.Func(
         [IDL.Text, IDL.Text],
         [IDL.Bool],
@@ -243,14 +182,14 @@ export const idlFactory = ({ IDL }) => {
     'set_stable_mem_use_payload' : IDL.Func([], [], []),
     'set_stable_mem_use_payload_simple' : IDL.Func([], [], []),
     'sync_transaction_record' : IDL.Func(
-        [IDL.Vec(IDL.Tuple(IDL.Nat64, IDL.Vec(TransactionF)))],
+        [IDL.Vec(SyncTransactionCommand)],
         [Result],
         [],
       ),
-    'transform' : IDL.Func([TransformArgs], [HttpResponse], ['query']),
     'update_neuron_wallet' : IDL.Func([NeuronUpdateCommand], [Result], []),
+    'update_transaction' : IDL.Func([TransactionB], [Result], []),
     'update_wallet' : IDL.Func([WalletUpdateCommand], [Result], []),
-    'user_quantity' : IDL.Func([], [IDL.Nat32], []),
+    'user_quantity' : IDL.Func([], [IDL.Nat32], ['query']),
     'wallet_history' : IDL.Func([HistoryQueryCommand], [Result_8], ['query']),
   });
 };
