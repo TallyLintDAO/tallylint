@@ -44,6 +44,10 @@ chmod 644 ./continue_prep_env.sh
 ```
 (if you dont have `wget` in your terminal yet. please install it .if you use ubuntu would be `apt update && apt install wget -y `) 
 
+### deploy backend
+`./backend/scripts/deploy_backend <mode>`  
+`mode` input local(run `dfx start` before) or ic 
+
 
 frontend:
 run `npm -i` before run `dfx deploy assets` TODO: maybe this can auto exec before deploy assets in dfx.json config file 

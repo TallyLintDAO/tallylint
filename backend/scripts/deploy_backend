@@ -3,15 +3,16 @@ import os
 import subprocess
 import sys
 import pexpect
+
 #### preparations
-passwd = os.getenv("DFXPASS_BTWLZ")
+passwd = os.getenv("DFXPASS_BTWLZ")  # data from /etc/enviroment
 deploy_local = f"dfx deploy backend "
 deploy_ic = f"dfx deploy backend --network ic"
-deploy_cmd='none'
+deploy_cmd = "none"
 if len(sys.argv) > 1:
-    if sys.argv[1] == 'ic':
+    if sys.argv[1] == "ic":
         deploy_cmd = deploy_ic
-    elif sys.argv[1] == 'local':
+    elif sys.argv[1] == "local":
         deploy_cmd = deploy_local
     else:
         print("Invalid argument. Please use 'local' or 'ic'.")
@@ -33,15 +34,20 @@ def get_git_root_dir():
 def deploy_backend(deploy_cmd):
     child = pexpect.spawn(deploy_cmd)
     child.expect("Please enter the passphrase for your identity:")
-    child.sendline(passwd)  #! automatically appends a newline character (\n) , like send a enter to it .
+    child.sendline(
+        passwd
+    )  #! automatically appends a newline character (\n) , like send a enter to it .
     child.interact()  # may need yes sometime
 
 
 def run_cmd(cmd):
-    print(f"running: {cmd}")
-    terminal = os.popen(cmd)
-    print(terminal.read())
-    print(terminal.close())
+    print(f"####running: {cmd}")
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+    output, error = process.communicate()
+    print(f"####stdout : {output.decode() if output else 'None'}")
+    print(f"####stderr : {error.decode() if error else 'None'}")
+    print(f"####return code : {process.returncode}")
+    print()
 
 
 base_dir = get_git_root_dir()
@@ -52,7 +58,9 @@ base_dir = get_git_root_dir()
 #!step1: gen did
 os.chdir(base_dir)
 run_cmd("cargo build --release --target wasm32-unknown-unknown --package backend ")
-run_cmd("candid-extractor target/wasm32-unknown-unknown/release/backend.wasm > ./backend/canisters/backend/backend.did")
+run_cmd(
+    "candid-extractor target/wasm32-unknown-unknown/release/backend.wasm > ./backend/canisters/backend/backend.did"
+)
 
 
 #! step2 : deploy
