@@ -8,7 +8,11 @@
             {{ transactionAmount }}
           </span>
         </div>
-        <div><q-btn color="primary">Add Transaction</q-btn></div>
+        <div>
+          <q-btn color="primary" @click="openDialog('add')"
+            >Add Transaction</q-btn
+          >
+        </div>
       </div>
       <div class="header row q-mb-md justify-between">
         <div class="header-left row q-gutter-md">
@@ -87,18 +91,10 @@
           />
         </div>
       </div>
-      <!-- <q-btn
-        v-if="walletList.length > 0"
-        flat
-        color="primary"
-        icon="file_download"
-        label="Export CSV"
-        @click="exportToCSV"
-      /> -->
       <div v-if="showLoading">
         <q-spinner-cube size="xl" color="primary" />
       </div>
-      <div v-else-if="walletList.length == 0">
+      <div v-else-if="transactionsList.length == 0">
         <span>No data available</span>
       </div>
       <div v-else>
@@ -206,6 +202,49 @@
         />
       </div>
     </div>
+    <q-dialog v-model="dialogVisible">
+      <q-card style="min-width: 450px">
+        <q-card-section>
+          <div class="text-h6">
+            {{ isEdit ? "Edit Transaction" : "Add Transaction" }}
+          </div>
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+          <q-form @submit="onSubmit" ref="form" class="q-gutter-md">
+            <q-select
+              filled
+              v-model="transaction.t_type"
+              :options="[1]"
+              label="Date"
+              ><template #option> <q-date v-model="date" /> </template>
+            </q-select>
+            <q-select
+              filled
+              v-model="transaction.t_type"
+              :options="typeOptions"
+              label="Type"
+            />
+            <div class="q-gutter-sm justify-end flex">
+              <q-btn flat label="Cancel" v-close-popup="true" />
+              <q-btn
+                v-if="isEdit"
+                :loading="loading"
+                label="Update"
+                type="submit"
+                color="primary"
+              />
+              <q-btn
+                v-else
+                :loading="loading"
+                label="Save"
+                type="submit"
+                color="primary"
+              />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -215,14 +254,22 @@ import { getUserAllWallets } from "@/api/user"
 import type { InferredTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
-import { exportFile } from "quasar"
+import type { QForm } from "quasar"
 import { computed, onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
 
 const route = useRoute()
 
 const address = route.params.address
-const walletList = ref<InferredTransaction[]>([])
+const transactionsList = ref<InferredTransaction[]>([])
+const transaction = ref({
+  hash: "",
+  timestamp: 0,
+  t_type: "",
+  tag: "",
+  manual: false,
+  commit: "",
+})
 const type = ref([])
 const typeOptions = ["SEND", "RECEIVE"]
 const tag = ref([])
@@ -234,7 +281,12 @@ const sort = ref("Recent")
 const sortOptions = ["Recent", "Oldest first", "Highest gains", "Lowest gains"]
 const selectedWallet = ref<WalletTag[]>([])
 const wallets = ref<WalletTag[]>([])
-const showLoading = ref(true)
+const form = ref<QForm | null>(null)
+
+const showLoading = ref(false)
+const loading = ref(false)
+const dialogVisible = ref(false)
+const isEdit = ref(false)
 
 const currentPage = ref(1)
 const maxPage = ref(1)
@@ -299,8 +351,8 @@ const paginatedGroups = computed(
   } => {
     const start = (currentPage.value - 1) * pageSize.value
     const end = start + pageSize.value
-    let paginatedData = walletList.value
-    // 按选定的日期区间过滤记录
+    let paginatedData = transactionsList.value
+    // 分页之前先按选定的日期区间过滤记录
     if (date.value) {
       paginatedData = paginatedData.filter(
         (item) =>
@@ -354,7 +406,7 @@ const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
     .then((res) => {
       console.log("getWalletHistory", res)
       if (res.total && res.total != 0) {
-        walletList.value = res.transactions
+        transactionsList.value = res.transactions
         maxPage.value = Math.ceil(res.total / pageSize.value)
         transactionAmount.value = res.total
       }
@@ -364,51 +416,16 @@ const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
     })
 }
 
-const exportToCSV = async () => {
-  const columnNames = [
-    "Hash",
-    "Type",
-    "Status",
-    "Timestamp",
-    "From",
-    "To",
-    "Amount",
-    "Fee",
-    "Memo",
-    "Price",
-    "Cost",
-    "Income",
-    "Profit",
-  ]
-
-  // 生成包含列名和数据的数组
-  const data = [
-    columnNames,
-    ...walletList.value.map((transaction) => [
-      transaction.hash,
-      transaction.t_type,
-      transaction.details.status,
-      //Time format fixed to Switzerland
-      new Date(Number(transaction.timestamp)).toLocaleString("fr-CH"),
-      transaction.details?.from,
-      transaction.details?.to,
-      transaction.details.amount,
-      transaction.details.fee,
-      "",
-      transaction.details.price,
-      transaction.details.cost,
-      transaction.details.value,
-      transaction.details.profit,
-    ]),
-  ]
-
-  // 将数据转换为 CSV 格式的字符串
-  const csvContent = data.map((row) => row.join(",")).join("\n")
-  const todayDate = new Date().toLocaleDateString("fr-CH").replace(/\./g, "")
-  const fileName = address ? "Tax_Data_" + address : "Tax_Data_All_Wallet"
-  // 使用 exportFile 函数导出 CSV 文件
-  exportFile(`${todayDate}_${fileName}.csv`, csvContent, "text/csv")
+const openDialog = (action: string, itemInfo?: any) => {
+  if (action === "edit" && itemInfo) {
+    isEdit.value = true
+  } else {
+    //不为edit就是add
+    isEdit.value = false
+  }
+  dialogVisible.value = true
 }
+const onSubmit = () => {}
 </script>
 
 <style lang="scss">

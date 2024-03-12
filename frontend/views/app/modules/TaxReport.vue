@@ -1,7 +1,7 @@
 <template>
   <div class="taxreport-container">
     <div class="text-h4 row q-gutter-md items-center">
-      <span> TaxReport For </span>
+      <span> Tax Report For </span>
       <q-select
         outlined
         v-model="selectedYear"
@@ -9,7 +9,7 @@
         style="max-width: 200px; font-size: 2.125rem"
       />
     </div>
-    <div v-if="selectedYear !== 'All'" class="text-subtitle1 q-mb-md">
+    <div v-if="selectedYear !== 'All'" class="text-subtitle2 q-mb-md text-grey">
       {{ `Jan 1, ${selectedYear} to Dec 31, ${selectedYear}` }}
     </div>
     <div class="row">
@@ -25,11 +25,14 @@
               The transactions used in this report are summarized below.
               <br />
               <div class="q-gutter-sm">
-                <q-badge color="blue"> 9 transactions </q-badge>
-                <q-badge color="grey-6"> 9 despoit </q-badge>
-                <q-badge color="grey-6"> 9 transfers </q-badge>
-                <q-badge color="grey-6"> 9 withdraw </q-badge>
-                <q-badge color="grey-6"> 9 trades </q-badge>
+                <q-badge color="teal" v-if="walletAmount !== 0">
+                  {{ walletAmount }} wallet{{ walletAmount !== 1 ? "s" : "" }}
+                </q-badge>
+                <q-badge color="blue" v-if="historyList.length !== 0">
+                  {{ historyList.length }} transaction{{
+                    historyList.length !== 1 ? "s" : ""
+                  }}
+                </q-badge>
               </div>
             </div>
           </q-card-section>
@@ -37,30 +40,35 @@
           <q-list separator>
             <q-item clickable v-ripple>
               <q-item-section>Capital gains / P&L</q-item-section>
-              <q-item-section side>$ 10</q-item-section>
+              <q-skeleton v-if="walletLoading" type="text" />
+              <q-item-section v-else side>$ 10</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section>
                 Other gains (futures, derivatives etc)
               </q-item-section>
-              <q-item-section side>$ 10</q-item-section>
+              <q-skeleton v-if="walletLoading" type="text" />
+              <q-item-section v-else side>$ 10</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section overline>Income</q-item-section>
-              <q-item-section side>$ 10</q-item-section>
+              <q-skeleton v-if="walletLoading" type="text" />
+              <q-item-section v-else side>$ 10</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section>
                 <q-item-label>Costs & expenses</q-item-label>
                 <q-icon name="warning" />
               </q-item-section>
-              <q-item-section side>$ 10</q-item-section>
+              <q-skeleton v-if="walletLoading" type="text" />
+              <q-item-section v-else side>$ 10</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section>
                 <q-item-label>Gifts, donations & lost coins</q-item-label>
               </q-item-section>
-              <q-item-section side>$ 10</q-item-section>
+              <q-skeleton v-if="walletLoading" type="text" />
+              <q-item-section v-else side>$ 10</q-item-section>
             </q-item>
           </q-list>
           <q-separator />
@@ -75,7 +83,7 @@
           <q-card-section>
             <q-banner rounded class="bg-yellow-2">
               <template v-slot:avatar>
-                <q-icon name="warning" />
+                <q-icon name="watch_later" />
               </template>
               Free For Now
             </q-banner>
@@ -84,6 +92,7 @@
               color="primary"
               icon="file_download"
               label="Export CSV"
+              :loading="walletLoading"
               @click="exportToCSV"
             />
           </q-card-section>
@@ -102,25 +111,30 @@
           <q-list separator>
             <q-item clickable v-ripple>
               <q-item-section overline>Home Country</q-item-section>
-              <q-item-section side>US</q-item-section>
+              <q-skeleton v-if="userConfigLoading" type="text" />
+              <q-item-section v-else side>None</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section overline>Base Currency</q-item-section>
-              <q-item-section side>USD</q-item-section>
+              <q-skeleton v-if="userConfigLoading" type="text" />
+              <q-item-section v-else side>USD</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section overline>Cost basis method</q-item-section>
-              <q-item-section side>FIFO</q-item-section>
+              <q-skeleton v-if="userConfigLoading" type="text" />
+              <q-item-section v-else side>FIFO</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section overline>Cost tracking method</q-item-section>
-              <q-item-section side>Universal</q-item-section>
+              <q-skeleton v-if="userConfigLoading" type="text" />
+              <q-item-section v-else side>Universal</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section overline>
                 Gains on crypto → crypto trades?
               </q-item-section>
-              <q-item-section side>Yes</q-item-section>
+              <q-skeleton v-if="userConfigLoading" type="text" />
+              <q-item-section v-else side>Yes</q-item-section>
             </q-item>
           </q-list>
         </q-card>
@@ -136,6 +150,7 @@ import { exportFile } from "quasar"
 import { onMounted, ref } from "vue"
 
 const walletLoading = ref(false)
+const userConfigLoading = ref(false)
 // 获取当前年份
 const currentYear = new Date().getFullYear()
 const selectedYear = ref<any>(currentYear)
@@ -146,8 +161,9 @@ for (let i = 1; currentYear - i >= 2021; i++) {
 }
 dateOptions.push("All")
 
-const walletList = ref<InferredTransaction[]>([])
+const historyList = ref<InferredTransaction[]>([])
 const transactionAmount = ref(0)
+const walletAmount = ref(0)
 
 onMounted(() => {
   getWalletHistory()
@@ -156,11 +172,12 @@ onMounted(() => {
 const getWalletHistory = async () => {
   walletLoading.value = true
   const wallets = await getUserAllWallets()
+  walletAmount.value = wallets.length
   getAllTransactions(wallets)
     .then((res) => {
       console.log("getWalletHistory", res)
       if (res.total && res.total != 0) {
-        walletList.value = res.transactions
+        historyList.value = res.transactions
 
         transactionAmount.value = res.total
       }
@@ -190,7 +207,7 @@ const exportToCSV = async () => {
   // 生成包含列名和数据的数组
   const data = [
     columnNames,
-    ...walletList.value.map((transaction) => [
+    ...historyList.value.map((transaction) => [
       transaction.hash,
       transaction.t_type,
       transaction.details.status,
@@ -219,5 +236,8 @@ const exportToCSV = async () => {
 
 <style lang="scss" scoped>
 .taxreport-container {
+  .q-skeleton--type-text {
+    width: 30px;
+  }
 }
 </style>

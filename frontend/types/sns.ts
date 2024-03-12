@@ -52,3 +52,12 @@ export interface InferredTransaction {
     value: number
   }
 }
+
+export interface canisterTransaction {
+  t_type: string
+  timestamp: number
+  hash: string
+  tag?: string
+  manual?: boolean //是否为手动导入
+  commit?: string //用户给予的备注
+}

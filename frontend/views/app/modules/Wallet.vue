@@ -82,7 +82,10 @@
               </q-card-section>
               <q-list>
                 <!-- principal只有有值才显示 -->
-                <q-item v-if="props.row.principal_id.length > 0">
+                <q-item
+                  v-if="props.row.principal_id.length > 0"
+                  style="padding-bottom: 8px"
+                >
                   <q-item-section>
                     <q-item-label> Principal </q-item-label>
                     <q-item-label caption>
@@ -220,6 +223,11 @@ const columns = [
   { name: "from", label: "From", field: "from" },
   { name: "name", label: "Name", field: "name" },
   { name: "transactions", label: "Transactions", field: "transactions" },
+  {
+    name: "syncedTransactions",
+    label: "Synced Transactions",
+    field: (row) => row.transactions,
+  },
   {
     name: "lastTransaction",
     label: "Last Transaction",
@@ -424,6 +432,10 @@ const deleteWallet = (walletId: bigint) => {
 
 <style lang="scss">
 .wallet-container {
+  .q-list .q-item {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
   .grid-style-transition {
     transition: transform 0.28s, background-color 0.28s;
   }
