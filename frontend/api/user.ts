@@ -1,5 +1,10 @@
 import type { ApiResult, ApiUserInfo } from "@/types/types"
-import type { WalletInfo, WalletTag, syncWalletParam } from "@/types/user"
+import type {
+  HistoryQueryParams,
+  WalletInfo,
+  WalletTag,
+  syncWalletParam,
+} from "@/types/user"
 import { TTL, getCache } from "@/utils/cache"
 import { showMessageError } from "@/utils/message"
 import { getNNS } from "@/utils/nns"
@@ -150,6 +155,19 @@ export async function getUserNeuron(
     execute: () => getBackend().query_all_neuron_wallet(),
     ttl: walletTTL,
     // isLocal: true, //使用内存储存就够了
+    refresh: refresh, //是否刷新缓存，用于执行增删改操作后的刷新。
+  })
+}
+
+// 查询用户已存储的交易记录
+export async function getSyncedTransactions(
+  params: HistoryQueryParams,
+  refresh: boolean,
+): Promise<ApiResult<any>> {
+  return await getCache({
+    key: "USER_SyncedTransactions",
+    execute: () => getBackend().wallet_history(params),
+    ttl: walletTTL,
     refresh: refresh, //是否刷新缓存，用于执行增删改操作后的刷新。
   })
 }

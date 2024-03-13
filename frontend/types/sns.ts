@@ -53,7 +53,7 @@ export interface InferredTransaction {
   }
 }
 
-export interface canisterTransaction {
+export interface transactionBackend {
   t_type: string
   timestamp: number
   hash: string

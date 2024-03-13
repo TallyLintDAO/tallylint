@@ -224,6 +224,58 @@
               :options="typeOptions"
               label="Type"
             />
+            <q-card flat bordered class="my-card">
+              <q-card-section>
+                <div class="text-h6 row justify-between q-mb-md">
+                  <div class="row align-center">
+                    <q-icon class="text-red-5" size="md" name="arrow_upward" />
+                    Send
+                  </div>
+                  <span> Manual </span>
+                </div>
+                <q-input
+                  filled
+                  label="From Address"
+                  v-model="transaction.from"
+                  class="q-mb-md"
+                />
+                <q-input
+                  filled
+                  label="Amount of tokens"
+                  v-model="transaction.amount"
+                >
+                  <template v-slot:before>
+                    <q-select
+                      filled
+                      v-model="transaction.currency"
+                      :options="tokenList"
+                      label="Token"
+                    />
+                  </template>
+                </q-input>
+              </q-card-section>
+
+              <q-separator inset />
+
+              <q-card-section>
+                <div class="text-h6 row justify-between q-mb-md">
+                  <div class="row align-center">
+                    <q-icon
+                      class="text-green-6"
+                      size="md"
+                      name="arrow_downward"
+                    />
+                    RECEIVE
+                  </div>
+                  <span> Manual </span>
+                </div>
+                <q-input
+                  filled
+                  label="To Target Address"
+                  v-model="transaction.from"
+                />
+              </q-card-section>
+            </q-card>
             <div class="q-gutter-sm justify-end flex">
               <q-btn flat label="Cancel" v-close-popup="true" />
               <q-btn
@@ -250,7 +302,7 @@
 
 <script lang="ts" setup>
 import { getAllTransactions } from "@/api/rosetta"
-import { getUserAllWallets } from "@/api/user"
+import { getSyncedTransactions, getUserAllWallets } from "@/api/user"
 import type { InferredTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
@@ -265,6 +317,10 @@ const transactionsList = ref<InferredTransaction[]>([])
 const transaction = ref({
   hash: "",
   timestamp: 0,
+  from: "",
+  to: "",
+  amount: 0,
+  currency: { decimals: 8, symbol: "ICP" },
   t_type: "",
   tag: "",
   manual: false,
@@ -279,6 +335,7 @@ const manual = ref([])
 const manualOptions = ["Manual"]
 const sort = ref("Recent")
 const sortOptions = ["Recent", "Oldest first", "Highest gains", "Lowest gains"]
+const tokenList = [{ decimals: 8, symbol: "ICP", label: "ICP", value: "ICP" }]
 const selectedWallet = ref<WalletTag[]>([])
 const wallets = ref<WalletTag[]>([])
 const form = ref<QForm | null>(null)
@@ -397,6 +454,21 @@ const getWallets = async () => {
 const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
   showLoading.value = true
   currentPage.value = 1
+
+  getSyncedTransactions(
+    {
+      tag: "",
+      from_time: 0,
+      to_time: 0,
+      t_type: "",
+      sort_method: "",
+      address: [],
+    },
+    false,
+  ).then((res) => {
+    console.log("getSyncedTransactions", res)
+  })
+
   let targetWallets: WalletTag[]
   //如果没有选择任何钱包，则查询所有钱包
   selectedWallets.length !== 0

@@ -27,7 +27,7 @@
             <q-btn
               flat
               color="primary"
-              label="Help"
+              label="How to import neuron"
               icon="lightbulb_outline"
               @click="goHelp()"
             />

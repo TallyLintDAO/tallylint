@@ -68,3 +68,12 @@ export interface Wallet {
 export interface DailyBalance {
   [date: string]: { [symbol: string]: { amount: number; value: number } }
 }
+
+export interface HistoryQueryParams {
+  tag: string
+  from_time: number
+  to_time: number
+  t_type: string
+  sort_method: string
+  address: string[]
+}

@@ -39,7 +39,7 @@ const routes: Array<RouteRecordRaw> = [
       { name: "App", path: "", component: DashBoard },
       { path: "wallet", component: Wallet },
       { path: "transactions/:address?", component: Transactions },
-      { path: "nns", component: NNS },
+      { path: "neurons", component: NNS },
       { path: "taxReport", component: TaxReport },
     ],
   },
