@@ -158,6 +158,7 @@ export interface _SERVICE {
   'query_a_wallet' : ActorMethod<[bigint], Result_5>,
   'query_all_neuron_wallet' : ActorMethod<[], Result_6>,
   'query_all_wallets' : ActorMethod<[], Result_7>,
+  'query_wallet_transactions' : ActorMethod<[HistoryQueryCommand], Result_8>,
   'save_payload_to_dropbox' : ActorMethod<[string, number, bigint], string>,
   'set_payload_using_dropbox' : ActorMethod<[string, string], boolean>,
   'set_payload_using_stable_mem' : ActorMethod<[], undefined>,
@@ -171,7 +172,6 @@ export interface _SERVICE {
   'update_transaction' : ActorMethod<[TransactionB], Result>,
   'update_wallet' : ActorMethod<[WalletUpdateCommand], Result>,
   'user_quantity' : ActorMethod<[], number>,
-  'wallet_history' : ActorMethod<[HistoryQueryCommand], Result_8>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
 export declare const init: ({ IDL }: { IDL: IDL }) => IDL.Type[];

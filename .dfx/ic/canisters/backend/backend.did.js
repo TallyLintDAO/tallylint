@@ -122,6 +122,18 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Vec(WalletProfile),
     'Err' : IDL.Vec(WalletProfile),
   });
+  const HistoryQueryCommand = IDL.Record({
+    'tag' : IDL.Text,
+    'from_time' : IDL.Nat64,
+    'to_time' : IDL.Nat64,
+    't_type' : IDL.Text,
+    'sort_method' : IDL.Text,
+    'address' : IDL.Opt(IDL.Text),
+  });
+  const Result_8 = IDL.Variant({
+    'Ok' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(TransactionB))),
+    'Err' : IDL.Text,
+  });
   const SyncTransactionCommand = IDL.Record({
     'history' : IDL.Vec(TransactionF),
     'walletId' : IDL.Nat64,
@@ -134,18 +146,6 @@ export const idlFactory = ({ IDL }) => {
     'id' : IDL.Nat64,
     'from' : IDL.Text,
     'name' : IDL.Text,
-  });
-  const HistoryQueryCommand = IDL.Record({
-    'tag' : IDL.Text,
-    'from_time' : IDL.Nat64,
-    'to_time' : IDL.Nat64,
-    't_type' : IDL.Text,
-    'sort_method' : IDL.Text,
-    'address' : IDL.Opt(IDL.Text),
-  });
-  const Result_8 = IDL.Variant({
-    'Ok' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(TransactionB))),
-    'Err' : IDL.Text,
   });
   return IDL.Service({
     'add_neuron_wallet' : IDL.Func([NeuronAddCommand], [Result], []),
@@ -168,6 +168,11 @@ export const idlFactory = ({ IDL }) => {
     'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_5], ['query']),
     'query_all_neuron_wallet' : IDL.Func([], [Result_6], ['query']),
     'query_all_wallets' : IDL.Func([], [Result_7], ['query']),
+    'query_wallet_transactions' : IDL.Func(
+        [HistoryQueryCommand],
+        [Result_8],
+        ['query'],
+      ),
     'save_payload_to_dropbox' : IDL.Func(
         [IDL.Text, IDL.Nat32, IDL.Nat],
         [IDL.Text],
@@ -190,7 +195,6 @@ export const idlFactory = ({ IDL }) => {
     'update_transaction' : IDL.Func([TransactionB], [Result], []),
     'update_wallet' : IDL.Func([WalletUpdateCommand], [Result], []),
     'user_quantity' : IDL.Func([], [IDL.Nat32], ['query']),
-    'wallet_history' : IDL.Func([HistoryQueryCommand], [Result_8], ['query']),
   });
 };
 export const init = ({ IDL }) => { return []; };

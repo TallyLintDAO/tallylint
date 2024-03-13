@@ -138,6 +138,7 @@ service : {
   query_a_wallet : (nat64) -> (Result_5) query;
   query_all_neuron_wallet : () -> (Result_6) query;
   query_all_wallets : () -> (Result_7) query;
+  query_wallet_transactions : (HistoryQueryCommand) -> (Result_8) query;
   save_payload_to_dropbox : (text, nat32, nat) -> (text);
   set_payload_using_dropbox : (text, text) -> (bool);
   set_payload_using_stable_mem : () -> ();
@@ -148,5 +149,4 @@ service : {
   update_transaction : (TransactionB) -> (Result);
   update_wallet : (WalletUpdateCommand) -> (Result);
   user_quantity : () -> (nat32) query;
-  wallet_history : (HistoryQueryCommand) -> (Result_8) query;
 }
