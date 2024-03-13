@@ -55,51 +55,52 @@ fn delete_transaction(id: TransactionId) -> Result<TransactionId, String> {
 fn query_wallet_transactions(
   mut cmd: HistoryQueryCommand,
 ) -> Result<HashMap<WalletAddress, Vec<TransactionB>>, String> {
-  CONTEXT.with(|c| {
-    let mut ctx = c.borrow_mut();
-    let mut history: HashMap<WalletAddress, Vec<TransactionB>> = HashMap::new();
+  // CONTEXT.with(|c| {
+  //   let mut ctx = c.borrow_mut();
+  //   let mut history: HashMap<WalletAddress, Vec<TransactionB>> = HashMap::new();
 
-    //#### query one
-    if cmd.address.is_some() {
-      let rec_srv = ctx.wallet_record_service.borrow_mut();
-      history = rec_srv.query_one_wallet(cmd);
-      if history.is_empty() {
-        return Err("no records stored!".to_string());
-      } else {
-        return Ok(history);
-      }
-    }
+  //   //#### query one
+  //   if cmd.address.is_some() {
+  //     let rec_srv = ctx.wallet_record_service.borrow_mut();
+  //     history = rec_srv.query_one_wallet(cmd);
+  //     if history.is_empty() {
+  //       return Err("no records stored!".to_string());
+  //     } else {
+  //       return Ok(history);
+  //     }
+  //   }
 
-    //#### query all
-    // TODO . need test .
-    // case1: wallet1 have addr and 3rec . w2 have 1 addr
-    // and 0rec. w3 have no addr and rec. query all 3
-    // wallets.
-    let wal_srv = ctx.wallet_service.borrow_mut();
-    let wallets = wal_srv.query_wallet_array(caller());
-    let mut addrs: Vec<String> = wallets
-      .iter()
-      .map(|wallet| wallet.address.clone())
-      .collect();
-    let rec_srv = ctx.wallet_record_service.borrow_mut();
-    while !addrs.is_empty() {
-      let addr = addrs.pop().unwrap();
-      cmd.address = Some(addr.clone());
-      let rec = rec_srv.query_one_wallet(cmd.clone());
-      if rec.is_empty() {
-        history.insert(addr, vec![]);
-        continue;
-      }
-      let v = rec.get(&addr).unwrap();
-      history.insert(addr, v.to_vec());
-    }
+  //   //#### query all
+  //   // TODO . need test .
+  //   // case1: wallet1 have addr and 3rec . w2 have 1 addr
+  //   // and 0rec. w3 have no addr and rec. query all 3
+  //   // wallets.
+  //   let wal_srv = ctx.wallet_service.borrow_mut();
+  //   let wallets = wal_srv.query_wallet_array(caller());
+  //   let mut addrs: Vec<String> = wallets
+  //     .iter()
+  //     .map(|wallet| wallet.address.clone())
+  //     .collect();
+  //   let rec_srv = ctx.wallet_record_service.borrow_mut();
+  //   while !addrs.is_empty() {
+  //     let addr = addrs.pop().unwrap();
+  //     cmd.address = Some(addr.clone());
+  //     let rec = rec_srv.query_one_wallet(cmd.clone());
+  //     if rec.is_empty() {
+  //       history.insert(addr, vec![]);
+  //       continue;
+  //     }
+  //     let v = rec.get(&addr).unwrap();
+  //     history.insert(addr, v.to_vec());
+  //   }
 
-    if history.is_empty() {
-      return Err("no records stored!".to_string());
-    } else {
-      return Ok(history);
-    }
-  })
+  //   if history.is_empty() {
+  //     return Err("no records stored!".to_string());
+  //   } else {
+  //     return Ok(history);
+  //   }
+  // })
+    return Ok( HashMap::new());
 }
 
 #[update(guard = "user_owner_guard")]

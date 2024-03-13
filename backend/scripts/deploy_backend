@@ -68,13 +68,13 @@ deploy_backend(deploy_cmd)
 
 #!step3 change did name
 # Commands for ./.dfx/ic/canisters/backend
-os.chdir(base_dir)
+os.chdir(os.path.join(base_dir, ".dfx/ic/canisters/backend"))
 run_cmd("mv service.did backend.did")
 run_cmd("mv service.did.d.ts backend.did.d.ts")
 run_cmd("mv service.did.js backend.did.js")
 
 # Commands for ./.dfx/local/canisters/backend
-os.chdir(base_dir)
+os.chdir(os.path.join(base_dir, ".dfx/local/canisters/backend"))
 run_cmd("mv service.did backend.did")
 run_cmd("mv service.did.d.ts backend.did.d.ts")
 run_cmd("mv service.did.js backend.did.js")
