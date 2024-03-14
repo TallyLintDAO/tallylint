@@ -214,24 +214,19 @@
             <q-select
               filled
               v-model="transaction.t_type"
-              :options="[1]"
-              label="Date"
-              ><template #option> <q-date v-model="date" /> </template>
-            </q-select>
-            <q-select
-              filled
-              v-model="transaction.t_type"
               :options="typeOptions"
               label="Type"
             />
             <q-card flat bordered class="my-card">
               <q-card-section>
                 <div class="text-h6 row justify-between q-mb-md">
-                  <div class="row align-center">
+                  <div class="row items-center">
                     <q-icon class="text-red-5" size="md" name="arrow_upward" />
                     Send
                   </div>
-                  <span> Manual </span>
+                  <div class="text-grey text-caption row items-center">
+                    Manual
+                  </div>
                 </div>
                 <q-input
                   filled
@@ -243,23 +238,48 @@
                   filled
                   label="Amount of tokens"
                   v-model="transaction.amount"
+                  class="q-mb-md"
                 >
                   <template v-slot:before>
                     <q-select
                       filled
+                      map-options
                       v-model="transaction.currency"
                       :options="tokenList"
                       label="Token"
-                    />
+                      style="min-width: 100px"
+                    >
+                      <template v-slot:option="scope">
+                        <q-item v-bind="scope.itemProps">
+                          <q-item-section avatar>
+                            <img
+                              class="head-icon"
+                              :src="scope.opt.icon"
+                              alt="Icon"
+                            />
+                          </q-item-section>
+                          <q-item-section>
+                            <q-item-label class="text-subtitle1">
+                              {{ scope.opt.label }}
+                            </q-item-label>
+                          </q-item-section>
+                        </q-item>
+                      </template>
+                    </q-select>
                   </template>
                 </q-input>
+                <q-input
+                  filled
+                  label="Token Price"
+                  v-model="transaction.price"
+                />
               </q-card-section>
 
               <q-separator inset />
 
               <q-card-section>
                 <div class="text-h6 row justify-between q-mb-md">
-                  <div class="row align-center">
+                  <div class="row items-center">
                     <q-icon
                       class="text-green-6"
                       size="md"
@@ -267,15 +287,23 @@
                     />
                     RECEIVE
                   </div>
-                  <span> Manual </span>
+                  <div class="text-grey text-caption row items-center">
+                    Manual
+                  </div>
                 </div>
                 <q-input
                   filled
                   label="To Target Address"
-                  v-model="transaction.from"
+                  v-model="transaction.to"
                 />
               </q-card-section>
             </q-card>
+            <el-date-picker
+              v-model="transaction.timestamp"
+              type="datetime"
+              placeholder="Transaction Datetime"
+              value-format="x"
+            />
             <div class="q-gutter-sm justify-end flex">
               <q-btn flat label="Cancel" v-close-popup="true" />
               <q-btn
@@ -320,6 +348,7 @@ const transaction = ref({
   from: "",
   to: "",
   amount: 0,
+  price: 0,
   currency: { decimals: 8, symbol: "ICP" },
   t_type: "",
   tag: "",
@@ -335,7 +364,28 @@ const manual = ref([])
 const manualOptions = ["Manual"]
 const sort = ref("Recent")
 const sortOptions = ["Recent", "Oldest first", "Highest gains", "Lowest gains"]
-const tokenList = [{ decimals: 8, symbol: "ICP", label: "ICP", value: "ICP" }]
+const tokenList = [
+  {
+    decimals: 8,
+    symbol: "ICP",
+    label: "ICP",
+    icon: "/frontend/assets/dfinity.svg",
+    value: {
+      decimals: 8,
+      symbol: "ICP",
+    },
+  },
+  {
+    decimals: 8,
+    symbol: "BCP",
+    label: "BCP",
+    icon: "/frontend/assets/dfinity.svg",
+    value: {
+      decimals: 8,
+      symbol: "BCP",
+    },
+  },
+]
 const selectedWallet = ref<WalletTag[]>([])
 const wallets = ref<WalletTag[]>([])
 const form = ref<QForm | null>(null)
@@ -491,9 +541,11 @@ const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
 const openDialog = (action: string, itemInfo?: any) => {
   if (action === "edit" && itemInfo) {
     isEdit.value = true
+    //理论上来说item里manual属性会覆盖transaction里的manual属性，所以这里不对manual做修改
   } else {
     //不为edit就是add
     isEdit.value = false
+    transaction.value.manual = true
   }
   dialogVisible.value = true
 }

@@ -22,10 +22,13 @@ a {
   word-wrap: break-word;
 }
 
-.q-tooltip--style{
+.q-tooltip--style {
   font-size: 12px;
 }
-
+/* 修改element+组件样式 */
+.el-picker__popper {
+  z-index: 6001 !important; //quasar弹窗z-index为6000，所以element的日期选择器需要更高一点
+}
 .head-icon {
   width: 32px;
 }
@@ -39,27 +42,42 @@ a {
 }
 
 @media (min-width: 576px) {
-  .container-sm, .container {
+  .container-sm,
+  .container {
     max-width: 540px;
   }
 }
 @media (min-width: 768px) {
-  .container-md, .container-sm, .container {
+  .container-md,
+  .container-sm,
+  .container {
     max-width: 720px;
   }
 }
 @media (min-width: 992px) {
-  .container-lg, .container-md, .container-sm, .container {
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container {
     max-width: 960px;
   }
 }
 @media (min-width: 1200px) {
-  .container-xl, .container-lg, .container-md, .container-sm, .container {
+  .container-xl,
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container {
     max-width: 1140px;
   }
 }
 @media (min-width: 1400px) {
-  .container-xxl, .container-xl, .container-lg, .container-md, .container-sm, .container {
+  .container-xxl,
+  .container-xl,
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container {
     //max-width: 1320px;
     max-width: 1200px; /* 网站设计风格 用 1200 宽度 */
   }
@@ -69,6 +87,6 @@ a {
   cursor: pointer;
 }
 
-.el-picker-panel__body-wrapper .el-picker-panel__sidebar {
+.el-date-range-picker .el-picker-panel__sidebar {
   width: 120px;
 }
