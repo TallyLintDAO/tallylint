@@ -19,23 +19,19 @@ export const idlFactory = ({ IDL }) => {
     'price' : IDL.Float64,
     'amount' : IDL.Float64,
   });
-  const TransactionF = IDL.Record({
-    'hash' : IDL.Text,
-    'walletName' : IDL.Text,
-    't_type' : IDL.Text,
-    'timestamp' : IDL.Float64,
-    'details' : Details,
-  });
   const TransactionB = IDL.Record({
     'id' : IDL.Nat64,
     'tag' : IDL.Text,
+    'hash' : IDL.Text,
     'memo' : IDL.Text,
+    'walletName' : IDL.Text,
+    't_type' : IDL.Text,
     'comment' : IDL.Text,
-    'income' : IDL.Float64,
     'address' : IDL.Text,
+    'timestamp' : IDL.Float64,
+    'details' : Details,
     'manual' : IDL.Bool,
     'principal_id' : IDL.Opt(IDL.Text),
-    'transaction_f' : TransactionF,
   });
   const Result_1 = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : IDL.Text });
   const WalletAddCommand = IDL.Record({
@@ -133,6 +129,13 @@ export const idlFactory = ({ IDL }) => {
   const Result_8 = IDL.Variant({
     'Ok' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(TransactionB))),
     'Err' : IDL.Text,
+  });
+  const TransactionF = IDL.Record({
+    'hash' : IDL.Text,
+    'walletName' : IDL.Text,
+    't_type' : IDL.Text,
+    'timestamp' : IDL.Float64,
+    'details' : Details,
   });
   const SyncTransactionCommand = IDL.Record({
     'history' : IDL.Vec(TransactionF),
