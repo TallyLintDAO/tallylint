@@ -102,13 +102,12 @@ pub struct HistoryQueryCommand {
   pub address: Vec<WalletAddress>, /* make this optional. if not
                                        * provide.
                                        * then query all. */
-  pub from_time: TimeStamp,
-  pub to_time: TimeStamp,
-  pub t_type: String, /* transaction_type SEND or
+  pub from_time: Option<TimeStamp>,
+  pub to_time: Option<TimeStamp>,
+  pub t_type: Option<String>, /* transaction_type SEND or
                        * RECEIVE or BOTH */
-  pub tag: String,
-  //    TODO sort method:
-  pub sort_method: String, /*by date-asc or date-desc
+  pub tag: Option<Vec<String>>,
+  pub sort_method: Option<String>, /*by date-asc or date-desc
                             * or profit-asc
                             * profit-desc */
 }

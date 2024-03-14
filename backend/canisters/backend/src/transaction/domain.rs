@@ -56,35 +56,25 @@ pub struct Currency {
   pub symbol: String, //代币符号，例如'ICP'，'CHAT'
 }
 
+#[allow(non_snake_case)]
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct TransactionB {
   //
   // backend autogen:
   pub id: TransactionId,
   //
+  pub hash: String,
+  pub timestamp: f64, // TODO check ns or ms as unit
+  pub t_type: String, //  transaction type : "SEND", "RECEIVE"
+  pub walletName: String,
+  pub details: Details,
 
-  //
-  //  frontend pass in:
-  // pub hash: String,
-  // pub timestamp: TimeStamp, //transaction_time
-  // pub t_type: String,       //transaction_type SEND or RECEIVE
-  // pub coin_type: String,
-
-  // pub status: String,
-  // pub fee: f64,
-  // pub to: String,
-  // pub from: String,
-  // pub amount: u32,
-  // pub price: f64,
-  // pub cost: f64,
-  // pub profit: f64,
-  pub transaction_f: TransactionF,
   pub principal_id: Option<String>, /* Plug use , need
                                      * to convert to
                                      * opt_account_id_hex for use. */
   pub memo: String,
-  pub address: WalletAddress, // same as account_id_hex
-  pub income: f64,
+  pub address: WalletAddress, 
+  
   pub tag: String,
   pub manual: bool,
   pub comment: String,

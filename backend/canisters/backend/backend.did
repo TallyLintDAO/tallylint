@@ -78,13 +78,16 @@ type SyncTransactionCommand = record {
 type TransactionB = record {
   id : nat64;
   tag : text;
+  hash : text;
   memo : text;
+  walletName : text;
+  t_type : text;
   comment : text;
-  income : float64;
   address : text;
+  timestamp : float64;
+  details : Details;
   manual : bool;
   principal_id : opt text;
-  transaction_f : TransactionF;
 };
 type TransactionF = record {
   hash : text;

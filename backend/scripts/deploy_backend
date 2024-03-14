@@ -40,18 +40,24 @@ def deploy_backend(deploy_cmd):
     child.interact()  # may need yes sometime
 
 
+from colorama import Fore, Style
+
+
 def run_cmd(cmd):
-    print(f"####running: {cmd}")
+    print(f"{Fore.BLUE}####running: {cmd}{Style.RESET_ALL}")
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
     output, error = process.communicate()
-    print(f"####stdout : {output.decode() if output else 'None'}")
-    print(f"####stderr : {error.decode() if error else 'None'}")
-    print(f"####return code : {process.returncode}")
+    print(
+        f"{Fore.BLUE}####stdout : {output.decode() if output else 'None'}{Style.RESET_ALL}"
+    )
+    print(
+        f"{Fore.BLUE}####stderr : {error.decode() if error else 'None'}{Style.RESET_ALL}"
+    )
+    print(f"{Fore.BLUE}####return code : {process.returncode}{Style.RESET_ALL}")
     print()
 
 
 base_dir = get_git_root_dir()
-
 #### preparations
 
 
@@ -67,26 +73,22 @@ run_cmd(
 deploy_backend(deploy_cmd)
 
 #!step3 change did name
-# Commands for ./.dfx/ic/canisters/backend
 os.chdir(os.path.join(base_dir, ".dfx/ic/canisters/backend"))
 run_cmd("mv service.did backend.did")
 run_cmd("mv service.did.d.ts backend.did.d.ts")
 run_cmd("mv service.did.js backend.did.js")
 
-# Commands for ./.dfx/local/canisters/backend
 os.chdir(os.path.join(base_dir, ".dfx/local/canisters/backend"))
 run_cmd("mv service.did backend.did")
 run_cmd("mv service.did.d.ts backend.did.d.ts")
 run_cmd("mv service.did.js backend.did.js")
 
-# Git add commands for ./.dfx/ic/canisters/backend
 os.chdir(base_dir)
 run_cmd("git add -f ./.dfx/ic/canisters/backend/backend.did")
 run_cmd("git add -f ./.dfx/ic/canisters/backend/backend.did.d.ts")
 run_cmd("git add -f ./.dfx/ic/canisters/backend/backend.did.js")
 run_cmd("git add -f ./.dfx/ic/canisters/backend/index.js")
 
-# Git add commands for ./.dfx/local/canisters/backend
 run_cmd("git add -f ./.dfx/local/canisters/backend/backend.did")
 run_cmd("git add -f ./.dfx/local/canisters/backend/backend.did.d.ts")
 run_cmd("git add -f ./.dfx/local/canisters/backend/backend.did.js")
