@@ -29,6 +29,22 @@ a {
 .el-picker__popper {
   z-index: 6001 !important; //quasar弹窗z-index为6000，所以element的日期选择器需要更高一点
 }
+
+.el-date-editor {
+  height: 56px !important;
+  font-size: 16px !important;
+  line-height: 20px;
+  .el-icon,
+  .el-range-input {
+    font-size: 16px;
+    line-height: 20px;
+  }
+}
+
+.el-date-range-picker .el-picker-panel__sidebar {
+  width: 120px;
+}
+
 .head-icon {
   width: 32px;
 }
@@ -85,8 +101,4 @@ a {
 /* 点击效果 */
 .clickable {
   cursor: pointer;
-}
-
-.el-date-range-picker .el-picker-panel__sidebar {
-  width: 120px;
 }

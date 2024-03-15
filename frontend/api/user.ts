@@ -106,13 +106,6 @@ export async function deleteUserWallet(
   return getBackend().delete_wallet(walletId)
 }
 
-// 同步钱包交易记录到后端
-export async function syncWallet(
-  walletTransactionHistoryArray: syncWalletParam[],
-): Promise<ApiResult<boolean>> {
-  return getBackend().sync_transaction_record(walletTransactionHistoryArray)
-}
-
 // 增加用户神经元的钱包地址
 export async function addUserNeuron(
   address: string,
@@ -159,15 +152,30 @@ export async function getUserNeuron(
   })
 }
 
+// 同步钱包交易记录到后端
+export async function syncWallet(
+  walletTransactionHistoryArray: syncWalletParam[],
+): Promise<ApiResult<boolean>> {
+  return getBackend().sync_transaction_record(walletTransactionHistoryArray)
+}
+
 // 查询用户已存储的交易记录
 export async function getSyncedTransactions(
   params: HistoryQueryParams,
   refresh: boolean,
 ): Promise<ApiResult<any>> {
-  return await getCache({
-    key: "USER_SyncedTransactions",
-    execute: () => getBackend().wallet_history(params),
-    ttl: walletTTL,
-    refresh: refresh, //是否刷新缓存，用于执行增删改操作后的刷新。
-  })
+  return getBackend().query_wallet_transactions(params)
+  // return await getCache({
+  //   key: "USER_SyncedTransactions",
+  //   execute: () => getBackend().query_wallet_transactions(params),
+  //   ttl: walletTTL,
+  //   refresh: refresh, //是否刷新缓存，用于执行增删改操作后的刷新。
+  // })
+}
+
+// 删除用户已存储的交易记录
+export async function deleteSyncedTransactions(
+  transactionId: number,
+): Promise<ApiResult<any>> {
+  return getBackend().delete_transaction(transactionId)
 }

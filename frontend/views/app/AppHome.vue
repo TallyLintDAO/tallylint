@@ -169,6 +169,10 @@ const onLogOut = async () => {
   await signOut(auth.client)
 
   goHome(router)
+  //返回首页后，刷新页面，防止出现缓存问题。
+  setTimeout(() => {
+    window.location.reload()
+  }, 500)
 }
 
 const toggleLeftDrawer = () => {

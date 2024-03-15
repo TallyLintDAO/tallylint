@@ -1,13 +1,13 @@
-import type { Router } from 'vue-router';
+import type { Router } from "vue-router"
 
 export const goBack = (router: Router) => {
-    window.history.length > 1 ? router.go(-1) : router.push('/');
-};
+  window.history.length > 1 ? router.go(-1) : router.push("/")
+}
 
 export const goHome = (router: Router) => {
-    router.push('/');
-};
+  router.push("/")
+}
 
 export const openTab = (url: string) => {
-    window.open(url, '_blank');
-};
+  window.open(url, "_blank")
+}
