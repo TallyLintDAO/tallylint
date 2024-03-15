@@ -24,12 +24,10 @@ export interface GovernanceError {
   'error_type' : number,
 }
 export interface HistoryQueryCommand {
-  'tag' : string,
   'from_time' : bigint,
   'to_time' : bigint,
-  't_type' : string,
-  'sort_method' : string,
-  'address' : [] | [string],
+  'sort_method' : [] | [string],
+  'address' : Array<string>,
 }
 export interface KnownNeuronData {
   'name' : string,

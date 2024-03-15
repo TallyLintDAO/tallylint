@@ -119,12 +119,10 @@ export const idlFactory = ({ IDL }) => {
     'Err' : IDL.Vec(WalletProfile),
   });
   const HistoryQueryCommand = IDL.Record({
-    'tag' : IDL.Text,
     'from_time' : IDL.Nat64,
     'to_time' : IDL.Nat64,
-    't_type' : IDL.Text,
-    'sort_method' : IDL.Text,
-    'address' : IDL.Opt(IDL.Text),
+    'sort_method' : IDL.Opt(IDL.Text),
+    'address' : IDL.Vec(IDL.Text),
   });
   const Result_8 = IDL.Variant({
     'Ok' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(TransactionB))),

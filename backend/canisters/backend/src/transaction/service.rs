@@ -96,21 +96,7 @@ impl TransactionService {
   }
 }
 
-#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
-pub struct HistoryQueryCommand {
-  // Primary key
-  pub address: Vec<WalletAddress>, /* make this optional. if not
-                                    * provide.
-                                    * then query all. */
-  pub from_time: TimeStamp,
-  pub to_time: TimeStamp,
-  // pub t_type: Option<String>, /* transaction_type SEND or
-  //  * RECEIVE or BOTH */
-  // pub tag: Option<Vec<String>>,
-  pub sort_method: Option<String>, /*by date-asc or date-desc
-                                    * or profit-asc
-                                    * profit-desc */
-}
+
 impl WalletRecordService {
   // TODO
   pub fn add_transaction_impl(
@@ -144,19 +130,19 @@ impl WalletRecordService {
   // pub fn get_addr_from_id(&self, id: TransactionId) -> WalletAddress {
   //   self.records.get(&id).unwrap().address.clone()
   // }
-  pub fn wallet_history(
-    &self,
-    cmd: HistoryQueryCommand,
-  ) -> Result<HashMap<WalletAddress, Vec<TransactionB>>, String> {
-    // if cmd.address.is_some() {
-    //   let res = self.query_one_wallet(cmd);
-    //   return Ok(res);
-    // } else { //query all
-    //    // let wallets=WalletService::query_wallet_array(self,caller());
-    //    // from ctx or ?
-    // }
-    return Err("nothing".to_string());
-  }
+  // pub fn wallet_history(
+  //   &self,
+  //   cmd: HistoryQueryCommand,
+  // ) -> Result<HashMap<WalletAddress, Vec<TransactionB>>, String> {
+  //   // if cmd.address.is_some() {
+  //   //   let res = self.query_one_wallet(cmd);
+  //   //   return Ok(res);
+  //   // } else { //query all
+  //   //    // let wallets=WalletService::query_wallet_array(self,caller());
+  //   //    // from ctx or ?
+  //   // }
+  //   return Err("nothing".to_string());
+  // }
 
   // TODO make sort method work.
   //

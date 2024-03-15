@@ -5,10 +5,11 @@ use ic_cdk::caller;
 use ic_cdk_macros::{query, update};
 
 use super::domain::*;
-use super::service::{HistoryQueryCommand, TransactionId, WalletAddress};
+use super::service::{ TransactionId, WalletAddress};
 use crate::common::context::{get_caller, now};
 use crate::common::guard::user_owner_guard;
 use crate::common::times::ms_float_to_ns;
+use crate::wallet::domain::HistoryQueryCommand;
 use crate::{TransactionB, CONTEXT};
 
 // TODO use: AddRecordCommand . front end dont need to input

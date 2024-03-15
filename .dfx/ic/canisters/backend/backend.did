@@ -16,12 +16,10 @@ type Details = record {
 };
 type GovernanceError = record { error_message : text; error_type : int32 };
 type HistoryQueryCommand = record {
-  tag : text;
   from_time : nat64;
   to_time : nat64;
-  t_type : text;
-  sort_method : text;
-  address : opt text;
+  sort_method : opt text;
+  address : vec text;
 };
 type KnownNeuronData = record { name : text; description : opt text };
 type NeuronAddCommand = record { from : text; name : text; address : text };
