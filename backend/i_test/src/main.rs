@@ -1,5 +1,5 @@
-use std::{collections::HashMap, fs::read};
 use client::setup::CanisterId;
+use std::{collections::HashMap, fs::read};
 
 pub fn add(left: usize, right: usize) -> usize {
   left + right
@@ -18,16 +18,25 @@ use rand::random;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_bytes::ByteBuf;
 
-use crate::client::setup::TERA;
+use crate::client::{rng::random_principal, setup::TERA};
 
 fn test_query_transactions() {
   // init
   let pic_env = PicEnv::new();
   let user1 = Principal::from_text(
+    // TODO this caller is clear inputed. can hacker using this as caller ?
     // this is admin BTWL
     "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
   )
   .unwrap();
+  // let user2 = random_principal();
+  // // !register
+  // let reply: Result<UserProfile, String> =
+  //   pic_env.my_update_call_no_arg(user2, "auto_register_user");
+  // match reply {
+  //   Ok(data) => println!("{:?}", data),
+  //   Err(_) => println!("err"),
+  // }
 
   // !register
   let reply: Result<UserProfile, String> =
@@ -36,7 +45,6 @@ fn test_query_transactions() {
     Ok(data) => println!("{:?}", data),
     Err(_) => println!("err"),
   }
-
   // !add_wallet
   let args = WalletAddCommand {
     address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
@@ -64,7 +72,7 @@ fn test_query_transactions() {
   // !add transactions
   let transaction = TransactionF {
     hash: "123".to_string(),
-    timestamp: 123.0,
+    timestamp: 10.0,
     t_type: "SEND".to_string(),
     walletName: "asd".to_string(),
     details: Details {
@@ -75,7 +83,77 @@ fn test_query_transactions() {
         symbol: "ICP".to_string(),
       },
       fee: 123.8,
-      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+        .to_string(),
+      to: "asd".to_string(),
+      price: 1.0,
+      value: 1.0,
+      status: "SUCCESS".to_string(),
+      ledgerCanisterId: "asd".to_string(),
+      profit: 12.0,
+    },
+  };
+  let transaction2 = TransactionF {
+    hash: "123".to_string(),
+    timestamp: 100.0,
+    t_type: "SEND".to_string(),
+    walletName: "asd".to_string(),
+    details: Details {
+      amount: 123.8,
+      cost: 1.0,
+      currency: Currency {
+        decimals: 2,
+        symbol: "ICP".to_string(),
+      },
+      fee: 123.8,
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+        .to_string(),
+      to: "asd".to_string(),
+      price: 1.0,
+      value: 1.0,
+      status: "SUCCESS".to_string(),
+      ledgerCanisterId: "asd".to_string(),
+      profit: 11.0,
+    },
+  };
+  let transaction3 = TransactionF {
+    hash: "123".to_string(),
+    timestamp: 101.0,
+    t_type: "SEND".to_string(),
+    walletName: "asd".to_string(),
+    details: Details {
+      amount: 123.8,
+      cost: 1.0,
+      currency: Currency {
+        decimals: 2,
+        symbol: "ICP".to_string(),
+      },
+      fee: 123.8,
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+        .to_string(),
+      to: "asd".to_string(),
+      price: 1.0,
+      value: 1.0,
+      status: "SUCCESS".to_string(),
+      ledgerCanisterId: "asd".to_string(),
+      profit: 10.0,
+    },
+  };
+  let transaction4 = TransactionF {
+    hash: "123".to_string(),
+    timestamp: 102.0,
+    t_type: "SEND".to_string(),
+    walletName: "asd".to_string(),
+    details: Details {
+      amount: 123.8,
+      cost: 1.0,
+      currency: Currency {
+        decimals: 2,
+        symbol: "ICP".to_string(),
+      },
+      fee: 123.8,
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+        .to_string(),
       to: "asd".to_string(),
       price: 1.0,
       value: 1.0,
@@ -84,10 +162,63 @@ fn test_query_transactions() {
       profit: 1.0,
     },
   };
+  let transaction5 = TransactionF {
+    hash: "123".to_string(),
+    timestamp: 1000.0,
+    t_type: "SEND".to_string(),
+    walletName: "asd".to_string(),
+    details: Details {
+      amount: 123.8,
+      cost: 1.0,
+      currency: Currency {
+        decimals: 2,
+        symbol: "ICP".to_string(),
+      },
+      fee: 123.8,
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+        .to_string(),
+      to: "asd".to_string(),
+      price: 1.0,
+      value: 1.0,
+      status: "SUCCESS".to_string(),
+      ledgerCanisterId: "asd".to_string(),
+      profit: 100.0,
+    },
+  };
+  let transaction6 = TransactionF {
+    hash: "123".to_string(),
+    timestamp: 1000.0,
+    t_type: "RECEIVE".to_string(),
+    walletName: "asd".to_string(),
+    details: Details {
+      amount: 123.8,
+      cost: 1.0,
+      currency: Currency {
+        decimals: 2,
+        symbol: "ICP".to_string(),
+      },
+      fee: 123.8,
+      from: "asd".to_string(),
+      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+        .to_string(),
+      price: 1.0,
+      value: 1.0,
+      status: "SUCCESS".to_string(),
+      ledgerCanisterId: "asd".to_string(),
+      profit: 1000.0,
+    },
+  };
   let sync_transaction_command = SyncTransactionCommand {
     // todo this id should get from last op of `query_all_wallets`
     walletId: 10002,
-    history: vec![transaction],
+    history: vec![
+      transaction,
+      transaction2,
+      transaction3,
+      transaction4,
+      transaction5,
+      transaction6,
+    ],
   };
   let args: Vec<SyncTransactionCommand> = vec![sync_transaction_command];
   let ret: Result<bool, String> =
@@ -96,8 +227,24 @@ fn test_query_transactions() {
     Ok(data) => println!("{:?}", data),
     Err(err) => println!("{:?}", err),
   }
+  // !query payload DB
+  query_payload_DB(&pic_env, user1);
 
-  // !query transactions
+  // ! simple query transactions
+  simple_transac_query(&pic_env, user1);
+  // !time range query test
+  time_range_test(&pic_env, user1);
+  // !sort method query test
+  sort_method_test(&pic_env, user1);
+}
+
+fn query_payload_DB(pic_env: &PicEnv, user1: Principal) {
+  let ret: String =
+    pic_env.my_query_call_no_arg(user1, "collect_running_payload");
+  println!("{:?}", ret);
+}
+
+fn simple_transac_query(pic_env: &PicEnv, user1: Principal) {
   // generate_query_call!(query_wallet_transactions);
   let args: HistoryQueryCommand = HistoryQueryCommand {
     address: (vec![
@@ -114,11 +261,70 @@ fn test_query_transactions() {
     Ok(data) => println!("{:?}", data),
     Err(err) => println!("{:?}", err),
   }
+}
 
-  // !query payload DB
-  let ret: String =
-    pic_env.my_query_call_no_arg(user1, "collect_running_payload");
-  println!("{:?}", ret);
+fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
+  let args_sort_method: HistoryQueryCommand = HistoryQueryCommand {
+    address: vec![
+      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+        .to_string(),
+    ],
+    from_time: 0,
+    to_time: 0,
+    sort_method: Some("date-desc".to_string()), /* Change to your desired
+                                                 * sort method */
+  };
+  let ret_sort_method: Result<
+    HashMap<WalletAddress, Vec<TransactionB>>,
+    String,
+  > =
+    pic_env.my_query_call(user1, args_sort_method, "query_wallet_transactions");
+  match ret_sort_method {
+    Ok(data) => println!("Sort method query result: {:?}", data),
+    Err(err) => println!("Error in sort method query: {:?}", err),
+  }
+
+  let args_sort_method: HistoryQueryCommand = HistoryQueryCommand {
+    address: vec![
+      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+        .to_string(),
+    ],
+    from_time: 0,
+    to_time: 0,
+    sort_method: Some("profit-desc".to_string()), /* Change to your desired
+                                                   * sort method */
+  };
+  let ret_sort_method: Result<
+    HashMap<WalletAddress, Vec<TransactionB>>,
+    String,
+  > =
+    pic_env.my_query_call(user1, args_sort_method, "query_wallet_transactions");
+  match ret_sort_method {
+    Ok(data) => println!("Sort method query result: {:?}", data),
+    Err(err) => println!("Error in sort method query: {:?}", err),
+  }
+}
+
+fn time_range_test(pic_env: &PicEnv, user1: Principal) {
+  let args_time_range: HistoryQueryCommand = HistoryQueryCommand {
+    address: vec![
+      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+        .to_string(),
+    ],
+    from_time: 100, // Replace with your actual timestamp
+    to_time: 150,   // Replace with your actual timestamp
+    sort_method: None,
+  };
+  let ret_time_range: Result<
+    HashMap<WalletAddress, Vec<TransactionB>>,
+    String,
+  > =
+    pic_env.my_query_call(user1, args_time_range, "query_wallet_transactions");
+  println!(" should be 3 result . full 6 result");
+  match ret_time_range {
+    Ok(data) => println!("Time range query result: {:?}", data),
+    Err(err) => println!("Error in time range query: {:?}", err),
+  }
 }
 
 const NNS_INTERNET_IDENTITY_CANISTER_ID: CanisterId =

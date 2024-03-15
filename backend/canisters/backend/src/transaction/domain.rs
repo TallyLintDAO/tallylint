@@ -64,7 +64,7 @@ pub struct TransactionB {
   pub id: TransactionId,
   //
   pub hash: String,
-  pub timestamp: f64, //this is ms format with float.
+  pub timestamp: u64, //this is ns format usigned 64bit
   pub t_type: String, //  transaction type : "SEND", "RECEIVE"
   pub walletName: String,
   pub details: Details,

@@ -6,7 +6,7 @@ use super::domain::*;
 use super::service::{TransactionId, WalletAddress};
 use crate::common::context::{get_caller, now};
 use crate::common::guard::user_owner_guard;
-use crate::common::times::ms_float_to_ns;
+use crate::common::times::timestamp_ms_float_to_ns;
 use crate::wallet::domain::HistoryQueryCommand;
 use crate::{TransactionB, CONTEXT};
 
@@ -50,8 +50,6 @@ fn delete_transaction(id: TransactionId) -> Result<TransactionId, String> {
 
 // TODO get all wallets of records info
 // many work todo to different query
-#[query(guard = "user_owner_guard")]
-// #[query]
 fn query_wallet_transactions(
   cmd: HistoryQueryCommand,
 ) -> Result<HashMap<WalletAddress, Vec<TransactionB>>, String> {
@@ -60,8 +58,33 @@ fn query_wallet_transactions(
     let mut history: HashMap<WalletAddress, Vec<TransactionB>> = HashMap::new();
 
     for addr in cmd.address {
+      // get all recs:
       let rec = ctx.wallet_record_service.query_one_wallet(addr);
-      for (k, v) in rec {
+
+      for (k, mut v) in rec {
+        // filter if time rage
+        if cmd.from_time != 0 && cmd.to_time != 0 {
+          v = v
+            .into_iter()
+            .filter(|txn| {
+              txn.timestamp >= cmd.from_time && txn.timestamp <= cmd.to_time
+            })
+            .collect();
+        }
+
+        // filter sort_method
+        if let Some(sort_method) = &cmd.sort_method {
+          match sort_method.as_str() {
+            "date-asc" => {
+              v.sort_by(|a, b| a.timestamp.partial_cmp(&b.timestamp).unwrap())
+            }
+            "date-desc" => {
+              v.sort_by(|a, b| b.timestamp.partial_cmp(&a.timestamp).unwrap())
+            }
+            // Add more sort methods here...
+            _ => (),
+          }
+        }
         history.insert(k, v);
       }
     }
@@ -135,8 +158,9 @@ fn sync_transaction_record(
         .expect("no such wallet");
       wallet_profile.last_sync_time = now();
       wallet_profile.transactions = one_wallet.history.len() as u64;
-      wallet_profile.last_transaction_time =
-        ms_float_to_ns(one_wallet.history.get(0).unwrap().clone().timestamp);
+      wallet_profile.last_transaction_time = timestamp_ms_float_to_ns(
+        one_wallet.history.get(0).unwrap().clone().timestamp,
+      );
       ctx
         .wallet_service
         .update_wallet(wallet_profile, get_caller());
@@ -161,7 +185,7 @@ fn convert_trans_f_to_trans_b(
   TransactionB {
     id,
     hash: trans_f.hash,
-    timestamp: trans_f.timestamp,
+    timestamp: timestamp_ms_float_to_ns(trans_f.timestamp),
     t_type: trans_f.t_type,
     walletName: trans_f.walletName,
     details: trans_f.details,

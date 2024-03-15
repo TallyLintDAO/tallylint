@@ -1,5 +1,5 @@
 {
-  "id": 10005,
+  "id": 10015,
   "users": [
     {
       "owner": "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
@@ -16,16 +16,16 @@
       "name": "w1",
       "principal_id": null,
       "create_time": 1620328630000000000,
-      "transactions": 1,
+      "transactions": 6,
       "last_sync_time": 1620328630000000000,
-      "last_transaction_time": 123000000
+      "last_transaction_time": 10000000
     }
   ],
   "records": [
     {
       "id": 10005,
       "hash": "123",
-      "timestamp": 123.0,
+      "timestamp": 10000000,
       "t_type": "SEND",
       "walletName": "asd",
       "details": {
@@ -33,7 +33,85 @@
         "cost": 1.0,
         "currency": { "decimals": 2, "symbol": "ICP" },
         "fee": 123.8,
-        "from": "12",
+        "from": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+        "to": "asd",
+        "price": 1.0,
+        "value": 1.0,
+        "status": "SUCCESS",
+        "ledgerCanisterId": "asd",
+        "profit": 12.0
+      },
+      "principal_id": null,
+      "memo": "",
+      "address": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+      "tag": "",
+      "manual": false,
+      "comment": ""
+    },
+    {
+      "id": 10007,
+      "hash": "123",
+      "timestamp": 100000000,
+      "t_type": "SEND",
+      "walletName": "asd",
+      "details": {
+        "amount": 123.8,
+        "cost": 1.0,
+        "currency": { "decimals": 2, "symbol": "ICP" },
+        "fee": 123.8,
+        "from": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+        "to": "asd",
+        "price": 1.0,
+        "value": 1.0,
+        "status": "SUCCESS",
+        "ledgerCanisterId": "asd",
+        "profit": 11.0
+      },
+      "principal_id": null,
+      "memo": "",
+      "address": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+      "tag": "",
+      "manual": false,
+      "comment": ""
+    },
+    {
+      "id": 10009,
+      "hash": "123",
+      "timestamp": 101000000,
+      "t_type": "SEND",
+      "walletName": "asd",
+      "details": {
+        "amount": 123.8,
+        "cost": 1.0,
+        "currency": { "decimals": 2, "symbol": "ICP" },
+        "fee": 123.8,
+        "from": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+        "to": "asd",
+        "price": 1.0,
+        "value": 1.0,
+        "status": "SUCCESS",
+        "ledgerCanisterId": "asd",
+        "profit": 10.0
+      },
+      "principal_id": null,
+      "memo": "",
+      "address": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+      "tag": "",
+      "manual": false,
+      "comment": ""
+    },
+    {
+      "id": 10011,
+      "hash": "123",
+      "timestamp": 102000000,
+      "t_type": "SEND",
+      "walletName": "asd",
+      "details": {
+        "amount": 123.8,
+        "cost": 1.0,
+        "currency": { "decimals": 2, "symbol": "ICP" },
+        "fee": 123.8,
+        "from": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
         "to": "asd",
         "price": 1.0,
         "value": 1.0,
@@ -43,7 +121,59 @@
       },
       "principal_id": null,
       "memo": "",
-      "address": "12",
+      "address": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+      "tag": "",
+      "manual": false,
+      "comment": ""
+    },
+    {
+      "id": 10013,
+      "hash": "123",
+      "timestamp": 1000000000,
+      "t_type": "SEND",
+      "walletName": "asd",
+      "details": {
+        "amount": 123.8,
+        "cost": 1.0,
+        "currency": { "decimals": 2, "symbol": "ICP" },
+        "fee": 123.8,
+        "from": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+        "to": "asd",
+        "price": 1.0,
+        "value": 1.0,
+        "status": "SUCCESS",
+        "ledgerCanisterId": "asd",
+        "profit": 100.0
+      },
+      "principal_id": null,
+      "memo": "",
+      "address": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+      "tag": "",
+      "manual": false,
+      "comment": ""
+    },
+    {
+      "id": 10015,
+      "hash": "123",
+      "timestamp": 1000000000,
+      "t_type": "RECEIVE",
+      "walletName": "asd",
+      "details": {
+        "amount": 123.8,
+        "cost": 1.0,
+        "currency": { "decimals": 2, "symbol": "ICP" },
+        "fee": 123.8,
+        "from": "asd",
+        "to": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+        "price": 1.0,
+        "value": 1.0,
+        "status": "SUCCESS",
+        "ledgerCanisterId": "asd",
+        "profit": 1000.0
+      },
+      "principal_id": null,
+      "memo": "",
+      "address": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
       "tag": "",
       "manual": false,
       "comment": ""
@@ -53,7 +183,7 @@
   "transactions": [
     {
       "hash": "123",
-      "timestamp": 123.0,
+      "timestamp": 10.0,
       "t_type": "SEND",
       "walletName": "asd",
       "details": {
@@ -61,13 +191,108 @@
         "cost": 1.0,
         "currency": { "decimals": 2, "symbol": "ICP" },
         "fee": 123.8,
-        "from": "12",
+        "from": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+        "to": "asd",
+        "price": 1.0,
+        "value": 1.0,
+        "status": "SUCCESS",
+        "ledgerCanisterId": "asd",
+        "profit": 12.0
+      }
+    },
+    {
+      "hash": "123",
+      "timestamp": 100.0,
+      "t_type": "SEND",
+      "walletName": "asd",
+      "details": {
+        "amount": 123.8,
+        "cost": 1.0,
+        "currency": { "decimals": 2, "symbol": "ICP" },
+        "fee": 123.8,
+        "from": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+        "to": "asd",
+        "price": 1.0,
+        "value": 1.0,
+        "status": "SUCCESS",
+        "ledgerCanisterId": "asd",
+        "profit": 11.0
+      }
+    },
+    {
+      "hash": "123",
+      "timestamp": 101.0,
+      "t_type": "SEND",
+      "walletName": "asd",
+      "details": {
+        "amount": 123.8,
+        "cost": 1.0,
+        "currency": { "decimals": 2, "symbol": "ICP" },
+        "fee": 123.8,
+        "from": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+        "to": "asd",
+        "price": 1.0,
+        "value": 1.0,
+        "status": "SUCCESS",
+        "ledgerCanisterId": "asd",
+        "profit": 10.0
+      }
+    },
+    {
+      "hash": "123",
+      "timestamp": 102.0,
+      "t_type": "SEND",
+      "walletName": "asd",
+      "details": {
+        "amount": 123.8,
+        "cost": 1.0,
+        "currency": { "decimals": 2, "symbol": "ICP" },
+        "fee": 123.8,
+        "from": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
         "to": "asd",
         "price": 1.0,
         "value": 1.0,
         "status": "SUCCESS",
         "ledgerCanisterId": "asd",
         "profit": 1.0
+      }
+    },
+    {
+      "hash": "123",
+      "timestamp": 1000.0,
+      "t_type": "SEND",
+      "walletName": "asd",
+      "details": {
+        "amount": 123.8,
+        "cost": 1.0,
+        "currency": { "decimals": 2, "symbol": "ICP" },
+        "fee": 123.8,
+        "from": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+        "to": "asd",
+        "price": 1.0,
+        "value": 1.0,
+        "status": "SUCCESS",
+        "ledgerCanisterId": "asd",
+        "profit": 100.0
+      }
+    },
+    {
+      "hash": "123",
+      "timestamp": 1000.0,
+      "t_type": "RECEIVE",
+      "walletName": "asd",
+      "details": {
+        "amount": 123.8,
+        "cost": 1.0,
+        "currency": { "decimals": 2, "symbol": "ICP" },
+        "fee": 123.8,
+        "from": "asd",
+        "to": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+        "price": 1.0,
+        "value": 1.0,
+        "status": "SUCCESS",
+        "ledgerCanisterId": "asd",
+        "profit": 1000.0
       }
     }
   ]
