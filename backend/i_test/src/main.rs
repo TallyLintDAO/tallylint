@@ -70,6 +70,19 @@ fn test_query_transactions() {
   }
 
   // !add transactions
+  add_transactions(&pic_env, user1);
+  // !query payload DB
+  query_payload_db(&pic_env, user1);
+
+  // ! simple query transactions
+  simple_transac_query(&pic_env, user1);
+  // !time range query test
+  time_range_test(&pic_env, user1);
+  // !sort method query test
+  sort_method_test(&pic_env, user1);
+}
+
+fn add_transactions(pic_env: &PicEnv, user1: Principal) {
   let transaction = TransactionF {
     hash: "123".to_string(),
     timestamp: 10.0,
@@ -95,7 +108,7 @@ fn test_query_transactions() {
   };
   let transaction2 = TransactionF {
     hash: "123".to_string(),
-    timestamp: 100.0,
+    timestamp: 210.0,
     t_type: "SEND".to_string(),
     walletName: "asd".to_string(),
     details: Details {
@@ -118,7 +131,7 @@ fn test_query_transactions() {
   };
   let transaction3 = TransactionF {
     hash: "123".to_string(),
-    timestamp: 101.0,
+    timestamp: 211.0,
     t_type: "SEND".to_string(),
     walletName: "asd".to_string(),
     details: Details {
@@ -141,7 +154,7 @@ fn test_query_transactions() {
   };
   let transaction4 = TransactionF {
     hash: "123".to_string(),
-    timestamp: 102.0,
+    timestamp: 222.0,
     t_type: "SEND".to_string(),
     walletName: "asd".to_string(),
     details: Details {
@@ -164,7 +177,7 @@ fn test_query_transactions() {
   };
   let transaction5 = TransactionF {
     hash: "123".to_string(),
-    timestamp: 1000.0,
+    timestamp: 3333.0,
     t_type: "SEND".to_string(),
     walletName: "asd".to_string(),
     details: Details {
@@ -227,18 +240,9 @@ fn test_query_transactions() {
     Ok(data) => println!("{:?}", data),
     Err(err) => println!("{:?}", err),
   }
-  // !query payload DB
-  query_payload_DB(&pic_env, user1);
-
-  // ! simple query transactions
-  simple_transac_query(&pic_env, user1);
-  // !time range query test
-  time_range_test(&pic_env, user1);
-  // !sort method query test
-  sort_method_test(&pic_env, user1);
 }
 
-fn query_payload_DB(pic_env: &PicEnv, user1: Principal) {
+fn query_payload_db(pic_env: &PicEnv, user1: Principal) {
   let ret: String =
     pic_env.my_query_call_no_arg(user1, "collect_running_payload");
   println!("{:?}", ret);
@@ -280,8 +284,14 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
   > =
     pic_env.my_query_call(user1, args_sort_method, "query_wallet_transactions");
   match ret_sort_method {
-    Ok(data) => println!("Sort method query result: {:?}", data),
-    Err(err) => println!("Error in sort method query: {:?}", err),
+      Ok(data) => print_red_header(
+      "====date-desc Sort method query result: ".to_string(),
+      format!("{:?}", data),
+    ),
+    Err(err) => print_red_header(
+      " ====Error in sort method query: ".to_string(),
+      format!("{:?}", err),
+    ),
   }
 
   let args_sort_method: HistoryQueryCommand = HistoryQueryCommand {
@@ -291,6 +301,7 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
     ],
     from_time: 0,
     to_time: 0,
+    // FIXME. not work ok 
     sort_method: Some("profit-desc".to_string()), /* Change to your desired
                                                    * sort method */
   };
@@ -300,19 +311,26 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
   > =
     pic_env.my_query_call(user1, args_sort_method, "query_wallet_transactions");
   match ret_sort_method {
-    Ok(data) => println!("Sort method query result: {:?}", data),
-    Err(err) => println!("Error in sort method query: {:?}", err),
+    Ok(data) => print_red_header(
+      "====profit-desc Sort method query result: ".to_string(),
+      format!("{:?}", data),
+    ),
+    Err(err) => print_red_header(
+      "====profit-desc Error in sort method query: ".to_string(),
+      format!("{:?}", err),
+    ),
   }
 }
 
+// FIXME not work ok with sementics
 fn time_range_test(pic_env: &PicEnv, user1: Principal) {
   let args_time_range: HistoryQueryCommand = HistoryQueryCommand {
     address: vec![
       "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
         .to_string(),
     ],
-    from_time: 100, // Replace with your actual timestamp
-    to_time: 150,   // Replace with your actual timestamp
+    from_time: 100_000_000, // ns as u64   ms to ns append  6 zero
+    to_time: 500_000_000,   
     sort_method: None,
   };
   let ret_time_range: Result<
@@ -322,9 +340,25 @@ fn time_range_test(pic_env: &PicEnv, user1: Principal) {
     pic_env.my_query_call(user1, args_time_range, "query_wallet_transactions");
   println!(" should be 3 result . full 6 result");
   match ret_time_range {
-    Ok(data) => println!("Time range query result: {:?}", data),
-    Err(err) => println!("Error in time range query: {:?}", err),
+    Ok(data) => print_red_header(
+      "====Time range query result: ".to_string(),
+      format!("{:?}", data),
+    ),
+    Err(err) => print_red_header(
+      "====Error in time range query: ".to_string(),
+      format!("{:?}", err),
+    ),
   }
+}
+
+fn print_red_header(red_string: String, origin_color_string: String) {
+  println!(
+    "{}{}{}{}",
+    color::Fg(color::Red),
+    red_string,
+    color::Fg(color::Reset),
+    origin_color_string
+  );
 }
 
 const NNS_INTERNET_IDENTITY_CANISTER_ID: CanisterId =
@@ -492,15 +526,6 @@ impl PicEnv {
   }
 }
 
-fn unwrap_response<R: CandidType + DeserializeOwned>(
-  response: Result<WasmResult, UserError>,
-) -> R {
-  match response.unwrap() {
-    WasmResult::Reply(bytes) => candid::decode_one(&bytes).unwrap(),
-    WasmResult::Reject(error) => panic!("{error}"),
-  }
-}
-
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -610,7 +635,7 @@ pub struct TransactionB {
   pub id: TransactionId,
   //
   pub hash: String,
-  pub timestamp: f64, //this is ms format with float.
+  pub timestamp: u64, //this is ms format with float.
   pub t_type: String, //  transaction type : "SEND", "RECEIVE"
   pub walletName: String,
   pub details: Details,
@@ -654,4 +679,13 @@ pub struct HistoryQueryCommand {
   pub sort_method: Option<String>, /*by date-asc or date-desc
                                     * or profit-asc
                                     * profit-desc */
+}
+
+fn unwrap_response<R: CandidType + DeserializeOwned>(
+  response: Result<WasmResult, UserError>,
+) -> R {
+  match response.unwrap() {
+    WasmResult::Reply(bytes) => candid::decode_one(&bytes).unwrap(),
+    WasmResult::Reject(error) => panic!("{error}"),
+  }
 }

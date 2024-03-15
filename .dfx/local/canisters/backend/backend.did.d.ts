@@ -23,6 +23,12 @@ export interface GovernanceError {
   'error_message' : string,
   'error_type' : number,
 }
+export interface HistoryQueryCommand {
+  'from_time' : bigint,
+  'to_time' : bigint,
+  'sort_method' : [] | [string],
+  'address' : Array<string>,
+}
 export interface KnownNeuronData {
   'name' : string,
   'description' : [] | [string],
@@ -79,6 +85,8 @@ export type Result_7 = { 'Ok' : Array<[bigint, TransactionB]> } |
   { 'Err' : string };
 export type Result_8 = { 'Ok' : Array<WalletProfile> } |
   { 'Err' : Array<WalletProfile> };
+export type Result_9 = { 'Ok' : Array<[string, Array<TransactionB>]> } |
+  { 'Err' : string };
 export interface SyncTransactionCommand {
   'history' : Array<TransactionF>,
   'walletId' : bigint,
@@ -154,6 +162,7 @@ export interface _SERVICE {
   'query_all_neuron_wallet' : ActorMethod<[], Result_6>,
   'query_all_transactions' : ActorMethod<[], Result_7>,
   'query_all_wallets' : ActorMethod<[], Result_8>,
+  'query_wallet_transactions' : ActorMethod<[HistoryQueryCommand], Result_9>,
   'save_payload_to_dropbox' : ActorMethod<[string, number, bigint], string>,
   'set_payload_using_dropbox' : ActorMethod<[string, string], boolean>,
   'set_payload_using_stable_mem' : ActorMethod<[], undefined>,

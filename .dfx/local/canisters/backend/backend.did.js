@@ -122,6 +122,16 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Vec(WalletProfile),
     'Err' : IDL.Vec(WalletProfile),
   });
+  const HistoryQueryCommand = IDL.Record({
+    'from_time' : IDL.Nat64,
+    'to_time' : IDL.Nat64,
+    'sort_method' : IDL.Opt(IDL.Text),
+    'address' : IDL.Vec(IDL.Text),
+  });
+  const Result_9 = IDL.Variant({
+    'Ok' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(TransactionB))),
+    'Err' : IDL.Text,
+  });
   const TransactionF = IDL.Record({
     'hash' : IDL.Text,
     'walletName' : IDL.Text,
@@ -164,6 +174,11 @@ export const idlFactory = ({ IDL }) => {
     'query_all_neuron_wallet' : IDL.Func([], [Result_6], ['query']),
     'query_all_transactions' : IDL.Func([], [Result_7], ['query']),
     'query_all_wallets' : IDL.Func([], [Result_8], ['query']),
+    'query_wallet_transactions' : IDL.Func(
+        [HistoryQueryCommand],
+        [Result_9],
+        ['query'],
+      ),
     'save_payload_to_dropbox' : IDL.Func(
         [IDL.Text, IDL.Nat32, IDL.Nat],
         [IDL.Text],

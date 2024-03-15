@@ -50,6 +50,7 @@ fn delete_transaction(id: TransactionId) -> Result<TransactionId, String> {
 
 // TODO get all wallets of records info
 // many work todo to different query
+#[query(guard = "user_owner_guard")]
 fn query_wallet_transactions(
   cmd: HistoryQueryCommand,
 ) -> Result<HashMap<WalletAddress, Vec<TransactionB>>, String> {

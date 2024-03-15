@@ -15,6 +15,12 @@ type Details = record {
   amount : float64;
 };
 type GovernanceError = record { error_message : text; error_type : int32 };
+type HistoryQueryCommand = record {
+  from_time : nat64;
+  to_time : nat64;
+  sort_method : opt text;
+  address : vec text;
+};
 type KnownNeuronData = record { name : text; description : opt text };
 type NeuronAddCommand = record { from : text; name : text; address : text };
 type NeuronId = record { id : vec nat8 };
@@ -60,6 +66,10 @@ type Result_5 = variant { Ok : WalletProfile; Err : text };
 type Result_6 = variant { Ok : vec NeuronProfile; Err : vec NeuronProfile };
 type Result_7 = variant { Ok : vec record { nat64; TransactionB }; Err : text };
 type Result_8 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
+type Result_9 = variant {
+  Ok : vec record { text; vec TransactionB };
+  Err : text;
+};
 type SyncTransactionCommand = record {
   history : vec TransactionF;
   walletId : nat64;
@@ -131,6 +141,7 @@ service : () -> {
   query_all_neuron_wallet : () -> (Result_6) query;
   query_all_transactions : () -> (Result_7) query;
   query_all_wallets : () -> (Result_8) query;
+  query_wallet_transactions : (HistoryQueryCommand) -> (Result_9) query;
   save_payload_to_dropbox : (text, nat32, nat) -> (text);
   set_payload_using_dropbox : (text, text) -> (bool);
   set_payload_using_stable_mem : () -> ();
