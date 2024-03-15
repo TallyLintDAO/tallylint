@@ -76,7 +76,7 @@ fn test_query_transactions() {
         symbol: "ICP".to_string(),
       },
       fee: 123.8,
-      from: "12".to_string(),
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
       to: "asd".to_string(),
       price: 1.0,
       value: 1.0,

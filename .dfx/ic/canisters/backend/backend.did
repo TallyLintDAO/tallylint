@@ -64,8 +64,9 @@ type Result_3 = variant {
 type Result_4 = variant { Ok : NeuronProfile; Err : text };
 type Result_5 = variant { Ok : WalletProfile; Err : text };
 type Result_6 = variant { Ok : vec NeuronProfile; Err : vec NeuronProfile };
-type Result_7 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
-type Result_8 = variant {
+type Result_7 = variant { Ok : vec record { nat64; TransactionB }; Err : text };
+type Result_8 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
+type Result_9 = variant {
   Ok : vec record { text; vec TransactionB };
   Err : text;
 };
@@ -138,8 +139,9 @@ service : {
   query_a_neuron_wallet : (nat64) -> (Result_4) query;
   query_a_wallet : (nat64) -> (Result_5) query;
   query_all_neuron_wallet : () -> (Result_6) query;
-  query_all_wallets : () -> (Result_7) query;
-  query_wallet_transactions : (HistoryQueryCommand) -> (Result_8) query;
+  query_all_transactions : () -> (Result_7) query;
+  query_all_wallets : () -> (Result_8) query;
+  query_wallet_transactions : (HistoryQueryCommand) -> (Result_9) query;
   save_payload_to_dropbox : (text, nat32, nat) -> (text);
   set_payload_using_dropbox : (text, text) -> (bool);
   set_payload_using_stable_mem : () -> ();
