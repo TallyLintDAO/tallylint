@@ -82,6 +82,12 @@ fn query_wallet_transactions(
             "date-desc" => {
               v.sort_by(|a, b| b.timestamp.partial_cmp(&a.timestamp).unwrap())
             }
+            "profit-asc" => v.sort_by(|a, b| {
+              a.details.profit.partial_cmp(&b.details.profit).unwrap()
+            }),
+            "profit-desc" => v.sort_by(|a, b| {
+              b.details.profit.partial_cmp(&a.details.profit).unwrap()
+            }),
             // Add more sort methods here...
             _ => (),
           }
@@ -189,7 +195,7 @@ fn convert_trans_f_to_trans_b(
     timestamp: timestamp_ms_float_to_ns(trans_f.timestamp),
     t_type: trans_f.t_type,
     walletName: trans_f.walletName,
-    details: trans_f.details,
+    details: trans_f.details.clone(),
     principal_id: None,
     memo: String::new(),
     address,

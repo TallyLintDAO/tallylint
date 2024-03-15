@@ -284,7 +284,7 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
   > =
     pic_env.my_query_call(user1, args_sort_method, "query_wallet_transactions");
   match ret_sort_method {
-      Ok(data) => print_red_header(
+    Ok(data) => print_red_header(
       "====date-desc Sort method query result: ".to_string(),
       format!("{:?}", data),
     ),
@@ -301,7 +301,7 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
     ],
     from_time: 0,
     to_time: 0,
-    // FIXME. not work ok 
+    // FIXME. not work ok
     sort_method: Some("profit-desc".to_string()), /* Change to your desired
                                                    * sort method */
   };
@@ -322,7 +322,6 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
   }
 }
 
-// FIXME not work ok with sementics
 fn time_range_test(pic_env: &PicEnv, user1: Principal) {
   let args_time_range: HistoryQueryCommand = HistoryQueryCommand {
     address: vec![
@@ -330,7 +329,7 @@ fn time_range_test(pic_env: &PicEnv, user1: Principal) {
         .to_string(),
     ],
     from_time: 100_000_000, // ns as u64   ms to ns append  6 zero
-    to_time: 500_000_000,   
+    to_time: 500_000_000,
     sort_method: None,
   };
   let ret_time_range: Result<
