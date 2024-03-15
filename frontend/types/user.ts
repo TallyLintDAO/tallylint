@@ -70,10 +70,8 @@ export interface DailyBalance {
 }
 
 export interface HistoryQueryParams {
-  tag: string
   from_time: number
   to_time: number
-  t_type: string
-  sort_method: string
+  sort_method: string[]
   address: string[]
 }

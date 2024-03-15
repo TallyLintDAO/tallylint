@@ -73,7 +73,6 @@
             end-placeholder="End date"
             :shortcuts="shortcuts"
             value-format="x"
-            size="large"
           />
           <q-select
             rounded
@@ -109,7 +108,6 @@
               v-for="transaction in transactions"
               :key="transaction.hash"
               clickable
-              v-ripple="true"
               style="padding: 20px"
             >
               <!-- transaction log -->
@@ -187,7 +185,26 @@
                   </b>
                 </div>
                 <div class="col">
-                  <q-icon size="sm" name="more_vert" />
+                  <q-icon size="sm" name="more_vert"
+                    ><q-menu>
+                      <q-list style="min-width: 100px">
+                        <q-item clickable v-close-popup="true">
+                          <q-item-section
+                            @click="openDialog('edit', transaction)"
+                          >
+                            Edit
+                          </q-item-section>
+                        </q-item>
+                        <q-item clickable v-close-popup="true">
+                          <q-item-section
+                            @click="deleteTransaction(transaction.id)"
+                          >
+                            Delete
+                          </q-item-section>
+                        </q-item>
+                      </q-list>
+                    </q-menu></q-icon
+                  >
                 </div>
               </div>
             </q-item>
@@ -304,6 +321,18 @@
               placeholder="Transaction Datetime"
               value-format="x"
             />
+            <q-input
+              outlined
+              label="Transaction Hash"
+              v-model="transaction.from"
+              class="q-mb-md"
+            />
+            <q-input
+              outlined
+              label="Description"
+              v-model="transaction.commit"
+              class="q-mb-md"
+            />
             <div class="q-gutter-sm justify-end flex">
               <q-btn flat label="Cancel" v-close-popup="true" />
               <q-btn
@@ -330,10 +359,16 @@
 
 <script lang="ts" setup>
 import { getAllTransactions } from "@/api/rosetta"
-import { getSyncedTransactions, getUserAllWallets } from "@/api/user"
+import {
+  deleteSyncedTransactions,
+  getSyncedTransactions,
+  getUserAllWallets,
+} from "@/api/user"
 import type { InferredTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
+import { confirmDialog } from "@/utils/dialog"
+import { showMessageSuccess } from "@/utils/message"
 import type { QForm } from "quasar"
 import { computed, onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
@@ -373,16 +408,6 @@ const tokenList = [
     value: {
       decimals: 8,
       symbol: "ICP",
-    },
-  },
-  {
-    decimals: 8,
-    symbol: "BCP",
-    label: "BCP",
-    icon: "/frontend/assets/dfinity.svg",
-    value: {
-      decimals: 8,
-      symbol: "BCP",
     },
   },
 ]
@@ -507,14 +532,12 @@ const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
 
   getSyncedTransactions(
     {
-      tag: "",
       from_time: 0,
       to_time: 0,
-      t_type: "",
-      sort_method: "",
+      sort_method: [],
       address: [],
     },
-    false,
+    true,
   ).then((res) => {
     console.log("getSyncedTransactions", res)
   })
@@ -548,6 +571,21 @@ const openDialog = (action: string, itemInfo?: any) => {
     transaction.value.manual = true
   }
   dialogVisible.value = true
+}
+
+const deleteTransaction = (transactionId: number) => {
+  confirmDialog({
+    title: "Delete Transaction",
+    message:
+      "Are you sure delete this transaction? Deleted transaction can't restore",
+    okMethod: () => {
+      deleteSyncedTransactions(transactionId).then((res) => {
+        if (res.Ok) {
+          showMessageSuccess("delete transaction success")
+        }
+      })
+    },
+  })
 }
 const onSubmit = () => {}
 </script>
