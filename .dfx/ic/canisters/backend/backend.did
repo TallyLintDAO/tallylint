@@ -83,7 +83,7 @@ type TransactionB = record {
   t_type : text;
   comment : text;
   address : text;
-  timestamp : float64;
+  timestamp : nat64;
   details : Details;
   manual : bool;
   principal_id : opt text;

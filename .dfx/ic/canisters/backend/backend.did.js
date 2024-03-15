@@ -28,7 +28,7 @@ export const idlFactory = ({ IDL }) => {
     't_type' : IDL.Text,
     'comment' : IDL.Text,
     'address' : IDL.Text,
-    'timestamp' : IDL.Float64,
+    'timestamp' : IDL.Nat64,
     'details' : Details,
     'manual' : IDL.Bool,
     'principal_id' : IDL.Opt(IDL.Text),

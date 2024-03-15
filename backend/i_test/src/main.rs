@@ -75,7 +75,7 @@ fn test_query_transactions() {
   query_payload_db(&pic_env, user1);
 
   // ! simple query transactions
-  simple_transac_query(&pic_env, user1);
+  no_filter_no_sort_simple_transac_query(&pic_env, user1);
   // !time range query test
   time_range_test(&pic_env, user1);
   // !sort method query test
@@ -248,7 +248,7 @@ fn query_payload_db(pic_env: &PicEnv, user1: Principal) {
   println!("{:?}", ret);
 }
 
-fn simple_transac_query(pic_env: &PicEnv, user1: Principal) {
+fn no_filter_no_sort_simple_transac_query(pic_env: &PicEnv, user1: Principal) {
   // generate_query_call!(query_wallet_transactions);
   let args: HistoryQueryCommand = HistoryQueryCommand {
     address: (vec![

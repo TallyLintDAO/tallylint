@@ -100,7 +100,7 @@ export interface TransactionB {
   't_type' : string,
   'comment' : string,
   'address' : string,
-  'timestamp' : number,
+  'timestamp' : bigint,
   'details' : Details,
   'manual' : boolean,
   'principal_id' : [] | [string],
