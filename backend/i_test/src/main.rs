@@ -10,8 +10,7 @@ pub mod backend_test;
 pub mod client;
 
 fn main() {
-  // test_query_transactions();
-  // test_query_transactions2();
+  test_query_transactions();
 }
 
 use candid::{encode_one, CandidType, Principal};
@@ -23,58 +22,22 @@ use serde_bytes::ByteBuf;
 use crate::client::setup::TERA;
 
 fn test_query_transactions() {
-  let env = PicEnv::new();
-  let pic = env.pic;
-  let canister_id = env.canister_id;
-  let user1 = random_user_principal().0;
-
-  // !clear env ?  maybe need to unsintall canister mannually  to clear stable
-  // mem.
+  let pic_env = PicEnv::new();
+  // this is admin BTWL
+  let user1 = Principal::from_text(
+    "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
+  )
+  .unwrap();
 
   // !register
-  // let reply = call_canister(&pic, canister_id, user1, "auto_register_user");
-  // let ret = String::from_utf8(wasm_result_to_vec8(reply)).unwrap();
-  // println!("{}", ret);
-
-  // !add_wallet
-  let args = WalletAddCommand {
-    address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-      .to_string(),
-    principal_id: None, /* This is set to None as per your structure. You
-                         * might need to set it as per your requirements. */
-    from: "NNS".to_string(),
-    name: "w1".to_string(),
-  };
-  let ret = pic.update_call(
-    canister_id,
-    user1,
-    "add_wallet",
-    candid::encode_one(args).unwrap(),
-  );
-
-  let ret: Result<bool, String> = unwrap_response(ret);
-
-  match ret {
-    Ok(_) => println!("ok"),
+  let reply: Result<UserProfile, String> =
+    pic_env.my_update_call_no_arg(user1, "auto_register_user");
+  match reply {
+    Ok(data) => println!("{:?}", data),
     Err(_) => println!("err"),
   }
-  // !query wallet info
-  // generate_update_call!(query_all_wallets);
 
-  // !add transactions
-  // '(vec {record {123; vec {record {hash="123"; walletName="asd";
-  // t_type="asd"; timestamp=123.0; details=record {to="asd"; fee=123.8;
-  // status="asd"; ledgerCanisterId="asd"; value=1.0; cost=1.0; from="12";
-  // currency=record {decimals=13; symbol="asd"}; profit=12.0; price=12.0;
-  // amount=12.0}}}}})'
-  // generate_update_call!(sync_transaction_record);
-
-  // !query transactions
-  // generate_query_call!(query_wallet_transactions);
-}
-fn test_query_transactions2() {
-  let pic_env = PicEnv::new();
-  let user1 = Principal::anonymous();
+  // !add_wallet
 
   let args = WalletAddCommand {
     address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
@@ -92,13 +55,57 @@ fn test_query_transactions2() {
     Ok(_) => println!("ok"),
     Err(_) => println!("err"),
   }
-}
-
-fn wasm_result_to_vec8(result: WasmResult) -> Vec<u8> {
-  match result {
-    WasmResult::Reply(vec) => vec,
-    WasmResult::Reject(err) => err.into_bytes(),
+  // !query wallet info
+  let ret: Result<Vec<WalletProfile>, Vec<WalletProfile>> =
+    pic_env.my_query_call_no_arg(user1, "query_all_wallets");
+  match ret {
+    Ok(data) => println!("{:?}", data),
+    Err(_) => println!("err"),
   }
+  // !add transactions
+  // id :10002
+  // '(vec {record {123; vec {record {hash="123"; walletName="asd";
+  // t_type="asd"; timestamp=123.0; details=record {to="asd"; fee=123.8;
+  // status="asd"; ledgerCanisterId="asd"; value=1.0; cost=1.0; from="12";
+  // currency=record {decimals=13; symbol="asd"}; profit=12.0; price=12.0;
+  // amount=12.0}}}}})'
+  // generate_update_call!(sync_transaction_record);
+  let transaction = TransactionF {
+    hash: "123".to_string(),
+    timestamp: 123.0,
+    t_type: "SEND".to_string(),
+    walletName: "asd".to_string(),
+    details: Details {
+      amount: 123.8,
+      cost: 1.0,
+      currency: Currency {
+        decimals: 2,
+        symbol: "ICP".to_string(),
+      },
+      fee: 123.8,
+      from: "12".to_string(),
+      to: "asd".to_string(),
+      price: 1.0,
+      value: 1.0,
+      status: "SUCCESS".to_string(),
+      ledgerCanisterId: "asd".to_string(),
+      profit: 1.0,
+    },
+  };
+  let sync_transaction_command = SyncTransactionCommand {
+    // todo this id should get from last op of `query_all_wallets`
+    walletId: 10002,
+    history: vec![transaction],
+  };
+  let args: Vec<SyncTransactionCommand> = vec![sync_transaction_command];
+  let ret: Result<bool, String> =
+    pic_env.my_update_call(user1, args, "sync_transaction_record");
+  match ret {
+    Ok(data) => println!("{:?}", data),
+    Err(err) => println!("{:?}", err),
+  }
+  // !query transactions
+  // generate_query_call!(query_wallet_transactions);
 }
 
 fn call_canister(
@@ -177,6 +184,7 @@ pub struct PicEnv {
   pic: PocketIc,
   canister_id: Principal,
 }
+use termion::color;
 
 impl PicEnv {
   pub fn new() -> Self {
@@ -202,11 +210,73 @@ impl PicEnv {
     args: ArgsType,
     method: &str,
   ) -> ResponseType {
+    print_red("####Executing:" + method);
     let ret_raw = self.pic.update_call(
       self.canister_id,
       user,
       method,
       candid::encode_one(args).unwrap(),
+    );
+
+    let ret: ResponseType = unwrap_response(ret_raw);
+    return ret;
+  }
+
+  fn my_update_call_no_arg<
+    ResponseType: candid::CandidType + DeserializeOwned,
+  >(
+    &self,
+    user: Principal,
+    method: &str,
+  ) -> ResponseType {
+    print_red("####Executing:" + method);
+
+    let ret_raw = self.pic.update_call(
+      self.canister_id,
+      user,
+      method,
+      candid::encode_one(()).unwrap(),
+    );
+
+    let ret: ResponseType = unwrap_response(ret_raw);
+    return ret;
+  }
+
+  fn my_query_call<
+    ArgsType: candid::CandidType,
+    ResponseType: candid::CandidType + DeserializeOwned,
+  >(
+    &self,
+    user: Principal,
+    args: ArgsType,
+    method: &str,
+  ) -> ResponseType {
+    print_red("####Executing:" + method);
+
+    let ret_raw = self.pic.query_call(
+      self.canister_id,
+      user,
+      method,
+      candid::encode_one(args).unwrap(),
+    );
+
+    let ret: ResponseType = unwrap_response(ret_raw);
+    return ret;
+  }
+  fn my_query_call_no_arg<
+    ResponseType: candid::CandidType + DeserializeOwned,
+  >(
+    &self,
+    user: Principal,
+    method: &str,
+  ) -> ResponseType {
+    print_red("####Executing:" + method);
+
+    let ret_raw = self.pic.query_call(
+      self.canister_id,
+      user,
+      method,
+      encode_one(()).unwrap(),
     );
 
     let ret: ResponseType = unwrap_response(ret_raw);
@@ -236,8 +306,11 @@ mod tests {
   #[test]
   fn test_query_transactions2() {
     let pic_env = PicEnv::new();
-    // this is admin BTWL 
-    let user1 = Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae").unwrap();
+    // this is admin BTWL
+    let user1 = Principal::from_text(
+      "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
+    )
+    .unwrap();
 
     let args = WalletAddCommand {
       address:
@@ -257,4 +330,103 @@ mod tests {
       Err(_) => eprintln!("err"),
     }
   }
+}
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct UserProfile {
+  pub owner: Principal, // 用户 Principal
+  pub name: String,
+  pub create_time: u64,
+}
+
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct Wallet {
+  walletid: u64,
+  wallet_history: Vec<TransactionF>,
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct SyncTransactionCommand {
+  pub walletId: WalletId,
+  pub history: Vec<TransactionF>,
+}
+
+/**
+ * FIXED DATA TYPE, use by frontend. dont change easily.
+ *
+ * B stands for backend data
+ * F stands for frontend data type
+ *
+ */
+#[allow(non_snake_case)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct TransactionF {
+  pub hash: String,
+  pub timestamp: f64, // TODO check ns or ms as unit
+  pub t_type: String, //  transaction type : "SEND", "RECEIVE"
+  pub walletName: String,
+  pub details: Details,
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct Details {
+  pub amount: f64,
+  pub cost: f64, /* 由后端计算，理论上应该是不要持久化储存的，
+                  * 只有调用方法的时候由后端计算，组装 */
+  pub currency: Currency,
+  pub fee: f64,
+  pub from: String,
+  pub to: String,
+  pub price: f64,
+  pub value: f64,     //此笔交易价值
+  pub status: String, //交易状态，表示交易成功与否，暂时先要着
+  pub ledgerCanisterId: String,
+  pub profit: f64,
+}
+
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct Currency {
+  pub decimals: u64,  //代币精度
+  pub symbol: String, //代币符号，例如'ICP'，'CHAT'
+}
+pub type WalletId = u64;
+pub type TransactionId = u64;
+pub type WalletAddress = String;
+
+#[allow(non_snake_case)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct TransactionB {
+  //
+  // backend autogen:
+  pub id: TransactionId,
+  //
+  pub hash: String,
+  pub timestamp: f64, //this is ms format with float.
+  pub t_type: String, //  transaction type : "SEND", "RECEIVE"
+  pub walletName: String,
+  pub details: Details,
+
+  pub principal_id: Option<String>, /* Plug use , need
+                                     * to convert to
+                                     * opt_account_id_hex for use. */
+  pub memo: String,
+  pub address: WalletAddress,
+
+  pub tag: String,
+  pub manual: bool,
+  pub comment: String,
+  // TODO , considering wallet_amount :
+  // pub wallet_amount:u32,
+  // pub warning:String,
+  // TODO: Warning（用户是否标记某些记录为missing cost,
+  // missing rates）这条字段先只做出来，不用,
+  // 解释：比如missing
+  // rates是标记某个交易历史找不到对应的价格记录，
+  // 例如某个NFT的交易价格查不到，
+  // 就会被自动标记为missing rates
+}
+
+fn print_red(s: &str) {
+  println!("{}{}{}", color::Fg(color::Red), s, color::Fg(color::Reset));
 }
