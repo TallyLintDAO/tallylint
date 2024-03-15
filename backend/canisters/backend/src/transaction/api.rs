@@ -5,7 +5,7 @@ use ic_cdk::caller;
 use ic_cdk_macros::{query, update};
 
 use super::domain::*;
-use super::service::{ TransactionId, WalletAddress};
+use super::service::{TransactionId, WalletAddress};
 use crate::common::context::{get_caller, now};
 use crate::common::guard::user_owner_guard;
 use crate::common::times::ms_float_to_ns;
@@ -52,7 +52,8 @@ fn delete_transaction(id: TransactionId) -> Result<TransactionId, String> {
 
 // TODO get all wallets of records info
 // many work todo to different query
-#[query(guard = "user_owner_guard")]
+// #[query(guard = "user_owner_guard")]
+#[query]
 fn query_wallet_transactions(
   cmd: HistoryQueryCommand,
 ) -> Result<HashMap<WalletAddress, Vec<TransactionB>>, String> {

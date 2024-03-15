@@ -11,14 +11,15 @@ const MAX_WALLET_NAME_LENGTH: usize = 64;
 const ACCOUNT_ID_LENGTH: usize = 64;
 const PRINCIPAL_ID_LENGTH: usize = 63;
 
-#[update(guard = "user_owner_guard")]
+#[update]
+// #[update(guard = "user_owner_guard")]
 fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
   CONTEXT.with(|c| {
     if cmd.name.len() > MAX_WALLET_NAME_LENGTH {
       return Err(String::from("Wallet name exceeds maximum length 64"));
     }
     if cmd.address.len() != ACCOUNT_ID_LENGTH {
-      return Err(String::from("acccount_id length need to be 64"));
+      return Err(String::from("wallet_id length need to be 64"));
     }
 
     let if_principal: Option<String> = cmd.principal_id.clone();
@@ -92,7 +93,8 @@ fn update_wallet(cmd: WalletUpdateCommand) -> Result<bool, String> {
   })
 }
 
-#[query(guard = "user_owner_guard")]
+// #[query(guard = "user_owner_guard")]
+#[query]
 fn query_a_wallet(id: u64) -> Result<WalletProfile, String> {
   CONTEXT.with(|c| {
     let ctx = c.borrow_mut();

@@ -96,7 +96,6 @@ impl TransactionService {
   }
 }
 
-
 impl WalletRecordService {
   // TODO
   pub fn add_transaction_impl(
@@ -151,24 +150,16 @@ impl WalletRecordService {
     addr: WalletAddress,
   ) -> HashMap<String, Vec<TransactionB>> {
     let mut one_wallet = HashMap::new();
-    let records = self.query_a_wallet_transactions(addr.clone());
-    if records.is_empty() {
-      return HashMap::new();
-    }
-    one_wallet.insert(addr.clone(), records);
-    return one_wallet;
-  }
-
-  pub fn query_a_wallet_transactions(
-    &self,
-    addr: WalletAddress,
-  ) -> Vec<TransactionB> {
-    let transac = self
+    let records: Vec<TransactionB> = self
       .records
       .values()
       .filter(|record| record.address == addr)
       .cloned()
       .collect();
-    return transac;
+    if records.is_empty() {
+      return HashMap::new();
+    }
+    one_wallet.insert(addr.clone(), records);
+    return one_wallet;
   }
 }

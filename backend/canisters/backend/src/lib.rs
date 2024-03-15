@@ -38,6 +38,8 @@ use crate::transaction::domain::TransactionF;
 use crate::transaction::service::TransactionId;
 
 #[allow(unused_imports)]
+use crate::wallet::domain::*;
+#[allow(unused_imports)]
 use crate::wallet::service::RecordId;
 #[allow(unused_imports)]
 use crate::wallet::service::WalletAddress;
@@ -58,8 +60,6 @@ use ic_cdk::api::management_canister::{
 };
 #[allow(unused_imports)]
 use std::collections::HashMap;
-#[allow(unused_imports)]
-use crate::wallet::domain::*;
 
 ic_cdk::export_candid!();
 
