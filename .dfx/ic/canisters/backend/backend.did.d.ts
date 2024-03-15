@@ -94,13 +94,16 @@ export interface SyncTransactionCommand {
 export interface TransactionB {
   'id' : bigint,
   'tag' : string,
+  'hash' : string,
   'memo' : string,
+  'walletName' : string,
+  't_type' : string,
   'comment' : string,
-  'income' : number,
   'address' : string,
+  'timestamp' : number,
+  'details' : Details,
   'manual' : boolean,
   'principal_id' : [] | [string],
-  'transaction_f' : TransactionF,
 }
 export interface TransactionF {
   'hash' : string,
