@@ -1,5 +1,4 @@
-use std::{any::Any, collections::HashMap, fs::read};
-
+use std::{collections::HashMap, fs::read};
 use client::setup::CanisterId;
 
 pub fn add(left: usize, right: usize) -> usize {
