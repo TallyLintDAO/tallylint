@@ -162,4 +162,11 @@ impl WalletRecordService {
     one_wallet.insert(addr.clone(), records);
     return one_wallet;
   }
+  pub fn query_all_transactions(&self) -> HashMap<TransactionId, TransactionB> {
+    let mut all_trans = HashMap::new();
+    for (id, records) in &self.records {
+      all_trans.insert(id.clone(), records.clone());
+    }
+    return all_trans;
+  }
 }

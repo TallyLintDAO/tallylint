@@ -1,0 +1,74 @@
+{
+  "id": 10005,
+  "users": [
+    {
+      "owner": "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
+      "name": "",
+      "create_time": 1620328630000000000
+    }
+  ],
+  "wallets": [
+    {
+      "id": 10002,
+      "holder": "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
+      "address": "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739",
+      "from": "NNS",
+      "name": "w1",
+      "principal_id": null,
+      "create_time": 1620328630000000000,
+      "transactions": 1,
+      "last_sync_time": 1620328630000000000,
+      "last_transaction_time": 123000000
+    }
+  ],
+  "records": [
+    {
+      "id": 10005,
+      "hash": "123",
+      "timestamp": 123.0,
+      "t_type": "SEND",
+      "walletName": "asd",
+      "details": {
+        "amount": 123.8,
+        "cost": 1.0,
+        "currency": { "decimals": 2, "symbol": "ICP" },
+        "fee": 123.8,
+        "from": "12",
+        "to": "asd",
+        "price": 1.0,
+        "value": 1.0,
+        "status": "SUCCESS",
+        "ledgerCanisterId": "asd",
+        "profit": 1.0
+      },
+      "principal_id": null,
+      "memo": "",
+      "address": "12",
+      "tag": "",
+      "manual": false,
+      "comment": ""
+    }
+  ],
+  "neurons": [],
+  "transactions": [
+    {
+      "hash": "123",
+      "timestamp": 123.0,
+      "t_type": "SEND",
+      "walletName": "asd",
+      "details": {
+        "amount": 123.8,
+        "cost": 1.0,
+        "currency": { "decimals": 2, "symbol": "ICP" },
+        "fee": 123.8,
+        "from": "12",
+        "to": "asd",
+        "price": 1.0,
+        "value": 1.0,
+        "status": "SUCCESS",
+        "ledgerCanisterId": "asd",
+        "profit": 1.0
+      }
+    }
+  ]
+}

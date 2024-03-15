@@ -1,4 +1,4 @@
-use std::{any::Any, fs::read};
+use std::{any::Any, collections::HashMap, fs::read};
 
 use client::setup::CanisterId;
 
@@ -22,9 +22,10 @@ use serde_bytes::ByteBuf;
 use crate::client::setup::TERA;
 
 fn test_query_transactions() {
+  // init
   let pic_env = PicEnv::new();
-  // this is admin BTWL
   let user1 = Principal::from_text(
+    // this is admin BTWL
     "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
   )
   .unwrap();
@@ -38,7 +39,6 @@ fn test_query_transactions() {
   }
 
   // !add_wallet
-
   let args = WalletAddCommand {
     address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
       .to_string(),
@@ -47,14 +47,13 @@ fn test_query_transactions() {
     from: "NNS".to_string(),
     name: "w1".to_string(),
   };
-
   let ret: Result<bool, String> =
     pic_env.my_update_call(user1, args, "add_wallet");
-
   match ret {
     Ok(_) => println!("ok"),
     Err(_) => println!("err"),
   }
+
   // !query wallet info
   let ret: Result<Vec<WalletProfile>, Vec<WalletProfile>> =
     pic_env.my_query_call_no_arg(user1, "query_all_wallets");
@@ -62,14 +61,8 @@ fn test_query_transactions() {
     Ok(data) => println!("{:?}", data),
     Err(_) => println!("err"),
   }
+
   // !add transactions
-  // id :10002
-  // '(vec {record {123; vec {record {hash="123"; walletName="asd";
-  // t_type="asd"; timestamp=123.0; details=record {to="asd"; fee=123.8;
-  // status="asd"; ledgerCanisterId="asd"; value=1.0; cost=1.0; from="12";
-  // currency=record {decimals=13; symbol="asd"}; profit=12.0; price=12.0;
-  // amount=12.0}}}}})'
-  // generate_update_call!(sync_transaction_record);
   let transaction = TransactionF {
     hash: "123".to_string(),
     timestamp: 123.0,
@@ -104,19 +97,29 @@ fn test_query_transactions() {
     Ok(data) => println!("{:?}", data),
     Err(err) => println!("{:?}", err),
   }
+
   // !query transactions
   // generate_query_call!(query_wallet_transactions);
-}
+  let args: HistoryQueryCommand = HistoryQueryCommand {
+    address: (vec![
+      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+        .to_string(),
+    ]),
+    from_time: 0, // Replace with your actual timestamp
+    to_time: 0,   // Replace with your actual timestamp
+    sort_method: Some("date-asc".to_string()),
+  };
+  let ret: Result<HashMap<WalletAddress, Vec<TransactionB>>, String> =
+    pic_env.my_query_call(user1, args, "query_wallet_transactions");
+  match ret {
+    Ok(data) => println!("{:?}", data),
+    Err(err) => println!("{:?}", err),
+  }
 
-fn call_canister(
-  pic: &PocketIc,
-  canister_id: CanisterId,
-  sender: Principal,
-  method: &str,
-) -> WasmResult {
-  pic
-    .update_call(canister_id, sender, method, encode_one(()).unwrap())
-    .expect("Failed to call counter canister")
+  // !query payload DB
+  let ret: String =
+    pic_env.my_query_call_no_arg(user1, "collect_running_payload");
+  println!("{:?}", ret);
 }
 
 const NNS_INTERNET_IDENTITY_CANISTER_ID: CanisterId =
@@ -210,7 +213,7 @@ impl PicEnv {
     args: ArgsType,
     method: &str,
   ) -> ResponseType {
-    print_red("####Executing:" + method);
+    print_red("####Executing:  ".to_owned() + method);
     let ret_raw = self.pic.update_call(
       self.canister_id,
       user,
@@ -229,7 +232,7 @@ impl PicEnv {
     user: Principal,
     method: &str,
   ) -> ResponseType {
-    print_red("####Executing:" + method);
+    print_red("####Executing:  ".to_owned() + method);
 
     let ret_raw = self.pic.update_call(
       self.canister_id,
@@ -251,7 +254,7 @@ impl PicEnv {
     args: ArgsType,
     method: &str,
   ) -> ResponseType {
-    print_red("####Executing:" + method);
+    print_red("####Executing:  ".to_owned() + method);
 
     let ret_raw = self.pic.query_call(
       self.canister_id,
@@ -270,7 +273,7 @@ impl PicEnv {
     user: Principal,
     method: &str,
   ) -> ResponseType {
-    print_red("####Executing:" + method);
+    print_red("####Executing:  ".to_owned() + method);
 
     let ret_raw = self.pic.query_call(
       self.canister_id,
@@ -427,6 +430,23 @@ pub struct TransactionB {
   // 就会被自动标记为missing rates
 }
 
-fn print_red(s: &str) {
+fn print_red(s: String) {
   println!("{}{}{}", color::Fg(color::Red), s, color::Fg(color::Reset));
+}
+
+pub type TimeStamp = u64;
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct HistoryQueryCommand {
+  // Primary key
+  pub address: Vec<WalletAddress>, /* make this optional. if not
+                                    * provide.
+                                    * then query all. */
+  pub from_time: TimeStamp,
+  pub to_time: TimeStamp,
+  // pub t_type: Option<String>, /* transaction_type SEND or
+  //  * RECEIVE or BOTH */
+  // pub tag: Option<Vec<String>>,
+  pub sort_method: Option<String>, /*by date-asc or date-desc
+                                    * or profit-asc
+                                    * profit-desc */
 }

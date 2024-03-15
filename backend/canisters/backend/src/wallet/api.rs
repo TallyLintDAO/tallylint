@@ -93,8 +93,8 @@ fn update_wallet(cmd: WalletUpdateCommand) -> Result<bool, String> {
   })
 }
 
-// #[query(guard = "user_owner_guard")]
-#[query]
+#[query(guard = "user_owner_guard")]
+// #[query]
 fn query_a_wallet(id: u64) -> Result<WalletProfile, String> {
   CONTEXT.with(|c| {
     let ctx = c.borrow_mut();

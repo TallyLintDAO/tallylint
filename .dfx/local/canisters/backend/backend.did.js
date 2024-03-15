@@ -115,6 +115,10 @@ export const idlFactory = ({ IDL }) => {
     'Err' : IDL.Vec(NeuronProfile),
   });
   const Result_7 = IDL.Variant({
+    'Ok' : IDL.Vec(IDL.Tuple(IDL.Nat64, TransactionB)),
+    'Err' : IDL.Text,
+  });
+  const Result_8 = IDL.Variant({
     'Ok' : IDL.Vec(WalletProfile),
     'Err' : IDL.Vec(WalletProfile),
   });
@@ -124,7 +128,7 @@ export const idlFactory = ({ IDL }) => {
     'sort_method' : IDL.Opt(IDL.Text),
     'address' : IDL.Vec(IDL.Text),
   });
-  const Result_8 = IDL.Variant({
+  const Result_9 = IDL.Variant({
     'Ok' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(TransactionB))),
     'Err' : IDL.Text,
   });
@@ -168,10 +172,11 @@ export const idlFactory = ({ IDL }) => {
     'query_a_neuron_wallet' : IDL.Func([IDL.Nat64], [Result_4], ['query']),
     'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_5], ['query']),
     'query_all_neuron_wallet' : IDL.Func([], [Result_6], ['query']),
-    'query_all_wallets' : IDL.Func([], [Result_7], ['query']),
+    'query_all_transactions' : IDL.Func([], [Result_7], ['query']),
+    'query_all_wallets' : IDL.Func([], [Result_8], ['query']),
     'query_wallet_transactions' : IDL.Func(
         [HistoryQueryCommand],
-        [Result_8],
+        [Result_9],
         ['query'],
       ),
     'save_payload_to_dropbox' : IDL.Func(

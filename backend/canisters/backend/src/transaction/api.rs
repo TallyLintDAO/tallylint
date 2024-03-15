@@ -1,7 +1,6 @@
 use std::borrow::BorrowMut;
 use std::collections::HashMap;
 
-use ic_cdk::caller;
 use ic_cdk_macros::{query, update};
 
 use super::domain::*;
@@ -52,8 +51,8 @@ fn delete_transaction(id: TransactionId) -> Result<TransactionId, String> {
 
 // TODO get all wallets of records info
 // many work todo to different query
-// #[query(guard = "user_owner_guard")]
-#[query]
+#[query(guard = "user_owner_guard")]
+// #[query]
 fn query_wallet_transactions(
   cmd: HistoryQueryCommand,
 ) -> Result<HashMap<WalletAddress, Vec<TransactionB>>, String> {
@@ -68,6 +67,18 @@ fn query_wallet_transactions(
       }
     }
     return Ok(history);
+  })
+}
+
+use crate::common::guard::admin_guard;
+
+#[query(guard = "admin_guard")]
+fn query_all_transactions(
+) -> Result<HashMap<TransactionId, TransactionB>, String> {
+  CONTEXT.with(|c| {
+    let ctx = c.borrow_mut();
+    let rec = ctx.wallet_record_service.query_all_transactions();
+    return Ok(rec);
   })
 }
 
