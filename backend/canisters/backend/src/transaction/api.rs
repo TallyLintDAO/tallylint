@@ -93,18 +93,30 @@ fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
 // 获得历史交易记录并存储到后端. (前端已有一部分计算代码),
 // 可以选择全部搬移到后端或者前端直接把现有计算好的利润发送给后端 需要用到的api:
 // nns dashboard的api可能要用到. 详见前端查询方法.
-#[update(guard = "user_owner_guard")]
+// #[update(guard = "user_owner_guard")]
+#[update]
 fn sync_transaction_record(
   cmd: Vec<SyncTransactionCommand>,
 ) -> Result<bool, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     for one_wallet in cmd {
+      // insert records
       for one_rec in one_wallet.history.clone() {
         ctx.id = ctx.id + 1;
         let id = ctx.id;
-        let _ret = ctx.transaction_service.add_transaction_record(id, one_rec);
+        let _ret = ctx
+          .transaction_service
+          .add_transaction_record(id, one_rec.clone());
+
+        // copy transF to transB
+        ctx.id = ctx.id + 1;
+        let id2 = ctx.id;
+        let trans_b = convert_trans_f_to_trans_b(one_rec, id2);
+        let _ = ctx.wallet_record_service.add_transaction_impl(trans_b);
       }
+
+      // update wallet info
       let mut wallet_profile = ctx
         .wallet_service
         .query_a_wallet(one_wallet.walletId)
@@ -117,8 +129,35 @@ fn sync_transaction_record(
         .wallet_service
         .update_wallet(wallet_profile, get_caller());
     }
+
     Ok(true)
   })
 }
 // TODO:
 // fn filt_by_tag(
+
+fn convert_trans_f_to_trans_b(
+  trans_f: TransactionF,
+  id: TransactionId,
+) -> TransactionB {
+  let address = match trans_f.t_type.as_str() {
+    "SEND" => trans_f.details.from.clone(),
+    "RECEIVE" => trans_f.details.to.clone(),
+    _ => WalletAddress::default(), // You can handle other cases here
+  };
+
+  TransactionB {
+    id,
+    hash: trans_f.hash,
+    timestamp: trans_f.timestamp,
+    t_type: trans_f.t_type,
+    walletName: trans_f.walletName,
+    details: trans_f.details,
+    principal_id: None,
+    memo: String::new(),
+    address,
+    tag: String::new(),
+    manual: false,
+    comment: String::new(),
+  }
+}
