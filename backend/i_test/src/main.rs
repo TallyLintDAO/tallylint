@@ -74,7 +74,7 @@ fn test_query_transactions() {
   // !query payload DB
   query_payload_db(&pic_env, user1);
 
-  // ! simple query transactions
+  // !simple query transactions
   no_filter_no_sort_simple_transac_query(&pic_env, user1);
   // !time range query test
   time_range_test(&pic_env, user1);

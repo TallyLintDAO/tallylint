@@ -49,6 +49,25 @@ pub struct Details {
   pub ledgerCanisterId: String,
   pub profit: f64,
 }
+// TODO multi profit type
+#[allow(non_snake_case)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct DetailsB {
+  pub amount: f64,
+  pub cost: f64, /* 由后端计算，理论上应该是不要持久化储存的，
+                  * 只有调用方法的时候由后端计算，组装 */
+  pub currency: Currency,
+  pub fee: f64,
+  pub from: String,
+  pub to: String,
+  pub price: f64,
+  pub value: f64,     //此笔交易价值
+  pub status: String, //交易状态，表示交易成功与否，暂时先要着
+  pub ledgerCanisterId: String,
+  pub profit_lifo: f64,
+  pub profit_fifo: f64,
+  pub profit_none: f64,
+}
 
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct Currency {
