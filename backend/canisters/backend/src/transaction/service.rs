@@ -100,16 +100,16 @@ impl TransactionService {
 pub struct HistoryQueryCommand {
   // Primary key
   pub address: Vec<WalletAddress>, /* make this optional. if not
-                                       * provide.
-                                       * then query all. */
-  pub from_time: Option<TimeStamp>,
-  pub to_time: Option<TimeStamp>,
-  pub t_type: Option<String>, /* transaction_type SEND or
-                       * RECEIVE or BOTH */
-  pub tag: Option<Vec<String>>,
+                                    * provide.
+                                    * then query all. */
+  pub from_time: TimeStamp,
+  pub to_time: TimeStamp,
+  // pub t_type: Option<String>, /* transaction_type SEND or
+  //  * RECEIVE or BOTH */
+  // pub tag: Option<Vec<String>>,
   pub sort_method: Option<String>, /*by date-asc or date-desc
-                            * or profit-asc
-                            * profit-desc */
+                                    * or profit-asc
+                                    * profit-desc */
 }
 impl WalletRecordService {
   // TODO
@@ -162,18 +162,15 @@ impl WalletRecordService {
   //
   pub fn query_one_wallet(
     &self,
-    cmd: HistoryQueryCommand,
+    addr: WalletAddress,
   ) -> HashMap<String, Vec<TransactionB>> {
-    // let addr = cmd.address.unwrap().clone();
-    // let records = self.query_a_wallet_transactions(addr.clone());
-    // if records.is_empty() {
-    //   return HashMap::new();
-    // }
-    // let mut res = HashMap::new();
-    // res.insert(addr.clone(), records);
-    // res
-    let mut res = HashMap::new();
-      return res;
+    let mut one_wallet = HashMap::new();
+    let records = self.query_a_wallet_transactions(addr.clone());
+    if records.is_empty() {
+      return HashMap::new();
+    }
+    one_wallet.insert(addr.clone(), records);
+    return one_wallet;
   }
 
   pub fn query_a_wallet_transactions(

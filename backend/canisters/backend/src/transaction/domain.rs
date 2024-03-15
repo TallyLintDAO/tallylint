@@ -73,8 +73,8 @@ pub struct TransactionB {
                                      * to convert to
                                      * opt_account_id_hex for use. */
   pub memo: String,
-  pub address: WalletAddress, 
-  
+  pub address: WalletAddress,
+
   pub tag: String,
   pub manual: bool,
   pub comment: String,
