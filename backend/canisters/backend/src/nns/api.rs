@@ -7,8 +7,8 @@ use std::{borrow::BorrowMut, collections::BTreeMap};
 use candid::Principal;
 #[allow(unused_imports)]
 use candid::{self, CandidType, Decode, Deserialize, Encode};
-use ic_cdk::{api::call::CallResult, caller};
 use ic_cdk::api::time;
+use ic_cdk::{api::call::CallResult, caller};
 use ic_cdk_macros::{query, update};
 use serde::Serialize;
 

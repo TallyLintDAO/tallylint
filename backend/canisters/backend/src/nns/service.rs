@@ -32,8 +32,7 @@ impl NeuronService {
       .collect()
   }
 
-
-    pub fn new() -> Self {
+  pub fn new() -> Self {
     NeuronService {
       neurons: BTreeMap::new(),
     }

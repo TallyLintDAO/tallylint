@@ -71,24 +71,26 @@ export type Result = { 'Ok' : boolean } |
   { 'Err' : string };
 export type Result_1 = { 'Ok' : bigint } |
   { 'Err' : string };
-export type Result_10 = { 'Ok' : Array<[string, Array<TransactionB>]> } |
+export type Result_10 = { 'Ok' : TransactionB } |
+  { 'Err' : string };
+export type Result_11 = { 'Ok' : Array<[string, Array<TransactionB>]> } |
   { 'Err' : string };
 export type Result_2 = { 'Ok' : UserProfile } |
   { 'Err' : string };
 export type Result_3 = { 'Ok' : [CustomResult1] } |
   { 'Err' : [RejectionCode, string] };
-export type Result_4 = { 'Ok' : NeuronProfile } |
+export type Result_4 = { 'Ok' : Uint8Array | number[] } |
   { 'Err' : string };
-export type Result_5 = { 'Ok' : WalletProfile } |
+export type Result_5 = { 'Ok' : NeuronProfile } |
   { 'Err' : string };
-export type Result_6 = { 'Ok' : Array<NeuronProfile> } |
+export type Result_6 = { 'Ok' : WalletProfile } |
+  { 'Err' : string };
+export type Result_7 = { 'Ok' : Array<NeuronProfile> } |
   { 'Err' : Array<NeuronProfile> };
-export type Result_7 = { 'Ok' : Array<[bigint, TransactionB]> } |
+export type Result_8 = { 'Ok' : Array<[bigint, TransactionB]> } |
   { 'Err' : string };
-export type Result_8 = { 'Ok' : Array<WalletProfile> } |
+export type Result_9 = { 'Ok' : Array<WalletProfile> } |
   { 'Err' : Array<WalletProfile> };
-export type Result_9 = { 'Ok' : TransactionB } |
-  { 'Err' : string };
 export interface SyncTransactionCommand {
   'history' : Array<TransactionF>,
   'walletId' : bigint,
@@ -152,27 +154,27 @@ export interface _SERVICE {
   'delete_neuron_wallet' : ActorMethod<[bigint], Result>,
   'delete_transaction' : ActorMethod<[bigint], Result_1>,
   'delete_wallet' : ActorMethod<[bigint], Result>,
-  'do_pre_upgrade_and_print_db' : ActorMethod<[], string>,
   'get_balance' : ActorMethod<[], bigint>,
   'get_neuron_info' : ActorMethod<[bigint], Result_3>,
   'get_payload_from_dropbox' : ActorMethod<[string, string], string>,
-  'get_payload_from_stable_mem' : ActorMethod<[], string>,
+  'get_payload_from_dropbox_u8' : ActorMethod<[string, string], Result_4>,
   'get_payload_from_stable_mem_simple' : ActorMethod<[], string>,
   'get_user_config' : ActorMethod<[], Array<UserProfile>>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
-  'my_post_upgrade' : ActorMethod<[], string>,
-  'query_a_neuron_wallet' : ActorMethod<[bigint], Result_4>,
-  'query_a_wallet' : ActorMethod<[bigint], Result_5>,
-  'query_all_neuron_wallet' : ActorMethod<[], Result_6>,
-  'query_all_transactions' : ActorMethod<[], Result_7>,
-  'query_all_wallets' : ActorMethod<[], Result_8>,
-  'query_one_transaction' : ActorMethod<[bigint], Result_9>,
-  'query_wallet_transactions' : ActorMethod<[HistoryQueryCommand], Result_10>,
-  'save_payload_to_dropbox' : ActorMethod<[string, number, bigint], string>,
-  'set_payload_using_dropbox' : ActorMethod<[string, string], boolean>,
-  'set_payload_using_stable_mem' : ActorMethod<[], undefined>,
-  'set_stable_mem_use_payload' : ActorMethod<[], undefined>,
-  'set_stable_mem_use_payload_simple' : ActorMethod<[], undefined>,
+  'query_a_neuron_wallet' : ActorMethod<[bigint], Result_5>,
+  'query_a_wallet' : ActorMethod<[bigint], Result_6>,
+  'query_all_neuron_wallet' : ActorMethod<[], Result_7>,
+  'query_all_transactions' : ActorMethod<[], Result_8>,
+  'query_all_wallets' : ActorMethod<[], Result_9>,
+  'query_one_transaction' : ActorMethod<[bigint], Result_10>,
+  'query_wallet_transactions' : ActorMethod<[HistoryQueryCommand], Result_11>,
+  'save_payload_to_dropbox' : ActorMethod<[string, number], string>,
+  'set_payload_using_dropbox' : ActorMethod<[string, string], string>,
+  'set_payload_using_dropbox_simple' : ActorMethod<[string, string], string>,
+  'set_payload_using_stable_mem' : ActorMethod<[], string>,
+  'set_payload_using_stable_mem_simple' : ActorMethod<[], string>,
+  'set_stable_mem_using_payload' : ActorMethod<[], undefined>,
+  'set_stable_mem_using_payload_simple' : ActorMethod<[], undefined>,
   'set_user_config' : ActorMethod<[], Array<UserProfile>>,
   'sync_transaction_record' : ActorMethod<
     [Array<SyncTransactionCommand>],

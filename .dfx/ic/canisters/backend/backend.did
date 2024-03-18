@@ -130,11 +130,9 @@ service : {
   delete_neuron_wallet : (nat64) -> (Result);
   delete_transaction : (nat64) -> (Result_1);
   delete_wallet : (nat64) -> (Result);
-  do_pre_upgrade_and_print_db : () -> (text) query;
   get_balance : () -> (nat64);
   get_neuron_info : (nat64) -> (Result_3);
   get_payload_from_dropbox : (text, text) -> (text);
-  get_payload_from_stable_mem : () -> (text) query;
   get_payload_from_stable_mem_simple : () -> (text) query;
   get_user_config : () -> (vec UserProfile) query;
   list_all_user : () -> (vec UserProfile);
@@ -145,11 +143,10 @@ service : {
   query_all_wallets : () -> (Result_8) query;
   query_one_transaction : (nat64) -> (Result_9) query;
   query_wallet_transactions : (HistoryQueryCommand) -> (Result_10) query;
-  save_payload_to_dropbox : (text, nat32, nat) -> (text);
-  set_payload_using_dropbox : (text, text) -> (bool);
-  set_payload_using_stable_mem : () -> ();
-  set_stable_mem_use_payload : () -> ();
-  set_stable_mem_use_payload_simple : () -> ();
+  save_payload_to_dropbox : (text, nat32) -> (text);
+  set_payload_using_dropbox : (text, text) -> (text);
+  set_payload_using_stable_mem : () -> (text);
+  set_stable_mem_using_payload : () -> () query;
   set_user_config : () -> (vec UserProfile);
   sync_transaction_record : (vec SyncTransactionCommand) -> (Result);
   update_neuron_wallet : (NeuronUpdateCommand) -> (Result);

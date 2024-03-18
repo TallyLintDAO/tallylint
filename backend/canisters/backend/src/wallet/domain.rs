@@ -11,7 +11,7 @@ pub struct WalletProfile {
   pub id: u64,
   pub holder: Principal,
 
-  // frontend para input
+  // !frontend para input
   pub address: String, // immutable.
   pub from: String,    /* from which wallet_type: such
                         * as  NNS Plug  Stoic
@@ -22,7 +22,7 @@ pub struct WalletProfile {
                                      * opt_account_id_hex(address)
                                      * for use. */
 
-  // backend auto-gen
+  // ! backend auto-gen
   pub create_time: u64, //ic_cdk::api::time();
 
   pub transactions: u64, //transactions count

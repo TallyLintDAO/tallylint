@@ -1,9 +1,9 @@
 use crate::common::guard::admin_guard;
 use crate::CONTEXT;
 use candid::Principal;
+use ic_cdk::api::time;
 use ic_cdk::query;
 use ic_cdk_macros::update;
-use ic_cdk::api::time;
 /**
  * IMPORTANT INFO
 自动登录和自动注册.api名称定了.注释描述一下在这里.

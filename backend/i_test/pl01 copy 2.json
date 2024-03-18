@@ -1,6 +1,6 @@
 {
   "id": 10194,
-  "users": [
+  "user_service": [
     {
       "owner": "ylnfs-4abxu-6fmvx-c4beo-x33vs-qykxt-ra2jh-hvyjd-p363h-npcnp-aae",
       "name": "",
@@ -202,7 +202,7 @@
       "create_time": 1710022015978042982
     }
   ],
-  "wallets": [
+  "wallet_service": [
     {
       "id": 10002,
       "holder": "ck7ij-a5lub-pklz3-xrpmk-hifoi-xikak-va7ss-hxvqo-5paw2-zx2bw-lae",
@@ -600,8 +600,8 @@
       "last_transaction_time": 1710477046136151115
     }
   ],
-  "records": [],
-  "neurons": [
+  "wallet_transc_srv": [],
+  "neuron_service": [
     {
       "owner": "grdwp-gvgoi-fkoor-twdni-262mn-hwkx5-3c3ug-a4hcs-sfa52-asxl7-pqe",
       "name": "Bross 8 years",
@@ -643,5 +643,5 @@
       "update_time": 1710140630678348212
     }
   ],
-  "transactions": []
+  "trans_f_srv": []
 }

@@ -4,10 +4,10 @@
 // 3. admin terminal
 // 4. dropbox
 
-
 use ic_cdk::api::management_canister::http_request::{
   http_request, CanisterHttpRequestArgument, HttpHeader, HttpMethod,
 };
+use ic_cdk::println;
 use ic_cdk::storage::{stable_restore, stable_save};
 use ic_cdk_macros::*;
 
@@ -19,10 +19,9 @@ use super::env::CanisterEnvironment;
 use crate::common::guard::admin_guard;
 use tracing::info;
 
-use crate::c_http::post::{get_payload_from_dropbox, TERA};
+use crate::c_http::post::{get_payload_from_dropbox, get_payload_from_dropbox_u8, TERA};
 
 use crate::CONTEXT;
-
 
 #[init]
 fn init() {
@@ -70,10 +69,18 @@ fn post_upgrade() {
   // my_post_upgrade();
 }
 
-#[query(guard = "admin_guard")]
+#[update(guard = "admin_guard")]
 fn set_stable_mem_using_payload() {
   let json = collect_running_payload();
   stable_save((json.clone(),)).expect("stable_save() fail!!!!");
+}
+
+#[update(guard = "admin_guard")]
+fn set_stable_mem_using_payload_simple() {
+  CONTEXT.with(|ctx| {
+    let db_json = serde_json::to_string(ctx).expect("serialize_err");
+    stable_save((db_json,)).expect("stable_save() fail!!!!");
+  });
 }
 
 // the whole update canister procedure: ( on a IC node program running on a
@@ -98,7 +105,6 @@ fn set_payload_using_stable_mem() -> String {
     Ok(payload) => {
       let stable_state = CanisterContext::from(payload);
       CONTEXT.with(|s| {
-        stable_save((s,)).expect("stable_save() fail!!!!");
         let mut state = s.borrow_mut();
         *state = stable_state;
       });
@@ -107,8 +113,24 @@ fn set_payload_using_stable_mem() -> String {
   }
 }
 
+#[update(guard = "admin_guard")]
+fn set_payload_using_stable_mem_simple() -> String {
+  let db_json = get_payload_from_stable_mem_simple();
 
-
+  let ret = serde_json::from_str::<CanisterContext>(&db_json);
+  match ret {
+    Err(e) => {
+      format!("!!!! deserialize_error: !!!! {:?}", e)
+    }
+    Ok(db_json) => {
+      CONTEXT.with(|s| {
+        let mut state = s.borrow_mut();
+        *state = db_json;
+      });
+      "upgrade_successful!".to_string()
+    }
+  }
+}
 
 #[update(guard = "admin_guard")]
 pub async fn set_payload_using_dropbox(
@@ -134,7 +156,32 @@ pub async fn set_payload_using_dropbox(
     }
   }
 }
+#[update(guard = "admin_guard")]
+pub async fn set_payload_using_dropbox_simple(
+  // get short-term token : https://www.dropbox.com/developers/apps/info/qi2656n62bhls4u
+  token: String,
+  // get from save_payload_to_dropbox fuction output
+  date_time_version_tag: String,
+) -> String {
+  let db_json_u8:Vec<u8> = get_payload_from_dropbox_u8(token, date_time_version_tag).await.unwrap();
+  let db_json=String::from_utf8(db_json_u8)
+        .expect("Transformed response is not UTF-8 encoded.");
+  ic_cdk::println!("{}", db_json);
 
+  let ret = serde_json::from_str::<CanisterContext>(&db_json);
+  match ret {
+    Err(e) => {
+      format!("!!!! deserialize_error: !!!! {:?}", e)
+    }
+    Ok(db_json) => {
+      CONTEXT.with(|s| {
+        let mut state = s.borrow_mut();
+        *state = db_json;
+      });
+      "upgrade_successful!".to_string()
+    }
+  }
+}
 
 // TODO
 // now work ok. but cant use in pre_upgrade in ic canister.
@@ -220,32 +267,6 @@ fn clean_db() -> bool {
   return false;
 }
 
-// #[cfg(test)]
-// mod tests {
-//   use crate::{
-//     c_http::post::get_payload_from_dropbox, common::context::CanisterDB,
-//   };
-
-//   // use futures::executor::block_on;
-//   use std::fs::File;
-//   use std::io::Read;
-//   #[test]
-//   fn test_deserialize() {
-//     let token=String::from("sl.BxPmJ_Y5qKXvWPtfPwon2tAIuGG-mkXQ0BT_c-13SAcN2Fv7jZOBpKKodcBHdULtrtC0OU7b1SUFQ5J0n-NcKOHNqa_D_Xoa-w2qwfq7U04c9rlqaPi_pzUpTQ2dy-3CL8RFB5KnKlr1-5cWxz0PddM");
-//     let mut file =
-//       File::open("/home/btwl/code/ic/tax_lint/backend/payload.json")
-//         .expect("Unable to open the file");
-//     let mut db_json = String::new();
-//     file
-//       .read_to_string(&mut db_json)
-//       .expect("Unable to read the file");
-//     eprintln!("{}", db_json);
-//     let payload: CanisterDB = serde_json::from_str(&db_json).unwrap();
-//     eprintln!("{}", payload.id);
-//   }
-// }
-
-
 #[query(guard = "admin_guard")]
 pub fn collect_running_payload() -> String {
   let mut json: String = String::new();
@@ -276,7 +297,33 @@ pub fn collect_running_payload() -> String {
 
 #[query(guard = "admin_guard")]
 pub fn get_payload_from_stable_mem_simple() -> String {
-  let (json,): (String,) =
+  let (db_json,): (String,) =
     stable_restore().expect("failed to exec stable_restore()");
-  return json;
+  return db_json;
+}
+
+#[cfg(test)]
+mod tests {
+  use crate::common::context::CanisterContext;
+
+  // use futures::executor::block_on;
+  use std::fs::File;
+  use std::io::Read;
+  #[test]
+  fn test_deserialize() {
+    let mut file = File::open(
+      "/home/btwl/code/ic/tax_lint/backend/i_test/pl_01_no_newline.json",
+    )
+    .expect("Unable to open the file");
+    let mut db_json = String::new();
+    file
+      .read_to_string(&mut db_json)
+      .expect("Unable to read the file");
+    let payload_result: Result<CanisterContext, _> =
+      serde_json::from_str(&db_json);
+    match payload_result {
+      Ok(payload) => eprintln!("{}", payload.id),
+      Err(e) => eprintln!("Failed to parse JSON: {}", e),
+    }
+  }
 }

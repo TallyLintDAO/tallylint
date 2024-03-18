@@ -6,7 +6,6 @@ use ic_cdk::api::management_canister::http_request::{
 
 use serde::{Deserialize, Serialize};
 
-
 pub const TERA: Cycles = 1_000_000_000_000;
 pub type Cycles = u128;
 
@@ -74,6 +73,53 @@ pub async fn get_payload_from_dropbox(
       let message =
       format!("The http_request resulted into error. RejectionCode: {r:?}, Error: {m}");
       message
+    }
+  }
+}
+
+#[ic_cdk::update]
+pub async fn get_payload_from_dropbox_u8(
+  token: String,
+  timestamp: String,
+) -> Result<Vec<u8>,String> {
+  let host = "content.dropboxapi.com";
+  let url = "https://content.dropboxapi.com/2/files/download";
+
+  let request_headers = vec![
+    HttpHeader {
+      name: "Host".to_string(),
+      value: format!("{host}:443"),
+    },
+    HttpHeader {
+      name: "Authorization".to_string(),
+      value: format!("Bearer {}", token).to_string(),
+    },
+    HttpHeader {
+      name: "Dropbox-API-Arg".to_string(),
+      // path: dst from dropbox folder.
+      value: format!("{{\"path\":\"/taxlint/payload_{}.json\"}}", timestamp),
+    },
+  ];
+
+  let request = CanisterHttpRequestArgument {
+    url: url.to_string(),
+    max_response_bytes: None, //optional for request
+    method: HttpMethod::POST,
+    headers: request_headers,
+    body: None,
+    transform: None, //optional for request
+  };
+
+  let cycles = 1 * TERA;
+
+  match http_request(request, cycles).await {
+    Ok((response,)) => {
+      Ok(response.body)
+    }
+    Err((r, m)) => {
+      let message =
+      format!("The http_request resulted into error. RejectionCode: {r:?}, Error: {m}");
+      Err(message)
     }
   }
 }
