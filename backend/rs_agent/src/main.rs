@@ -1,11 +1,11 @@
-use candid::{Decode, Principal};
+use candid::{CandidType, Decode, Encode, Nat, Principal};
 #[allow(unused_imports)]
 #[allow(unused_imports)]
 use ic_utils::call::AsyncCall;
-use ic_utils::interfaces::management_canister::builders::InstallMode;
-use ic_utils::interfaces::ManagementCanister;
+
 use std::env;
-use std::fs::read;
+use std::fs::{read, File};
+use std::io::Read;
 
 // sometime debug cache err:
 // cargo clean -p canister_upgrader && cargo build --package canister_upgrader
@@ -14,6 +14,11 @@ use std::fs::read;
 //  ./target/debug/canister_upgrader 0 1
 #[tokio::main]
 async fn main() {
+  
+  testing().await;
+}
+
+async fn testing(){
   let args: Vec<String> = env::args().collect();
   let online_mode = &args[1];
   let install_mode = &args[2];
@@ -42,18 +47,22 @@ async fn main() {
 
   let controller = String::from("btwlz");
 
-  // INFO this need use input passwd in terminal if have passwd. takes about 4s
+  // TODO get from local file 
+  let pay_load_json_string=read_db_to_string_from_local_json_file("/home/btwl/code/ic/tax_lint/backend/i_test/new_ctx_struct_all_ic_data.json".to_owned());
+  let my_arg=Encode!(&Argument { payload: pay_load_json_string}).unwrap();
+  // !INFO this need use input passwd in terminal if have passwd. takes about 4s
   // to run
   let identity = get_dfx_identity(&controller);
   let agent = build_ic_agent(url, identity).await;
-  let response = agent
-    .update(&canister_id_local, "send_payload_string_to_canister")
-    .with_arg(Encode!(&Argument { amount: None })?)
-    .call_and_wait()
-    .await?;
-  let result = Decode!(response.as_slice(), String)?;
+  let response=agent.update(&canister_id_local, "send_payload_string_to_canister").with_arg(my_arg).call_and_wait().await;
+  let result = Decode!(&response.unwrap(), String).unwrap();
+  println!("{}", result);
 }
 
+#[derive(CandidType)]
+struct Argument {
+  payload: String,
+}
 use ic_agent::agent::http_transport::reqwest_transport::ReqwestHttpReplicaV2Transport;
 use ic_agent::{Agent, Identity};
 
@@ -101,4 +110,15 @@ pub struct BuildVersion {
 
 pub struct MyArgs {
   pub wasm_version: BuildVersion,
+}
+
+
+
+fn read_db_to_string_from_local_json_file(f_path: String) -> String {
+  let mut file = File::open(f_path).expect("Unable to open the file");
+  let mut db_json = String::new();
+  file
+    .read_to_string(&mut db_json)
+    .expect("Unable to read the file");
+  db_json
 }

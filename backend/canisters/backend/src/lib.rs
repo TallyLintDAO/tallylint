@@ -63,6 +63,11 @@ use std::collections::HashMap;
 
 ic_cdk::export_candid!();
 
+#[ic_cdk::query]
+fn greet_test() -> String {
+  String::from("hello")
+}
+
 // #[cfg(test)]
 // mod tests {
 //   use super::*;

@@ -4,12 +4,14 @@ from ic.agent import Agent
 
 # Identity and Client are dependencies of Agent
 
-# TODO get pk from env:
+# TODO get pk from env: BTWLZ_PK
 iden = Identity(
     privkey="833fe62409237b9d62ec77587520911e9a759cec1d19755b7da901b96dca3d42"
 )  # create an instance from private key
 
-client = Client(url="https://ic0.app")
+client = Client(url="https://127.0.0.1:40010")
+#   let url_local = String::from("https://127.0.0.1:40010");
+#   let url_ic = String::from("https://ic0.app/");
 agent = Agent(iden, client)
 
 
