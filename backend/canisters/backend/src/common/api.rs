@@ -1,6 +1,6 @@
 use super::context::CanisterContext;
 use super::env::CanisterEnvironment;
-use ic_cdk::update;
+
 use tracing::info;
 
 #[allow(dead_code)]

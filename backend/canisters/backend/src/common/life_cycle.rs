@@ -4,8 +4,10 @@
 // 3. admin terminal
 // 4. dropbox
 
-use std::io::{Read, Write};
 
+use ic_cdk::api::management_canister::http_request::{
+  http_request, CanisterHttpRequestArgument, HttpHeader, HttpMethod,
+};
 use ic_cdk::storage::{stable_restore, stable_save};
 use ic_cdk_macros::*;
 
@@ -13,14 +15,14 @@ use canister_tracing_macros::trace;
 
 use super::context::{CanisterContext, CanisterDB};
 use super::env::CanisterEnvironment;
-use super::memory::get_upgrades_memory;
+
 use crate::common::guard::admin_guard;
 use tracing::info;
 
 use crate::c_http::post::{get_payload_from_dropbox, TERA};
 
 use crate::CONTEXT;
-use stable_memory::*;
+
 #[init]
 fn init() {
   ic_cdk::setup();
@@ -68,10 +70,9 @@ fn post_upgrade() {
 }
 
 #[query(guard = "admin_guard")]
-fn set_stable_mem_using_payload() -> String {
+fn set_stable_mem_using_payload() {
   let json = collect_running_payload();
   stable_save((json.clone(),)).expect("stable_save() fail!!!!");
-  return json;
 }
 
 // the whole update canister procedure: ( on a IC node program running on a
@@ -113,26 +114,26 @@ pub async fn set_payload_using_dropbox(
   token: String,
   // get from save_payload_to_dropbox fuction output
   date_time_version_tag: String,
-) -> bool {
-  let db_json = get_payload_from_dropbox(token, date_time_version_tag).await;
+) -> String {
+  let json = get_payload_from_dropbox(token, date_time_version_tag).await;
 
-  // ic_cdk::println!("json: {}", db_json); // this print debug info to
-  // ic-replica node console. TODO any possible to set log level and detect
-  // dev-env or prod-env to optional log ?
-
-  let payload: CanisterDB = serde_json::from_str(&db_json).unwrap();
-
-  let stable_state = CanisterContext::from(payload);
-  CONTEXT.with(|s| {
-    let mut state = s.borrow_mut();
-    *state = stable_state;
-    return true;
-  })
+  let ret = serde_json::from_str::<CanisterDB>(&json);
+  match ret {
+    Err(e) => {
+      format!("!!!! deserialize_error: !!!! {:?}", e)
+    }
+    Ok(payload) => {
+      let stable_state = CanisterContext::from(payload);
+      CONTEXT.with(|s| {
+        let mut state = s.borrow_mut();
+        *state = stable_state;
+      });
+      "upgrade_successful!".to_string()
+    }
+  }
 }
 
-use ic_cdk::api::management_canister::http_request::{
-  http_request, CanisterHttpRequestArgument, HttpHeader, HttpMethod,
-};
+
 // TODO
 // now work ok. but cant use in pre_upgrade in ic canister.
 // need to make this function blocking . cant be async.
