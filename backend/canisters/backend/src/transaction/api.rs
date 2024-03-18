@@ -117,9 +117,7 @@ fn update_transaction(data: TransactionB) -> Result<bool, String> {
     let mut ctx = c.borrow_mut();
     let ret = ctx.wallet_transc_srv.update_transaction_impl(data);
     match ret {
-      Ok(_) => {
-        Ok(true)
-      }
+      Ok(_) => Ok(true),
       Err(msg) => Err(msg),
     }
   })
@@ -131,9 +129,7 @@ fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
     let mut ctx = c.borrow_mut();
     let ret = ctx.wallet_transc_srv.query_one(id);
     match ret {
-      Ok(t) => {
-        Ok(t)
-      }
+      Ok(t) => Ok(t),
       Err(msg) => Err(msg),
     }
   })

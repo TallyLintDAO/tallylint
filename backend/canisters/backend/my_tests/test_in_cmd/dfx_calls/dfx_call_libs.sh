@@ -82,7 +82,6 @@ dfx canister call backend store_paylaod_to_dropbox
 # test http 
 dfx canister call backend get_icp_usd_exchange 
 dfx canister call backend save_payload_to_dropbox 
-dfx canister call backend save_payload_to_dropbox_blocking 
 
 # dropbox test:
 ```
@@ -290,6 +289,7 @@ test stable_simple:
 
 # works good!
 dfx canister call backend get_payload_from_stable_mem_simple
+dfx canister call backend collect_running_payload
 
 dfx canister call backend set_stable_mem_use_payload_simple
 
@@ -299,10 +299,11 @@ dfx canister call backend sync_transaction_record '(vec {record {123; vec {recor
 
 
 
- dfx canister call  backend save_payload_to_dropbox '("sl.BxPmJ_Y5qKXvWPtfPwon2tAIuGG-mkXQ0BT_c-13SAcN2Fv7jZOBpKKodcBHdULtrtC0OU7b1SUFQ5J0n-NcKOHNqa_D_Xoa-w2qwfq7U04c9rlqaPi_pzUpTQ2dy-3CL8RFB5KnKlr1-5cWxz0PddM", 0 ,100)'
+ dfx canister call  backend save_payload_to_dropbox '("sl.BxPmJ_Y5qKXvWPtfPwon2tAIuGG-mkXQ0BT_c-13SAcN2Fv7jZOBpKKodcBHdULtrtC0OU7b1SUFQ5J0n-NcKOHNqa_D_Xoa-w2qwfq7U04c9rlqaPi_pzUpTQ2dy-3CL8RFB5KnKlr1-5cWxz0PddM", 0)'
 
 
  dfx canister call backend user_quantity --network ic 
 
  dfx canister call  backend do_pre_upgrade_and_print_db --network ic 
  dfx canister call  backend get_payload_from_stable_mem 
+ dfx canister call  backend my_post_upgrade 

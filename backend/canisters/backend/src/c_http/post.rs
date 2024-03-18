@@ -7,6 +7,8 @@ use ic_cdk::api::management_canister::http_request::{
 use serde::{Deserialize, Serialize};
 
 use crate::{calculate_cost, common::life_cycle::collect_running_payload};
+pub const TERA: Cycles = 1_000_000_000_000;
+pub type Cycles = u128;
 
 // This struct is legacy code and is not really used in the code.
 #[derive(Serialize, Deserialize)]
@@ -50,11 +52,6 @@ pub async fn get_payload_from_dropbox(
     },
   ];
 
-  let json_string: String = collect_running_payload();
-
-  let json_utf8: Vec<u8> = json_string.into_bytes();
-  let json_length = json_utf8.len() as u64;
-
   let request = CanisterHttpRequestArgument {
     url: url.to_string(),
     max_response_bytes: None, //optional for request
@@ -64,13 +61,12 @@ pub async fn get_payload_from_dropbox(
     transform: None, //optional for request
   };
 
-  let cycles = calculate_cost(16, json_length, 1000);
+  let cycles = 1 * TERA;
 
   match http_request(request, cycles).await {
     Ok((response,)) => {
       let mut str_body = String::from_utf8(response.body)
         .expect("Transformed response is not UTF-8 encoded.");
-      // ic_cdk::api::print(format!("{:?}", str_body));
       str_body = str_body.replace("\\", "");
       str_body
     }

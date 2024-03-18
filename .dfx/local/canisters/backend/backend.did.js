@@ -21,7 +21,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const TransactionB = IDL.Record({
     'id' : IDL.Nat64,
-    'tag' : IDL.Text,
+    'tag' : IDL.Vec(IDL.Text),
     'hash' : IDL.Text,
     'memo' : IDL.Text,
     'walletName' : IDL.Text,
@@ -122,13 +122,14 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Vec(WalletProfile),
     'Err' : IDL.Vec(WalletProfile),
   });
+  const Result_9 = IDL.Variant({ 'Ok' : TransactionB, 'Err' : IDL.Text });
   const HistoryQueryCommand = IDL.Record({
     'from_time' : IDL.Nat64,
     'to_time' : IDL.Nat64,
     'sort_method' : IDL.Opt(IDL.Text),
     'address' : IDL.Vec(IDL.Text),
   });
-  const Result_9 = IDL.Variant({
+  const Result_10 = IDL.Variant({
     'Ok' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Vec(TransactionB))),
     'Err' : IDL.Text,
   });
@@ -168,15 +169,18 @@ export const idlFactory = ({ IDL }) => {
     'get_payload_from_dropbox' : IDL.Func([IDL.Text, IDL.Text], [IDL.Text], []),
     'get_payload_from_stable_mem' : IDL.Func([], [IDL.Text], ['query']),
     'get_payload_from_stable_mem_simple' : IDL.Func([], [IDL.Text], ['query']),
+    'get_user_config' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
+    'my_post_upgrade' : IDL.Func([], [IDL.Text], []),
     'query_a_neuron_wallet' : IDL.Func([IDL.Nat64], [Result_4], ['query']),
     'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_5], ['query']),
     'query_all_neuron_wallet' : IDL.Func([], [Result_6], ['query']),
     'query_all_transactions' : IDL.Func([], [Result_7], ['query']),
     'query_all_wallets' : IDL.Func([], [Result_8], ['query']),
+    'query_one_transaction' : IDL.Func([IDL.Nat64], [Result_9], ['query']),
     'query_wallet_transactions' : IDL.Func(
         [HistoryQueryCommand],
-        [Result_9],
+        [Result_10],
         ['query'],
       ),
     'save_payload_to_dropbox' : IDL.Func(
@@ -192,6 +196,7 @@ export const idlFactory = ({ IDL }) => {
     'set_payload_using_stable_mem' : IDL.Func([], [], []),
     'set_stable_mem_use_payload' : IDL.Func([], [], []),
     'set_stable_mem_use_payload_simple' : IDL.Func([], [], []),
+    'set_user_config' : IDL.Func([], [IDL.Vec(UserProfile)], []),
     'sync_transaction_record' : IDL.Func(
         [IDL.Vec(SyncTransactionCommand)],
         [Result],

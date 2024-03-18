@@ -97,8 +97,6 @@ impl TransactionService {
 }
 
 impl WalletRecordService {
-
-  
   pub fn add_transaction_impl(
     &mut self,
     profile: TransactionB,
@@ -130,8 +128,8 @@ impl WalletRecordService {
     id: TransactionId,
   ) -> Result<TransactionB, String> {
     match self.records.get(&id) {
-        Some(transaction) => Ok(transaction.clone()),
-        None => Err(format!("No transaction found with id: {}", id)),
+      Some(transaction) => Ok(transaction.clone()),
+      None => Err(format!("No transaction found with id: {}", id)),
     }
   }
 

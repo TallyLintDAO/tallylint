@@ -138,6 +138,7 @@ service : () -> {
   get_payload_from_stable_mem_simple : () -> (text) query;
   get_user_config : () -> (vec UserProfile) query;
   list_all_user : () -> (vec UserProfile);
+  my_post_upgrade : () -> (text);
   query_a_neuron_wallet : (nat64) -> (Result_4) query;
   query_a_wallet : (nat64) -> (Result_5) query;
   query_all_neuron_wallet : () -> (Result_6) query;

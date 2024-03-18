@@ -10,7 +10,7 @@ pub mod client;
 
 fn main() {
   // TODO exec this before test:
-  // cd git root 
+  // cd git root
   // cargo build --release --target wasm32-unknown-unknown --package backend &&
   // candid-extractor target/wasm32-unknown-unknown/release/backend.wasm
   // >./backend/canisters/backend/backend.did
@@ -342,7 +342,7 @@ fn update_completx_transaction(pic_env: &PicEnv, user1: Principal) {
   args.comment = "my manualled blabala".to_string();
   args.tag.push("air drop".to_string());
   args.tag.push("air drop3333".to_string());
-  
+
   let ret: Result<bool, String> =
     pic_env.my_update_call(user1, args, "update_transaction");
   match ret {
@@ -353,7 +353,7 @@ fn update_completx_transaction(pic_env: &PicEnv, user1: Principal) {
 
 // TODO
 fn query_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
-  let ret:Result<TransactionB, String> =
+  let ret: Result<TransactionB, String> =
     pic_env.my_update_call(user1, 10016 as u64, "query_one_transaction");
   match ret {
     Ok(data) => println!("{:?}", data),
