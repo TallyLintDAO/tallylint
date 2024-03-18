@@ -359,16 +359,13 @@
 
 <script lang="ts" setup>
 import { getAllTransactions } from "@/api/rosetta"
-import {
-  deleteSyncedTransactions,
-  getSyncedTransactions,
-  getUserAllWallets,
-} from "@/api/user"
+import { deleteSyncedTransactions, getUserAllWallets } from "@/api/user"
 import type { InferredTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
 import { confirmDialog } from "@/utils/dialog"
 import { showMessageSuccess } from "@/utils/message"
+import { getAllSyncedTransactions } from "@/utils/syncedTransactions"
 import type { QForm } from "quasar"
 import { computed, onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
@@ -530,23 +527,12 @@ const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
   showLoading.value = true
   currentPage.value = 1
 
-  getSyncedTransactions(
-    {
-      from_time: 0,
-      to_time: 0,
-      sort_method: [],
-      address: [],
-    },
-    true,
-  ).then((res) => {
-    console.log("getSyncedTransactions", res)
-  })
-
   let targetWallets: WalletTag[]
   //如果没有选择任何钱包，则查询所有钱包
   selectedWallets.length !== 0
     ? (targetWallets = selectedWallets)
     : (targetWallets = wallets.value)
+  getAllSyncedTransactions(0, 0, ["date-asc"], targetWallets)
   getAllTransactions(targetWallets)
     .then((res) => {
       console.log("getWalletHistory", res)
@@ -608,3 +594,4 @@ const onSubmit = () => {}
   }
 }
 </style>
+@/utils/syncedTransactions

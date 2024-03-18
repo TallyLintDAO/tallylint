@@ -1,6 +1,7 @@
 import type { ApiResult, ApiUserInfo } from "@/types/types"
 import type {
   HistoryQueryParams,
+  SyncedHistory,
   WalletInfo,
   WalletTag,
   syncWalletParam,
@@ -163,7 +164,7 @@ export async function syncWallet(
 export async function getSyncedTransactions(
   params: HistoryQueryParams,
   refresh: boolean,
-): Promise<ApiResult<any>> {
+): Promise<SyncedHistory[]> {
   return getBackend().query_wallet_transactions(params)
   // return await getCache({
   //   key: "USER_SyncedTransactions",

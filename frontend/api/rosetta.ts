@@ -84,6 +84,7 @@ export const getAllTransactions = async (
       getICPTransactions(wallet, true),
     )
     const transactionsResults = await Promise.all(transactionsPromises)
+    console.log("transactionsResults", transactionsResults)
     // 使用 Array.reduce 将所有 total 相加，并将 transactions 拼接在一起
     const response: GetTransactionsResponse = transactionsResults.reduce(
       (acc, curr) => {
