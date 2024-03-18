@@ -175,6 +175,8 @@ export interface _SERVICE {
   'get_neuron_info' : ActorMethod<[bigint], Result_3>,
   'get_payload_from_dropbox' : ActorMethod<[string, string], string>,
   'get_payload_from_dropbox_u8' : ActorMethod<[string, string], Result_4>,
+  'get_payload_from_my_server' : ActorMethod<[], string>,
+  'get_payload_from_my_server_raw_ip' : ActorMethod<[], string>,
   'get_payload_from_stable_mem_simple' : ActorMethod<[], string>,
   'get_payload_from_stable_mem_simple_raw' : ActorMethod<[], CanisterContext>,
   'get_user_config' : ActorMethod<[], Array<UserProfile>>,
@@ -187,6 +189,7 @@ export interface _SERVICE {
   'query_one_transaction' : ActorMethod<[bigint], Result_10>,
   'query_wallet_transactions' : ActorMethod<[HistoryQueryCommand], WalletData>,
   'save_payload_to_dropbox' : ActorMethod<[string, number], string>,
+  'send_payload_string_to_canister' : ActorMethod<[string], string>,
   'set_payload_using_dropbox' : ActorMethod<[string, string], string>,
   'set_payload_using_dropbox_simple' : ActorMethod<[string, string], string>,
   'set_payload_using_dropbox_simple_raw' : ActorMethod<

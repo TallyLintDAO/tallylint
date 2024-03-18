@@ -196,6 +196,8 @@ export const idlFactory = ({ IDL }) => {
         [Result_4],
         [],
       ),
+    'get_payload_from_my_server' : IDL.Func([], [IDL.Text], []),
+    'get_payload_from_my_server_raw_ip' : IDL.Func([], [IDL.Text], []),
     'get_payload_from_stable_mem_simple' : IDL.Func([], [IDL.Text], ['query']),
     'get_payload_from_stable_mem_simple_raw' : IDL.Func(
         [],
@@ -216,6 +218,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'save_payload_to_dropbox' : IDL.Func([IDL.Text, IDL.Nat32], [IDL.Text], []),
+    'send_payload_string_to_canister' : IDL.Func([IDL.Text], [IDL.Text], []),
     'set_payload_using_dropbox' : IDL.Func(
         [IDL.Text, IDL.Text],
         [IDL.Text],

@@ -368,8 +368,23 @@ pub fn get_payload_from_stable_mem_simple_raw() -> CanisterContext {
 
 #[update(guard = "admin_guard")]
 pub fn send_payload_string_to_canister(payload: String) -> String {
-  let data = payload;
-  return data;
+   let db_json = payload;
+
+  let ret = serde_json::from_str::<CanisterContext>(&db_json);
+  match ret {
+    Err(e) => {
+      let ret =format!("!!!! deserialize_error: !!!! {:?}", e);
+      return ret;
+    }
+    Ok(db_json) => {
+      CONTEXT.with(|s| {
+        let mut state = s.borrow_mut();
+        *state = db_json;
+      });
+        let ret ="####Congrates!: upgrade_successful!".to_string();
+        return ret;
+    }
+  }
 }
 
 // !only works ok in single node. multi node replica response not match

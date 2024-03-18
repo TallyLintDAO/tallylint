@@ -14,20 +14,19 @@ use std::io::Read;
 //  ./target/debug/canister_upgrader 0 1
 #[tokio::main]
 async fn main() {
-  
   testing().await;
 }
 
-async fn testing(){
+async fn testing() {
+  let controller = String::from("btwlz");
   let args: Vec<String> = env::args().collect();
   let online_mode = &args[1];
-  let install_mode = &args[2];
 
   let url_local = String::from("https://127.0.0.1:40010");
   let url_ic = String::from("https://ic0.app/");
 
   let canister_id_local =
-    Principal::from_text("be2us-64aaa-aaaaa-qaabq-cai").unwrap();
+    Principal::from_text("bkyz2-fmaaa-aaaaa-qaaaq-cai").unwrap();
   let canister_id_ic =
     Principal::from_text("v7g7o-oiaaa-aaaag-qcj3q-cai").unwrap();
   let url;
@@ -45,18 +44,52 @@ async fn testing(){
     panic!("args input err!!");
   }
 
-  let controller = String::from("btwlz");
-
-  // TODO get from local file 
-  let pay_load_json_string=read_db_to_string_from_local_json_file("/home/btwl/code/ic/tax_lint/backend/i_test/new_ctx_struct_all_ic_data.json".to_owned());
-  let my_arg=Encode!(&Argument { payload: pay_load_json_string}).unwrap();
   // !INFO this need use input passwd in terminal if have passwd. takes about 4s
   // to run
   let identity = get_dfx_identity(&controller);
   let agent = build_ic_agent(url, identity).await;
-  let response=agent.update(&canister_id_local, "send_payload_string_to_canister").with_arg(my_arg).call_and_wait().await;
-  let result = Decode!(&response.unwrap(), String).unwrap();
+
+  // ! greet test 
+  // let result = greet_test(agent, canister_id).await;
+  // println!("{}", result);
+
+  let pay_load_json_string=read_db_to_string_from_local_json_file("/home/btwl/code/ic/tax_lint/backend/i_test/new_ctx_struct_all_ic_data.json".to_owned());
+  let args =candid::encode_one((pay_load_json_string)).unwrap();
+  // ! CALL SEND and RECEIVE SUCCESS!!!! YEAH!
+  let result = send_payload_test(agent, canister_id, args).await;
   println!("{}", result);
+}
+
+async fn send_payload_test(
+  agent: Agent,
+  canister_id: Principal,
+  my_arg: Vec<u8>,
+) -> String {
+  let response = agent
+    .update(&canister_id, "send_payload_string_to_canister")
+    .with_arg(my_arg)
+    .call_and_wait()
+    .await;
+  let result = candid::decode_one(&response.unwrap()).unwrap();
+  result
+}
+
+async fn greet_test(agent: Agent, canister_id: Principal) -> String {
+  let response = agent
+    .query(&canister_id, "greet_test")
+    .with_arg(candid::encode_one(()).unwrap())
+    .call()
+    .await;
+  match response {
+    Ok(data) => {
+      let ret = String::from_utf8(data).unwrap();
+      return ret;
+    }
+    Err(e) => {
+      let ret = format!("####An error occurred: {:?}", e);
+      return ret;
+    }
+  }
 }
 
 #[derive(CandidType)]
@@ -111,8 +144,6 @@ pub struct BuildVersion {
 pub struct MyArgs {
   pub wasm_version: BuildVersion,
 }
-
-
 
 fn read_db_to_string_from_local_json_file(f_path: String) -> String {
   let mut file = File::open(f_path).expect("Unable to open the file");
