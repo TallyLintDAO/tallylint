@@ -81,7 +81,7 @@ pub async fn get_payload_from_dropbox(
 pub async fn get_payload_from_dropbox_u8(
   token: String,
   timestamp: String,
-) -> Result<Vec<u8>,String> {
+) -> Result<Vec<u8>, String> {
   let host = "content.dropboxapi.com";
   let url = "https://content.dropboxapi.com/2/files/download";
 
@@ -113,9 +113,7 @@ pub async fn get_payload_from_dropbox_u8(
   let cycles = 1 * TERA;
 
   match http_request(request, cycles).await {
-    Ok((response,)) => {
-      Ok(response.body)
-    }
+    Ok((response,)) => Ok(response.body),
     Err((r, m)) => {
       let message =
       format!("The http_request resulted into error. RejectionCode: {r:?}, Error: {m}");

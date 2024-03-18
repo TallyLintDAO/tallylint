@@ -19,7 +19,9 @@ use super::env::CanisterEnvironment;
 use crate::common::guard::admin_guard;
 use tracing::info;
 
-use crate::c_http::post::{get_payload_from_dropbox, get_payload_from_dropbox_u8, TERA};
+use crate::c_http::post::{
+  get_payload_from_dropbox, get_payload_from_dropbox_u8, TERA,
+};
 
 use crate::CONTEXT;
 
@@ -163,9 +165,12 @@ pub async fn set_payload_using_dropbox_simple(
   // get from save_payload_to_dropbox fuction output
   date_time_version_tag: String,
 ) -> String {
-  let db_json_u8:Vec<u8> = get_payload_from_dropbox_u8(token, date_time_version_tag).await.unwrap();
-  let db_json=String::from_utf8(db_json_u8)
-        .expect("Transformed response is not UTF-8 encoded.");
+  let db_json_u8: Vec<u8> =
+    get_payload_from_dropbox_u8(token, date_time_version_tag)
+      .await
+      .unwrap();
+  let db_json = String::from_utf8(db_json_u8)
+    .expect("Transformed response is not UTF-8 encoded.");
   ic_cdk::println!("{}", db_json);
 
   let ret = serde_json::from_str::<CanisterContext>(&db_json);
@@ -322,7 +327,17 @@ mod tests {
     let payload_result: Result<CanisterContext, _> =
       serde_json::from_str(&db_json);
     match payload_result {
-      Ok(payload) => eprintln!("{}", payload.id),
+      Ok(payload) => eprintln!("PLID is :{}", payload.id),
+      Err(e) => eprintln!("Failed to parse JSON: {}", e),
+    }
+  }
+  #[test]
+  fn test_deserialize_simple() {
+    let ctx: CanisterContext = CanisterContext::new();
+    let payload_result: Result<CanisterContext, _> =
+      serde_json::from_str(&db_json);
+    match payload_result {
+      Ok(payload) => eprintln!("PLID is :{}", payload.id),
       Err(e) => eprintln!("Failed to parse JSON: {}", e),
     }
   }

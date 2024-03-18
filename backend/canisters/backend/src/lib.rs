@@ -12,14 +12,7 @@ pub mod wallet;
 
 use crate::common::context::CanisterContext;
 thread_local! {
-  static CONTEXT: RefCell<CanisterContext> = RefCell::new(CanisterContext {
-        id: 10001,
-        user_service: UserService::new(),
-        wallet_service: WalletService::new(),
-        wallet_transc_srv: WalletRecordService::new(),
-        neuron_service: NeuronService::new(),
-        trans_f_srv: TransactionService::new(),
-    });
+  static CONTEXT: RefCell<CanisterContext> = RefCell::new(CanisterContext::new());
 }
 
 // new auto did generate: in ic_cdk 0.10.0
@@ -29,9 +22,6 @@ thread_local! {
 use crate::nns::api::*;
 #[allow(unused_imports)]
 use crate::nns::domain::*;
-use crate::nns::service::NeuronService;
-use crate::transaction::service::TransactionService;
-use crate::transaction::service::WalletRecordService;
 #[allow(unused_imports)]
 use crate::user::domain::*;
 // #[allow(unused_imports)]
@@ -47,7 +37,6 @@ use crate::transaction::domain::TransactionF;
 #[allow(unused_imports)]
 use crate::transaction::service::TransactionId;
 
-use crate::user::UserService;
 #[allow(unused_imports)]
 use crate::wallet::domain::*;
 #[allow(unused_imports)]
@@ -56,7 +45,6 @@ use crate::wallet::service::RecordId;
 use crate::wallet::service::WalletAddress;
 #[allow(unused_imports)]
 use crate::wallet::service::WalletId;
-use crate::wallet::WalletService;
 #[allow(unused_imports)]
 use ic_cdk::api::call::CallResult;
 #[allow(unused_imports)]

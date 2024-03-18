@@ -31,6 +31,19 @@ pub struct CanisterContext {
   pub trans_f_srv: TransactionService,
 }
 
+impl CanisterContext {
+  pub fn new() -> Self {
+    CanisterContext {
+      id: 10001,
+      user_service: UserService::new(),
+      wallet_service: WalletService::new(),
+      wallet_transc_srv: WalletRecordService::new(),
+      neuron_service: NeuronService::new(),
+      trans_f_srv: TransactionService::new(),
+    }
+  }
+}
+
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct CanisterDB {
   pub id: u64,
