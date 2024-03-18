@@ -149,6 +149,12 @@ pub struct Wallet {
   wallet_history: Vec<TransactionB>,
 }
 
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct WalletData {
+  pub addr: WalletAddress,
+  pub history: Vec<TransactionB>,
+}
+
 /**
  * FIXED DATA TYPE, use by frontend. dont change easily.
  *

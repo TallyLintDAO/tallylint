@@ -180,9 +180,7 @@ pub async fn set_payload_using_dropbox_simple(
   // get from save_payload_to_dropbox fuction output
   date_time_version_tag: String,
 ) -> String {
-  let db_json =
-    get_payload_from_dropbox(token, date_time_version_tag)
-      .await;
+  let db_json = get_payload_from_dropbox(token, date_time_version_tag).await;
   let ret = serde_json::from_str::<CanisterContext>(&db_json);
   match ret {
     Err(e) => {
@@ -435,7 +433,9 @@ mod tests {
     }
   }
 
-
+  /**
+   * TEST OK
+   */
   #[test]
   fn new_struct_deserial() {
     let db_json = read_db_to_string_from_local_json_file(

@@ -310,8 +310,10 @@ dfx canister call backend sync_transaction_record '(vec {record {123; vec {recor
  dfx canister call  backend set_stable_mem_using_payload_simple 
 
 
+#! work on local. not work on ic. very strange!!!
  dfx canister call  backend set_payload_using_dropbox_simple  '("sl.BxrvRi_oHr-E79eZDTyzuJsCejB-kl0dkVW9z2HnWgCQKBXrDR9kb0Y_pi7ly-cb3Z8hfNA2aKT7lred5H19B8U2ZcgdM-CE0ve_FsCB1UxP9tndDzeMoDeVaG2jaDQB6zZ7uL6ucvS1TOtQpbq6a-E", "02")' 
 
+# not work on ic .
  dfx canister call  backend set_payload_using_dropbox_simple_raw  '("sl.BxrvRi_oHr-E79eZDTyzuJsCejB-kl0dkVW9z2HnWgCQKBXrDR9kb0Y_pi7ly-cb3Z8hfNA2aKT7lred5H19B8U2ZcgdM-CE0ve_FsCB1UxP9tndDzeMoDeVaG2jaDQB6zZ7uL6ucvS1TOtQpbq6a-E", "02")' 
 
   dfx canister call backend user_quantity 

@@ -8,7 +8,7 @@ use crate::common::context::{get_caller, now};
 use crate::common::guard::user_owner_guard;
 use crate::common::times::timestamp_ms_float_to_ns;
 use crate::wallet::domain::HistoryQueryCommand;
-use crate::{TransactionB, CONTEXT};
+use crate::{TransactionB, WalletData, CONTEXT};
 
 // TODO use: AddRecordCommand . front end dont need to input
 // id . id gen by backend. TODO 测试 id 正常生成且不冲突
@@ -51,12 +51,14 @@ fn delete_transaction(id: TransactionId) -> Result<TransactionId, String> {
 // TODO get all wallets of records info
 // many work todo to different query
 #[query(guard = "user_owner_guard")]
-fn query_wallet_transactions(
-  cmd: HistoryQueryCommand,
-) -> Result<HashMap<WalletAddress, Vec<TransactionB>>, String> {
+fn query_wallet_transactions(cmd: HistoryQueryCommand) -> WalletData {
   CONTEXT.with(|c| {
     let ctx = c.borrow_mut();
     let mut history: HashMap<WalletAddress, Vec<TransactionB>> = HashMap::new();
+    let mut wallet_data = WalletData {
+      addr: String::new(),
+      history: Vec::new(),
+    };
 
     for addr in cmd.address {
       // get all recs:
@@ -95,7 +97,13 @@ fn query_wallet_transactions(
         history.insert(k, v);
       }
     }
-    return Ok(history);
+    for (_, transactions) in &history {
+      for transaction in transactions {
+        wallet_data.history.push(transaction.clone());
+      }
+    }
+
+    return wallet_data;
   })
 }
 

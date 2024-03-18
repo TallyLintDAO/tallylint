@@ -66,10 +66,6 @@ type RejectionCode = variant {
 type Result = variant { Ok : bool; Err : text };
 type Result_1 = variant { Ok : nat64; Err : text };
 type Result_10 = variant { Ok : TransactionB; Err : text };
-type Result_11 = variant {
-  Ok : vec record { text; vec TransactionB };
-  Err : text;
-};
 type Result_2 = variant { Ok : UserProfile; Err : text };
 type Result_3 = variant {
   Ok : record { CustomResult1 };
@@ -121,6 +117,7 @@ type WalletAddCommand = record {
   address : text;
   principal_id : opt text;
 };
+type WalletData = record { addr : text; history : vec TransactionB };
 type WalletProfile = record {
   id : nat64;
   last_transaction_time : nat64;
@@ -163,7 +160,7 @@ service : {
   query_all_transactions : () -> (Result_8) query;
   query_all_wallets : () -> (Result_9) query;
   query_one_transaction : (nat64) -> (Result_10) query;
-  query_wallet_transactions : (HistoryQueryCommand) -> (Result_11) query;
+  query_wallet_transactions : (HistoryQueryCommand) -> (WalletData) query;
   save_payload_to_dropbox : (text, nat32) -> (text);
   set_payload_using_dropbox : (text, text) -> (text);
   set_payload_using_dropbox_simple : (text, text) -> (text);
