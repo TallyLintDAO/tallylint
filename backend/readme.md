@@ -288,7 +288,7 @@ call aaaaa-aa canister_info\
 # 0: collect_running_payload.  1: use stable mem
 dfx canister call  backend save_payload_to_dropbox '("sl.BxPmJ_Y5qKXvWPtfPwon2tAIuGG-mkXQ0BT_c-13SAcN2Fv7jZOBpKKodcBHdULtrtC0OU7b1SUFQ5J0n-NcKOHNqa_D_Xoa-w2qwfq7U04c9rlqaPi_pzUpTQ2dy-3CL8RFB5KnKlr1-5cWxz0PddM", 0 )' --ic
 
-dfx canister call  backend set_payload_using_dropbox  '("sl.BxPnQVC9NQX02VwYEU8Wc66SVoMpo4XFAplbULbLKaCVuiGl3jAeZawE0bw1z0XDhJtr36hji6lgfYfg_37t6zKrMyHAjfb3HGJ-AFhps8BunLPb6ndk2yTnnC05EBHBLRtLBkeUk_MWfTYgFkcXzJ8", "01")' --ic
+dfx canister call  backend set_payload_using_dropbox  '("sl.BxrvRi_oHr-E79eZDTyzuJsCejB-kl0dkVW9z2HnWgCQKBXrDR9kb0Y_pi7ly-cb3Z8hfNA2aKT7lred5H19B8U2ZcgdM-CE0ve_FsCB1UxP9tndDzeMoDeVaG2jaDQB6zZ7uL6ucvS1TOtQpbq6a-E", "01")' --ic
 
 dfx canister call  backend get_payload_from_dropbox  '("sl.BxPmJ_Y5qKXvWPtfPwon2tAIuGG-mkXQ0BT_c-13SAcN2Fv7jZOBpKKodcBHdULtrtC0OU7b1SUFQ5J0n-NcKOHNqa_D_Xoa-w2qwfq7U04c9rlqaPi_pzUpTQ2dy-3CL8RFB5KnKlr1-5cWxz0PddM", "01")' --ic
 
@@ -304,3 +304,7 @@ dfx canister call  backend do_pre_upgrade_and_print_db --ic
 TODO
 查看b3wallet是如何做持久化和如何使用threadlocal代码的
 
+
+
+dfx canister call  backend collect_running_payload
+dfx canister call  backend user_quantity

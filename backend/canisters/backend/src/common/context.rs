@@ -19,12 +19,10 @@ use crate::wallet::domain::WalletProfile;
 use crate::wallet::service::WalletService;
 use serde::{Deserialize, Serialize};
 
-use super::env::{CanisterEnvironment, EmptyEnvironment};
-
 pub type TimeStamp = u64;
 // pub type NeuronId_t = u64;
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct CanisterContext {
-  pub env: Box<dyn Environment>,
   pub id: u64,
   pub user_service: UserService,
   pub wallet_service: WalletService,
@@ -43,19 +41,18 @@ pub struct CanisterDB {
   pub transactions: Vec<TransactionF>,
 }
 
-impl Default for CanisterContext {
-  fn default() -> Self {
-    Self {
-      env: Box::new(EmptyEnvironment {}),
-      id: 10001,
-      user_service: UserService::default(),
-      wallet_service: WalletService::default(),
-      wallet_transc_srv: WalletRecordService::default(),
-      neuron_service: NeuronService::default(),
-      trans_f_srv: TransactionService::default(),
-    }
-  }
-}
+// impl Default for CanisterContext {
+//   fn default() -> Self {
+//     Self {
+//       id: 10001,
+//       user_service: UserService::default(),
+//       wallet_service: WalletService::default(),
+//       wallet_transc_srv: WalletRecordService::default(),
+//       neuron_service: NeuronService::default(),
+//       trans_f_srv: TransactionService::default(),
+//     }
+//   }
+// }
 
 use std::num::ParseIntError;
 #[allow(dead_code)]
@@ -100,7 +97,6 @@ impl From<CanisterDB> for CanisterContext {
       .map(|p| (p.address.clone(), p))
       .collect();
     Self {
-      env: Box::new(CanisterEnvironment {}),
       id: payload.id,
       user_service: UserService { users },
       wallet_service: WalletService { wallets },

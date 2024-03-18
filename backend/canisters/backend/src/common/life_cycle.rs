@@ -23,14 +23,15 @@ use crate::c_http::post::{get_payload_from_dropbox, TERA};
 
 use crate::CONTEXT;
 
+
 #[init]
 fn init() {
   ic_cdk::setup();
-  let context = CanisterContext {
-    env: Box::new(CanisterEnvironment {}),
-    ..CanisterContext::default()
-  };
-  let _now = context.env.now();
+  // let context = CanisterContext {
+  //   env: Box::new(CanisterEnvironment {}),
+  //   ..CanisterContext::default()
+  // };
+  // let _now = context.env.now();
   // let _creator1 = GOVERNANCE_BTWL.with(|g| *g);
   // let _creator2 = GOVERNANCE_ZHOU.with(|g| *g);
 
@@ -97,6 +98,7 @@ fn set_payload_using_stable_mem() -> String {
     Ok(payload) => {
       let stable_state = CanisterContext::from(payload);
       CONTEXT.with(|s| {
+        stable_save((s,)).expect("stable_save() fail!!!!");
         let mut state = s.borrow_mut();
         *state = stable_state;
       });

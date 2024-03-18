@@ -8,10 +8,10 @@ use super::constants::{GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
 pub fn has_user_guard() -> Result<(), String> {
   CONTEXT.with(|c| {
     let ctx = c.borrow();
-    let caller = &ctx.env.caller();
+    let caller = caller();
     ctx
       .user_service
-      .get_user(caller)
+      .get_user(&caller)
       .map(|_| ())
       .ok_or_else(|| String::from("UserNotFound"))
   })
@@ -20,8 +20,8 @@ pub fn has_user_guard() -> Result<(), String> {
 pub fn user_owner_guard() -> Result<(), String> {
   CONTEXT.with(|c| {
     let ctx = c.borrow();
-    let caller = &ctx.env.caller();
-    if ctx.user_service.is_owner(caller) {
+    let caller = caller();
+    if ctx.user_service.is_owner(&caller) {
       Ok(())
     } else {
       let error_message = format!(

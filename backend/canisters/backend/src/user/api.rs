@@ -3,6 +3,7 @@ use crate::CONTEXT;
 use candid::Principal;
 use ic_cdk::query;
 use ic_cdk_macros::update;
+use ic_cdk::api::time;
 /**
  * IMPORTANT INFO
 自动登录和自动注册.api名称定了.注释描述一下在这里.
@@ -11,7 +12,7 @@ use ic_cdk_macros::update;
 fn auto_register_user() -> Result<UserProfile, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    let caller = ctx.env.caller();
+    let caller = caller();
     if caller == Principal::anonymous() {
       return Err(String::from("AnonymousNotAllowRegistering"));
     }
@@ -21,7 +22,7 @@ fn auto_register_user() -> Result<UserProfile, String> {
         let user_profile = UserProfile {
           name: "".to_string(),
           owner: caller,
-          create_time: ctx.env.now(),
+          create_time: time(),
         };
         match ctx.user_service.insert_user(user_profile.clone()) {
           Ok(user_profile) => {
@@ -116,7 +117,7 @@ async fn check_callers_balance() -> Tokens {
 pub fn get_caller_principal() -> String {
   CONTEXT.with(|c| {
     let ctx = c.borrow();
-    let caller = &ctx.env.caller();
+    let caller = &caller();
     return caller.to_text().to_string();
   })
 }

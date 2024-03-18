@@ -1,5 +1,6 @@
 #[allow(unused_imports)]
 use candid::{CandidType, Principal};
+use serde::{Deserialize, Serialize};
 
 use std::collections::BTreeMap;
 
@@ -18,7 +19,7 @@ pub type WalletAddress = String;
 整个BTree功能类似于Redis的KV存储.
 然后持久化整个Map实体到IC-DB里面去
 */
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct WalletService {
   pub wallets: BTreeMap<WalletId, WalletProfile>,
 }

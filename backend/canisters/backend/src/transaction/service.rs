@@ -67,11 +67,11 @@ pub struct EditHistoryCommand {
   pub comment: String,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct WalletRecordService {
   pub records: BTreeMap<TransactionId, TransactionB>,
 }
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct TransactionService {
   pub transactions: BTreeMap<TransactionId, TransactionF>,
 }

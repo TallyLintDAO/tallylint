@@ -7,7 +7,8 @@ use std::{borrow::BorrowMut, collections::BTreeMap};
 use candid::Principal;
 #[allow(unused_imports)]
 use candid::{self, CandidType, Decode, Deserialize, Encode};
-use ic_cdk::api::call::CallResult;
+use ic_cdk::{api::call::CallResult, caller};
+use ic_cdk::api::time;
 use ic_cdk_macros::{query, update};
 use serde::Serialize;
 
@@ -79,8 +80,8 @@ use super::service::NeuronService;
 fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    let user = ctx.env.caller();
-    let time = ctx.env.now();
+    let user = caller();
+    let time = time();
     let id = ctx.id;
 
     let mut service = ctx.neuron_service.borrow_mut();
@@ -107,7 +108,7 @@ fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
 fn delete_neuron_wallet(id: u64) -> Result<bool, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    let user = ctx.env.caller();
+    let user = caller();
     let mut service = ctx.neuron_service.borrow_mut();
     let profile = service.search_by_id(id);
     if profile.is_none() {
@@ -122,7 +123,7 @@ fn delete_neuron_wallet(id: u64) -> Result<bool, String> {
 fn update_neuron_wallet(cmd: NeuronUpdateCommand) -> Result<bool, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    let user = ctx.env.caller();
+    let user = caller();
     let mut service = ctx.neuron_service.borrow_mut();
     let mut profile = service.search_by_id(cmd.id);
     if profile.is_none() {
@@ -139,7 +140,7 @@ fn update_neuron_wallet(cmd: NeuronUpdateCommand) -> Result<bool, String> {
 fn query_all_neuron_wallet() -> Result<Vec<NeuronProfile>, Vec<NeuronProfile>> {
   CONTEXT.with(|c| {
     let ctx = c.borrow_mut();
-    let user = ctx.env.caller();
+    let user = caller();
     let neurons = ctx
       .neuron_service
       .search_by_owner(user)
@@ -154,7 +155,7 @@ fn query_all_neuron_wallet() -> Result<Vec<NeuronProfile>, Vec<NeuronProfile>> {
 fn query_a_neuron_wallet(id: u64) -> Result<NeuronProfile, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    let user = ctx.env.caller();
+    let user = caller();
     let mut ns = ctx.neuron_service.borrow_mut();
     let a_neuron = ns.search_by_id(id);
     if a_neuron.is_none() {

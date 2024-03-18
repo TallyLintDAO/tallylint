@@ -55,9 +55,9 @@
 //   return String::from("create_and_install succuess");
 // }
 // #[query]
-// pub fn whoami() -> Principal {
-//   return ic_cdk::caller();
-// }
+pub fn whoami() -> Principal {
+  return ic_cdk::caller();
+}
 // #[update] // costs cycles. so need update function
 // pub async fn get_canister_info(id: String) -> CanisterInfoResponse {
 //   let canister_id = Principal::from_text(id).unwrap();

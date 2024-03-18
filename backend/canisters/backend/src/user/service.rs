@@ -1,5 +1,6 @@
 #[allow(unused_imports)]
 use candid::{CandidType, Principal};
+use serde::Serialize;
 use std::collections::BTreeMap;
 
 #[allow(unused_imports)]
@@ -7,7 +8,7 @@ use serde::Deserialize;
 
 use super::domain::*;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct UserService {
   pub users: BTreeMap<Principal, UserProfile>,
 }

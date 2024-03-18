@@ -1,3 +1,4 @@
+use ic_cdk::caller;
 use ic_cdk_macros::{query, update};
 use ic_ledger_types::AccountIdentifier;
 
@@ -10,7 +11,7 @@ use crate::CONTEXT;
 const MAX_WALLET_NAME_LENGTH: usize = 64;
 const ACCOUNT_ID_LENGTH: usize = 64;
 const PRINCIPAL_ID_LENGTH: usize = 63;
-
+use ic_cdk::api::time;
 #[update]
 // #[update(guard = "user_owner_guard")]
 fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
@@ -28,10 +29,9 @@ fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
         return Err(String::from("principal_id length need to be 63"));
       }
     }
-    let time = ic_cdk::api::time();
+    let now = time();
     let mut ctx = c.borrow_mut();
-    let caller = ctx.env.caller();
-    let now = ctx.env.now();
+    let caller = caller();
     let id = ctx.id;
     let mut profile = WalletProfile {
       holder: caller,
@@ -42,7 +42,7 @@ fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
       create_time: now,
       transactions: 0,
       last_sync_time: 0,
-      last_transaction_time: time,
+      last_transaction_time: 0,
       principal_id: None,
     };
     if if_principal.is_some() {
@@ -67,8 +67,8 @@ fn update_wallet(cmd: WalletUpdateCommand) -> Result<bool, String> {
       return Err(String::from("Wallet name exceeds maximum length 64"));
     }
     let mut ctx = c.borrow_mut();
-    let caller = ctx.env.caller();
-    // let now = ctx.env.now();
+    let caller = caller();
+    // let now = time();
     let id: u64 = cmd.id;
     let ret = ctx.wallet_service.query_a_wallet(id);
     if ret.is_none() {
@@ -112,7 +112,7 @@ fn query_a_wallet(id: u64) -> Result<WalletProfile, String> {
 fn query_all_wallets() -> Result<Vec<WalletProfile>, Vec<WalletProfile>> {
   CONTEXT.with(|c| {
     let ctx = c.borrow_mut();
-    let user = ctx.env.caller();
+    let user = caller();
     let wallets = ctx.wallet_service.query_wallet_array(user);
     return Ok(wallets);
   })

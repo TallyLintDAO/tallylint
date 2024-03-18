@@ -1,10 +1,11 @@
 use std::collections::BTreeMap;
 
-use candid::Principal;
+use candid::{CandidType, Principal};
+use serde::{Deserialize, Serialize};
 
 use super::domain::NeuronProfile;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct NeuronService {
   pub neurons: BTreeMap<String, NeuronProfile>,
 }
