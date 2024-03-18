@@ -1,4 +1,12 @@
 type BallotInfo = record { vote : int32; proposal_id : opt NeuronId };
+type CanisterContext = record {
+  id : nat64;
+  trans_f_srv : TransactionService;
+  wallet_transc_srv : WalletRecordService;
+  wallet_service : WalletService;
+  neuron_service : NeuronService;
+  user_service : UserService;
+};
 type Currency = record { decimals : nat64; symbol : text };
 type CustomResult1 = variant { Ok : NeuronInfo; Err : GovernanceError };
 type Details = record {
@@ -44,6 +52,7 @@ type NeuronProfile = record {
   create_time : nat64;
   address : text;
 };
+type NeuronService = record { neurons : vec record { text; NeuronProfile } };
 type NeuronUpdateCommand = record { id : nat64; name : text };
 type RejectionCode = variant {
   NoError;
@@ -56,7 +65,8 @@ type RejectionCode = variant {
 };
 type Result = variant { Ok : bool; Err : text };
 type Result_1 = variant { Ok : nat64; Err : text };
-type Result_10 = variant {
+type Result_10 = variant { Ok : TransactionB; Err : text };
+type Result_11 = variant {
   Ok : vec record { text; vec TransactionB };
   Err : text;
 };
@@ -65,12 +75,12 @@ type Result_3 = variant {
   Ok : record { CustomResult1 };
   Err : record { RejectionCode; text };
 };
-type Result_4 = variant { Ok : NeuronProfile; Err : text };
-type Result_5 = variant { Ok : WalletProfile; Err : text };
-type Result_6 = variant { Ok : vec NeuronProfile; Err : vec NeuronProfile };
-type Result_7 = variant { Ok : vec record { nat64; TransactionB }; Err : text };
-type Result_8 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
-type Result_9 = variant { Ok : TransactionB; Err : text };
+type Result_4 = variant { Ok : vec nat8; Err : text };
+type Result_5 = variant { Ok : NeuronProfile; Err : text };
+type Result_6 = variant { Ok : WalletProfile; Err : text };
+type Result_7 = variant { Ok : vec NeuronProfile; Err : vec NeuronProfile };
+type Result_8 = variant { Ok : vec record { nat64; TransactionB }; Err : text };
+type Result_9 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
 type SyncTransactionCommand = record {
   history : vec TransactionF;
   walletId : nat64;
@@ -96,11 +106,15 @@ type TransactionF = record {
   timestamp : float64;
   details : Details;
 };
+type TransactionService = record {
+  transactions : vec record { nat64; TransactionF };
+};
 type UserProfile = record {
   owner : principal;
   name : text;
   create_time : nat64;
 };
+type UserService = record { users : vec record { principal; UserProfile } };
 type WalletAddCommand = record {
   from : text;
   name : text;
@@ -119,6 +133,10 @@ type WalletProfile = record {
   holder : principal;
   transactions : nat64;
 };
+type WalletRecordService = record {
+  records : vec record { nat64; TransactionB };
+};
+type WalletService = record { wallets : vec record { nat64; WalletProfile } };
 type WalletUpdateCommand = record { id : nat64; from : text; name : text };
 service : {
   add_neuron_wallet : (NeuronAddCommand) -> (Result);
@@ -127,26 +145,35 @@ service : {
   auto_register_user : () -> (Result_2);
   clean_db : () -> (bool);
   collect_running_payload : () -> (text) query;
+  collect_running_payload_simple : () -> (text) query;
   delete_neuron_wallet : (nat64) -> (Result);
   delete_transaction : (nat64) -> (Result_1);
   delete_wallet : (nat64) -> (Result);
   get_balance : () -> (nat64);
   get_neuron_info : (nat64) -> (Result_3);
   get_payload_from_dropbox : (text, text) -> (text);
+  get_payload_from_dropbox_u8 : (text, text) -> (Result_4);
   get_payload_from_stable_mem_simple : () -> (text) query;
+  get_payload_from_stable_mem_simple_raw : () -> (CanisterContext) query;
   get_user_config : () -> (vec UserProfile) query;
   list_all_user : () -> (vec UserProfile);
-  query_a_neuron_wallet : (nat64) -> (Result_4) query;
-  query_a_wallet : (nat64) -> (Result_5) query;
-  query_all_neuron_wallet : () -> (Result_6) query;
-  query_all_transactions : () -> (Result_7) query;
-  query_all_wallets : () -> (Result_8) query;
-  query_one_transaction : (nat64) -> (Result_9) query;
-  query_wallet_transactions : (HistoryQueryCommand) -> (Result_10) query;
+  query_a_neuron_wallet : (nat64) -> (Result_5) query;
+  query_a_wallet : (nat64) -> (Result_6) query;
+  query_all_neuron_wallet : () -> (Result_7) query;
+  query_all_transactions : () -> (Result_8) query;
+  query_all_wallets : () -> (Result_9) query;
+  query_one_transaction : (nat64) -> (Result_10) query;
+  query_wallet_transactions : (HistoryQueryCommand) -> (Result_11) query;
   save_payload_to_dropbox : (text, nat32) -> (text);
   set_payload_using_dropbox : (text, text) -> (text);
+  set_payload_using_dropbox_simple : (text, text) -> (text);
+  set_payload_using_dropbox_simple_raw : (text, text) -> (text);
   set_payload_using_stable_mem : () -> (text);
-  set_stable_mem_using_payload : () -> () query;
+  set_payload_using_stable_mem_simple : () -> (text);
+  set_payload_using_stable_mem_simple_raw : () -> ();
+  set_stable_mem_using_payload : () -> ();
+  set_stable_mem_using_payload_simple : () -> ();
+  set_stable_mem_using_payload_simple_raw : () -> ();
   set_user_config : () -> (vec UserProfile);
   sync_transaction_record : (vec SyncTransactionCommand) -> (Result);
   update_neuron_wallet : (NeuronUpdateCommand) -> (Result);

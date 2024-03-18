@@ -116,7 +116,7 @@ async fn check_callers_balance() -> Tokens {
 // #[query]
 pub fn get_caller_principal() -> String {
   CONTEXT.with(|c| {
-    let ctx = c.borrow();
+    let _ctx = c.borrow();
     let caller = &caller();
     return caller.to_text().to_string();
   })

@@ -1,5 +1,4 @@
 use crate::{
-  common::env::Environment,
   transaction::{
     domain::{TransactionB, TransactionF},
     service::{TransactionService, WalletRecordService},

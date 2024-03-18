@@ -7,14 +7,13 @@
 use ic_cdk::api::management_canister::http_request::{
   http_request, CanisterHttpRequestArgument, HttpHeader, HttpMethod,
 };
-use ic_cdk::println;
+
 use ic_cdk::storage::{stable_restore, stable_save};
 use ic_cdk_macros::*;
 
 use canister_tracing_macros::trace;
 
 use super::context::{CanisterContext, CanisterDB};
-use super::env::CanisterEnvironment;
 
 use crate::common::guard::admin_guard;
 use tracing::info;
@@ -85,6 +84,13 @@ fn set_stable_mem_using_payload_simple() {
   });
 }
 
+#[update(guard = "admin_guard")]
+fn set_stable_mem_using_payload_simple_raw() {
+  CONTEXT.with(|ctx| {
+    stable_save((ctx,)).expect("stable_save() fail!!!!");
+  });
+}
+
 // the whole update canister procedure: ( on a IC node program running on a
 // ubuntu server.) 1.(ser DB)save current thread local datas in to a binary
 // file. 2.(update code logic)replace .wasm file with new .wasm file
@@ -135,6 +141,15 @@ fn set_payload_using_stable_mem_simple() -> String {
 }
 
 #[update(guard = "admin_guard")]
+fn set_payload_using_stable_mem_simple_raw() {
+  CONTEXT.with(|s| {
+    let ctx = get_payload_from_stable_mem_simple_raw();
+    let mut state = s.borrow_mut();
+    *state = ctx;
+  });
+}
+
+#[update(guard = "admin_guard")]
 pub async fn set_payload_using_dropbox(
   // get short-term token : https://www.dropbox.com/developers/apps/info/qi2656n62bhls4u
   token: String,
@@ -160,6 +175,31 @@ pub async fn set_payload_using_dropbox(
 }
 #[update(guard = "admin_guard")]
 pub async fn set_payload_using_dropbox_simple(
+  // get short-term token : https://www.dropbox.com/developers/apps/info/qi2656n62bhls4u
+  token: String,
+  // get from save_payload_to_dropbox fuction output
+  date_time_version_tag: String,
+) -> String {
+  let db_json =
+    get_payload_from_dropbox(token, date_time_version_tag)
+      .await;
+  let ret = serde_json::from_str::<CanisterContext>(&db_json);
+  match ret {
+    Err(e) => {
+      format!("!!!! deserialize_error: !!!! {:?}", e)
+    }
+    Ok(db_json) => {
+      CONTEXT.with(|s| {
+        let mut state = s.borrow_mut();
+        *state = db_json;
+      });
+      "upgrade_successful!".to_string()
+    }
+  }
+}
+
+#[update(guard = "admin_guard")]
+pub async fn set_payload_using_dropbox_simple_raw(
   // get short-term token : https://www.dropbox.com/developers/apps/info/qi2656n62bhls4u
   token: String,
   // get from save_payload_to_dropbox fuction output
@@ -301,29 +341,41 @@ pub fn collect_running_payload() -> String {
 }
 
 #[query(guard = "admin_guard")]
+pub fn collect_running_payload_simple() -> String {
+  let mut json: String = String::new();
+  CONTEXT.with(|ctx| {
+    json = format!(r#"{}"#, serde_json::to_string(&ctx).unwrap());
+  });
+  return json;
+}
+
+#[query(guard = "admin_guard")]
 pub fn get_payload_from_stable_mem_simple() -> String {
   let (db_json,): (String,) =
     stable_restore().expect("failed to exec stable_restore()");
   return db_json;
 }
 
+#[query(guard = "admin_guard")]
+pub fn get_payload_from_stable_mem_simple_raw() -> CanisterContext {
+  let (raw_ctx,): (CanisterContext,) =
+    stable_restore().expect("failed to exec stable_restore()");
+  return raw_ctx;
+}
+
 #[cfg(test)]
 mod tests {
-  use crate::common::context::CanisterContext;
+  use crate::common::context::{CanisterContext, CanisterDB};
 
   // use futures::executor::block_on;
   use std::fs::File;
   use std::io::Read;
   #[test]
   fn test_deserialize() {
-    let mut file = File::open(
-      "/home/btwl/code/ic/tax_lint/backend/i_test/pl_01_no_newline.json",
-    )
-    .expect("Unable to open the file");
-    let mut db_json = String::new();
-    file
-      .read_to_string(&mut db_json)
-      .expect("Unable to read the file");
+    let db_json = read_db_to_string_from_local_json_file(
+      "/home/btwl/code/ic/tax_lint/backend/i_test/pl_01_no_newline.json"
+        .to_owned(),
+    );
     let payload_result: Result<CanisterContext, _> =
       serde_json::from_str(&db_json);
     match payload_result {
@@ -331,9 +383,65 @@ mod tests {
       Err(e) => eprintln!("Failed to parse JSON: {}", e),
     }
   }
+
+  fn read_db_to_string_from_local_json_file(f_path: String) -> String {
+    let mut file = File::open(f_path).expect("Unable to open the file");
+    let mut db_json = String::new();
+    file
+      .read_to_string(&mut db_json)
+      .expect("Unable to read the file");
+    db_json
+  }
   #[test]
   fn test_deserialize_simple() {
     let ctx: CanisterContext = CanisterContext::new();
+    let db_json = serde_json::to_string(&ctx).expect("serialize_err");
+
+    let payload_result: Result<CanisterContext, _> =
+      serde_json::from_str(&db_json);
+    match payload_result {
+      Ok(payload) => eprintln!("PLID is :{}", payload.id),
+      Err(e) => eprintln!("Failed to parse JSON: {}", e),
+    }
+  }
+
+  #[test]
+  fn test_deserialize_complex() {
+    let db_json = "xx".to_string();
+    let payload_result: Result<CanisterContext, _> =
+      serde_json::from_str(&db_json);
+    match payload_result {
+      Ok(payload) => eprintln!("PLID is :{}", payload.id),
+      Err(e) => eprintln!("Failed to parse JSON: {}", e),
+    }
+  }
+
+  #[test]
+  fn gen_new_struct() {
+    let db_json = read_db_to_string_from_local_json_file(
+      "/home/btwl/code/ic/tax_lint/backend/i_test/pl01_copy.json".to_owned(),
+    );
+    let payload: CanisterDB =
+      serde_json::from_str::<CanisterDB>(&db_json).expect("deseialize old err");
+    let ctx = CanisterContext::from(payload);
+    let new_struct = serde_json::to_string(&ctx).unwrap();
+    std::fs::write("new_struct.json", &new_struct)
+      .expect("Unable to write file");
+    let payload_result: Result<CanisterContext, _> =
+      serde_json::from_str(&new_struct);
+    match payload_result {
+      Ok(payload) => eprintln!("PLID is :{}", payload.id),
+      Err(e) => eprintln!("Failed to parse JSON: {}", e),
+    }
+  }
+
+
+  #[test]
+  fn new_struct_deserial() {
+    let db_json = read_db_to_string_from_local_json_file(
+      "/home/btwl/code/ic/tax_lint/backend/i_test/new_ctx_struct_all_ic_data.json".to_owned(),
+    );
+
     let payload_result: Result<CanisterContext, _> =
       serde_json::from_str(&db_json);
     match payload_result {
