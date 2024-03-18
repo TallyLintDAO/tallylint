@@ -97,6 +97,7 @@ fn query_wallet_transactions(cmd: HistoryQueryCommand) -> WalletData {
         history.insert(k, v);
       }
     }
+    // TODO not test yet.
     for (_, transactions) in &history {
       for transaction in transactions {
         wallet_data.history.push(transaction.clone());

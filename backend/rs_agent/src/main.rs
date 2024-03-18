@@ -1,4 +1,4 @@
-use candid::Principal;
+use candid::{Decode, Principal};
 #[allow(unused_imports)]
 #[allow(unused_imports)]
 use ic_utils::call::AsyncCall;
@@ -42,38 +42,16 @@ async fn main() {
 
   let controller = String::from("btwlz");
 
-  let mode;
-  if install_mode == "1" {
-    println!("skip_pre_upgrade mode");
-    mode = InstallMode::Upgrade {
-      skip_pre_upgrade: Some(true),
-      // skip_pre_upgrade: true,
-    };
-  } else if install_mode == "0" {
-    mode = InstallMode::Reinstall;
-    println!("reinstall mode");
-  } else {
-    panic!("args input err!!");
-  }
   // INFO this need use input passwd in terminal if have passwd. takes about 4s
   // to run
   let identity = get_dfx_identity(&controller);
   let agent = build_ic_agent(url, identity).await;
-  let management_canister = ManagementCanister::create(&agent);
-  let wasm_file_path = "/home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm";
-  let wasm_bytes = read(wasm_file_path).expect("wasm file not exsit");
-
-  // let args="0";
-  match management_canister
-    .install_code(&canister_id, &wasm_bytes)
-    .with_mode(mode)
-    // .with_arg(args)
+  let response = agent
+    .update(&canister_id_local, "send_payload_string_to_canister")
+    .with_arg(Encode!(&Argument { amount: None })?)
     .call_and_wait()
-    .await
-  {
-    Ok(_) => println!("Wasm upgraded with skip_pre_upgrade ! "),
-    Err(error) => println!("Upgrade failed: {error:?}"),
-  };
+    .await?;
+  let result = Decode!(response.as_slice(), String)?;
 }
 
 use ic_agent::agent::http_transport::reqwest_transport::ReqwestHttpReplicaV2Transport;

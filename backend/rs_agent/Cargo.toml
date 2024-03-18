@@ -1,0 +1,36 @@
+[package]
+name = "rs_agent"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+lazy_static = { workspace = true }
+pocket-ic = { workspace = true }
+candid = { workspace = true }
+serde = { workspace = true }
+serde_bytes = { workspace = true }
+rand = { workspace = true }
+chrono = "0.4.31"
+icrc-ledger-types = { workspace = true }
+termion = "3.0.0"# IMPORTANT hidden FATAL 
+#! this will cause ld(link) error in compile very hidden bug!!!, 
+# backend = { path = "../canisters/backend/" }
+ic-agent = "0.33.0"
+
+tokio = { version = "1", features = ["full"] }
+# this commit tag is : skip_pre_upgrade hot fix 
+
+# TODO maybe need to mannually go into local src code of ic-utils and change the src code base thsi commit.
+# ic-utils =  { git = "https://github.com/dfinity/agent-rs.git", rev = "b74445e1da0a6afefc3a08372f74e8ea416cd1ba" }
+
+# dfx-core = { workspace = true }
+# ic-utils = { workspace = true }
+# ic-agent = { workspace = true }
+# itertools  = { workspace = true }
+# slog  = { workspace = true }
+dfx-core ={ workspace = true }
+ic-utils = "0.33.0"
+itertools = "0.12.1"
+slog = "2.7.0"

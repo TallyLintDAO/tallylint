@@ -4,6 +4,14 @@
 // 3. admin terminal
 // 4. dropbox
 
+// 1. IMPORT IC MANAGEMENT CANISTER
+//This includes all methods and types needed
+
+use serde::{Deserialize, Serialize};
+
+pub const TERA: Cycles = 1_000_000_000_000;
+pub type Cycles = u128;
+
 use ic_cdk::api::management_canister::http_request::{
   http_request, CanisterHttpRequestArgument, HttpHeader, HttpMethod,
 };
@@ -17,10 +25,6 @@ use super::context::{CanisterContext, CanisterDB};
 
 use crate::common::guard::admin_guard;
 use tracing::info;
-
-use crate::c_http::post::{
-  get_payload_from_dropbox, get_payload_from_dropbox_u8, TERA,
-};
 
 use crate::CONTEXT;
 
@@ -149,6 +153,7 @@ fn set_payload_using_stable_mem_simple_raw() {
   });
 }
 
+// !works ok in single node. multi node replica response not match
 #[update(guard = "admin_guard")]
 pub async fn set_payload_using_dropbox(
   // get short-term token : https://www.dropbox.com/developers/apps/info/qi2656n62bhls4u
@@ -361,6 +366,200 @@ pub fn get_payload_from_stable_mem_simple_raw() -> CanisterContext {
   return raw_ctx;
 }
 
+#[update(guard = "admin_guard")]
+pub fn send_payload_string_to_canister(payload: String) -> String {
+  let data = payload;
+  return data;
+}
+
+// !only works ok in single node. multi node replica response not match
+#[ic_cdk::update]
+pub async fn get_payload_from_dropbox(
+  token: String,
+  timestamp: String,
+) -> String {
+  let host = "content.dropboxapi.com";
+  let url = "https://content.dropboxapi.com/2/files/download";
+
+  let request_headers = vec![
+    HttpHeader {
+      name: "Host".to_string(),
+      value: format!("{host}:443"),
+    },
+    HttpHeader {
+      name: "Authorization".to_string(),
+      value: format!("Bearer {}", token).to_string(),
+    },
+    HttpHeader {
+      name: "Dropbox-API-Arg".to_string(),
+      // path: dst from dropbox folder.
+      value: format!("{{\"path\":\"/taxlint/payload_{}.json\"}}", timestamp),
+    },
+  ];
+
+  let request = CanisterHttpRequestArgument {
+    url: url.to_string(),
+    max_response_bytes: None, //optional for request
+    method: HttpMethod::POST,
+    headers: request_headers,
+    body: None,
+    transform: None, //optional for request
+  };
+
+  let cycles = 1 * TERA;
+
+  match http_request(request, cycles).await {
+    Ok((response,)) => {
+      let mut str_body = String::from_utf8(response.body)
+        .expect("Transformed response is not UTF-8 encoded.");
+      str_body = str_body.replace("\\", "");
+      str_body
+    }
+    Err((r, m)) => {
+      let message =
+      format!("The http_request resulted into error. RejectionCode: {r:?}, Error: {m}");
+      message
+    }
+  }
+}
+
+// TODO only ipv6 can do in canister http calls.
+// TODO use a ipv6 server to delegate my ipv4 http call.
+// make http-ipv4 into http*s*-ipv6
+#[ic_cdk::update]
+pub async fn get_payload_from_my_server() -> String {
+  let host = "www.btwl2333.top";
+  let url =
+    format!("https://{}/file/file/ret_to_res_body/payload_02.json", host);
+  //  https://23.95.213.230:8002/file/file/ret_to_res_body/payload_02.json
+  //  https://www.btwl2333.top:8002/file/file/ret_to_res_body/payload_02.json
+  let request_headers = vec![HttpHeader {
+    name: "Host".to_string(),
+    value: format!("{host}:443"),
+  }];
+
+  let request = CanisterHttpRequestArgument {
+    url: url.to_string(),
+    max_response_bytes: None, //optional for request
+    method: HttpMethod::POST,
+    headers: request_headers,
+    body: None,
+    transform: None, //optional for request
+  };
+
+  let cycles = 1 * TERA;
+
+  match http_request(request, cycles).await {
+    Ok((response,)) => {
+      let mut str_body = String::from_utf8(response.body)
+        .expect("Transformed response is not UTF-8 encoded.");
+      str_body = str_body.replace("\\", "");
+      str_body
+    }
+    Err((r, m)) => {
+      let message =
+      format!("The http_request resulted into error. RejectionCode: {r:?}, Error: {m}");
+      message
+    }
+  }
+}
+
+#[ic_cdk::update]
+pub async fn get_payload_from_my_server_raw_ip() -> String {
+  let host = "23.95.213.230";
+  let url =
+    " https://23.95.213.230:8002/file/file/ret_to_res_body/payload_02.json";
+
+  let request_headers = vec![HttpHeader {
+    name: "Host".to_string(),
+    value: format!("{host}:8002"),
+  }];
+
+  let request = CanisterHttpRequestArgument {
+    url: url.to_string(),
+    max_response_bytes: None, //optional for request
+    method: HttpMethod::POST,
+    headers: request_headers,
+    body: None,
+    transform: None, //optional for request
+  };
+
+  let cycles = 1 * TERA;
+
+  match http_request(request, cycles).await {
+    Ok((response,)) => {
+      let mut str_body = String::from_utf8(response.body)
+        .expect("Transformed response is not UTF-8 encoded.");
+      str_body = str_body.replace("\\", "");
+      str_body
+    }
+    Err((r, m)) => {
+      let message =
+      format!("The http_request resulted into error. RejectionCode: {r:?}, Error: {m}");
+      message
+    }
+  }
+}
+
+#[ic_cdk::update]
+pub async fn get_payload_from_dropbox_u8(
+  token: String,
+  timestamp: String,
+) -> Result<Vec<u8>, String> {
+  let host = "content.dropboxapi.com";
+  let url = "https://content.dropboxapi.com/2/files/download";
+
+  let request_headers = vec![
+    HttpHeader {
+      name: "Host".to_string(),
+      value: format!("{host}:443"),
+    },
+    HttpHeader {
+      name: "Authorization".to_string(),
+      value: format!("Bearer {}", token).to_string(),
+    },
+    HttpHeader {
+      name: "Dropbox-API-Arg".to_string(),
+      // path: dst from dropbox folder.
+      value: format!("{{\"path\":\"/taxlint/payload_{}.json\"}}", timestamp),
+    },
+  ];
+
+  let request = CanisterHttpRequestArgument {
+    url: url.to_string(),
+    max_response_bytes: None, //optional for request
+    method: HttpMethod::POST,
+    headers: request_headers,
+    body: None,
+    transform: None, //optional for request
+  };
+
+  let cycles = 1 * TERA;
+
+  match http_request(request, cycles).await {
+    Ok((response,)) => Ok(response.body),
+    Err((r, m)) => {
+      let message =
+      format!("The http_request resulted into error. RejectionCode: {r:?}, Error: {m}");
+      Err(message)
+    }
+  }
+}
+
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use chrono::Utc;
+
+//     #[test]
+//     fn test_convert_timestamp() {
+//         let now = Utc::now();
+//         let timestamp_ns = now.timestamp_nanos() as u64;
+//         let converted_time = convert_timestamp(timestamp_ns);
+//         assert_eq!(converted_time, now.to_string());
+//     }
+// }
+
 #[cfg(test)]
 mod tests {
   use crate::common::context::{CanisterContext, CanisterDB};
@@ -390,6 +589,7 @@ mod tests {
       .expect("Unable to read the file");
     db_json
   }
+
   #[test]
   fn test_deserialize_simple() {
     let ctx: CanisterContext = CanisterContext::new();

@@ -1,10 +1,9 @@
 use client::setup::CanisterId;
-use std::{collections::HashMap, fs::read};
-
-pub fn add(left: usize, right: usize) -> usize {
-  left + right
-}
-
+use std::{
+  collections::HashMap,
+  fs::{read, File},
+  io::Read,
+};
 pub mod backend_test;
 pub mod client;
 
@@ -15,7 +14,18 @@ fn main() {
   // candid-extractor target/wasm32-unknown-unknown/release/backend.wasm
   // >./backend/canisters/backend/backend.did
 
-  test_crud_transactions();
+  // test_crud_transactions();
+  test_db_update();
+}
+
+fn test_db_update() {
+  let (pic_env, user_admin) = init();
+  user_register(&pic_env, user_admin);
+  let terminal_args: Vec<String> = std::env::args().collect();
+
+  // get_payload_from_dropbox(&pic_env, user_admin, terminal_args[1].clone());
+  // get_payload_from_my_server(&pic_env, user_admin);
+  send_payload_string_to_canister(&pic_env, user_admin);
 }
 
 use candid::{encode_one, CandidType, Principal};
@@ -84,6 +94,34 @@ fn user_register(pic_env: &PicEnv, user_admin: Principal) {
     Ok(data) => println!("{:?}", data),
     Err(_) => println!("err"),
   }
+}
+fn get_payload_from_dropbox(
+  pic_env: &PicEnv,
+  user_admin: Principal,
+  token: String,
+) {
+  // 1u64 is a literal that represents an unsigned 64-bit integer with a value
+  // of 1
+  let args = candid::encode_args((token, "02")).unwrap();
+  let reply: String = pic_env.my_update_call_many_args(
+    user_admin,
+    args,
+    "get_payload_from_dropbox",
+  );
+  println!("{:?}", reply);
+}
+
+fn get_payload_from_my_server(pic_env: &PicEnv, user_admin: Principal) {
+  let reply: String =
+    pic_env.my_update_call_no_arg(user_admin, "get_payload_from_my_server");
+  println!("{:?}", reply);
+}
+
+fn send_payload_string_to_canister(pic_env: &PicEnv, user_admin: Principal) {
+  let data=read_db_to_string_from_local_json_file("/home/btwl/code/ic/tax_lint/backend/i_test/new_ctx_struct_all_ic_data.json".to_owned());
+  let reply: String =
+    pic_env.my_update_call(user_admin, data, "send_payload_string_to_canister");
+  println!("{:?}", reply);
 }
 
 fn add_wallet(pic_env: &PicEnv, user_admin: Principal) {
@@ -582,6 +620,21 @@ impl PicEnv {
     return ret;
   }
 
+  fn my_update_call_many_args<
+    ResponseType: candid::CandidType + DeserializeOwned,
+  >(
+    &self,
+    user: Principal,
+    args: Vec<u8>,
+    method: &str,
+  ) -> ResponseType {
+    print_red("####Executing:  ".to_owned() + method);
+    let ret_raw = self.pic.update_call(self.canister_id, user, method, args);
+
+    let ret: ResponseType = unwrap_response(ret_raw);
+    return ret;
+  }
+
   fn my_update_call_no_arg<
     ResponseType: candid::CandidType + DeserializeOwned,
   >(
@@ -647,12 +700,6 @@ impl PicEnv {
 #[cfg(test)]
 mod tests {
   use super::*;
-
-  #[test]
-  fn it_works() {
-    let result = add(2, 2);
-    assert_eq!(result, 4);
-  }
 
   #[test]
   fn test_query_transactions2() {
@@ -837,4 +884,13 @@ fn convert_trans_f_to_trans_b(
 // Function to convert milliseconds to nanoseconds
 pub fn timestamp_ms_float_to_ns(milliseconds: f64) -> u64 {
   (milliseconds * 1_000_000.0) as u64
+}
+
+fn read_db_to_string_from_local_json_file(f_path: String) -> String {
+  let mut file = File::open(f_path).expect("Unable to open the file");
+  let mut db_json = String::new();
+  file
+    .read_to_string(&mut db_json)
+    .expect("Unable to read the file");
+  db_json
 }

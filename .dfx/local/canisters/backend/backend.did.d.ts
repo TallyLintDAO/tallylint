@@ -82,8 +82,6 @@ export type Result_1 = { 'Ok' : bigint } |
   { 'Err' : string };
 export type Result_10 = { 'Ok' : TransactionB } |
   { 'Err' : string };
-export type Result_11 = { 'Ok' : Array<[string, Array<TransactionB>]> } |
-  { 'Err' : string };
 export type Result_2 = { 'Ok' : UserProfile } |
   { 'Err' : string };
 export type Result_3 = { 'Ok' : [CustomResult1] } |
@@ -140,6 +138,7 @@ export interface WalletAddCommand {
   'address' : string,
   'principal_id' : [] | [string],
 }
+export interface WalletData { 'addr' : string, 'history' : Array<TransactionB> }
 export interface WalletProfile {
   'id' : bigint,
   'last_transaction_time' : bigint,
@@ -176,6 +175,8 @@ export interface _SERVICE {
   'get_neuron_info' : ActorMethod<[bigint], Result_3>,
   'get_payload_from_dropbox' : ActorMethod<[string, string], string>,
   'get_payload_from_dropbox_u8' : ActorMethod<[string, string], Result_4>,
+  'get_payload_from_my_server' : ActorMethod<[], string>,
+  'get_payload_from_my_server_raw_ip' : ActorMethod<[], string>,
   'get_payload_from_stable_mem_simple' : ActorMethod<[], string>,
   'get_payload_from_stable_mem_simple_raw' : ActorMethod<[], CanisterContext>,
   'get_user_config' : ActorMethod<[], Array<UserProfile>>,
@@ -186,8 +187,9 @@ export interface _SERVICE {
   'query_all_transactions' : ActorMethod<[], Result_8>,
   'query_all_wallets' : ActorMethod<[], Result_9>,
   'query_one_transaction' : ActorMethod<[bigint], Result_10>,
-  'query_wallet_transactions' : ActorMethod<[HistoryQueryCommand], Result_11>,
+  'query_wallet_transactions' : ActorMethod<[HistoryQueryCommand], WalletData>,
   'save_payload_to_dropbox' : ActorMethod<[string, number], string>,
+  'send_payload_string_to_canister' : ActorMethod<[string], string>,
   'set_payload_using_dropbox' : ActorMethod<[string, string], string>,
   'set_payload_using_dropbox_simple' : ActorMethod<[string, string], string>,
   'set_payload_using_dropbox_simple_raw' : ActorMethod<

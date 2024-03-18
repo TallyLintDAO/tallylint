@@ -326,3 +326,23 @@ dfx canister call backend sync_transaction_record '(vec {record {123; vec {recor
 
   dfx canister call backend collect_running_payload_simple 
 
+
+
+  #  THIS OK on local. not ok on ic 
+   dfx canister call  backend get_payload_from_dropbox  '("sl.BxrZ-YR9M9Ouxz2vh5oh0sDJHkmIXPW-UIO6p50vfFI9MmL2FmuizBG4ODjjheCrYewpDMKfC6c5m0F3hqn3iOP7faeswyg76v21uwueUEwYQZdMw7uu8_vv2zhnUOPcNoxJK3m4ThULUCmctRPpTqk", "02")' 
+#    (
+#   "The http_request resulted into error. RejectionCode: SysTransient, Error: Canister http responses were different across replicas, and no consensus was reached",
+# )
+
+
+  #  THIS OK on local. not ok on ic
+   dfx canister call  backend set_payload_using_dropbox_simple  '("sl.BxrZ-YR9M9Ouxz2vh5oh0sDJHkmIXPW-UIO6p50vfFI9MmL2FmuizBG4ODjjheCrYewpDMKfC6c5m0F3hqn3iOP7faeswyg76v21uwueUEwYQZdMw7uu8_vv2zhnUOPcNoxJK3m4ThULUCmctRPpTqk", "02")' 
+
+
+# TODO  用一个file server 存db, 返回的response 要统一.不要有时间戳那些
+
+
+  dfx canister call backend get_payload_from_my_server 
+  dfx canister call backend get_payload_from_my_server_raw_ip 
+  dfx canister call backend send_payload_string_to_canister '"x3"""'
+  
