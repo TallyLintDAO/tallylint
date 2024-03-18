@@ -37,8 +37,28 @@ fn auto_register_user() -> Result<UserProfile, String> {
 
 use crate::common::guard::user_owner_guard;
 use crate::user::domain::UserProfile;
-#[update(guard = "user_owner_guard")]
+#[update(guard = "admin_guard")]
 fn list_all_user() -> Vec<UserProfile> {
+  CONTEXT.with(|c| {
+    let context = c.borrow();
+    let users = Vec::from_iter(context.user_service.users.values().cloned());
+    return users;
+  })
+}
+
+// TODO
+#[update(guard = "user_owner_guard")]
+fn set_user_config() -> Vec<UserProfile> {
+  CONTEXT.with(|c| {
+    let context = c.borrow();
+    let users = Vec::from_iter(context.user_service.users.values().cloned());
+    return users;
+  })
+}
+
+// TODO
+#[query(guard = "user_owner_guard")]
+fn get_user_config() -> Vec<UserProfile> {
   CONTEXT.with(|c| {
     let context = c.borrow();
     let users = Vec::from_iter(context.user_service.users.values().cloned());

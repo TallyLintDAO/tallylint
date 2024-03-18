@@ -172,7 +172,7 @@ fn sync_transaction_record(
         .wallet_service
         .update_wallet(wallet_profile, get_caller());
     }
-
+    
     Ok(true)
   })
 }
@@ -199,7 +199,7 @@ fn convert_trans_f_to_trans_b(
     principal_id: None,
     memo: String::new(),
     address,
-    tag: String::new(),
+    tag: Vec::new(),
     manual: false,
     comment: String::new(),
   }

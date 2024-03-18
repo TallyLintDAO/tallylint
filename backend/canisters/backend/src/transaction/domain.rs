@@ -64,9 +64,8 @@ pub struct DetailsB {
   pub value: f64,     //此笔交易价值
   pub status: String, //交易状态，表示交易成功与否，暂时先要着
   pub ledgerCanisterId: String,
-  pub profit_lifo: f64,
-  pub profit_fifo: f64,
-  pub profit_none: f64,
+  pub profit: f64,
+  // pub profit_method: String,
 }
 
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
@@ -94,8 +93,8 @@ pub struct TransactionB {
   pub memo: String,
   pub address: WalletAddress,
 
-  pub tag: String,
-  pub manual: bool,
+  pub tag: Vec<String>,
+  pub manual: bool, // if this trasac is manual import
   pub comment: String,
   // TODO , considering wallet_amount :
   // pub wallet_amount:u32,
