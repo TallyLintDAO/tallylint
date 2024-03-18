@@ -316,7 +316,7 @@ const identifyAddress = () => {
   addressIsPrincipal.value = isPrincipal(address.value)
   if (addressIsPrincipal.value) {
     wallet.value.address = p2a(address.value)
-    wallet.value.principal_id.push(address.value)
+    wallet.value.principal_id = [address.value]
   } else {
     wallet.value.address = address.value
   }

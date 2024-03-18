@@ -1,5 +1,5 @@
 // 统一用户信息的结构
-
+import type { TransactionB } from ".dfx/ic/canisters/backend/backend.did"
 import type { InferredTransaction } from "./sns"
 
 // 注意和types.ts中的ApiUserInfo统一格式
@@ -74,4 +74,9 @@ export interface HistoryQueryParams {
   to_time: number
   sort_method: string[]
   address: string[]
+}
+
+export interface SyncedHistory {
+  addr: string
+  history: TransactionB[]
 }
