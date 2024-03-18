@@ -20,7 +20,7 @@ fn add_transaction(mut data: TransactionB) -> Result<TransactionId, String> {
     let id = ctx.id;
     data.id = id;
     let id = data.id;
-    let ret = ctx.wallet_record_service.add_transaction_impl(data.clone());
+    let ret = ctx.wallet_transc_srv.add_transaction_impl(data.clone());
     match ret {
       Ok(_) => {
         // TODO save the id as fast bmap index into the wallet struct.
@@ -36,7 +36,7 @@ fn add_transaction(mut data: TransactionB) -> Result<TransactionId, String> {
 fn delete_transaction(id: TransactionId) -> Result<TransactionId, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    let ret = ctx.wallet_record_service.delete_transaction_impl(id);
+    let ret = ctx.wallet_transc_srv.delete_transaction_impl(id);
     match ret {
       Ok(_) => {
         // TODO delete the id as fast bmap index into the wallet struct.
@@ -60,7 +60,7 @@ fn query_wallet_transactions(
 
     for addr in cmd.address {
       // get all recs:
-      let rec = ctx.wallet_record_service.query_one_wallet(addr);
+      let rec = ctx.wallet_transc_srv.query_one_wallet(addr);
 
       for (k, mut v) in rec {
         // filter if time rage
@@ -106,23 +106,33 @@ fn query_all_transactions(
 ) -> Result<HashMap<TransactionId, TransactionB>, String> {
   CONTEXT.with(|c| {
     let ctx = c.borrow_mut();
-    let rec = ctx.wallet_record_service.query_all_transactions();
+    let rec = ctx.wallet_transc_srv.query_all_transactions();
     return Ok(rec);
   })
 }
 
 #[update(guard = "user_owner_guard")]
-fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
+fn update_transaction(data: TransactionB) -> Result<bool, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    ctx.id = ctx.id + 1;
-    let id = ctx.id;
-    data.id = id;
-    let ret = ctx.wallet_record_service.add_transaction_impl(data);
+    let ret = ctx.wallet_transc_srv.update_transaction_impl(data);
     match ret {
       Ok(_) => {
-        // TODO update the id as fast bmap index into the wallet struct.
         Ok(true)
+      }
+      Err(msg) => Err(msg),
+    }
+  })
+}
+
+#[query(guard = "user_owner_guard")]
+fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
+  CONTEXT.with(|c| {
+    let mut ctx = c.borrow_mut();
+    let ret = ctx.wallet_transc_srv.query_one(id);
+    match ret {
+      Ok(t) => {
+        Ok(t)
       }
       Err(msg) => Err(msg),
     }
@@ -147,15 +157,13 @@ fn sync_transaction_record(
       for one_rec in one_wallet.history.clone() {
         ctx.id = ctx.id + 1;
         let id = ctx.id;
-        let _ret = ctx
-          .transaction_service
-          .add_transaction_record(id, one_rec.clone());
+        let _ret = ctx.trans_f_srv.add_transaction_record(id, one_rec.clone());
 
         // copy transF to transB
         ctx.id = ctx.id + 1;
         let id2 = ctx.id;
         let trans_b = convert_trans_f_to_trans_b(one_rec, id2);
-        let _ = ctx.wallet_record_service.add_transaction_impl(trans_b);
+        let _ = ctx.wallet_transc_srv.add_transaction_impl(trans_b);
       }
 
       // update wallet info
@@ -172,7 +180,7 @@ fn sync_transaction_record(
         .wallet_service
         .update_wallet(wallet_profile, get_caller());
     }
-    
+
     Ok(true)
   })
 }

@@ -82,12 +82,12 @@ impl Default for WalletAddCommand {
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct HistoryQueryCommand {
   // Primary key
-  pub address: Vec<WalletAddress>, 
+  pub address: Vec<WalletAddress>,
   pub from_time: TimeStamp,
   pub to_time: TimeStamp,
   // pub t_type: Option<String>, /* transaction_type SEND or
   //  * RECEIVE or BOTH */ //! front end do
-  // pub tag: Option<Vec<String>>,   //! front end do 
+  // pub tag: Option<Vec<String>>,   //! front end do
   pub sort_method: Option<String>, /*by date-asc or date-desc
                                     * or profit-asc
                                     * profit-desc */
@@ -97,8 +97,8 @@ pub struct EditHistoryCommand {
   pub id: RecordId, //delete id here . dont need.
   pub coin_type: String,
   pub principal_id: Option<String>, /* Plug wallet need use , need
-                     * to convert to
-                     * opt_account_id_hex for use. */
+                                     * to convert to
+                                     * opt_account_id_hex for use. */
   pub address: WalletAddress, // same as account_id_hex
   pub hash: String,
   pub t_type: String, //transaction_type

@@ -91,10 +91,9 @@ pub fn collect_running_payload() -> String {
     let wallets =
       Vec::from_iter(context.wallet_service.wallets.values().cloned());
     let records =
-      Vec::from_iter(context.wallet_record_service.records.values().cloned());
-    let transactions = Vec::from_iter(
-      context.transaction_service.transactions.values().cloned(),
-    );
+      Vec::from_iter(context.wallet_transc_srv.records.values().cloned());
+    let transactions =
+      Vec::from_iter(context.trans_f_srv.transactions.values().cloned());
     let neurons =
       Vec::from_iter(context.neuron_service.neurons.values().cloned());
 
@@ -186,10 +185,9 @@ fn set_stable_mem_use_payload() {
     let wallets =
       Vec::from_iter(context.wallet_service.wallets.values().cloned());
     let records =
-      Vec::from_iter(context.wallet_record_service.records.values().cloned());
-    let transactions = Vec::from_iter(
-      context.transaction_service.transactions.values().cloned(),
-    );
+      Vec::from_iter(context.wallet_transc_srv.records.values().cloned());
+    let transactions =
+      Vec::from_iter(context.trans_f_srv.transactions.values().cloned());
     let neurons =
       Vec::from_iter(context.neuron_service.neurons.values().cloned());
     let payload = CanisterDB {
@@ -226,10 +224,9 @@ fn set_stable_mem_use_payload_simple() {
     let wallets =
       Vec::from_iter(context.wallet_service.wallets.values().cloned());
     let records =
-      Vec::from_iter(context.wallet_record_service.records.values().cloned());
-    let transactions = Vec::from_iter(
-      context.transaction_service.transactions.values().cloned(),
-    );
+      Vec::from_iter(context.wallet_transc_srv.records.values().cloned());
+    let transactions =
+      Vec::from_iter(context.trans_f_srv.transactions.values().cloned());
     let neurons =
       Vec::from_iter(context.neuron_service.neurons.values().cloned());
     let payload = CanisterDB {
@@ -402,10 +399,9 @@ fn do_pre_upgrade_and_print_db() -> String {
     let wallets =
       Vec::from_iter(context.wallet_service.wallets.values().cloned());
     let records =
-      Vec::from_iter(context.wallet_record_service.records.values().cloned());
-    let transactions = Vec::from_iter(
-      context.transaction_service.transactions.values().cloned(),
-    );
+      Vec::from_iter(context.wallet_transc_srv.records.values().cloned());
+    let transactions =
+      Vec::from_iter(context.trans_f_srv.transactions.values().cloned());
     let neurons =
       Vec::from_iter(context.neuron_service.neurons.values().cloned());
 

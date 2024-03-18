@@ -97,7 +97,8 @@ impl TransactionService {
 }
 
 impl WalletRecordService {
-  // TODO
+
+  
   pub fn add_transaction_impl(
     &mut self,
     profile: TransactionB,
@@ -110,6 +111,30 @@ impl WalletRecordService {
       return Err("Insert fail. may heap overflow".to_string());
     }
   }
+
+  pub fn update_transaction_impl(
+    &mut self,
+    profile: TransactionB,
+  ) -> Result<bool, String> {
+    let id = profile.id;
+    self.records.insert(profile.id, profile);
+    if self.records.contains_key(&id) {
+      return Ok(true);
+    } else {
+      return Err("Update fail. may heap overflow".to_string());
+    }
+  }
+
+  pub fn query_one(
+    &mut self,
+    id: TransactionId,
+  ) -> Result<TransactionB, String> {
+    match self.records.get(&id) {
+        Some(transaction) => Ok(transaction.clone()),
+        None => Err(format!("No transaction found with id: {}", id)),
+    }
+  }
+
   pub fn delete_transaction_impl(
     &mut self,
     id: TransactionId,

@@ -8,7 +8,6 @@ pub struct UserProfile {
   pub create_time: u64,
 }
 
-
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct UserInfo {
   pub owner: Principal, // 用户 Principal

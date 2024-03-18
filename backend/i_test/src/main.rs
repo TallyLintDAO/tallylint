@@ -9,6 +9,12 @@ pub mod backend_test;
 pub mod client;
 
 fn main() {
+  // TODO exec this before test:
+  // cd git root 
+  // cargo build --release --target wasm32-unknown-unknown --package backend &&
+  // candid-extractor target/wasm32-unknown-unknown/release/backend.wasm
+  // >./backend/canisters/backend/backend.did
+
   test_crud_transactions();
 }
 
@@ -45,63 +51,65 @@ fn test_crud_transactions() {
   sort_method_test(&pic_env, user_admin);
 
   // !edit transacitons:
-  // add a new tranc as mannual flag.then add some tag, add a comment 
+  // add a new tranc as mannual flag.then add some tag, add a comment
   add_a_completx_transaction(&pic_env, user_admin);
-
+  // tag as 3333 keyword serach if ok
+  update_completx_transaction(&pic_env, user_admin);
+  query_a_completx_transaction(&pic_env, user_admin);
 }
 
 fn init() -> (PicEnv, Principal) {
-    let pic_env = PicEnv::new();
-    let user_admin = Principal::from_text(
-        // TODO this caller is clear inputed. can hacker using this as caller ?
-        // this is admin BTWL
-        "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
-      )
-      .unwrap();
-    // let user2 = random_principal();
-    // // !register
-    // let reply: Result<UserProfile, String> =
-    //   pic_env.my_update_call_no_arg(user2, "auto_register_user");
-    // match reply {
-    //   Ok(data) => println!("{:?}", data),
-    //   Err(_) => println!("err"),
-    // }
-    (pic_env, user_admin)
+  let pic_env = PicEnv::new();
+  let user_admin = Principal::from_text(
+    // TODO this caller is clear inputed with un encrtpted. can hacker using
+    // this as caller ? this is admin BTWL
+    "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
+  )
+  .unwrap();
+  // let user2 = random_principal();
+  // // !register
+  // let reply: Result<UserProfile, String> =
+  //   pic_env.my_update_call_no_arg(user2, "auto_register_user");
+  // match reply {
+  //   Ok(data) => println!("{:?}", data),
+  //   Err(_) => println!("err"),
+  // }
+  (pic_env, user_admin)
 }
 
 fn user_register(pic_env: &PicEnv, user_admin: Principal) {
-    let reply: Result<UserProfile, String> =
-        pic_env.my_update_call_no_arg(user_admin, "auto_register_user");
-    match reply {
-        Ok(data) => println!("{:?}", data),
-        Err(_) => println!("err"),
-      }
+  let reply: Result<UserProfile, String> =
+    pic_env.my_update_call_no_arg(user_admin, "auto_register_user");
+  match reply {
+    Ok(data) => println!("{:?}", data),
+    Err(_) => println!("err"),
+  }
 }
 
 fn add_wallet(pic_env: &PicEnv, user_admin: Principal) {
-    let args = WalletAddCommand {
-        address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-          .to_string(),
-        principal_id: None, /* This is set to None as per your structure. You
+  let args = WalletAddCommand {
+    address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+      .to_string(),
+    principal_id: None, /* This is set to None as per your structure. You
                          * might need to set it as per your requirements. */
-        from: "NNS".to_string(),
-        name: "w1".to_string(),
-      };
-    let ret: Result<bool, String> =
-        pic_env.my_update_call(user_admin, args, "add_wallet");
-    match ret {
-        Ok(_) => println!("ok"),
-        Err(_) => println!("err"),
-      }
+    from: "NNS".to_string(),
+    name: "w1".to_string(),
+  };
+  let ret: Result<bool, String> =
+    pic_env.my_update_call(user_admin, args, "add_wallet");
+  match ret {
+    Ok(_) => println!("ok"),
+    Err(_) => println!("err"),
+  }
 }
 
 fn query_all_wallet_info(pic_env: &PicEnv, user_admin: Principal) {
-    let ret: Result<Vec<WalletProfile>, Vec<WalletProfile>> =
-        pic_env.my_query_call_no_arg(user_admin, "query_all_wallets");
-    match ret {
-        Ok(data) => println!("{:?}", data),
-        Err(_) => println!("err"),
-      }
+  let ret: Result<Vec<WalletProfile>, Vec<WalletProfile>> =
+    pic_env.my_query_call_no_arg(user_admin, "query_all_wallets");
+  match ret {
+    Ok(data) => println!("{:?}", data),
+    Err(_) => println!("err"),
+  }
 }
 
 fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
@@ -264,7 +272,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   }
 }
 
-  // add a new tranc as mannual flag.then add some tag, add a comment 
+// add a new tranc as mannual flag.then add some tag, add a comment
 fn add_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
   let trans_f = TransactionF {
     hash: "123".to_string(),
@@ -289,10 +297,10 @@ fn add_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
       profit: 12.0,
     },
   };
- 
+
   let mut args: TransactionB = convert_trans_f_to_trans_b(trans_f, 110050);
-  args.manual=true;
-  args.comment="my manualled blabala".to_string();
+  args.manual = true;
+  args.comment = "my manualled blabala".to_string();
   args.tag.push("air drop".to_string());
   args.tag.push("air drop2222".to_string());
   let ret: Result<TransactionId, String> =
@@ -302,7 +310,56 @@ fn add_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
     Err(err) => println!("{:?}", err),
   }
 }
+// TODO
+fn update_completx_transaction(pic_env: &PicEnv, user1: Principal) {
+  let trans_f = TransactionF {
+    hash: "123".to_string(),
+    timestamp: 10.0,
+    t_type: "SEND".to_string(),
+    walletName: "asd".to_string(),
+    details: Details {
+      amount: 123.8,
+      cost: 1.0,
+      currency: Currency {
+        decimals: 2,
+        symbol: "ICP".to_string(),
+      },
+      fee: 123.8,
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+        .to_string(),
+      to: "asd".to_string(),
+      price: 1.0,
+      value: 1.0,
+      status: "SUCCESS".to_string(),
+      ledgerCanisterId: "asd".to_string(),
+      profit: 12.0,
+    },
+  };
 
+  let mut args: TransactionB = convert_trans_f_to_trans_b(trans_f, 10016);
+
+  args.manual = true;
+  args.comment = "my manualled blabala".to_string();
+  args.tag.push("air drop".to_string());
+  args.tag.push("air drop3333".to_string());
+  
+  let ret: Result<bool, String> =
+    pic_env.my_update_call(user1, args, "update_transaction");
+  match ret {
+    Ok(data) => println!("{:?}", data),
+    Err(err) => println!("{:?}", err),
+  }
+}
+
+// TODO
+fn query_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
+  let ret:Result<TransactionB, String> =
+    pic_env.my_update_call(user1, 10016 as u64, "query_one_transaction");
+  match ret {
+    Ok(data) => println!("{:?}", data),
+    Err(err) => println!("{:?}", err),
+  }
+}
 
 fn query_payload_db(pic_env: &PicEnv, user1: Principal) {
   let ret: String =
@@ -750,7 +807,6 @@ fn unwrap_response<R: CandidType + DeserializeOwned>(
     WasmResult::Reject(error) => panic!("{error}"),
   }
 }
-
 
 fn convert_trans_f_to_trans_b(
   trans_f: TransactionF,

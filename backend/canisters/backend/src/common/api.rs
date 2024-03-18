@@ -17,7 +17,6 @@ fn init() {
   info!("canister initialization complete");
 }
 
-
 // #[update(guard = "user_owner_guard")]
 // fn get_a_global_id()-> {
 //   ic_cdk::setup();

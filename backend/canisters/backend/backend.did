@@ -56,6 +56,10 @@ type RejectionCode = variant {
 };
 type Result = variant { Ok : bool; Err : text };
 type Result_1 = variant { Ok : nat64; Err : text };
+type Result_10 = variant {
+  Ok : vec record { text; vec TransactionB };
+  Err : text;
+};
 type Result_2 = variant { Ok : UserProfile; Err : text };
 type Result_3 = variant {
   Ok : record { CustomResult1 };
@@ -66,17 +70,14 @@ type Result_5 = variant { Ok : WalletProfile; Err : text };
 type Result_6 = variant { Ok : vec NeuronProfile; Err : vec NeuronProfile };
 type Result_7 = variant { Ok : vec record { nat64; TransactionB }; Err : text };
 type Result_8 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
-type Result_9 = variant {
-  Ok : vec record { text; vec TransactionB };
-  Err : text;
-};
+type Result_9 = variant { Ok : TransactionB; Err : text };
 type SyncTransactionCommand = record {
   history : vec TransactionF;
   walletId : nat64;
 };
 type TransactionB = record {
   id : nat64;
-  tag : text;
+  tag : vec text;
   hash : text;
   memo : text;
   walletName : text;
@@ -135,18 +136,21 @@ service : () -> {
   get_payload_from_dropbox : (text, text) -> (text);
   get_payload_from_stable_mem : () -> (text) query;
   get_payload_from_stable_mem_simple : () -> (text) query;
+  get_user_config : () -> (vec UserProfile) query;
   list_all_user : () -> (vec UserProfile);
   query_a_neuron_wallet : (nat64) -> (Result_4) query;
   query_a_wallet : (nat64) -> (Result_5) query;
   query_all_neuron_wallet : () -> (Result_6) query;
   query_all_transactions : () -> (Result_7) query;
   query_all_wallets : () -> (Result_8) query;
-  query_wallet_transactions : (HistoryQueryCommand) -> (Result_9) query;
+  query_one_transaction : (nat64) -> (Result_9) query;
+  query_wallet_transactions : (HistoryQueryCommand) -> (Result_10) query;
   save_payload_to_dropbox : (text, nat32, nat) -> (text);
   set_payload_using_dropbox : (text, text) -> (bool);
   set_payload_using_stable_mem : () -> ();
   set_stable_mem_use_payload : () -> ();
   set_stable_mem_use_payload_simple : () -> ();
+  set_user_config : () -> (vec UserProfile);
   sync_transaction_record : (vec SyncTransactionCommand) -> (Result);
   update_neuron_wallet : (NeuronUpdateCommand) -> (Result);
   update_transaction : (TransactionB) -> (Result);
