@@ -138,7 +138,6 @@ impl WalletService {
     // self.wallets
   }
 
-  #[allow(dead_code)]
   pub fn new() -> Self {
     WalletService {
       wallets: BTreeMap::new(),

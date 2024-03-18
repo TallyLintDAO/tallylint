@@ -31,4 +31,11 @@ impl NeuronService {
       .filter(|neuron_profile| neuron_profile.owner == target_owner)
       .collect()
   }
+
+
+    pub fn new() -> Self {
+    NeuronService {
+      neurons: BTreeMap::new(),
+    }
+  }
 }

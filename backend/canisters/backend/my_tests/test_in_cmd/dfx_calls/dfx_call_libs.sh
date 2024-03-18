@@ -26,7 +26,7 @@ dfx deploy backend
 # step1: gen did
 # after ic-cdk v0.11.3 use this :
 # TODO how to do this in dfx.json to add this cmd before any dfx deploy ? 
-cargo build --release --target wasm32-unknown-unknown --package backend && candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/canisters/backend/backend.did
+cargo check && cargo build --release --target wasm32-unknown-unknown --package backend && candid-extractor target/wasm32-unknown-unknown/release/backend.wasm >./backend/canisters/backend/backend.did
 # step2:
 dfx deploy backend --network ic 
 # or  dfx deploy backend --network ic  -m reinstall  #this will empty the ic-DB 

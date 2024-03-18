@@ -94,6 +94,11 @@ impl TransactionService {
       return Err("Insert fail. may heap overflow".to_string());
     }
   }
+    pub fn new() -> Self {
+    TransactionService {
+      transactions: BTreeMap::new(),
+    }
+  }
 }
 
 impl WalletRecordService {
@@ -109,7 +114,11 @@ impl WalletRecordService {
       return Err("Insert fail. may heap overflow".to_string());
     }
   }
-
+    pub fn new() -> Self {
+    WalletRecordService {
+      records: BTreeMap::new(),
+    }
+  }
   pub fn update_transaction_impl(
     &mut self,
     profile: TransactionB,
