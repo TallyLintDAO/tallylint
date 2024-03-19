@@ -160,9 +160,15 @@ export const idlFactory = ({ IDL }) => {
     'sort_method' : IDL.Opt(IDL.Text),
     'address' : IDL.Vec(IDL.Text),
   });
-  const WalletData = IDL.Record({
-    'addr' : IDL.Text,
-    'history' : IDL.Vec(TransactionB),
+  const SimpleTransaction = IDL.Record({
+    'id' : IDL.Nat64,
+    'tag' : IDL.Vec(IDL.Text),
+    'hash' : IDL.Text,
+    't_type' : IDL.Text,
+    'comment' : IDL.Text,
+    'timestamp' : IDL.Nat64,
+    'details' : Details,
+    'manual' : IDL.Bool,
   });
   const SyncTransactionCommand = IDL.Record({
     'history' : IDL.Vec(TransactionF),
@@ -214,7 +220,7 @@ export const idlFactory = ({ IDL }) => {
     'query_one_transaction' : IDL.Func([IDL.Nat64], [Result_10], ['query']),
     'query_wallet_transactions' : IDL.Func(
         [HistoryQueryCommand],
-        [WalletData],
+        [IDL.Vec(SimpleTransaction)],
         ['query'],
       ),
     'save_payload_to_dropbox' : IDL.Func([IDL.Text, IDL.Nat32], [IDL.Text], []),

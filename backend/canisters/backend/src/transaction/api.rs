@@ -50,8 +50,6 @@ fn delete_transaction(id: TransactionId) -> Result<TransactionId, String> {
   })
 }
 
-// TODO get all wallets of records info
-// many work todo to different query
 #[query(guard = "user_owner_guard")]
 fn query_wallet_transactions(
   cmd: HistoryQueryCommand,
@@ -77,7 +75,7 @@ fn query_wallet_transactions(
       .map(TransactionB::trim)
       .collect();
 
-    // !filter if time rage
+    // !filter if time range
     simple_trans.retain(|transaction| {
       transaction.timestamp >= cmd.from_time
         && transaction.timestamp <= cmd.to_time
@@ -114,6 +112,7 @@ fn query_wallet_transactions(
     return simple_trans;
   })
 }
+
 
 #[query(guard = "admin_guard")]
 fn query_all_transactions(
