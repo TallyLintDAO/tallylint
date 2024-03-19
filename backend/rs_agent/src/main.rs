@@ -132,18 +132,6 @@ pub fn get_dfx_identity(name: &str) -> Box<dyn Identity> {
     .instantiate_identity_from_name(name, &logger)
     .unwrap()
 }
-// ic_utils lib hot fix patch : git commit:
-// b74445e1da0a6afefc3a08372f74e8ea416cd1ba
-
-pub struct BuildVersion {
-  pub major: u32,
-  pub minor: u32,
-  pub patch: u32,
-}
-
-pub struct MyArgs {
-  pub wasm_version: BuildVersion,
-}
 
 fn read_db_to_string_from_local_json_file(f_path: String) -> String {
   let mut file = File::open(f_path).expect("Unable to open the file");

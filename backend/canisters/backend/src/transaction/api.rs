@@ -9,7 +9,7 @@ use crate::common::guard::admin_guard;
 use crate::common::guard::user_owner_guard;
 use crate::common::times::timestamp_ms_float_to_ns;
 use crate::wallet::domain::HistoryQueryCommand;
-use crate::{TransactionB, WalletData, CONTEXT};
+use crate::{TransactionB, CONTEXT};
 
 // TODO use: AddRecordCommand . front end dont need to input
 // id . id gen by backend. TODO 测试 id 正常生成且不冲突
@@ -193,8 +193,6 @@ fn sync_transaction_record(
     Ok(true)
   })
 }
-// TODO:
-// fn filt_by_tag(
 
 fn convert_trans_f_to_trans_b(
   trans_f: TransactionF,
@@ -221,3 +219,4 @@ fn convert_trans_f_to_trans_b(
     comment: String::new(),
   }
 }
+
