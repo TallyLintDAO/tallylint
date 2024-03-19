@@ -29,6 +29,8 @@ use crate::user::domain::*;
 #[allow(unused_imports)]
 use crate::c_http::api::*;
 #[allow(unused_imports)]
+use crate::transaction::domain::SimpleTransaction;
+#[allow(unused_imports)]
 use crate::transaction::domain::SyncTransactionCommand;
 #[allow(unused_imports)]
 use crate::transaction::domain::TransactionB;

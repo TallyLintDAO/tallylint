@@ -5,6 +5,7 @@ use ic_cdk_macros::{query, update};
 use super::domain::*;
 use super::service::{TransactionId, WalletAddress};
 use crate::common::context::{get_caller, now};
+use crate::common::guard::admin_guard;
 use crate::common::guard::user_owner_guard;
 use crate::common::times::timestamp_ms_float_to_ns;
 use crate::wallet::domain::HistoryQueryCommand;
@@ -18,6 +19,7 @@ fn add_transaction(mut data: TransactionB) -> Result<TransactionId, String> {
     let mut ctx = c.borrow_mut();
     ctx.id = ctx.id + 1;
     let id = ctx.id;
+
     data.id = id;
     let id = data.id;
     let ret = ctx.wallet_transc_srv.add_transaction_impl(data.clone());
@@ -51,64 +53,67 @@ fn delete_transaction(id: TransactionId) -> Result<TransactionId, String> {
 // TODO get all wallets of records info
 // many work todo to different query
 #[query(guard = "user_owner_guard")]
-fn query_wallet_transactions(cmd: HistoryQueryCommand) -> WalletData {
+fn query_wallet_transactions(
+  cmd: HistoryQueryCommand,
+) -> Vec<SimpleTransaction> {
   CONTEXT.with(|c| {
-    let ctx = c.borrow_mut();
-    let mut history: HashMap<WalletAddress, Vec<TransactionB>> = HashMap::new();
-    let mut wallet_data = WalletData {
-      addr: String::new(),
-      history: Vec::new(),
-    };
+    let ctx = c.borrow();
+    let mut all_transactions = Vec::new();
 
+    // !get all recs
     for addr in cmd.address {
-      // get all recs:
-      let rec = ctx.wallet_transc_srv.query_one_wallet(addr);
-
-      for (k, mut v) in rec {
-        // filter if time rage
-        if cmd.from_time != 0 && cmd.to_time != 0 {
-          v = v
-            .into_iter()
-            .filter(|txn| {
-              txn.timestamp >= cmd.from_time && txn.timestamp <= cmd.to_time
-            })
-            .collect();
-        }
-
-        // filter sort_method
-        if let Some(sort_method) = &cmd.sort_method {
-          match sort_method.as_str() {
-            "date-asc" => {
-              v.sort_by(|a, b| a.timestamp.partial_cmp(&b.timestamp).unwrap())
-            }
-            "date-desc" => {
-              v.sort_by(|a, b| b.timestamp.partial_cmp(&a.timestamp).unwrap())
-            }
-            "profit-asc" => v.sort_by(|a, b| {
-              a.details.profit.partial_cmp(&b.details.profit).unwrap()
-            }),
-            "profit-desc" => v.sort_by(|a, b| {
-              b.details.profit.partial_cmp(&a.details.profit).unwrap()
-            }),
-            // Add more sort methods here...
-            _ => (),
-          }
-        }
-        history.insert(k, v);
-      }
-    }
-    // TODO not test yet.
-    for (_, transactions) in &history {
-      for transaction in transactions {
-        wallet_data.history.push(transaction.clone());
-      }
+      let rec = ctx
+        .wallet_transc_srv
+        .query_one_wallet(addr.clone())
+        .get(&addr)
+        .cloned()
+        .unwrap_or(Vec::new());
+      all_transactions.extend(rec);
     }
 
-    return wallet_data;
+    // !delete unwant field
+    let mut simple_trans: Vec<SimpleTransaction> = all_transactions
+      .into_iter()
+      .map(TransactionB::trim)
+      .collect();
+
+    // !filter if time rage
+    simple_trans.retain(|transaction| {
+      transaction.timestamp >= cmd.from_time
+        && transaction.timestamp <= cmd.to_time
+    });
+
+    // ! sort if need
+    if cmd.sort_method.is_none() {
+      return simple_trans;
+    };
+    let method = cmd.sort_method.unwrap();
+    if method == String::from("date-asc") {
+      simple_trans.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
+    }
+    if method == String::from("date--desc") {
+      simple_trans.sort_by(|a, b| b.timestamp.cmp(&a.timestamp));
+    }
+    if method == String::from("profit-asc") {
+      simple_trans.sort_by(|a, b| {
+        a.details
+          .profit
+          .partial_cmp(&b.details.profit)
+          .unwrap_or(std::cmp::Ordering::Equal)
+      });
+    }
+    if method == String::from("profit-desc") {
+      simple_trans.sort_by(|a, b| {
+        b.details
+          .profit
+          .partial_cmp(&a.details.profit)
+          .unwrap_or(std::cmp::Ordering::Equal)
+      });
+    }
+
+    return simple_trans;
   })
 }
-
-use crate::common::guard::admin_guard;
 
 #[query(guard = "admin_guard")]
 fn query_all_transactions(

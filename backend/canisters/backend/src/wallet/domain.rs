@@ -1,6 +1,9 @@
 pub(crate) use candid::{CandidType, Principal};
 
-use crate::{common::context::TimeStamp, transaction::domain::TransactionB};
+use crate::{
+  common::context::TimeStamp,
+  transaction::domain::{SimpleTransaction, TransactionB},
+};
 
 use super::service::{RecordId, WalletAddress, WalletId};
 use serde::{Deserialize, Serialize};
@@ -153,6 +156,12 @@ pub struct Wallet {
 pub struct WalletData {
   pub addr: WalletAddress,
   pub history: Vec<TransactionB>,
+}
+
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct WalletDataTrimed {
+  pub addr: WalletAddress,
+  pub history: Vec<SimpleTransaction>,
 }
 
 /**

@@ -180,7 +180,7 @@ impl WalletRecordService {
   pub fn query_one_wallet(
     &self,
     addr: WalletAddress,
-  ) -> HashMap<String, Vec<TransactionB>> {
+  ) -> HashMap<WalletAddress, Vec<TransactionB>> {
     let mut one_wallet = HashMap::new();
     let records: Vec<TransactionB> = self
       .records

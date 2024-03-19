@@ -7,8 +7,6 @@
 // 1. IMPORT IC MANAGEMENT CANISTER
 //This includes all methods and types needed
 
-use serde::{Deserialize, Serialize};
-
 pub const TERA: Cycles = 1_000_000_000_000;
 pub type Cycles = u128;
 
@@ -366,14 +364,15 @@ pub fn get_payload_from_stable_mem_simple_raw() -> CanisterContext {
   return raw_ctx;
 }
 
+// ! Important API to upload a file to canister
 #[update(guard = "admin_guard")]
 pub fn send_payload_string_to_canister(payload: String) -> String {
-   let db_json = payload;
+  let db_json = payload;
 
   let ret = serde_json::from_str::<CanisterContext>(&db_json);
   match ret {
     Err(e) => {
-      let ret =format!("!!!! deserialize_error: !!!! {:?}", e);
+      let ret = format!("!!!! deserialize_error: !!!! {:?}", e);
       return ret;
     }
     Ok(db_json) => {
@@ -381,8 +380,8 @@ pub fn send_payload_string_to_canister(payload: String) -> String {
         let mut state = s.borrow_mut();
         *state = db_json;
       });
-        let ret ="####Congrates!: upgrade_successful!".to_string();
-        return ret;
+      let ret = "####Congrates!: upgrade_successful!".to_string();
+      return ret;
     }
   }
 }

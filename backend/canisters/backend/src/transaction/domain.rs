@@ -106,3 +106,42 @@ pub struct TransactionB {
   // 例如某个NFT的交易价格查不到，
   // 就会被自动标记为missing rates
 }
+#[allow(non_snake_case)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct SimpleTransaction {
+  //
+  // backend autogen:
+  pub id: TransactionId,
+  //
+  pub hash: String,
+  pub timestamp: u64, //this is ns format usigned 64bit
+  pub t_type: String, //  transaction type : "SEND", "RECEIVE"
+  pub details: Details,
+  pub tag: Vec<String>,
+  pub manual: bool, // if this trasac is manual import
+  pub comment: String,
+  // TODO , considering wallet_amount :
+  // pub wallet_amount:u32,
+  // pub warning:String,
+  // TODO: Warning（用户是否标记某些记录为missing cost,
+  // missing rates）这条字段先只做出来，不用,
+  // 解释：比如missing
+  // rates是标记某个交易历史找不到对应的价格记录，
+  // 例如某个NFT的交易价格查不到，
+  // 就会被自动标记为missing rates
+}
+
+impl TransactionB {
+  pub fn trim(self) -> SimpleTransaction {
+    SimpleTransaction {
+      id: self.id,
+      hash: self.hash,
+      timestamp: self.timestamp,
+      t_type: self.t_type,
+      details: self.details,
+      tag: self.tag,
+      manual: self.manual,
+      comment: self.comment,
+    }
+  }
+}

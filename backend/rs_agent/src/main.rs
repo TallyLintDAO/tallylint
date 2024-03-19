@@ -49,12 +49,12 @@ async fn testing() {
   let identity = get_dfx_identity(&controller);
   let agent = build_ic_agent(url, identity).await;
 
-  // ! greet test 
+  // ! greet test
   // let result = greet_test(agent, canister_id).await;
   // println!("{}", result);
 
   let pay_load_json_string=read_db_to_string_from_local_json_file("/home/btwl/code/ic/tax_lint/backend/i_test/new_ctx_struct_all_ic_data.json".to_owned());
-  let args =candid::encode_one((pay_load_json_string)).unwrap();
+  let args = candid::encode_one((pay_load_json_string)).unwrap();
   // ! CALL SEND and RECEIVE SUCCESS!!!! YEAH!
   let result = send_payload_test(agent, canister_id, args).await;
   println!("{}", result);

@@ -77,6 +77,16 @@ type Result_6 = variant { Ok : WalletProfile; Err : text };
 type Result_7 = variant { Ok : vec NeuronProfile; Err : vec NeuronProfile };
 type Result_8 = variant { Ok : vec record { nat64; TransactionB }; Err : text };
 type Result_9 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
+type SimpleTransaction = record {
+  id : nat64;
+  tag : vec text;
+  hash : text;
+  t_type : text;
+  comment : text;
+  timestamp : nat64;
+  details : Details;
+  manual : bool;
+};
 type SyncTransactionCommand = record {
   history : vec TransactionF;
   walletId : nat64;
@@ -117,7 +127,6 @@ type WalletAddCommand = record {
   address : text;
   principal_id : opt text;
 };
-type WalletData = record { addr : text; history : vec TransactionB };
 type WalletProfile = record {
   id : nat64;
   last_transaction_time : nat64;
@@ -162,7 +171,9 @@ service : () -> {
   query_all_transactions : () -> (Result_8) query;
   query_all_wallets : () -> (Result_9) query;
   query_one_transaction : (nat64) -> (Result_10) query;
-  query_wallet_transactions : (HistoryQueryCommand) -> (WalletData) query;
+  query_wallet_transactions : (HistoryQueryCommand) -> (
+      vec SimpleTransaction,
+    ) query;
   save_payload_to_dropbox : (text, nat32) -> (text);
   send_payload_string_to_canister : (text) -> (text);
   set_payload_using_dropbox : (text, text) -> (text);
