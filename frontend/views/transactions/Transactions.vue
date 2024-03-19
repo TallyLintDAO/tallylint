@@ -141,7 +141,13 @@
                       src="@/assets/dfinity.svg"
                       alt="NNS Icon"
                     />
-                    <span>{{ transaction.walletName }}</span>
+                    <span>{{
+                      getTransactionWalletName(
+                        transaction.t_type,
+                        transaction.details,
+                        wallets,
+                      )
+                    }}</span>
                   </div>
                   <span v-if="transaction.t_type === 'SEND'">-</span>
                   {{ transaction.details.currency.symbol }}
@@ -196,9 +202,7 @@
                           </q-item-section>
                         </q-item>
                         <q-item clickable v-close-popup="true">
-                          <q-item-section
-                            @click="deleteTransaction(transaction.id)"
-                          >
+                          <q-item-section @click="deleteTransaction(0)">
                             Delete
                           </q-item-section>
                         </q-item>
@@ -365,7 +369,10 @@ import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
 import { confirmDialog } from "@/utils/dialog"
 import { showMessageSuccess } from "@/utils/message"
-import { getAllSyncedTransactions } from "@/utils/syncedTransactions"
+import {
+  getAllSyncedTransactions,
+  getTransactionWalletName,
+} from "@/utils/syncedTransactions"
 import type { QForm } from "quasar"
 import { computed, onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
@@ -408,7 +415,7 @@ const tokenList = [
     },
   },
 ]
-const selectedWallet = ref<WalletTag[]>([])
+const selectedWallet = ref<WalletTag[]>([]) //用户选择的钱包
 const wallets = ref<WalletTag[]>([])
 const form = ref<QForm | null>(null)
 

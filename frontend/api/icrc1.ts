@@ -82,7 +82,6 @@ const formatICRC1Transaction = async (
   const t_type = detail.to === wallet.address ? "RECEIVE" : "SEND"
   return {
     detail,
-    walletName: wallet.name,
     currency,
     hash: Number(id),
     timestamp: timestampNormal,

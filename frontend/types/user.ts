@@ -21,6 +21,7 @@ export interface WalletInfo {
   principal_id: string[] //opt
   from: string //'NNS' | 'Plug' | 'Stoic' | 'AstorMe'
   name: string
+  now_transactions: number
   transactions: number
   last_transaction_time: number
   last_sync_time: number

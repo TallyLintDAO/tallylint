@@ -37,7 +37,6 @@ export interface InferredTransaction {
   hash: string
   timestamp: number
   t_type: string // rust中type为关键字，所以不能使用type作为字段名
-  walletName: string
   details: {
     status: string
     fee: number

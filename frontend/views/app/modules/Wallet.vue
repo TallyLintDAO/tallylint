@@ -222,7 +222,7 @@ const columns = [
   },
   { name: "from", label: "From", field: "from" },
   { name: "name", label: "Name", field: "name" },
-  { name: "transactions", label: "Transactions", field: "transactions" },
+  { name: "transactions", label: "Transactions", field: "now_transactions" },
   {
     name: "syncedTransactions",
     label: "Synced Transactions",
@@ -251,6 +251,7 @@ const wallet = ref({
   principal_id: [] as string[], // 无值就用[]，而不是[""]，不然opt类型会报错
   from: "NNS",
   name: "",
+  now_transactions: 0,
   transactions: 0,
   last_transaction_time: 0,
   last_sync_time: 0,
@@ -261,6 +262,7 @@ const walletPrototype = {
   principal_id: [] as string[],
   from: "NNS",
   name: "",
+  now_transactions: 0,
   transactions: 0,
   last_transaction_time: 0,
   last_sync_time: 0,
@@ -337,8 +339,8 @@ const getWallets = (isRefresh: boolean) => {
               { address: row.address, name: "", from: "" },
               true,
             ).then((res) => {
-              // 将查询得到的transactions绑定回原数组中的transactions
-              row.transactions = res.total
+              // 将查询得到的transactions绑定回原数组中的now_transactions，表明现在的交易数有多少
+              row.now_transactions = res.total
               row.last_transaction_time = res.transactions[0].timestamp
               console.log("getUserWallet", res, row)
             })
