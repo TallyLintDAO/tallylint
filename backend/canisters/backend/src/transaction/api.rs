@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::collections::VecDeque;
 
 use ic_cdk_macros::{query, update};
 
@@ -150,11 +151,7 @@ fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
 }
 
 // TODO
-//方法完成后，需要检查关联更新：钱包的交易记录总数，上次同步时间，
-// 上次交易发生的时间 描述:户点击同步钱包按钮,调用nns或者交易所等api.
-// 获得历史交易记录并存储到后端. (前端已有一部分计算代码),
-// 可以选择全部搬移到后端或者前端直接把现有计算好的利润发送给后端 需要用到的api:
-// nns dashboard的api可能要用到. 详见前端查询方法.
+// 用户点击导入钱包自动调用这个接口.存transacs 到后端
 // #[update(guard = "user_owner_guard")]
 #[update]
 fn sync_transaction_record(
@@ -163,7 +160,12 @@ fn sync_transaction_record(
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     for one_wallet in cmd {
-      // ! insert records
+      // FIXME fix already exsit transac . 检查最近一条的hash是否和db上的
+      // hash一样.一样则返回 "transactions already newest. nothing append since
+      // last time sync"
+      let latest_hash = one_wallet.history[0].hash.clone();
+      // let hash_db=
+      // ! append records
       for one_rec in one_wallet.history.clone() {
         ctx.id = ctx.id + 1;
         let id = ctx.id;
@@ -182,6 +184,7 @@ fn sync_transaction_record(
         .query_a_wallet(one_wallet.walletId)
         .expect("no such wallet");
       wallet_profile.last_sync_time = now();
+      // FIXME this not work as semantics . still 0
       wallet_profile.transactions = one_wallet.history.len() as u64;
       wallet_profile.last_transaction_time = timestamp_ms_float_to_ns(
         one_wallet.history.get(0).unwrap().clone().timestamp,
@@ -218,5 +221,62 @@ fn convert_trans_f_to_trans_b(
     tag: Vec::new(),
     manual: false,
     comment: String::new(),
+  }
+}
+
+#[update(guard = "user_owner_guard")]
+fn calculate_tax(method: String) -> String {
+  return "calculate success".to_string();
+}
+
+// TODO
+
+struct Transaction {
+  t_type: String,
+  details: Details,
+}
+
+struct Details {
+  price: f64,
+  amount: f64,
+}
+
+struct Purchase {
+  price: f64,
+  amount: f64,
+}
+
+
+fn calculate_cost(transaction: TransactionF) -> f64 {
+  let mut purchase_queue: VecDeque<Purchase> = VecDeque::new();
+
+  if transaction.t_type == "RECEIVE" {
+    let price = transaction.details.price;
+    let amount = transaction.details.amount;
+    purchase_queue.push_back(Purchase { price, amount });
+    return 0.0;
+  } else if transaction.t_type == "SEND" {
+    let mut cost = 0.0;
+    let mut send_amount = transaction.details.amount;
+
+    while send_amount > 0.0 && !purchase_queue.is_empty() {
+      let earliest_purchase = purchase_queue.pop_front().unwrap();
+
+      if earliest_purchase.amount <= send_amount {
+        cost += earliest_purchase.price * earliest_purchase.amount;
+        send_amount -= earliest_purchase.amount;
+      } else {
+        cost += earliest_purchase.price * send_amount;
+        purchase_queue.push_front(Purchase {
+          price: earliest_purchase.price,
+          amount: earliest_purchase.amount - send_amount,
+        });
+        send_amount = 0.0;
+      }
+    }
+
+    return cost;
+  } else {
+    return 0.0;
   }
 }

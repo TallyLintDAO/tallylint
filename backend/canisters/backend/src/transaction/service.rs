@@ -99,6 +99,13 @@ impl TransactionService {
       transactions: BTreeMap::new(),
     }
   }
+
+  pub fn contains(&mut self, id: TransactionId) -> bool {
+    if self.transactions.contains_key(&id) {
+      return true;
+    }
+    return false;
+  }
 }
 
 impl WalletRecordService {
