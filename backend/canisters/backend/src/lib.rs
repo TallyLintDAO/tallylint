@@ -15,9 +15,6 @@ thread_local! {
   static CONTEXT: RefCell<CanisterContext> = RefCell::new(CanisterContext::new());
 }
 
-// new auto did generate: in ic_cdk 0.10.0
-// IMPORTANT :dont remove ref
-// cargo hint to remove these is wrong. but must use below.
 #[allow(unused_imports)]
 use crate::nns::api::*;
 #[allow(unused_imports)]

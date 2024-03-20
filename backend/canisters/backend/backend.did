@@ -169,11 +169,11 @@ service : () -> {
   query_a_wallet : (nat64) -> (Result_6) query;
   query_all_neuron_wallet : () -> (Result_7) query;
   query_all_transactions : () -> (Result_8) query;
-  query_all_wallets : () -> (Result_9) query;
-  query_one_transaction : (nat64) -> (Result_10) query;
-  query_wallet_transactions : (HistoryQueryCommand) -> (
+  query_all_wallet_transactions : (HistoryQueryCommand) -> (
       vec SimpleTransaction,
     ) query;
+  query_all_wallets : () -> (Result_9) query;
+  query_one_transaction : (nat64) -> (Result_10) query;
   save_payload_to_dropbox : (text, nat32) -> (text);
   send_payload_string_to_canister : (text) -> (text);
   set_payload_using_dropbox : (text, text) -> (text);

@@ -127,7 +127,7 @@ pub fn execute_update_no_response<P: CandidType>(
     .unwrap();
 }
 
-fn unwrap_response<R: CandidType + DeserializeOwned>(
+pub fn unwrap_response<R: CandidType + DeserializeOwned>(
   response: Result<WasmResult, UserError>,
 ) -> R {
   match response.unwrap() {

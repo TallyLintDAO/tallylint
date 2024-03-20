@@ -194,12 +194,12 @@ export interface _SERVICE {
   'query_a_wallet' : ActorMethod<[bigint], Result_6>,
   'query_all_neuron_wallet' : ActorMethod<[], Result_7>,
   'query_all_transactions' : ActorMethod<[], Result_8>,
-  'query_all_wallets' : ActorMethod<[], Result_9>,
-  'query_one_transaction' : ActorMethod<[bigint], Result_10>,
-  'query_wallet_transactions' : ActorMethod<
+  'query_all_wallet_transactions' : ActorMethod<
     [HistoryQueryCommand],
     Array<SimpleTransaction>
   >,
+  'query_all_wallets' : ActorMethod<[], Result_9>,
+  'query_one_transaction' : ActorMethod<[bigint], Result_10>,
   'save_payload_to_dropbox' : ActorMethod<[string, number], string>,
   'send_payload_string_to_canister' : ActorMethod<[string], string>,
   'set_payload_using_dropbox' : ActorMethod<[string, string], string>,

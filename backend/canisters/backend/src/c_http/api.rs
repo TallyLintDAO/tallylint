@@ -11,4 +11,3 @@ pub fn calculate_cost(
   let response_cost = 800 * node_num as u128 * receive_bytes as u128;
   base_fee_http_request_init + request_cost + response_cost
 }
-

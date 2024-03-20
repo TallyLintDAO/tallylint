@@ -51,7 +51,7 @@ fn delete_transaction(id: TransactionId) -> Result<TransactionId, String> {
 }
 
 #[query(guard = "user_owner_guard")]
-fn query_wallet_transactions(
+fn query_all_wallet_transactions(
   cmd: HistoryQueryCommand,
 ) -> Vec<SimpleTransaction> {
   CONTEXT.with(|c| {
@@ -76,10 +76,12 @@ fn query_wallet_transactions(
       .collect();
 
     // !filter if time range
-    simple_trans.retain(|transaction| {
-      transaction.timestamp >= cmd.from_time
-        && transaction.timestamp <= cmd.to_time
-    });
+    if cmd.from_time != 0 && cmd.to_time != 0 {
+      simple_trans.retain(|transaction| {
+        transaction.timestamp >= cmd.from_time
+          && transaction.timestamp <= cmd.to_time
+      });
+    }
 
     // ! sort if need
     if cmd.sort_method.is_none() {
@@ -89,7 +91,7 @@ fn query_wallet_transactions(
     if method == String::from("date-asc") {
       simple_trans.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
     }
-    if method == String::from("date--desc") {
+    if method == String::from("date-desc") {
       simple_trans.sort_by(|a, b| b.timestamp.cmp(&a.timestamp));
     }
     if method == String::from("profit-asc") {
@@ -112,7 +114,6 @@ fn query_wallet_transactions(
     return simple_trans;
   })
 }
-
 
 #[query(guard = "admin_guard")]
 fn query_all_transactions(
@@ -162,20 +163,20 @@ fn sync_transaction_record(
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     for one_wallet in cmd {
-      // insert records
+      // ! insert records
       for one_rec in one_wallet.history.clone() {
         ctx.id = ctx.id + 1;
         let id = ctx.id;
         let _ret = ctx.trans_f_srv.add_transaction_record(id, one_rec.clone());
 
-        // copy transF to transB
+        // ! copy transF to transB
         ctx.id = ctx.id + 1;
         let id2 = ctx.id;
         let trans_b = convert_trans_f_to_trans_b(one_rec, id2);
         let _ = ctx.wallet_transc_srv.add_transaction_impl(trans_b);
       }
 
-      // update wallet info
+      // ! update wallet info
       let mut wallet_profile = ctx
         .wallet_service
         .query_a_wallet(one_wallet.walletId)
@@ -219,4 +220,3 @@ fn convert_trans_f_to_trans_b(
     comment: String::new(),
   }
 }
-

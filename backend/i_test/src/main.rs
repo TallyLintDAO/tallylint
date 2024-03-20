@@ -1,4 +1,4 @@
-use client::setup::CanisterId;
+use client::{setup::CanisterId, unwrap_response};
 use std::{
   collections::HashMap,
   fs::{read, File},
@@ -14,8 +14,8 @@ fn main() {
   // candid-extractor target/wasm32-unknown-unknown/release/backend.wasm
   // >./backend/canisters/backend/backend.did
 
-  // test_crud_transactions();
-  test_db_update();
+  test_crud_transactions();
+  // test_db_update();
 }
 
 fn test_db_update() {
@@ -51,7 +51,7 @@ fn test_crud_transactions() {
   // !add transactions
   sync_transactions_from_front_end(&pic_env, user_admin);
   // !query payload DB
-  query_payload_db(&pic_env, user_admin);
+  // query_payload_db(&pic_env, user_admin);
 
   // !simple query transactions
   no_filter_no_sort_simple_transac_query(&pic_env, user_admin);
@@ -406,7 +406,6 @@ fn query_payload_db(pic_env: &PicEnv, user1: Principal) {
 }
 
 fn no_filter_no_sort_simple_transac_query(pic_env: &PicEnv, user1: Principal) {
-  // generate_query_call!(query_wallet_transactions);
   let args: HistoryQueryCommand = HistoryQueryCommand {
     address: (vec![
       "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
@@ -414,14 +413,11 @@ fn no_filter_no_sort_simple_transac_query(pic_env: &PicEnv, user1: Principal) {
     ]),
     from_time: 0, // Replace with your actual timestamp
     to_time: 0,   // Replace with your actual timestamp
-    sort_method: Some("date-asc".to_string()),
+    sort_method: None,
   };
-  let ret: Result<HashMap<WalletAddress, Vec<TransactionB>>, String> =
-    pic_env.my_query_call(user1, args, "query_wallet_transactions");
-  match ret {
-    Ok(data) => println!("{:?}", data),
-    Err(err) => println!("{:?}", err),
-  }
+  let ret: Vec<SimpleTransaction> =
+    pic_env.my_query_call(user1, args, "query_all_wallet_transactions");
+  println!("{:?}", ret);
 }
 
 fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
@@ -435,23 +431,17 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
     sort_method: Some("date-desc".to_string()), /* Change to your desired
                                                  * sort method */
   };
-  let ret_sort_method: Result<
-    HashMap<WalletAddress, Vec<TransactionB>>,
-    String,
-  > =
-    pic_env.my_query_call(user1, args_sort_method, "query_wallet_transactions");
-  match ret_sort_method {
-    Ok(data) => print_red_header(
-      "====date-desc Sort method query result: ".to_string(),
-      format!("{:?}", data),
-    ),
-    Err(err) => print_red_header(
-      " ====Error in sort method query: ".to_string(),
-      format!("{:?}", err),
-    ),
-  }
+  let ret_sort_method: Vec<SimpleTransaction> = pic_env.my_query_call(
+    user1,
+    args_sort_method,
+    "query_all_wallet_transactions",
+  );
+  print_red_header(
+    "====date-desc Sort method query result: ".to_string(),
+    format!("{:?}", ret_sort_method),
+  );
 
-  let args_sort_method: HistoryQueryCommand = HistoryQueryCommand {
+  let args = HistoryQueryCommand {
     address: vec![
       "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
         .to_string(),
@@ -462,21 +452,13 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
     sort_method: Some("profit-desc".to_string()), /* Change to your desired
                                                    * sort method */
   };
-  let ret_sort_method: Result<
-    HashMap<WalletAddress, Vec<TransactionB>>,
-    String,
-  > =
-    pic_env.my_query_call(user1, args_sort_method, "query_wallet_transactions");
-  match ret_sort_method {
-    Ok(data) => print_red_header(
-      "====profit-desc Sort method query result: ".to_string(),
-      format!("{:?}", data),
-    ),
-    Err(err) => print_red_header(
-      "====profit-desc Error in sort method query: ".to_string(),
-      format!("{:?}", err),
-    ),
-  }
+  let res: Vec<SimpleTransaction>=
+  // !This is a kind of RPC . should have good reflection way of handle input type and output type 
+    pic_env.my_query_call(user1, args, "query_all_wallet_transactions");
+  print_red_header(
+    "====profit-desc Sort method query result: ".to_string(),
+    format!("{:?}", res),
+  );
 }
 
 fn time_range_test(pic_env: &PicEnv, user1: Principal) {
@@ -489,22 +471,16 @@ fn time_range_test(pic_env: &PicEnv, user1: Principal) {
     to_time: 500_000_000,
     sort_method: None,
   };
-  let ret_time_range: Result<
-    HashMap<WalletAddress, Vec<TransactionB>>,
-    String,
-  > =
-    pic_env.my_query_call(user1, args_time_range, "query_wallet_transactions");
+  let ret_time_range: Vec<SimpleTransaction> = pic_env.my_query_call(
+    user1,
+    args_time_range,
+    "query_all_wallet_transactions",
+  );
   println!(" should be 3 result . full 6 result");
-  match ret_time_range {
-    Ok(data) => print_red_header(
-      "====Time range query result: ".to_string(),
-      format!("{:?}", data),
-    ),
-    Err(err) => print_red_header(
-      "====Error in time range query: ".to_string(),
-      format!("{:?}", err),
-    ),
-  }
+  print_red_header(
+    "====Time range query result: ".to_string(),
+    format!("{:?}", ret_time_range),
+  );
 }
 
 fn print_red_header(red_string: String, origin_color_string: String) {
@@ -846,15 +822,6 @@ pub struct HistoryQueryCommand {
                                     * profit-desc */
 }
 
-fn unwrap_response<R: CandidType + DeserializeOwned>(
-  response: Result<WasmResult, UserError>,
-) -> R {
-  match response.unwrap() {
-    WasmResult::Reply(bytes) => candid::decode_one(&bytes).unwrap(),
-    WasmResult::Reject(error) => panic!("{error}"),
-  }
-}
-
 fn convert_trans_f_to_trans_b(
   trans_f: TransactionF,
   id: TransactionId,
@@ -893,4 +860,29 @@ fn read_db_to_string_from_local_json_file(f_path: String) -> String {
     .read_to_string(&mut db_json)
     .expect("Unable to read the file");
   db_json
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct SimpleTransaction {
+  //
+  // backend autogen:
+  pub id: TransactionId,
+  //
+  pub hash: String,
+  pub timestamp: u64, //this is ns format usigned 64bit
+  pub t_type: String, //  transaction type : "SEND", "RECEIVE"
+  pub details: Details,
+  pub tag: Vec<String>,
+  pub manual: bool, // if this trasac is manual import
+  pub comment: String,
+  // TODO , considering wallet_amount :
+  // pub wallet_amount:u32,
+  // pub warning:String,
+  // TODO: Warning（用户是否标记某些记录为missing cost,
+  // missing rates）这条字段先只做出来，不用,
+  // 解释：比如missing
+  // rates是标记某个交易历史找不到对应的价格记录，
+  // 例如某个NFT的交易价格查不到，
+  // 就会被自动标记为missing rates
 }

@@ -8,10 +8,11 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-crate-type = [
-  "cdylib",
+crate-type = [ 
+  # cdy: "C Dynamic Library."
+  "cdylib", # produce a dynamic system library .For example nix produce .so file. windows produce .dll file baseon compile option. **And this lib can link to a C program.**
 ] #  necessary to compile this Rust program into WebAssembly module.
-# cdy: "C Dynamic Library."
+
 path = "src/lib.rs"
 # FIXME this cause cc compile error . dont know why yet. wasm with proc_marco error ?
 # proc_macro = true
