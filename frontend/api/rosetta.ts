@@ -165,7 +165,6 @@ export const formatIcpTransaccion = async (
 
     transaction.t_type =
       transaction.details.to === wallet.address ? "RECEIVE" : "SEND"
-    transaction.walletName = wallet.name
     //直接输出真实的数量，不再使用浮点数
     transaction.details.amount = currencyCalculate(
       amount,
