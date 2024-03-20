@@ -62,3 +62,5 @@ backend/ohter_test/pic_test/pic_test
 backend/ohter_test/pic_test/err.log
 
 backend/lib/sha256_versions/src/testings
+
+db/

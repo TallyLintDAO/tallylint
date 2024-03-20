@@ -88,7 +88,6 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : IDL.Tuple(CustomResult1),
     'Err' : IDL.Tuple(RejectionCode, IDL.Text),
   });
-  const Result_4 = IDL.Variant({ 'Ok' : IDL.Vec(IDL.Nat8), 'Err' : IDL.Text });
   const TransactionF = IDL.Record({
     'hash' : IDL.Text,
     't_type' : IDL.Text,
@@ -138,13 +137,13 @@ export const idlFactory = ({ IDL }) => {
     'neuron_service' : NeuronService,
     'user_service' : UserService,
   });
-  const Result_5 = IDL.Variant({ 'Ok' : NeuronProfile, 'Err' : IDL.Text });
-  const Result_6 = IDL.Variant({ 'Ok' : WalletProfile, 'Err' : IDL.Text });
-  const Result_7 = IDL.Variant({
+  const Result_4 = IDL.Variant({ 'Ok' : NeuronProfile, 'Err' : IDL.Text });
+  const Result_5 = IDL.Variant({ 'Ok' : WalletProfile, 'Err' : IDL.Text });
+  const Result_6 = IDL.Variant({
     'Ok' : IDL.Vec(NeuronProfile),
     'Err' : IDL.Vec(NeuronProfile),
   });
-  const Result_8 = IDL.Variant({
+  const Result_7 = IDL.Variant({
     'Ok' : IDL.Vec(IDL.Tuple(IDL.Nat64, TransactionB)),
     'Err' : IDL.Text,
   });
@@ -164,11 +163,11 @@ export const idlFactory = ({ IDL }) => {
     'details' : Details,
     'manual' : IDL.Bool,
   });
-  const Result_9 = IDL.Variant({
+  const Result_8 = IDL.Variant({
     'Ok' : IDL.Vec(WalletProfile),
     'Err' : IDL.Vec(WalletProfile),
   });
-  const Result_10 = IDL.Variant({ 'Ok' : TransactionB, 'Err' : IDL.Text });
+  const Result_9 = IDL.Variant({ 'Ok' : TransactionB, 'Err' : IDL.Text });
   const SyncTransactionCommand = IDL.Record({
     'history' : IDL.Vec(TransactionF),
     'walletId' : IDL.Nat64,
@@ -188,21 +187,13 @@ export const idlFactory = ({ IDL }) => {
     'add_wallet' : IDL.Func([WalletAddCommand], [Result], []),
     'auto_register_user' : IDL.Func([], [Result_2], []),
     'clean_db' : IDL.Func([], [IDL.Bool], []),
-    'collect_running_payload' : IDL.Func([], [IDL.Text], ['query']),
     'collect_running_payload_simple' : IDL.Func([], [IDL.Text], ['query']),
+    'collect_running_payload_simple_raw' : IDL.Func([], [IDL.Text], ['query']),
     'delete_neuron_wallet' : IDL.Func([IDL.Nat64], [Result], []),
     'delete_transaction' : IDL.Func([IDL.Nat64], [Result_1], []),
     'delete_wallet' : IDL.Func([IDL.Nat64], [Result], []),
     'get_balance' : IDL.Func([], [IDL.Nat64], []),
     'get_neuron_info' : IDL.Func([IDL.Nat64], [Result_3], []),
-    'get_payload_from_dropbox' : IDL.Func([IDL.Text, IDL.Text], [IDL.Text], []),
-    'get_payload_from_dropbox_u8' : IDL.Func(
-        [IDL.Text, IDL.Text],
-        [Result_4],
-        [],
-      ),
-    'get_payload_from_my_server' : IDL.Func([], [IDL.Text], []),
-    'get_payload_from_my_server_raw_ip' : IDL.Func([], [IDL.Text], []),
     'get_payload_from_stable_mem_simple' : IDL.Func([], [IDL.Text], ['query']),
     'get_payload_from_stable_mem_simple_raw' : IDL.Func(
         [],
@@ -211,38 +202,20 @@ export const idlFactory = ({ IDL }) => {
       ),
     'get_user_config' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
-    'query_a_neuron_wallet' : IDL.Func([IDL.Nat64], [Result_5], ['query']),
-    'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_6], ['query']),
-    'query_all_neuron_wallet' : IDL.Func([], [Result_7], ['query']),
-    'query_all_transactions' : IDL.Func([], [Result_8], ['query']),
+    'query_a_neuron_wallet' : IDL.Func([IDL.Nat64], [Result_4], ['query']),
+    'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_5], ['query']),
+    'query_all_neuron_wallet' : IDL.Func([], [Result_6], ['query']),
+    'query_all_transactions' : IDL.Func([], [Result_7], ['query']),
     'query_all_wallet_transactions' : IDL.Func(
         [HistoryQueryCommand],
         [IDL.Vec(SimpleTransaction)],
         ['query'],
       ),
-    'query_all_wallets' : IDL.Func([], [Result_9], ['query']),
-    'query_one_transaction' : IDL.Func([IDL.Nat64], [Result_10], ['query']),
-    'save_payload_to_dropbox' : IDL.Func([IDL.Text, IDL.Nat32], [IDL.Text], []),
-    'send_payload_string_to_canister' : IDL.Func([IDL.Text], [IDL.Text], []),
-    'set_payload_using_dropbox' : IDL.Func(
-        [IDL.Text, IDL.Text],
-        [IDL.Text],
-        [],
-      ),
-    'set_payload_using_dropbox_simple' : IDL.Func(
-        [IDL.Text, IDL.Text],
-        [IDL.Text],
-        [],
-      ),
-    'set_payload_using_dropbox_simple_raw' : IDL.Func(
-        [IDL.Text, IDL.Text],
-        [IDL.Text],
-        [],
-      ),
-    'set_payload_using_stable_mem' : IDL.Func([], [IDL.Text], []),
+    'query_all_wallets' : IDL.Func([], [Result_8], ['query']),
+    'query_one_transaction' : IDL.Func([IDL.Nat64], [Result_9], ['query']),
+    'set_payload_using_dev_machine_file' : IDL.Func([IDL.Text], [IDL.Text], []),
     'set_payload_using_stable_mem_simple' : IDL.Func([], [IDL.Text], []),
     'set_payload_using_stable_mem_simple_raw' : IDL.Func([], [], []),
-    'set_stable_mem_using_payload' : IDL.Func([], [], []),
     'set_stable_mem_using_payload_simple' : IDL.Func([], [], []),
     'set_stable_mem_using_payload_simple_raw' : IDL.Func([], [], []),
     'set_user_config' : IDL.Func([], [IDL.Vec(UserProfile)], []),

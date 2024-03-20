@@ -3,21 +3,50 @@ use candid::{CandidType, Decode, Encode, Nat, Principal};
 #[allow(unused_imports)]
 use ic_utils::call::AsyncCall;
 
-use std::env;
+use chrono::prelude::*;
+use std::borrow::Borrow;
 use std::fs::{read, File};
 use std::io::Read;
+use std::{env, fs};
 
-// sometime debug cache err:
-// cargo clean -p canister_upgrader && cargo build --package canister_upgrader
-
-// testing :
-//  ./target/debug/canister_upgrader 0 1
+// run canister_on_ic update :
+//  ./target/debug/rs_agent 1
+// run canister_on_local update :
+//  ./target/debug/rs_agent 0
 #[tokio::main]
 async fn main() {
-  testing().await;
+  update_canister_with_db().await;
 }
 
-async fn testing() {
+async fn update_canister_with_db() {
+  let (canister_id, agent) = init_agent().await;
+
+  // ! save payload to dev machine file and then read to rust
+  // let now = Local::now().format("%Y%m%d%H%M%S").to_string();
+  // let payload =
+  //   collect_running_payload_simple(agent.borrow(), canister_id).await;
+  // save_payload_to_local(payload, now.clone());
+  let now = "20240320132553".to_string();
+  let payload_with_time_tag = read_db_from_local(now);
+
+  // ! deploy ic
+  // let _ = exec_deploy().await;
+
+  // ! send payload to ic and set payload on ic
+  let args = candid::encode_one(payload_with_time_tag).unwrap();
+  let result = send_payload_and_set(agent.borrow(), canister_id, args).await;
+  println!("{}", result);
+}
+
+fn save_payload_to_local(payload: String, time_tag: String) {
+  let filename =
+    format!("/home/btwl/code/ic/tax_lint/db/payload_{}.json", time_tag);
+  let contents = payload;
+
+  fs::write(filename, contents).expect("Unable to write file");
+}
+
+async fn init_agent() -> (Principal, Agent) {
   let controller = String::from("btwlz");
   let args: Vec<String> = env::args().collect();
   let online_mode = &args[1];
@@ -44,33 +73,38 @@ async fn testing() {
     panic!("args input err!!");
   }
 
-  // !INFO this need use input passwd in terminal if have passwd. takes about 4s
+  // !INFO this need use input passwd in terminal if have passwd. takes about 3s
   // to run
   let identity = get_dfx_identity(&controller);
   let agent = build_ic_agent(url, identity).await;
-
-  // ! greet test
-  // let result = greet_test(agent, canister_id).await;
-  // println!("{}", result);
-
-  let pay_load_json_string=read_db_to_string_from_local_json_file("/home/btwl/code/ic/tax_lint/backend/i_test/new_ctx_struct_all_ic_data.json".to_owned());
-  let args = candid::encode_one((pay_load_json_string)).unwrap();
-  // ! CALL SEND and RECEIVE SUCCESS!!!! YEAH!
-  let result = send_payload_test(agent, canister_id, args).await;
-  println!("{}", result);
+  (canister_id, agent)
 }
 
-async fn send_payload_test(
-  agent: Agent,
+async fn send_payload_and_set(
+  agent: &Agent,
   canister_id: Principal,
   my_arg: Vec<u8>,
 ) -> String {
   let response = agent
-    .update(&canister_id, "send_payload_string_to_canister")
+    .update(&canister_id, "set_payload_using_dev_machine_file")
     .with_arg(my_arg)
     .call_and_wait()
     .await;
   let result = candid::decode_one(&response.unwrap()).unwrap();
+  result
+}
+
+async fn collect_running_payload_simple(
+  agent: &Agent,
+  canister_id: Principal,
+) -> String {
+  let response = agent
+    .query(&canister_id, "collect_running_payload_simple")
+    .with_arg(candid::encode_one(()).unwrap())
+    .call()
+    .await;
+  let res = &response.expect("agent err");
+  let result: String = candid::decode_one(res).unwrap();
   result
 }
 
@@ -92,10 +126,6 @@ async fn greet_test(agent: Agent, canister_id: Principal) -> String {
   }
 }
 
-#[derive(CandidType)]
-struct Argument {
-  payload: String,
-}
 use ic_agent::agent::http_transport::reqwest_transport::ReqwestHttpReplicaV2Transport;
 use ic_agent::{Agent, Identity};
 
@@ -133,11 +163,37 @@ pub fn get_dfx_identity(name: &str) -> Box<dyn Identity> {
     .unwrap()
 }
 
-fn read_db_to_string_from_local_json_file(f_path: String) -> String {
-  let mut file = File::open(f_path).expect("Unable to open the file");
+fn read_db_from_local(time_tag: String) -> String {
+  let mut file = File::open(format!(
+    "/home/btwl/code/ic/tax_lint/db/payload_{}.json",
+    time_tag
+  ))
+  .expect("Unable to open the file");
   let mut db_json = String::new();
   file
     .read_to_string(&mut db_json)
     .expect("Unable to read the file");
   db_json
+}
+
+use std::io::{BufRead, BufReader};
+use std::process::{Command, Stdio};
+
+async fn exec_deploy() -> std::io::Result<()> {
+  let mut child =
+    Command::new("/home/btwl/code/ic/tax_lint/backend/scripts/deploy_backend")
+      .arg("local")
+      .stdout(Stdio::piped())
+      .spawn()?;
+
+  let stdout = child.stdout.take().unwrap();
+  let reader = BufReader::new(stdout);
+
+  for line in reader.lines() {
+    println!("{}", line?);
+  }
+
+  let status = child.wait()?;
+  println!("command exited with: {}", status);
+  Ok(())
 }

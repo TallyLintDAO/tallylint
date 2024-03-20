@@ -345,4 +345,5 @@ dfx canister call backend sync_transaction_record '(vec {record {123; vec {recor
   dfx canister call backend get_payload_from_my_server 
   dfx canister call backend get_payload_from_my_server_raw_ip 
   dfx canister call backend send_payload_string_to_canister '"x3"""'
-  
+  dfx canister call backend collect_running_payload_simple --ic
+dfx canister call backend user_quantity --ic 
