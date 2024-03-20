@@ -91,7 +91,6 @@ export const idlFactory = ({ IDL }) => {
   const Result_4 = IDL.Variant({ 'Ok' : IDL.Vec(IDL.Nat8), 'Err' : IDL.Text });
   const TransactionF = IDL.Record({
     'hash' : IDL.Text,
-    'walletName' : IDL.Text,
     't_type' : IDL.Text,
     'timestamp' : IDL.Float64,
     'details' : Details,

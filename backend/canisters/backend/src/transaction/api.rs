@@ -210,7 +210,7 @@ fn convert_trans_f_to_trans_b(
     hash: trans_f.hash,
     timestamp: timestamp_ms_float_to_ns(trans_f.timestamp),
     t_type: trans_f.t_type,
-    walletName: trans_f.walletName,
+    walletName: String::new(),
     details: trans_f.details.clone(),
     principal_id: None,
     memo: String::new(),

@@ -107,7 +107,6 @@ type TransactionB = record {
 };
 type TransactionF = record {
   hash : text;
-  walletName : text;
   t_type : text;
   timestamp : float64;
   details : Details;

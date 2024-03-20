@@ -128,7 +128,6 @@ export interface TransactionB {
 }
 export interface TransactionF {
   'hash' : string,
-  'walletName' : string,
   't_type' : string,
   'timestamp' : number,
   'details' : Details,

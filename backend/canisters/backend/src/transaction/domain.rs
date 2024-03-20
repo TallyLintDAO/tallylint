@@ -29,7 +29,7 @@ pub struct TransactionF {
   pub hash: String,
   pub timestamp: f64, // TODO check ns or ms as unit
   pub t_type: String, //  transaction type : "SEND", "RECEIVE"
-  pub walletName: String,
+  // pub walletName: String,
   pub details: Details,
 }
 
