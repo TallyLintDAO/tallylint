@@ -2,6 +2,7 @@ import type {
   Details,
   TransactionB,
 } from ".dfx/ic/canisters/backend/backend.did"
+import { MILI_PER_SECOND } from "@/api/constants/ic"
 import { getSyncedTransactions } from "@/api/user"
 import type { WalletTag } from "@/types/user"
 
@@ -23,15 +24,13 @@ export const getAllSyncedTransactions = async (
       },
       true,
     )
-    console.log("getSyncedTransactions", res)
-    const allTransactions: TransactionB[] = res.flatMap(
-      (syncedHistory) => syncedHistory.history,
-    )
 
-    // 按照 timestamp 进行排序
-    allTransactions.sort((a, b) => Number(a.timestamp) - Number(b.timestamp))
-    console.log("getSyncedTransactions", allTransactions)
-    return { total: allTransactions.length, transactions: allTransactions }
+    const transactions = res.map((transaction) => ({
+      ...transaction,
+      timestamp: Number(transaction.timestamp) / MILI_PER_SECOND,
+    }))
+    console.log("getSyncedTransactions", transactions)
+    return { total: transactions.length, transactions: transactions }
   } catch (error) {
     console.error("Error fetching transactions:", error)
     throw error

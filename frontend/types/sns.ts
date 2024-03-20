@@ -1,3 +1,5 @@
+import type { TransactionF } from ".dfx/ic/canisters/backend/backend.did"
+
 export interface SnsInfo {
   canisters: {
     //Related canister id
@@ -33,30 +35,4 @@ export interface IRCR1Price {
   timestamp: number
 }
 
-export interface InferredTransaction {
-  hash: string
-  timestamp: number
-  t_type: string // rust中type为关键字，所以不能使用type作为字段名
-  details: {
-    status: string
-    fee: number
-    to?: string
-    from?: string
-    amount: number
-    price: number // 发生交易时代币的单价
-    currency: Currency
-    ledgerCanisterId: string
-    cost: number
-    profit: number
-    value: number
-  }
-}
-
-export interface transactionBackend {
-  t_type: string
-  timestamp: number
-  hash: string
-  tag?: string
-  manual?: boolean //是否为手动导入
-  commit?: string //用户给予的备注
-}
+export type InferredTransaction = TransactionF

@@ -1,6 +1,8 @@
 // 统一用户信息的结构
-import type { TransactionB } from ".dfx/ic/canisters/backend/backend.did"
-import type { InferredTransaction } from "./sns"
+import type {
+  TransactionB,
+  TransactionF,
+} from ".dfx/ic/canisters/backend/backend.did"
 
 // 注意和types.ts中的ApiUserInfo统一格式
 export class UserInfo {
@@ -38,7 +40,7 @@ export interface WalletHistory {
 
 export interface syncWalletParam {
   walletId: bigint
-  history: InferredTransaction[]
+  history: TransactionF[]
 }
 
 export interface WalletTag {
@@ -77,7 +79,4 @@ export interface HistoryQueryParams {
   address: string[]
 }
 
-export interface SyncedHistory {
-  addr: string
-  history: TransactionB[]
-}
+export type SyncedHistory = TransactionB[]
