@@ -164,11 +164,11 @@ export async function syncWallet(
 export async function getSyncedTransactions(
   params: HistoryQueryParams,
   refresh: boolean,
-): Promise<SyncedHistory[]> {
-  return getBackend().query_wallet_transactions(params)
+): Promise<SyncedHistory> {
+  return getBackend().query_all_wallet_transactions(params)
   // return await getCache({
   //   key: "USER_SyncedTransactions",
-  //   execute: () => getBackend().query_wallet_transactions(params),
+  //   execute: () => getBackend().query_all_wallet_transactions(params),
   //   ttl: walletTTL,
   //   refresh: refresh, //是否刷新缓存，用于执行增删改操作后的刷新。
   // })

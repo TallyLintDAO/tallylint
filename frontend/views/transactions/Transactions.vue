@@ -128,7 +128,7 @@
                   {{ transaction.t_type }}
                   <br />
                   {{
-                    new Date(transaction.timestamp).toLocaleTimeString(
+                    new Date(Number(transaction.timestamp)).toLocaleTimeString(
                       "en-US",
                       { hour12: false },
                     )
@@ -362,13 +362,12 @@
 </template>
 
 <script lang="ts" setup>
-import { getAllTransactions } from "@/api/rosetta"
-import { deleteSyncedTransactions, getUserAllWallets } from "@/api/user"
+import { deleteSyncedTransactions, getUserWallet } from "@/api/user"
 import type { InferredTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
 import { confirmDialog } from "@/utils/dialog"
-import { showMessageSuccess } from "@/utils/message"
+import { showMessageError, showMessageSuccess } from "@/utils/message"
 import {
   getAllSyncedTransactions,
   getTransactionWalletName,
@@ -527,7 +526,17 @@ onMounted(() => {
 
 const getWallets = async () => {
   showLoading.value = true
-  wallets.value = await getUserAllWallets()
+  const userWallets = await getUserWallet(false)
+  const mapToWallet = (wallet: { name: any; address: any; from: any }) => ({
+    name: wallet.name,
+    address: wallet.address,
+    from: wallet.from,
+  })
+  if (userWallets.Ok) {
+    wallets.value = userWallets.Ok.map(mapToWallet)
+  } else {
+    showMessageError("get Wallets Error")
+  }
 }
 
 const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
@@ -540,7 +549,6 @@ const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
     ? (targetWallets = selectedWallets)
     : (targetWallets = wallets.value)
   getAllSyncedTransactions(0, 0, ["date-asc"], targetWallets)
-  getAllTransactions(targetWallets)
     .then((res) => {
       console.log("getWalletHistory", res)
       if (res.total && res.total != 0) {
@@ -552,6 +560,18 @@ const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
     .finally(() => {
       showLoading.value = false
     })
+  // getAllTransactions(targetWallets)
+  //   .then((res) => {
+  //     console.log("getWalletHistory", res)
+  //     if (res.total && res.total != 0) {
+  //       transactionsList.value = res.transactions
+  //       maxPage.value = Math.ceil(res.total / pageSize.value)
+  //       transactionAmount.value = res.total
+  //     }
+  //   })
+  //   .finally(() => {
+  //     showLoading.value = false
+  //   })
 }
 
 const openDialog = (action: string, itemInfo?: any) => {
