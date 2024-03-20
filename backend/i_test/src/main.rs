@@ -53,8 +53,12 @@ fn test_crud_transactions() {
   // !query payload DB
   // query_payload_db(&pic_env, user_admin);
 
+  // !calculate_tax
+  calculate_tax(&pic_env, user_admin);
+
   // !simple query transactions
   no_filter_no_sort_simple_transac_query(&pic_env, user_admin);
+
   // !time range query test
   time_range_test(&pic_env, user_admin);
   // !sort method query test
@@ -158,7 +162,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
     walletName: "asd".to_string(),
     details: Details {
       amount: 123.8,
-      cost: 1.0,
+      cost: 11.0,
       currency: Currency {
         decimals: 2,
         symbol: "ICP".to_string(),
@@ -190,8 +194,8 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
         .to_string(),
       to: "asd".to_string(),
-      price: 1.0,
-      value: 1.0,
+      price: 41.0,
+      value: 21.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
       profit: 11.0,
@@ -204,7 +208,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
     walletName: "asd".to_string(),
     details: Details {
       amount: 123.8,
-      cost: 1.0,
+      cost: 13.0,
       currency: Currency {
         decimals: 2,
         symbol: "ICP".to_string(),
@@ -213,8 +217,8 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
         .to_string(),
       to: "asd".to_string(),
-      price: 1.0,
-      value: 1.0,
+      price: 10.0,
+      value: 16.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
       profit: 10.0,
@@ -227,7 +231,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
     walletName: "asd".to_string(),
     details: Details {
       amount: 123.8,
-      cost: 1.0,
+      cost: 11.0,
       currency: Currency {
         decimals: 2,
         symbol: "ICP".to_string(),
@@ -236,8 +240,8 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
         .to_string(),
       to: "asd".to_string(),
-      price: 1.0,
-      value: 1.0,
+      price: 10.0,
+      value: 19.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
       profit: 1.0,
@@ -417,6 +421,19 @@ fn no_filter_no_sort_simple_transac_query(pic_env: &PicEnv, user1: Principal) {
   };
   let ret: Vec<SimpleTransaction> =
     pic_env.my_query_call(user1, args, "query_all_wallet_transactions");
+  println!("{:?}", ret);
+}
+fn calculate_tax(pic_env: &PicEnv, user1: Principal) {
+  let args = candid::encode_args((
+    "default",
+    vec![
+      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+        .to_string(),
+    ],
+  ))
+  .unwrap();
+  let ret: String =
+    pic_env.my_update_call_many_args(user1, args, "calculate_tax");
   println!("{:?}", ret);
 }
 

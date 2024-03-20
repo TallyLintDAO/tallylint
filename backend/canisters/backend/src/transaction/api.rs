@@ -9,6 +9,7 @@ use crate::common::context::{get_caller, now};
 use crate::common::guard::admin_guard;
 use crate::common::guard::user_owner_guard;
 use crate::common::times::timestamp_ms_float_to_ns;
+use crate::wallet;
 use crate::wallet::domain::HistoryQueryCommand;
 use crate::{TransactionB, CONTEXT};
 
@@ -63,7 +64,7 @@ fn query_all_wallet_transactions(
     for addr in cmd.address {
       let rec = ctx
         .wallet_transc_srv
-        .query_one_wallet(addr.clone())
+        .query_one_wallet_trans(addr.clone())
         .get(&addr)
         .cloned()
         .unwrap_or(Vec::new());
@@ -225,20 +226,28 @@ fn convert_trans_f_to_trans_b(
 }
 
 #[update(guard = "user_owner_guard")]
-fn calculate_tax(method: String) -> String {
-  return "calculate success".to_string();
-}
-
-// TODO
-
-struct Transaction {
-  t_type: String,
-  details: Details,
-}
-
-struct Details {
-  price: f64,
-  amount: f64,
+fn calculate_tax(method: String, wallets: Vec<WalletAddress>) -> String {
+  CONTEXT.with(|ctx| {
+    let mut ctx = ctx.borrow_mut();
+    for one_wallet in wallets {
+      let map = ctx.wallet_transc_srv.query_one_wallet_trans(one_wallet);
+      let vec_data = map
+        .values()
+        .next()
+        .expect("wallet transaction empty")
+        .clone();
+      for mut one in vec_data {
+        if one.t_type == "RECEIVE".to_string() {
+          one.details.profit = 0.0;
+        } else if one.t_type == "SEND".to_string() {
+          let profit = one.details.value - one.details.cost;
+          one.details.profit = profit;
+        }
+        let _ = ctx.wallet_transc_srv.update_transaction_impl(one);
+      }
+    }
+    return "calculate success".to_string();
+  })
 }
 
 struct Purchase {
@@ -246,8 +255,7 @@ struct Purchase {
   amount: f64,
 }
 
-
-fn calculate_cost(transaction: TransactionF) -> f64 {
+fn calculate_cost(transaction: TransactionB) -> f64 {
   let mut purchase_queue: VecDeque<Purchase> = VecDeque::new();
 
   if transaction.t_type == "RECEIVE" {

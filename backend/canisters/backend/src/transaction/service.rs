@@ -184,7 +184,7 @@ impl WalletRecordService {
 
   // TODO make sort method work.
   //
-  pub fn query_one_wallet(
+  pub fn query_one_wallet_trans(
     &self,
     addr: WalletAddress,
   ) -> HashMap<WalletAddress, Vec<TransactionB>> {
