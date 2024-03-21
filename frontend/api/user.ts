@@ -10,6 +10,7 @@ import { TTL, getCache } from "@/utils/cache"
 import { showMessageError } from "@/utils/message"
 import { getNNS } from "@/utils/nns"
 import { getBackend, getCurrentPrincipal } from "./canister_pool"
+import type { TransactionB } from ".dfx/ic/canisters/backend/backend.did"
 
 //TODO demo阶段用户字段修改频繁，暂时用短缓存时间。
 const userTTL = TTL.minute1 //用户自身信息缓存时长。
@@ -160,6 +161,13 @@ export async function syncWallet(
   return getBackend().sync_transaction_record(walletTransactionHistoryArray)
 }
 
+// 手动添加单条交易记录
+export async function addManualTransaction(
+  transaction: TransactionB,
+): Promise<ApiResult<boolean>> {
+  return getBackend().add_transaction(transaction)
+}
+
 // 查询用户已存储的交易记录
 export async function getSyncedTransactions(
   params: HistoryQueryParams,
@@ -177,6 +185,6 @@ export async function getSyncedTransactions(
 // 删除用户已存储的交易记录
 export async function deleteSyncedTransactions(
   transactionId: number,
-): Promise<ApiResult<any>> {
+): Promise<ApiResult<boolean>> {
   return getBackend().delete_transaction(transactionId)
 }

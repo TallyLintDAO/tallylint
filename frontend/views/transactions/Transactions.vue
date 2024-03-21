@@ -252,20 +252,20 @@
                 <q-input
                   filled
                   label="From Address"
-                  v-model="transaction.from"
+                  v-model="transaction.details.from"
                   class="q-mb-md"
                 />
                 <q-input
                   filled
                   label="Amount of tokens"
-                  v-model="transaction.amount"
+                  v-model="transaction.details.amount"
                   class="q-mb-md"
                 >
                   <template v-slot:before>
                     <q-select
                       filled
                       map-options
-                      v-model="transaction.currency"
+                      v-model="transaction.details.currency"
                       :options="tokenList"
                       label="Token"
                       style="min-width: 100px"
@@ -292,7 +292,7 @@
                 <q-input
                   filled
                   label="Token Price"
-                  v-model="transaction.price"
+                  v-model="transaction.details.price"
                 />
               </q-card-section>
 
@@ -315,7 +315,7 @@
                 <q-input
                   filled
                   label="To Target Address"
-                  v-model="transaction.to"
+                  v-model="transaction.details.to"
                 />
               </q-card-section>
             </q-card>
@@ -328,13 +328,13 @@
             <q-input
               outlined
               label="Transaction Hash"
-              v-model="transaction.from"
+              v-model="transaction.hash"
               class="q-mb-md"
             />
             <q-input
               outlined
               label="Description"
-              v-model="transaction.commit"
+              v-model="transaction.comment"
               class="q-mb-md"
             />
             <div class="q-gutter-sm justify-end flex">
@@ -362,6 +362,7 @@
 </template>
 
 <script lang="ts" setup>
+import { getAllTransactions } from "@/api/rosetta"
 import { deleteSyncedTransactions, getUserWallet } from "@/api/user"
 import type { InferredTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
@@ -381,17 +382,30 @@ const route = useRoute()
 const address = route.params.address
 const transactionsList = ref<InferredTransaction[]>([])
 const transaction = ref({
+  id: 0n,
+  tag: [],
   hash: "",
-  timestamp: 0,
-  from: "",
-  to: "",
-  amount: 0,
-  price: 0,
-  currency: { decimals: 8, symbol: "ICP" },
+  memo: "",
+  walletName: "",
   t_type: "",
-  tag: "",
+  comment: "",
+  address: "",
+  timestamp: 0,
+  details: {
+    to: "",
+    fee: 0,
+    status: "",
+    ledgerCanisterId: "",
+    value: 0,
+    cost: 0,
+    from: "",
+    currency: { decimals: 8, symbol: "ICP" },
+    profit: 0,
+    price: 0,
+    amount: 0,
+  },
   manual: false,
-  commit: "",
+  principal_id: [],
 })
 const type = ref([])
 const typeOptions = ["SEND", "RECEIVE"]
@@ -509,18 +523,30 @@ onMounted(() => {
     let walletsToQuery: WalletTag[]
 
     if (address) {
-      // 如果 address 存在
+      // 如果 address 存在，则是单独查询某一钱包，直接查询
       walletsToQuery = Array.isArray(address)
         ? // 如果 address 是数组，则直接使用
           address.map((addr) => ({ address: addr, name: "", from: "" }))
         : // 如果 address 是字符串，则构造包含单个地址的数组
           [{ address: address, name: "", from: "" }]
+      //TODO 感觉有bug，待定
+      getAllTransactions(walletsToQuery)
+        .then((res) => {
+          console.log("getWalletHistory", res)
+          if (res.total && res.total != 0) {
+            transactionsList.value = res.transactions
+            maxPage.value = Math.ceil(res.total / pageSize.value)
+            transactionAmount.value = res.total
+          }
+        })
+        .finally(() => {
+          showLoading.value = false
+        })
     } else {
-      // 如果 address 不存在，则默认查询所有地址
+      // 如果 address 不存在，则默认使用canister查询IC数据库
       walletsToQuery = wallets.value
+      getSelectedWalletHistory(walletsToQuery)
     }
-
-    getSelectedWalletHistory(walletsToQuery)
   })
 })
 
@@ -560,18 +586,6 @@ const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
     .finally(() => {
       showLoading.value = false
     })
-  // getAllTransactions(targetWallets)
-  //   .then((res) => {
-  //     console.log("getWalletHistory", res)
-  //     if (res.total && res.total != 0) {
-  //       transactionsList.value = res.transactions
-  //       maxPage.value = Math.ceil(res.total / pageSize.value)
-  //       transactionAmount.value = res.total
-  //     }
-  //   })
-  //   .finally(() => {
-  //     showLoading.value = false
-  //   })
 }
 
 const openDialog = (action: string, itemInfo?: any) => {
@@ -584,6 +598,28 @@ const openDialog = (action: string, itemInfo?: any) => {
     transaction.value.manual = true
   }
   dialogVisible.value = true
+}
+
+const onSubmit = async () => {
+  loading.value = true
+  const validationSuccess = await form.value?.validate()
+  if (validationSuccess) {
+    if (isEdit.value) {
+      // await editTransaction()
+    } else {
+      await addTransaction()
+    }
+    dialogVisible.value = false
+  } else {
+    // 数据验证失败
+    // 用户至少输入了一个无效值
+  }
+  loading.value = false
+}
+
+const addTransaction = () => {
+  console.log("addTransaction", transaction.value)
+  // addManualTransaction(transaction.value).then((res) => {})
 }
 
 const deleteTransaction = (transactionId: number) => {
@@ -600,7 +636,6 @@ const deleteTransaction = (transactionId: number) => {
     },
   })
 }
-const onSubmit = () => {}
 </script>
 
 <style lang="scss">
