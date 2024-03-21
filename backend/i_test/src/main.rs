@@ -175,7 +175,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       value: 1.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
-      profit: 12.0,
+      profit: 0.0,
     },
   };
   let transaction2 = TransactionF {
@@ -198,7 +198,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       value: 21.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
-      profit: 11.0,
+      profit: 0.0,
     },
   };
   let transaction3 = TransactionF {
@@ -221,7 +221,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       value: 16.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
-      profit: 10.0,
+      profit:  0.0,
     },
   };
   let transaction4 = TransactionF {
@@ -244,7 +244,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       value: 19.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
-      profit: 1.0,
+      profit:  0.0,
     },
   };
   let transaction5 = TransactionF {
@@ -267,7 +267,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       value: 1.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
-      profit: 100.0,
+      profit:  0.0,
     },
   };
   let transaction6 = TransactionF {
@@ -290,7 +290,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       value: 1.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
-      profit: 1000.0,
+      profit:  0.0,
     },
   };
   let sync_transaction_command = SyncTransactionCommand {
@@ -336,7 +336,7 @@ fn add_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
       value: 1.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
-      profit: 12.0,
+      profit:  0.0,
     },
   };
 
@@ -374,7 +374,7 @@ fn update_completx_transaction(pic_env: &PicEnv, user1: Principal) {
       value: 1.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
-      profit: 12.0,
+      profit:  0.0,
     },
   };
 
