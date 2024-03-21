@@ -70,7 +70,7 @@ pub struct DetailsB {
 
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct Currency {
-  pub decimals: u64,  //代币精度
+  pub decimals: u8,  //代币精度,多少个0
   pub symbol: String, //代币符号，例如'ICP'，'CHAT'
 }
 
@@ -84,12 +84,7 @@ pub struct TransactionB {
   pub hash: String,
   pub timestamp: u64, //this is ns format usigned 64bit
   pub t_type: String, //  transaction type : "SEND", "RECEIVE"
-  pub walletName: String,
   pub details: Details,
-
-  pub principal_id: Option<String>, /* Plug use , need
-                                     * to convert to
-                                     * opt_account_id_hex for use. */
   pub memo: String,
   pub address: WalletAddress,
 
