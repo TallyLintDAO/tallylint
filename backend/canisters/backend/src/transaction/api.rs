@@ -223,7 +223,11 @@ fn convert_trans_f_to_trans_b(
 }
 
 #[update(guard = "user_owner_guard")]
-fn calculate_tax(method: String, wallets: Vec<WalletAddress>) -> String {
+fn calculate_tax(
+  wallets: Vec<WalletAddress>,
+  method: String,
+  flag: String,
+) -> String {
   CONTEXT.with(|ctx| {
     let mut ctx = ctx.borrow_mut();
     for one_wallet in wallets {
@@ -233,14 +237,41 @@ fn calculate_tax(method: String, wallets: Vec<WalletAddress>) -> String {
         .next()
         .expect("wallet transaction empty")
         .clone();
-      for mut one in vec_data {
-        if one.t_type == "RECEIVE".to_string() {
-          one.details.profit = 0.0;
-        } else if one.t_type == "SEND".to_string() {
-          let profit = one.details.value - one.details.cost;
-          one.details.profit = profit;
+
+      let filtered_vec_data: Vec<_> = match flag.as_str() {
+        "Air Drop profit exclude" => vec_data
+          .into_iter()
+          .filter(|one| {
+            !one.tag.iter().any(|tag| *tag == "Air Drop".to_string())
+          })
+          .collect(),
+        "Method2" => vec_data
+          .into_iter()
+          .filter(|one| {
+            !one.tag.iter().any(|tag| *tag == "Air Drop".to_string())
+          })
+          .collect(),
+        "Method3" => vec_data
+          .into_iter()
+          .filter(|one| {
+            !one.tag.iter().any(|tag| *tag == "Air Drop".to_string())
+          })
+          .collect(),
+        _ => vec_data,
+      };
+
+      // TODO ! cal profit using :
+      // /home/btwl/code/ic/tax_lint/backend/ohter_test/tax_test/main.rs
+      if method == "fifo".to_string() {
+        for mut one in filtered_vec_data {
+          if one.t_type == "RECEIVE".to_string() {
+            one.details.profit = 0.0;
+          } else if one.t_type == "SEND".to_string() {
+            let profit = one.details.value - one.details.cost;
+            one.details.profit = profit;
+          }
+          let _ = ctx.wallet_transc_srv.update_transaction_impl(one);
         }
-        let _ = ctx.wallet_transc_srv.update_transaction_impl(one);
       }
     }
     return "calculate success".to_string();

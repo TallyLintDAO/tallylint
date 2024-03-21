@@ -70,6 +70,9 @@ fn test_crud_transactions() {
   // tag as 3333 keyword serach if ok
   update_completx_transaction(&pic_env, user_admin);
   query_a_completx_transaction(&pic_env, user_admin);
+
+  // !query wallet info
+  query_all_wallet_info(&pic_env, user_admin);
 }
 
 fn init() -> (PicEnv, Principal) {
@@ -159,7 +162,6 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
     hash: "123".to_string(),
     timestamp: 10.0,
     t_type: "SEND".to_string(),
-    walletName: "asd".to_string(),
     details: Details {
       amount: 123.8,
       cost: 11.0,
@@ -182,7 +184,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
     hash: "123".to_string(),
     timestamp: 210.0,
     t_type: "SEND".to_string(),
-    walletName: "asd".to_string(),
+
     details: Details {
       amount: 123.8,
       cost: 1.0,
@@ -205,7 +207,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
     hash: "123".to_string(),
     timestamp: 211.0,
     t_type: "SEND".to_string(),
-    walletName: "asd".to_string(),
+
     details: Details {
       amount: 123.8,
       cost: 13.0,
@@ -221,14 +223,14 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       value: 16.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
-      profit:  0.0,
+      profit: 0.0,
     },
   };
   let transaction4 = TransactionF {
     hash: "123".to_string(),
     timestamp: 222.0,
     t_type: "SEND".to_string(),
-    walletName: "asd".to_string(),
+
     details: Details {
       amount: 123.8,
       cost: 11.0,
@@ -244,14 +246,14 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       value: 19.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
-      profit:  0.0,
+      profit: 0.0,
     },
   };
   let transaction5 = TransactionF {
     hash: "123".to_string(),
     timestamp: 3333.0,
     t_type: "SEND".to_string(),
-    walletName: "asd".to_string(),
+
     details: Details {
       amount: 123.8,
       cost: 1.0,
@@ -267,14 +269,14 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       value: 1.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
-      profit:  0.0,
+      profit: 0.0,
     },
   };
   let transaction6 = TransactionF {
     hash: "123".to_string(),
     timestamp: 1000.0,
     t_type: "RECEIVE".to_string(),
-    walletName: "asd".to_string(),
+
     details: Details {
       amount: 123.8,
       cost: 1.0,
@@ -290,7 +292,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       value: 1.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
-      profit:  0.0,
+      profit: 0.0,
     },
   };
   let sync_transaction_command = SyncTransactionCommand {
@@ -320,7 +322,7 @@ fn add_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
     hash: "123".to_string(),
     timestamp: 10.0,
     t_type: "SEND".to_string(),
-    walletName: "asd".to_string(),
+
     details: Details {
       amount: 123.8,
       cost: 1.0,
@@ -336,7 +338,7 @@ fn add_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
       value: 1.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
-      profit:  0.0,
+      profit: 0.0,
     },
   };
 
@@ -358,7 +360,7 @@ fn update_completx_transaction(pic_env: &PicEnv, user1: Principal) {
     hash: "123".to_string(),
     timestamp: 10.0,
     t_type: "SEND".to_string(),
-    walletName: "asd".to_string(),
+
     details: Details {
       amount: 123.8,
       cost: 1.0,
@@ -374,7 +376,7 @@ fn update_completx_transaction(pic_env: &PicEnv, user1: Principal) {
       value: 1.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
-      profit:  0.0,
+      profit: 0.0,
     },
   };
 
@@ -755,7 +757,7 @@ pub struct TransactionF {
   pub hash: String,
   pub timestamp: f64, // TODO check ns or ms as unit
   pub t_type: String, //  transaction type : "SEND", "RECEIVE"
-  pub walletName: String,
+  // pub walletName: String,
   pub details: Details,
 }
 
@@ -778,7 +780,7 @@ pub struct Details {
 
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct Currency {
-  pub decimals: u64,  //代币精度
+  pub decimals: u8,   //代币精度
   pub symbol: String, //代币符号，例如'ICP'，'CHAT'
 }
 pub type WalletId = u64;
@@ -795,12 +797,8 @@ pub struct TransactionB {
   pub hash: String,
   pub timestamp: u64, //this is ms format with float.
   pub t_type: String, //  transaction type : "SEND", "RECEIVE"
-  pub walletName: String,
   pub details: Details,
 
-  pub principal_id: Option<String>, /* Plug use , need
-                                     * to convert to
-                                     * opt_account_id_hex for use. */
   pub memo: String,
   pub address: WalletAddress,
 
@@ -854,9 +852,7 @@ fn convert_trans_f_to_trans_b(
     hash: trans_f.hash,
     timestamp: timestamp_ms_float_to_ns(trans_f.timestamp),
     t_type: trans_f.t_type,
-    walletName: trans_f.walletName,
     details: trans_f.details.clone(),
-    principal_id: None,
     memo: String::new(),
     address,
     tag: Vec::new(),
