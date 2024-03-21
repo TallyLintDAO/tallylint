@@ -62,24 +62,25 @@ const loading = ref(false)
 const onLogin = async () => {
   const auth = await initAuth()
   loading.value = true
-  if (!auth.info) {
-    //检查用户是否已登录，未登录就登录
-    signIn(auth.client) // 理论上有链接对象才会进入这个方法
-      .then((ii) => {
-        signedIn.value = true
-        auth.info = ii
-        loginSuccess(ii)
-      })
-      .catch((e) => {
-        console.error("e", e)
-      })
-      .finally(() => {
-        loading.value = false
-      })
-  } else {
-    //存在auth.info，说明用户已登录，不需要再登录
-    loginSuccess(auth.info)
-  }
+  //TODO 先不使用登录缓存，有点问题
+  // if (!auth.info) {
+  //检查用户是否已登录，未登录就登录
+  signIn(auth.client) // 理论上有链接对象才会进入这个方法
+    .then((ii) => {
+      signedIn.value = true
+      auth.info = ii
+      loginSuccess(ii)
+    })
+    .catch((e) => {
+      console.error("e", e)
+    })
+    .finally(() => {
+      loading.value = false
+    })
+  // } else {
+  //   //存在auth.info，说明用户已登录，不需要再登录
+  //   loginSuccess(auth.info)
+  // }
 }
 
 const loginSuccess = (ii: IdentityInfo) => {
