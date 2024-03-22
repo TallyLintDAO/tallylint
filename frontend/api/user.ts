@@ -168,6 +168,13 @@ export async function addManualTransaction(
   return getBackend().add_transaction(transaction)
 }
 
+// 编辑单条交易记录
+export async function editUserTransaction(
+  transaction: TransactionB,
+): Promise<ApiResult<boolean>> {
+  return getBackend().update_transaction(transaction)
+}
+
 // 查询用户已存储的交易记录
 export async function getSyncedTransactions(
   params: HistoryQueryParams,

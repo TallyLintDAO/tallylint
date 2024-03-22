@@ -236,7 +236,12 @@
               filled
               v-model="transaction.t_type"
               :options="typeOptions"
-              label="Type"
+              label="Type *"
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) || 'Please select transaction type',
+              ]"
+              :disable="isEdit"
             />
             <q-card flat bordered class="my-card">
               <q-card-section>
@@ -246,20 +251,28 @@
                     Send
                   </div>
                   <div class="text-grey text-caption row items-center">
-                    Manual
+                    {{ isEdit ? "Auto Import" : "Manual" }}
                   </div>
                 </div>
                 <q-input
                   filled
-                  label="From Address"
+                  label="From Address *"
                   v-model="transaction.details.from"
                   class="q-mb-md"
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) ||
+                      'Please enter the source address',
+                  ]"
+                  :disable="isEdit"
                 />
                 <q-input
                   filled
                   label="Amount of tokens"
-                  v-model="transaction.details.amount"
+                  type="number"
+                  v-model.number="transaction.details.amount"
                   class="q-mb-md"
+                  :disable="isEdit"
                 >
                   <template v-slot:before>
                     <q-select
@@ -269,6 +282,7 @@
                       :options="tokenList"
                       label="Token"
                       style="min-width: 100px"
+                      :disable="isEdit"
                     >
                       <template v-slot:option="scope">
                         <q-item v-bind="scope.itemProps">
@@ -292,7 +306,9 @@
                 <q-input
                   filled
                   label="Token Price"
-                  v-model="transaction.details.price"
+                  type="number"
+                  v-model.number="transaction.details.price"
+                  :disable="isEdit"
                 />
               </q-card-section>
 
@@ -309,31 +325,50 @@
                     RECEIVE
                   </div>
                   <div class="text-grey text-caption row items-center">
-                    Manual
+                    {{ isEdit ? "Auto Import" : "Manual" }}
                   </div>
                 </div>
                 <q-input
                   filled
-                  label="To Target Address"
+                  label="To Target Address *"
                   v-model="transaction.details.to"
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) ||
+                      'Please enter the target address',
+                  ]"
+                  :disable="isEdit"
                 />
               </q-card-section>
             </q-card>
             <el-date-picker
               v-model="transaction.timestamp"
               type="datetime"
-              placeholder="Transaction Datetime"
+              placeholder="Transaction Datetime *"
               value-format="x"
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'Please enter the transaction datetime',
+              ]"
+              :disabled="isEdit"
             />
             <q-input
               outlined
-              label="Transaction Hash"
+              label="Transaction Hash *"
               v-model="transaction.hash"
               class="q-mb-md"
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'Please enter the transaction hash',
+              ]"
+              :disable="isEdit"
             />
             <q-input
               outlined
               label="Description"
+              type="textarea"
               v-model="transaction.comment"
               class="q-mb-md"
             />
@@ -363,7 +398,12 @@
 
 <script lang="ts" setup>
 import { getAllTransactions } from "@/api/rosetta"
-import { deleteSyncedTransactions, getUserWallet } from "@/api/user"
+import {
+  addManualTransaction,
+  deleteSyncedTransactions,
+  editUserTransaction,
+  getUserWallet,
+} from "@/api/user"
 import type { InferredTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
@@ -425,6 +465,16 @@ const tokenList = [
     value: {
       decimals: 8,
       symbol: "ICP",
+    },
+  },
+  {
+    decimals: 8,
+    symbol: "BCP",
+    label: "BCP",
+    icon: "/frontend/assets/dfinity.svg",
+    value: {
+      decimals: 8,
+      symbol: "BCP",
     },
   },
 ]
@@ -591,6 +641,8 @@ const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
 const openDialog = (action: string, itemInfo?: any) => {
   if (action === "edit" && itemInfo) {
     isEdit.value = true
+    console.log("edit", itemInfo)
+    transaction.value = itemInfo
     //理论上来说item里manual属性会覆盖transaction里的manual属性，所以这里不对manual做修改
   } else {
     //不为edit就是add
@@ -603,23 +655,46 @@ const openDialog = (action: string, itemInfo?: any) => {
 const onSubmit = async () => {
   loading.value = true
   const validationSuccess = await form.value?.validate()
-  if (validationSuccess) {
-    if (isEdit.value) {
-      // await editTransaction()
+  try {
+    if (validationSuccess) {
+      if (isEdit.value) {
+        // await editTransaction()
+      } else {
+        await addTransaction()
+      }
+      dialogVisible.value = false
     } else {
-      await addTransaction()
+      // 数据验证失败
+      // 用户至少输入了一个无效值
     }
-    dialogVisible.value = false
-  } else {
-    // 数据验证失败
-    // 用户至少输入了一个无效值
+  } catch (error) {
+    console.error("onSubmitError", error)
+    showMessageError((error as Error).toString())
+  } finally {
+    loading.value = false
   }
-  loading.value = false
 }
 
-const addTransaction = () => {
+const addTransaction = async () => {
   console.log("addTransaction", transaction.value)
-  // addManualTransaction(transaction.value).then((res) => {})
+
+  const res = await addManualTransaction(transaction.value)
+  console.log("res", res)
+  if (res.Ok) {
+    showMessageSuccess("add transaction success")
+  }
+  return
+}
+
+const editTransaction = async () => {
+  console.log("addTransaction", transaction.value)
+
+  const res = await editUserTransaction(transaction.value)
+  console.log("res", res)
+  if (res.Ok) {
+    showMessageSuccess("add transaction success")
+  }
+  return
 }
 
 const deleteTransaction = (transactionId: number) => {
