@@ -163,7 +163,9 @@ fn sync_transaction_record(
       // FIXME fix already exsit transac . 检查最近一条的hash是否和db上的
       // hash一样.一样则返回 "transactions already newest. nothing append since
       // last time sync"
-      let latest_hash = one_wallet.history[0].hash.clone();
+      // let latest_hash = one_wallet.history[0].hash.clone();
+      // ! remove dup:
+
       // let hash_db=
       // ! append records
       for one_rec in one_wallet.history.clone() {

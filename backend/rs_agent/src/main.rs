@@ -20,7 +20,7 @@ async fn main() {
 
 async fn regular_update_canister_with_db() {
   let (canister_id, agent, online_mode) = init_agent().await;
-  let ic_or_local:String;
+  let ic_or_local: String;
   if online_mode == "0" {
     ic_or_local = "local".to_owned()
   } else if online_mode == "1" {
@@ -34,7 +34,8 @@ async fn regular_update_canister_with_db() {
   let payload =
     collect_running_payload_simple(agent.borrow(), canister_id).await;
   save_payload_to_local(payload, now.clone(), ic_or_local.to_owned());
-  let payload_now = read_db_from_local(now, ic_or_local.to_owned());
+  
+  let payload_now = read_db_from_local("2024_03_22_15_21_53".to_string(), ic_or_local.to_owned());
 
   // ! deploy ic
   // FIXME. run ok. but  displaying locations bad.  cmds output in real time .
@@ -49,7 +50,7 @@ async fn regular_update_canister_with_db() {
 fn save_payload_to_local(payload: String, time_tag: String, mode: String) {
   let filename = format!(
     "/home/btwl/code/ic/tax_lint/db/{}/payload_{}.json",
-    mode,time_tag
+    mode, time_tag
   );
   println!("saving: {}", filename);
   let contents = payload;
@@ -177,13 +178,13 @@ pub fn get_dfx_identity(name: &str) -> Box<dyn Identity> {
 }
 
 fn read_db_from_local(time_tag: String, mode: String) -> String {
-  let file_name=format!(
+  let file_name = format!(
     "/home/btwl/code/ic/tax_lint/db/{}/payload_{}.json",
-     mode,time_tag
+    mode, time_tag
   );
   println!("reading: {}", file_name);
-  let mut file = File::open(file_name.clone())
-  .expect("Unable to open the file");
+  let mut file =
+    File::open(file_name.clone()).expect("Unable to open the file");
   let mut db_json = String::new();
   file
     .read_to_string(&mut db_json)
