@@ -20,38 +20,41 @@ async fn main() {
 
 async fn regular_update_canister_with_db() {
   let (canister_id, agent, online_mode) = init_agent().await;
-  let ic_or_local;
+  let ic_or_local:String;
   if online_mode == "0" {
-    ic_or_local = "local"
+    ic_or_local = "local".to_owned()
   } else if online_mode == "1" {
-    ic_or_local = "ic"
+    ic_or_local = "ic".to_owned()
   } else {
     panic!("err mode ic or local 1,0")
   }
 
   // ! save payload to dev machine file and read to rust
-  let now = Local::now().format("%Y%m%d%H%M%S").to_string();
+  let now = Local::now().format("%Y_%m_%d_%H_%M_%S").to_string();
   let payload =
     collect_running_payload_simple(agent.borrow(), canister_id).await;
-  save_payload_to_local(payload, now.clone(),ic_or_local.to_owned());
-  let payload_with_time_tag = read_db_from_local(now,ic_or_local.to_owned());
+  save_payload_to_local(payload, now.clone(), ic_or_local.to_owned());
+  let payload_now = read_db_from_local(now, ic_or_local.to_owned());
 
   // ! deploy ic
-  // FIXME. run ok. but not displaying cmds in real time .
+  // FIXME. run ok. but  displaying locations bad.  cmds output in real time .
   let _ = exec_deploy(ic_or_local.to_owned()).await;
 
   // ! send payload to ic and set payload on ic
-  let args = candid::encode_one(payload_with_time_tag).unwrap();
+  let args = candid::encode_one(payload_now).unwrap();
   let result = send_payload_and_set(agent.borrow(), canister_id, args).await;
   println!("{}", result);
 }
 
-fn save_payload_to_local(payload: String, time_tag: String,mode:String) {
-  let filename =
-    format!("/home/btwl/code/ic/tax_lint/db/{}/payload_{}.json", time_tag,mode);
+fn save_payload_to_local(payload: String, time_tag: String, mode: String) {
+  let filename = format!(
+    "/home/btwl/code/ic/tax_lint/db/{}/payload_{}.json",
+    mode,time_tag
+  );
+  println!("saving: {}", filename);
   let contents = payload;
-
-  fs::write(filename, contents).expect("Unable to write file");
+  fs::write(filename.clone(), contents).expect("Unable to write file");
+  println!("file save ok ");
 }
 
 async fn init_agent() -> (Principal, Agent, String) {
@@ -113,6 +116,8 @@ async fn collect_running_payload_simple(
     .await;
   let res = &response.expect("agent err");
   let result: String = candid::decode_one(res).unwrap();
+  println!("get db from ic ok ");
+
   result
 }
 
@@ -171,15 +176,20 @@ pub fn get_dfx_identity(name: &str) -> Box<dyn Identity> {
     .unwrap()
 }
 
-fn read_db_from_local(time_tag: String,mode :String) -> String {
-  let mut file = File::open(format!(
-    "/home/btwl/code/ic/tax_lint/db/{}/payload_{}.json", time_tag,mode
-  ))
+fn read_db_from_local(time_tag: String, mode: String) -> String {
+  let file_name=format!(
+    "/home/btwl/code/ic/tax_lint/db/{}/payload_{}.json",
+     mode,time_tag
+  );
+  println!("reading: {}", file_name);
+  let mut file = File::open(file_name.clone())
   .expect("Unable to open the file");
   let mut db_json = String::new();
   file
     .read_to_string(&mut db_json)
     .expect("Unable to read the file");
+  println!("file read ok ");
+
   db_json
 }
 

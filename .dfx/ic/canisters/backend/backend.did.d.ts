@@ -11,7 +11,7 @@ export interface CanisterContext {
   'neuron_service' : NeuronService,
   'user_service' : UserService,
 }
-export interface Currency { 'decimals' : bigint, 'symbol' : string }
+export interface Currency { 'decimals' : number, 'symbol' : string }
 export type CustomResult1 = { 'Ok' : NeuronInfo } |
   { 'Err' : GovernanceError };
 export interface Details {
@@ -115,14 +115,12 @@ export interface TransactionB {
   'tag' : Array<string>,
   'hash' : string,
   'memo' : string,
-  'walletName' : string,
   't_type' : string,
   'comment' : string,
   'address' : string,
   'timestamp' : bigint,
   'details' : Details,
   'manual' : boolean,
-  'principal_id' : [] | [string],
 }
 export interface TransactionF {
   'hash' : string,
@@ -171,6 +169,7 @@ export interface _SERVICE {
   'add_transaction' : ActorMethod<[TransactionB], Result_1>,
   'add_wallet' : ActorMethod<[WalletAddCommand], Result>,
   'auto_register_user' : ActorMethod<[], Result_2>,
+  'calculate_tax' : ActorMethod<[Array<string>, string, Array<string>], string>,
   'clean_db' : ActorMethod<[], boolean>,
   'collect_running_payload_simple' : ActorMethod<[], string>,
   'collect_running_payload_simple_raw' : ActorMethod<[], string>,
