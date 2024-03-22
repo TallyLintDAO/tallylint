@@ -49,6 +49,12 @@ pub struct Details {
   pub ledgerCanisterId: String,
   pub profit: f64,
 }
+
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct Currency {
+  pub decimals: u8,   //代币精度,多少个0
+  pub symbol: String, //代币符号，例如'ICP'，'CHAT'
+}
 // TODO multi profit type
 #[allow(non_snake_case)]
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
@@ -68,11 +74,6 @@ pub struct DetailsB {
   // pub profit_method: String,
 }
 
-#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
-pub struct Currency {
-  pub decimals: u8,   //代币精度,多少个0
-  pub symbol: String, //代币符号，例如'ICP'，'CHAT'
-}
 
 #[allow(non_snake_case)]
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]

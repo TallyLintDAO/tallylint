@@ -158,22 +158,22 @@ fn query_all_wallet_info(pic_env: &PicEnv, user_admin: Principal) {
 }
 
 fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
-  let transaction = TransactionF {
+  let transaction1 = TransactionF {
     hash: "123".to_string(),
     timestamp: 10.0,
-    t_type: "SEND".to_string(),
+    t_type: "RECEIVE".to_string(),
     details: Details {
-      amount: 123.8,
-      cost: 11.0,
+      amount: 10.0,
+      cost: 50.0,
       currency: Currency {
         decimals: 2,
         symbol: "ICP".to_string(),
       },
-      fee: 123.8,
-      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+      fee: 0.8,
+      from: "asd"
         .to_string(),
-      to: "asd".to_string(),
-      price: 1.0,
+      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
+      price: 5.0,
       value: 1.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
@@ -181,12 +181,12 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
     },
   };
   let transaction2 = TransactionF {
-    hash: "123".to_string(),
+    hash: "12z33".to_string(),
     timestamp: 210.0,
     t_type: "SEND".to_string(),
 
     details: Details {
-      amount: 123.8,
+      amount: 5.0,
       cost: 1.0,
       currency: Currency {
         decimals: 2,
@@ -299,7 +299,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
     // todo this id should get from last op of `query_all_wallets`
     walletId: 10002,
     history: vec![
-      transaction,
+      transaction1,
       transaction2,
       transaction3,
       transaction4,
@@ -467,7 +467,6 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
     ],
     from_time: 0,
     to_time: 0,
-    // FIXME. not work ok
     sort_method: Some("profit-desc".to_string()), /* Change to your desired
                                                    * sort method */
   };

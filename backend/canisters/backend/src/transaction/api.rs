@@ -226,7 +226,7 @@ fn convert_trans_f_to_trans_b(
 fn calculate_tax(
   wallets: Vec<WalletAddress>,
   method: String,
-  flag: String,
+  tag: String,
 ) -> String {
   CONTEXT.with(|ctx| {
     let mut ctx = ctx.borrow_mut();
@@ -238,7 +238,8 @@ fn calculate_tax(
         .expect("wallet transaction empty")
         .clone();
 
-      let filtered_vec_data: Vec<_> = match flag.as_str() {
+       // ! filter if got flag. air drop ... 
+      let filtered_vec_data: Vec<_> = match tag.as_str() {
         "Air Drop profit exclude" => vec_data
           .into_iter()
           .filter(|one| {
@@ -260,8 +261,9 @@ fn calculate_tax(
         _ => vec_data,
       };
 
-      // TODO ! cal profit using :
+      // TODO ! cal profit using : lifo is for next milestone
       // /home/btwl/code/ic/tax_lint/backend/ohter_test/tax_test/main.rs
+      // ! calculate base on method: fifo lifo.
       if method == "fifo".to_string() {
         for mut one in filtered_vec_data {
           if one.t_type == "RECEIVE".to_string() {
@@ -283,7 +285,7 @@ struct Purchase {
   amount: f64,
 }
 
-fn calculate_cost(transaction: TransactionB) -> f64 {
+fn calculate_cost_fifo(transaction: TransactionB) -> f64 {
   let mut purchase_queue: VecDeque<Purchase> = VecDeque::new();
 
   if transaction.t_type == "RECEIVE" {
