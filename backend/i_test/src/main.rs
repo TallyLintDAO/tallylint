@@ -170,9 +170,9 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
         symbol: "ICP".to_string(),
       },
       fee: 0.8,
-      from: "asd"
+      from: "asd".to_string(),
+      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
         .to_string(),
-      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
       price: 5.0,
       value: 1.0,
       status: "SUCCESS".to_string(),

@@ -226,7 +226,7 @@ fn convert_trans_f_to_trans_b(
 fn calculate_tax(
   wallets: Vec<WalletAddress>,
   method: String,
-  tag: String,
+  exclued_tags: Vec<String>,
 ) -> String {
   CONTEXT.with(|ctx| {
     let mut ctx = ctx.borrow_mut();
@@ -238,28 +238,11 @@ fn calculate_tax(
         .expect("wallet transaction empty")
         .clone();
 
-       // ! filter if got flag. air drop ... 
-      let filtered_vec_data: Vec<_> = match tag.as_str() {
-        "Air Drop profit exclude" => vec_data
-          .into_iter()
-          .filter(|one| {
-            !one.tag.iter().any(|tag| *tag == "Air Drop".to_string())
-          })
-          .collect(),
-        "Method2" => vec_data
-          .into_iter()
-          .filter(|one| {
-            !one.tag.iter().any(|tag| *tag == "Air Drop".to_string())
-          })
-          .collect(),
-        "Method3" => vec_data
-          .into_iter()
-          .filter(|one| {
-            !one.tag.iter().any(|tag| *tag == "Air Drop".to_string())
-          })
-          .collect(),
-        _ => vec_data,
-      };
+      // ! filter if got flag. air drop ...
+      let filtered_vec_data: Vec<_> = vec_data
+        .into_iter()
+        .filter(|one| !one.tag.iter().any(|tag| exclued_tags.contains(tag)))
+        .collect();
 
       // TODO ! cal profit using : lifo is for next milestone
       // /home/btwl/code/ic/tax_lint/backend/ohter_test/tax_test/main.rs
@@ -274,6 +257,8 @@ fn calculate_tax(
           }
           let _ = ctx.wallet_transc_srv.update_transaction_impl(one);
         }
+      } else {
+        return "only support fifo now".to_string();
       }
     }
     return "calculate success".to_string();

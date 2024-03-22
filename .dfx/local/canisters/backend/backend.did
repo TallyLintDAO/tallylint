@@ -7,7 +7,7 @@ type CanisterContext = record {
   neuron_service : NeuronService;
   user_service : UserService;
 };
-type Currency = record { decimals : nat64; symbol : text };
+type Currency = record { decimals : nat8; symbol : text };
 type CustomResult1 = variant { Ok : NeuronInfo; Err : GovernanceError };
 type Details = record {
   to : text;
@@ -95,14 +95,12 @@ type TransactionB = record {
   tag : vec text;
   hash : text;
   memo : text;
-  walletName : text;
   t_type : text;
   comment : text;
   address : text;
   timestamp : nat64;
   details : Details;
   manual : bool;
-  principal_id : opt text;
 };
 type TransactionF = record {
   hash : text;
@@ -147,6 +145,7 @@ service : {
   add_transaction : (TransactionB) -> (Result_1);
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_2);
+  calculate_tax : (vec text, text, vec text) -> (text);
   clean_db : () -> (bool);
   collect_running_payload_simple : () -> (text) query;
   collect_running_payload_simple_raw : () -> (text) query;

@@ -145,7 +145,7 @@ service : () -> {
   add_transaction : (TransactionB) -> (Result_1);
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_2);
-  calculate_tax : (text, vec text) -> (text);
+  calculate_tax : (vec text, text, vec text) -> (text);
   clean_db : () -> (bool);
   collect_running_payload_simple : () -> (text) query;
   collect_running_payload_simple_raw : () -> (text) query;

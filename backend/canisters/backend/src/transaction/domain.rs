@@ -74,7 +74,6 @@ pub struct DetailsB {
   // pub profit_method: String,
 }
 
-
 #[allow(non_snake_case)]
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct TransactionB {

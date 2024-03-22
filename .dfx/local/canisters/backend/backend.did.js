@@ -5,7 +5,7 @@ export const idlFactory = ({ IDL }) => {
     'address' : IDL.Text,
   });
   const Result = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : IDL.Text });
-  const Currency = IDL.Record({ 'decimals' : IDL.Nat64, 'symbol' : IDL.Text });
+  const Currency = IDL.Record({ 'decimals' : IDL.Nat8, 'symbol' : IDL.Text });
   const Details = IDL.Record({
     'to' : IDL.Text,
     'fee' : IDL.Float64,
@@ -24,14 +24,12 @@ export const idlFactory = ({ IDL }) => {
     'tag' : IDL.Vec(IDL.Text),
     'hash' : IDL.Text,
     'memo' : IDL.Text,
-    'walletName' : IDL.Text,
     't_type' : IDL.Text,
     'comment' : IDL.Text,
     'address' : IDL.Text,
     'timestamp' : IDL.Nat64,
     'details' : Details,
     'manual' : IDL.Bool,
-    'principal_id' : IDL.Opt(IDL.Text),
   });
   const Result_1 = IDL.Variant({ 'Ok' : IDL.Nat64, 'Err' : IDL.Text });
   const WalletAddCommand = IDL.Record({
@@ -186,6 +184,11 @@ export const idlFactory = ({ IDL }) => {
     'add_transaction' : IDL.Func([TransactionB], [Result_1], []),
     'add_wallet' : IDL.Func([WalletAddCommand], [Result], []),
     'auto_register_user' : IDL.Func([], [Result_2], []),
+    'calculate_tax' : IDL.Func(
+        [IDL.Vec(IDL.Text), IDL.Text, IDL.Vec(IDL.Text)],
+        [IDL.Text],
+        [],
+      ),
     'clean_db' : IDL.Func([], [IDL.Bool], []),
     'collect_running_payload_simple' : IDL.Func([], [IDL.Text], ['query']),
     'collect_running_payload_simple_raw' : IDL.Func([], [IDL.Text], ['query']),

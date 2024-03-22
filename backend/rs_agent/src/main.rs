@@ -19,18 +19,26 @@ async fn main() {
 }
 
 async fn update_canister_with_db() {
-  let (canister_id, agent) = init_agent().await;
+  let (canister_id, agent, online_mode) = init_agent().await;
 
   // ! save payload to dev machine file and then read to rust
-  // let now = Local::now().format("%Y%m%d%H%M%S").to_string();
-  // let payload =
-  //   collect_running_payload_simple(agent.borrow(), canister_id).await;
-  // save_payload_to_local(payload, now.clone());
-  let now = "20240320132553".to_string();
+  let now = Local::now().format("%Y%m%d%H%M%S").to_string();
+  let payload =
+    collect_running_payload_simple(agent.borrow(), canister_id).await;
+  save_payload_to_local(payload, now.clone());
+  // let now = "20240320132553".to_string();
   let payload_with_time_tag = read_db_from_local(now);
 
   // ! deploy ic
-  // let _ = exec_deploy().await;
+  let ic_or_local;
+  if online_mode == "0" {
+    ic_or_local = "local"
+  } else if online_mode == "1" {
+    ic_or_local = "ic"
+  } else {
+    panic!("err mode ic or local 1,0")
+  }
+  let _ = exec_deploy(ic_or_local.to_owned()).await;
 
   // ! send payload to ic and set payload on ic
   let args = candid::encode_one(payload_with_time_tag).unwrap();
@@ -46,7 +54,7 @@ fn save_payload_to_local(payload: String, time_tag: String) {
   fs::write(filename, contents).expect("Unable to write file");
 }
 
-async fn init_agent() -> (Principal, Agent) {
+async fn init_agent() -> (Principal, Agent, String) {
   let controller = String::from("btwlz");
   let args: Vec<String> = env::args().collect();
   let online_mode = &args[1];
@@ -77,7 +85,7 @@ async fn init_agent() -> (Principal, Agent) {
   // to run
   let identity = get_dfx_identity(&controller);
   let agent = build_ic_agent(url, identity).await;
-  (canister_id, agent)
+  (canister_id, agent, online_mode.to_string())
 }
 
 async fn send_payload_and_set(
@@ -179,10 +187,10 @@ fn read_db_from_local(time_tag: String) -> String {
 use std::io::{BufRead, BufReader};
 use std::process::{Command, Stdio};
 
-async fn exec_deploy() -> std::io::Result<()> {
+async fn exec_deploy(ic_or_local: String) -> std::io::Result<()> {
   let mut child =
     Command::new("/home/btwl/code/ic/tax_lint/backend/scripts/deploy_backend")
-      .arg("local")
+      .arg(ic_or_local)
       .stdout(Stdio::piped())
       .spawn()?;
 
