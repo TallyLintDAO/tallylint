@@ -15,21 +15,11 @@ use std::{env, fs};
 //  ./target/debug/rs_agent 0
 #[tokio::main]
 async fn main() {
-  update_canister_with_db().await;
+  regular_update_canister_with_db().await;
 }
 
-async fn update_canister_with_db() {
+async fn regular_update_canister_with_db() {
   let (canister_id, agent, online_mode) = init_agent().await;
-
-  // ! save payload to dev machine file and then read to rust
-  let now = Local::now().format("%Y%m%d%H%M%S").to_string();
-  let payload =
-    collect_running_payload_simple(agent.borrow(), canister_id).await;
-  save_payload_to_local(payload, now.clone());
-  // let now = "20240320132553".to_string();
-  let payload_with_time_tag = read_db_from_local(now);
-
-  // ! deploy ic
   let ic_or_local;
   if online_mode == "0" {
     ic_or_local = "local"
@@ -38,6 +28,16 @@ async fn update_canister_with_db() {
   } else {
     panic!("err mode ic or local 1,0")
   }
+
+  // ! save payload to dev machine file and read to rust
+  let now = Local::now().format("%Y%m%d%H%M%S").to_string();
+  let payload =
+    collect_running_payload_simple(agent.borrow(), canister_id).await;
+  save_payload_to_local(payload, now.clone(),ic_or_local.to_owned());
+  let payload_with_time_tag = read_db_from_local(now,ic_or_local.to_owned());
+
+  // ! deploy ic
+  // FIXME. run ok. but not displaying cmds in real time .
   let _ = exec_deploy(ic_or_local.to_owned()).await;
 
   // ! send payload to ic and set payload on ic
@@ -46,9 +46,9 @@ async fn update_canister_with_db() {
   println!("{}", result);
 }
 
-fn save_payload_to_local(payload: String, time_tag: String) {
+fn save_payload_to_local(payload: String, time_tag: String,mode:String) {
   let filename =
-    format!("/home/btwl/code/ic/tax_lint/db/payload_{}.json", time_tag);
+    format!("/home/btwl/code/ic/tax_lint/db/{}/payload_{}.json", time_tag,mode);
   let contents = payload;
 
   fs::write(filename, contents).expect("Unable to write file");
@@ -171,10 +171,9 @@ pub fn get_dfx_identity(name: &str) -> Box<dyn Identity> {
     .unwrap()
 }
 
-fn read_db_from_local(time_tag: String) -> String {
+fn read_db_from_local(time_tag: String,mode :String) -> String {
   let mut file = File::open(format!(
-    "/home/btwl/code/ic/tax_lint/db/payload_{}.json",
-    time_tag
+    "/home/btwl/code/ic/tax_lint/db/{}/payload_{}.json", time_tag,mode
   ))
   .expect("Unable to open the file");
   let mut db_json = String::new();
