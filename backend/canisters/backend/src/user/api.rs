@@ -1,4 +1,4 @@
-use crate::common::guard::admin_guard;
+use crate::{common::guard::admin_guard, UserConfig};
 use crate::CONTEXT;
 use candid::Principal;
 use ic_cdk::api::time;
@@ -49,21 +49,22 @@ fn list_all_user() -> Vec<UserProfile> {
 
 // TODO
 #[update(guard = "user_owner_guard")]
-fn set_user_config() -> Vec<UserProfile> {
+fn set_user_config(cfg:UserConfig) -> UserConfig {
   CONTEXT.with(|c| {
-    let context = c.borrow();
-    let users = Vec::from_iter(context.user_service.users.values().cloned());
-    return users;
+    let mut ctx = c.borrow_mut();
+    ctx.user_service.add_config(&caller(), cfg);
+    let data=ctx.user_service.get_config(&caller());
+    return data;
   })
 }
 
 // TODO
 #[query(guard = "user_owner_guard")]
-fn get_user_config() -> Vec<UserProfile> {
+fn get_user_config() -> UserConfig {
   CONTEXT.with(|c| {
-    let context = c.borrow();
-    let users = Vec::from_iter(context.user_service.users.values().cloned());
-    return users;
+     let mut ctx = c.borrow_mut();
+    let data=ctx.user_service.get_config(&caller());
+    return data;
   })
 }
 
@@ -110,16 +111,6 @@ async fn check_callers_balance() -> Tokens {
   )
   .await
   .expect("call to ledger failed")
-}
-
-#[allow(dead_code)]
-// #[query]
-pub fn get_caller_principal() -> String {
-  CONTEXT.with(|c| {
-    let _ctx = c.borrow();
-    let caller = &caller();
-    return caller.to_text().to_string();
-  })
 }
 
 #[cfg(test)] //unit-test attribute(#) in rust syntax

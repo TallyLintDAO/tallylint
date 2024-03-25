@@ -64,7 +64,7 @@ async fn init_agent() -> (Principal, Agent, String) {
   let args: Vec<String> = env::args().collect();
   let online_mode = &args[1];
 
-  let url_local = String::from("https://127.0.0.1:40010");
+  let url_local = String::from("http://127.0.0.1:40010");
   let url_ic = String::from("https://ic0.app/");
 
   let canister_id_local =
