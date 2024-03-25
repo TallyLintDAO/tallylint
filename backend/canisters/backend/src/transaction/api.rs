@@ -275,69 +275,22 @@ fn calculate_tax(
         .filter(|one| !one.tag.iter().any(|tag| exclued_tags.contains(tag)))
         .collect();
 
-      // TODO ! cal profit using : lifo is for next milestone
-      // /home/btwl/code/ic/tax_lint/backend/ohter_test/tax_test/main.rs
       // ! calculate base on method: fifo lifo.
-      if method == "fifo".to_string() {
-        // FIXME. using WalletForTax::calculate_gain_or_loss()
-        for mut one in filtered_vec_data {
-          if one.t_type == "RECEIVE".to_string() {
-            one.details.profit = 0.0;
-          } else if one.t_type == "SEND".to_string() {
-            let profit = one.details.value - one.details.cost;
-            one.details.profit = profit;
-          }
-          let _ = ctx.wallet_transc_srv.update_transaction_impl(one);
-        }
-      } else {
-        return "only support fifo now".to_string();
+      let tax_transac: Vec<TransactionForTax> = filtered_vec_data
+        .clone()
+        .into_iter()
+        .map(TransactionForTax::from)
+        .collect();
+      let taxed_vec_trans = calculate_gain_or_loss(tax_transac, method.clone());
+      if taxed_vec_trans.is_empty(){
+        return "ERROR tax calculation abort! no such calculate method ! ".to_string();
+      }
+      // map tax into transb_db
+      let trans_b = map_taxTrans_to_transB(taxed_vec_trans, filtered_vec_data);
+      for one in trans_b {
+        let _ = ctx.wallet_transc_srv.update_transaction_impl(one);
       }
     }
-    return "calculate success".to_string();
+    return "calculate success!".to_string();
   })
-}
-
-struct Purchase {
-  price: f64,
-  amount: f64,
-}
-
-fn calculate_cost_fifo(transaction: TransactionB) -> f64 {
-  let mut purchase_queue: VecDeque<Purchase> = VecDeque::new();
-
-  if transaction.t_type == "RECEIVE" {
-    let price = transaction.details.price;
-    let amount = transaction.details.amount;
-    purchase_queue.push_back(Purchase { price, amount });
-    return 0.0;
-  } else if transaction.t_type == "SEND" {
-    let mut cost = 0.0;
-    let mut send_amount = transaction.details.amount;
-
-    while send_amount > 0.0 && !purchase_queue.is_empty() {
-      let earliest_purchase = purchase_queue.pop_front().unwrap();
-
-      if earliest_purchase.amount <= send_amount {
-        cost += earliest_purchase.price * earliest_purchase.amount;
-        send_amount -= earliest_purchase.amount;
-      } else {
-        cost += earliest_purchase.price * send_amount;
-        purchase_queue.push_front(Purchase {
-          price: earliest_purchase.price,
-          amount: earliest_purchase.amount - send_amount,
-        });
-        send_amount = 0.0;
-      }
-    }
-
-    return cost;
-  } else {
-    return 0.0;
-  }
-}
-
-fn test1() {
-  ic_cdk::api::time();
-  ic_cdk::api::caller();
-  // ic_cdk::api::
 }

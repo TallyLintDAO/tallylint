@@ -70,12 +70,22 @@ fn test_crud_transactions() {
   // tag as 3333 keyword serach if ok
   update_completx_transaction(&pic_env, user_admin);
   query_a_completx_transaction(&pic_env, user_admin);
-
   // !simple query wallet-linked-transactions
   no_filter_no_sort_simple_transac_query(&pic_env, user_admin);
 
   // !query wallet info
   query_all_wallet_info(&pic_env, user_admin);
+}
+
+fn tax_calculation(pic_env: &PicEnv, user1: Principal) {
+
+  let ret: Result<bool, String> =
+    pic_env.my_update_call(user1, args, "calculate_tax");
+  match ret {
+    Ok(data) => println!("{:?}", data),
+    Err(err) => println!("{:?}", err),
+  }
+
 }
 
 fn init() -> (PicEnv, Principal) {
