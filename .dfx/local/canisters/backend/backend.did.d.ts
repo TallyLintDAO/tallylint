@@ -185,6 +185,7 @@ export interface _SERVICE {
   'get_payload_from_stable_mem_simple' : ActorMethod<[], string>,
   'get_payload_from_stable_mem_simple_raw' : ActorMethod<[], CanisterContext>,
   'get_user_config' : ActorMethod<[], UserConfig>,
+  'greet_test' : ActorMethod<[], string>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
   'query_a_neuron_wallet' : ActorMethod<[bigint], Result_4>,
   'query_a_wallet' : ActorMethod<[bigint], Result_5>,

@@ -15,7 +15,14 @@ use std::{env, fs};
 //  ./target/debug/rs_agent 0
 #[tokio::main]
 async fn main() {
-  regular_update_canister_with_db().await;
+  // regular_update_canister_with_db().await;
+  hello_agent_test().await;
+}
+
+async fn hello_agent_test()  {
+   let (canister_id, agent, online_mode) = init_agent().await;
+   greet_test(agent, canister_id).await;
+   
 }
 
 async fn regular_update_canister_with_db() {
@@ -132,10 +139,12 @@ async fn greet_test(agent: Agent, canister_id: Principal) -> String {
   match response {
     Ok(data) => {
       let ret = String::from_utf8(data).unwrap();
+      println!("{}", ret);
       return ret;
     }
     Err(e) => {
       let ret = format!("####An error occurred: {:?}", e);
+      println!("{}", ret);
       return ret;
     }
   }

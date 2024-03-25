@@ -309,3 +309,10 @@ fn calculate_tax(
     return "calculate success!".to_string();
   })
 }
+
+
+#[query(guard = "user_owner_guard")]
+pub fn greet_test()->String{
+  ic_cdk::println!("got greet_test() call");
+  return "hello agent!".to_string();
+}
