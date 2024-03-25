@@ -39,7 +39,7 @@ fn add_transaction(mut data: TransactionB) -> Result<TransactionId, String> {
 fn delete_transaction(id: TransactionId) -> Result<TransactionId, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
-    let ret = ctx.wallet_transc_srv.delete_transaction_impl(id);
+    let ret = ctx.wallet_transc_srv.delete_transaction_by_id_impl(id);
     match ret {
       Ok(_) => {
         // TODO delete the id as fast bmap index into the wallet struct.
@@ -58,7 +58,7 @@ fn query_all_wallet_transactions(
   CONTEXT.with(|c| {
     let ctx = c.borrow();
     let mut all_transactions = Vec::new();
-
+    
     // !get all recs
     for addr in cmd.address {
       let rec = ctx
@@ -304,4 +304,10 @@ fn calculate_cost_fifo(transaction: TransactionB) -> f64 {
   } else {
     return 0.0;
   }
+}
+
+fn test1(){
+  ic_cdk::api::time();
+  ic_cdk::api::caller();
+  // ic_cdk::api::
 }

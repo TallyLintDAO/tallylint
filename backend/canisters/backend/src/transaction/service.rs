@@ -149,7 +149,7 @@ impl WalletRecordService {
     }
   }
 
-  pub fn delete_transaction_impl(
+  pub fn delete_transaction_by_id_impl(
     &mut self,
     id: TransactionId,
   ) -> Result<bool, String> {

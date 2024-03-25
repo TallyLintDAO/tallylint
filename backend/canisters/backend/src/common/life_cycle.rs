@@ -13,16 +13,14 @@
 pub const TERA: Cycles = 1_000_000_000_000;
 pub type Cycles = u128;
 
-use ic_cdk::api::management_canister::http_request::{
-  http_request, CanisterHttpRequestArgument, HttpHeader, HttpMethod,
-};
+
 
 use ic_cdk::storage::{stable_restore, stable_save};
 use ic_cdk_macros::*;
 
-use canister_tracing_macros::trace;
 
-use super::context::{CanisterContext, CanisterDB};
+
+use super::context::{CanisterContext};
 
 use crate::common::guard::admin_guard;
 

@@ -174,7 +174,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
         .to_string(),
       price: 5.0,
-      value: 1.0,
+      value: 5.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
       profit: 0.0,
@@ -187,7 +187,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
 
     details: Details {
       amount: 5.0,
-      cost: 1.0,
+      cost: 40.0,
       currency: Currency {
         decimals: 2,
         symbol: "ICP".to_string(),
@@ -196,8 +196,8 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
         .to_string(),
       to: "asd".to_string(),
-      price: 41.0,
-      value: 21.0,
+      price: 8.0,
+      value: 8.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
       profit: 0.0,
@@ -206,21 +206,21 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   let transaction3 = TransactionF {
     hash: "123".to_string(),
     timestamp: 211.0,
-    t_type: "SEND".to_string(),
+    t_type: "RECEIVE".to_string(),
 
     details: Details {
-      amount: 123.8,
-      cost: 13.0,
+      amount: 3.0,
+      cost: 60.0,
       currency: Currency {
         decimals: 2,
         symbol: "ICP".to_string(),
       },
       fee: 123.8,
-      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
         .to_string(),
-      to: "asd".to_string(),
-      price: 10.0,
-      value: 16.0,
+      from: "asd".to_string(),
+      price: 20.0,
+      value: 20.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
       profit: 0.0,
@@ -232,8 +232,8 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
     t_type: "SEND".to_string(),
 
     details: Details {
-      amount: 123.8,
-      cost: 11.0,
+      amount: 2.0,
+      cost: 8.0,
       currency: Currency {
         decimals: 2,
         symbol: "ICP".to_string(),
@@ -242,8 +242,8 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
         .to_string(),
       to: "asd".to_string(),
-      price: 10.0,
-      value: 19.0,
+      price: 4.0,
+      value: 4.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
       profit: 0.0,
@@ -252,21 +252,21 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   let transaction5 = TransactionF {
     hash: "123".to_string(),
     timestamp: 3333.0,
-    t_type: "SEND".to_string(),
+    t_type: "RECEIVE".to_string(),
 
     details: Details {
-      amount: 123.8,
-      cost: 1.0,
+      amount: 2.0,
+      cost: 12.0,
       currency: Currency {
         decimals: 2,
         symbol: "ICP".to_string(),
       },
       fee: 123.8,
-      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
         .to_string(),
-      to: "asd".to_string(),
-      price: 1.0,
-      value: 1.0,
+      from: "asd".to_string(),
+      price: 6.0,
+      value: 6.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
       profit: 0.0,
@@ -275,21 +275,21 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   let transaction6 = TransactionF {
     hash: "123".to_string(),
     timestamp: 1000.0,
-    t_type: "RECEIVE".to_string(),
+    t_type: "SEND".to_string(),
 
     details: Details {
-      amount: 123.8,
-      cost: 1.0,
+      amount: 8.0,
+      cost: 112.0,
       currency: Currency {
         decimals: 2,
         symbol: "ICP".to_string(),
       },
       fee: 123.8,
-      from: "asd".to_string(),
-      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+      to: "asd".to_string(),
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
         .to_string(),
-      price: 1.0,
-      value: 1.0,
+      price: 14.0,
+      value: 14.0,
       status: "SUCCESS".to_string(),
       ledgerCanisterId: "asd".to_string(),
       profit: 0.0,
@@ -427,11 +427,15 @@ fn no_filter_no_sort_simple_transac_query(pic_env: &PicEnv, user1: Principal) {
 }
 fn calculate_tax(pic_env: &PicEnv, user1: Principal) {
   let args = candid::encode_args((
-    "default",
     vec![
       "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-        .to_string(),
-    ],
+      .to_string(),
+      ],
+      "fifo".to_string(),
+       vec![
+      "none"
+      .to_string(),
+      ],
   ))
   .unwrap();
   let ret: String =
