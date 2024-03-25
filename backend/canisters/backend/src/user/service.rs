@@ -11,6 +11,7 @@ use super::domain::*;
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct UserService {
   pub users: BTreeMap<Principal, UserProfile>,
+  pub configs: BTreeMap<Principal, UserConfig>,
 }
 
 impl UserService {
@@ -48,6 +49,7 @@ impl UserService {
   pub fn new() -> Self {
     UserService {
       users: BTreeMap::new(),
+      configs: BTreeMap::new(),
     }
   }
 }

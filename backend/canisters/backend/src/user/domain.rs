@@ -9,6 +9,13 @@ pub struct UserProfile {
 }
 
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct UserConfig {
+  pub owner: Principal, // 用户 Principal
+  pub name: String,
+  pub create_time: u64,
+}
+
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct UserInfo {
   pub owner: Principal, // 用户 Principal
   pub name: String,
@@ -25,10 +32,4 @@ impl UserProfile {
     }
   }
 }
-// TODO
-#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
-pub struct UserConfig {
-  pub owner: Principal, // 用户 Principal
-  pub name: String,
-  pub create_time: u64,
-}
+

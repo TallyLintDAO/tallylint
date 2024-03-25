@@ -222,24 +222,6 @@ mod tests {
     }
   }
 
-  #[test]
-  fn gen_new_struct() {
-    let db_json = read_db_to_string_from_local_json_file(
-      "/home/btwl/code/ic/tax_lint/backend/i_test/pl01_copy.json".to_owned(),
-    );
-    let payload: CanisterDB =
-      serde_json::from_str::<CanisterDB>(&db_json).expect("deseialize old err");
-    let ctx = CanisterContext::from(payload);
-    let new_struct = serde_json::to_string(&ctx).unwrap();
-    std::fs::write("new_struct.json", &new_struct)
-      .expect("Unable to write file");
-    let payload_result: Result<CanisterContext, _> =
-      serde_json::from_str(&new_struct);
-    match payload_result {
-      Ok(payload) => eprintln!("PLID is :{}", payload.id),
-      Err(e) => eprintln!("Failed to parse JSON: {}", e),
-    }
-  }
 
   /**
    * TEST OK
