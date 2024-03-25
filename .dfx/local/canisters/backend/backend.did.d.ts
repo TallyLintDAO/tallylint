@@ -131,12 +131,16 @@ export interface TransactionF {
 export interface TransactionService {
   'transactions' : Array<[bigint, TransactionF]>,
 }
+export interface UserConfig { 'tax_method' : string }
 export interface UserProfile {
   'owner' : Principal,
   'name' : string,
   'create_time' : bigint,
 }
-export interface UserService { 'users' : Array<[Principal, UserProfile]> }
+export interface UserService {
+  'configs' : Array<[string, UserConfig]>,
+  'users' : Array<[Principal, UserProfile]>,
+}
 export interface WalletAddCommand {
   'from' : string,
   'name' : string,
@@ -180,24 +184,24 @@ export interface _SERVICE {
   'get_neuron_info' : ActorMethod<[bigint], Result_3>,
   'get_payload_from_stable_mem_simple' : ActorMethod<[], string>,
   'get_payload_from_stable_mem_simple_raw' : ActorMethod<[], CanisterContext>,
-  'get_user_config' : ActorMethod<[], Array<UserProfile>>,
+  'get_user_config' : ActorMethod<[], UserConfig>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
   'query_a_neuron_wallet' : ActorMethod<[bigint], Result_4>,
   'query_a_wallet' : ActorMethod<[bigint], Result_5>,
   'query_all_neuron_wallet' : ActorMethod<[], Result_6>,
   'query_all_transactions' : ActorMethod<[], Result_7>,
-  'query_all_wallet_transactions' : ActorMethod<
+  'query_all_wallets' : ActorMethod<[], Result_8>,
+  'query_one_transaction' : ActorMethod<[bigint], Result_9>,
+  'query_wallets_synced_transactions' : ActorMethod<
     [HistoryQueryCommand],
     Array<SimpleTransaction>
   >,
-  'query_all_wallets' : ActorMethod<[], Result_8>,
-  'query_one_transaction' : ActorMethod<[bigint], Result_9>,
   'set_payload_using_dev_machine_file' : ActorMethod<[string], string>,
   'set_payload_using_stable_mem_simple' : ActorMethod<[], string>,
   'set_payload_using_stable_mem_simple_raw' : ActorMethod<[], undefined>,
   'set_stable_mem_using_payload_simple' : ActorMethod<[], undefined>,
   'set_stable_mem_using_payload_simple_raw' : ActorMethod<[], undefined>,
-  'set_user_config' : ActorMethod<[], Array<UserProfile>>,
+  'set_user_config' : ActorMethod<[UserConfig], UserConfig>,
   'sync_transaction_record' : ActorMethod<
     [Array<SyncTransactionCommand>],
     Result
