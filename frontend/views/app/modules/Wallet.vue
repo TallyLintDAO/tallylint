@@ -290,7 +290,10 @@ const syncAllWallet = async () => {
     // syncTransactionArray.push([row.id, res.transactions])
   })
   // 使用 Promise.all() 等待所有的请求完成
-  await Promise.all(promises)
+  await Promise.all(promises).catch((error) => {
+    //如果失败，将loading取消
+    syncLoading.value = false
+  })
   console.log("transactionInfo", syncTransactionArray)
   syncWallet(syncTransactionArray)
     .then((res) => {
