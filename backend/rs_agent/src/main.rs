@@ -34,11 +34,12 @@ async fn regular_update_canister_with_db() {
   let payload =
     collect_running_payload_simple(agent.borrow(), canister_id).await;
   save_payload_to_local(payload, now.clone(), ic_or_local.to_owned());
-  
+
   let payload_now = read_db_from_local(now, ic_or_local.to_owned());
 
   // ! deploy ic
   // FIXME. run ok. but  displaying locations bad.  cmds output in real time .
+  // TODO just make this output into file .
   let _ = exec_deploy(ic_or_local.to_owned()).await;
 
   // ! send payload to ic and set payload on ic

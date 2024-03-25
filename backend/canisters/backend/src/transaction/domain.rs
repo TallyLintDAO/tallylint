@@ -1,6 +1,8 @@
 pub(crate) use candid::CandidType;
 
-use super::service::{WalletId, WalletAddress, WalletId};
+use crate::wallet::service::WalletId;
+
+use super::service::WalletAddress;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]

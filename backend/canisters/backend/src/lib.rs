@@ -33,8 +33,6 @@ use crate::transaction::domain::SyncTransactionCommand;
 use crate::transaction::domain::TransactionB;
 #[allow(unused_imports)]
 use crate::transaction::domain::TransactionF;
-#[allow(unused_imports)]
-use crate::transaction::service::WalletId;
 
 #[allow(unused_imports)]
 use crate::wallet::domain::*;

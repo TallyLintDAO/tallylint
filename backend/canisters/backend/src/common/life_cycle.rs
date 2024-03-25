@@ -13,14 +13,10 @@
 pub const TERA: Cycles = 1_000_000_000_000;
 pub type Cycles = u128;
 
-
-
 use ic_cdk::storage::{stable_restore, stable_save};
 use ic_cdk_macros::*;
 
-
-
-use super::context::{CanisterContext};
+use super::context::CanisterContext;
 
 use crate::common::guard::admin_guard;
 

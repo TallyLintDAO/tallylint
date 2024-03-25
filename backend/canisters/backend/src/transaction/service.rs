@@ -2,17 +2,20 @@
 use candid::{CandidType, Principal};
 use serde::{Deserialize, Serialize};
 
-use std::{any::Any, collections::{BTreeMap, HashMap}};
+use std::{
+  any::Any,
+  collections::{BTreeMap, HashMap},
+};
 
 use super::domain::*;
 
-use crate::{common::context::TimeStamp, TransactionB};
+use crate::{
+  common::context::TimeStamp, wallet::service::WalletId, TransactionB,
+};
 
 #[allow(unused_imports)]
 use crate::CONTEXT;
 
-pub type WalletId = u64;
-pub type WalletId = u64;
 pub type WalletAddress = String;
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct AddRecordCommand {
@@ -46,8 +49,8 @@ pub struct EditHistoryCommand {
 
   pub id: WalletId, //delete id here . dont need.
   pub principal_id: Option<String>, /* Plug use , need
-                          * to convert to
-                          * opt_account_id_hex for use. */
+                     * to convert to
+                     * opt_account_id_hex for use. */
   pub address: WalletAddress, // same as account_id_hex
   pub hash: String,
   pub t_type: String, //transaction_type
@@ -107,12 +110,15 @@ impl TransactionService {
     return false;
   }
 
-  pub fn delete_all_by_addr(&mut self, addr:String) -> bool{
-    for one in self.transactions{
+
+  pub fn delete_all_by_addr(&mut self, addr: String) -> bool {
+    for one in self.transactions {
       let trans_f = one.1;
-          if trans_f.t_type=="SEND".to_string()|| trans_f.details.from==addr{
+      if trans_f.t_type == "SEND".to_string() || trans_f.details.from == addr {
         self.transactions.remove(&one.0);
-      }else if trans_f.details.to==addr {
+      }
+      // else can only be RECEIVE t_type
+      else if trans_f.details.to == addr {
         self.transactions.remove(&one.0);
       }
     }
@@ -151,14 +157,17 @@ impl WalletRecordService {
     }
   }
 
-  pub fn query_one(
-    &mut self,
-    id: WalletId,
-  ) -> Result<TransactionB, String> {
+  pub fn query_one(&mut self, id: WalletId) -> Result<TransactionB, String> {
     match self.records.get(&id) {
       Some(transaction) => Ok(transaction.clone()),
       None => Err(format!("No transaction found with id: {}", id)),
     }
+  }
+
+  pub fn delete_transaction_by_addr(&mut self, addr: &WalletAddress) {
+    self
+      .records
+      .retain(|index, transaction| transaction.address != *addr);
   }
 
   pub fn delete_transaction_by_id_impl(

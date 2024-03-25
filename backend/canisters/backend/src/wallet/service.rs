@@ -6,13 +6,13 @@ use std::collections::BTreeMap;
 
 use super::domain::*;
 
-use crate::{common::context::TimeStamp, transaction::service::WalletId};
+use crate::common::context::TimeStamp;
 
 #[allow(unused_imports)]
 use crate::CONTEXT;
 
-pub type WalletId = u64;
 pub type RecordId = u64;
+pub type WalletId = u64;
 pub type WalletAddress = String;
 
 /**
@@ -61,9 +61,8 @@ impl WalletService {
     }
   }
 
-  pub fn get_addr_by_id(&mut self,id: WalletId)->WalletAddress{
-self.wallets.get(&id).unwrap().address
-
+  pub fn get_addr_by_id(&mut self, id: WalletId) -> WalletAddress {
+    self.wallets.get(&id).unwrap().address.clone()
   }
 
   pub fn update_wallet(

@@ -4,12 +4,13 @@ use std::collections::VecDeque;
 use ic_cdk_macros::{query, update};
 
 use super::domain::*;
-use super::service::{WalletId, WalletAddress};
+use super::service::WalletAddress;
 use crate::common::context::{get_caller, now};
 use crate::common::guard::admin_guard;
 use crate::common::guard::user_owner_guard;
 use crate::common::times::timestamp_ms_float_to_ns;
 use crate::wallet::domain::HistoryQueryCommand;
+use crate::wallet::service::WalletId;
 use crate::{TransactionB, CONTEXT};
 
 // TODO use: AddRecordCommand . front end dont need to input
@@ -58,7 +59,7 @@ fn query_all_wallet_transactions(
   CONTEXT.with(|c| {
     let ctx = c.borrow();
     let mut all_transactions = Vec::new();
-    
+
     // !get all recs
     for addr in cmd.address {
       let rec = ctx
@@ -117,8 +118,7 @@ fn query_all_wallet_transactions(
 }
 
 #[query(guard = "admin_guard")]
-fn query_all_transactions(
-) -> Result<HashMap<WalletId, TransactionB>, String> {
+fn query_all_transactions() -> Result<HashMap<WalletId, TransactionB>, String> {
   CONTEXT.with(|c| {
     let ctx = c.borrow_mut();
     let rec = ctx.wallet_transc_srv.query_all_transactions();
@@ -160,18 +160,18 @@ fn sync_transaction_record(
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     for one_wallet in cmd {
-      // FIXME fix already exsit transac . 检查最近一条的hash是否和db上的
-      // hash一样.一样则返回 "transactions already newest. nothing append since
-      // last time sync"
+      // FIXME fix already exsit transac . 检查最近一条的hash是否和db上的.
+      // TODO WARN:remove 是临时方案.应该前端每次传增量数据.
+      // 才不必要传过量数据,花费不合理 hash一样.一样则返回 "transactions
+      // already newest. nothing append since last time sync"
       // let latest_hash = one_wallet.history[0].hash.clone();
       // ! remove current all.
       for one_rec in one_wallet.history.clone() {
-        let w_addr= ctx.wallet_service.get_addr_by_id(one_wallet.walletId);
-        ctx.trans_f_srv.delete_all_by_addr(w_addr);
+        let w_addr = ctx.wallet_service.get_addr_by_id(one_wallet.walletId);
+        ctx.trans_f_srv.delete_all_by_addr(w_addr.clone());
+        ctx.wallet_transc_srv.delete_transaction_by_addr(&w_addr);
       }
 
-
-      // let hash_db=
       // ! append records
       for one_rec in one_wallet.history.clone() {
         ctx.id = ctx.id + 1;
@@ -312,7 +312,7 @@ fn calculate_cost_fifo(transaction: TransactionB) -> f64 {
   }
 }
 
-fn test1(){
+fn test1() {
   ic_cdk::api::time();
   ic_cdk::api::caller();
   // ic_cdk::api::
