@@ -71,6 +71,9 @@ fn test_crud_transactions() {
   update_completx_transaction(&pic_env, user_admin);
   query_a_completx_transaction(&pic_env, user_admin);
 
+  // !simple query wallet-linked-transactions
+  no_filter_no_sort_simple_transac_query(&pic_env, user_admin);
+
   // !query wallet info
   query_all_wallet_info(&pic_env, user_admin);
 }
@@ -422,7 +425,7 @@ fn no_filter_no_sort_simple_transac_query(pic_env: &PicEnv, user1: Principal) {
     sort_method: None,
   };
   let ret: Vec<SimpleTransaction> =
-    pic_env.my_query_call(user1, args, "query_all_wallet_transactions");
+    pic_env.my_query_call(user1, args, "query_wallets_synced_transactions");
   println!("{:?}", ret);
 }
 fn calculate_tax(pic_env: &PicEnv, user1: Principal) {
@@ -454,7 +457,7 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
   let ret_sort_method: Vec<SimpleTransaction> = pic_env.my_query_call(
     user1,
     args_sort_method,
-    "query_all_wallet_transactions",
+    "query_wallets_synced_transactions",
   );
   print_red_header(
     "====date-desc Sort method query result: ".to_string(),
@@ -473,7 +476,7 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
   };
   let res: Vec<SimpleTransaction>=
   // !This is a kind of RPC . should have good reflection way of handle input type and output type 
-    pic_env.my_query_call(user1, args, "query_all_wallet_transactions");
+    pic_env.my_query_call(user1, args, "query_wallets_synced_transactions");
   print_red_header(
     "====profit-desc Sort method query result: ".to_string(),
     format!("{:?}", res),
@@ -493,7 +496,7 @@ fn time_range_test(pic_env: &PicEnv, user1: Principal) {
   let ret_time_range: Vec<SimpleTransaction> = pic_env.my_query_call(
     user1,
     args_time_range,
-    "query_all_wallet_transactions",
+    "query_wallets_synced_transactions",
   );
   println!(" should be 3 result . full 6 result");
   print_red_header(

@@ -29,6 +29,23 @@ fn add_transaction(mut data: TransactionB) -> Result<WalletId, String> {
       Ok(_) => {
         // TODO save the id as fast bmap index into the wallet struct.
         // ctx.index_service.add_transaction_index(id);
+        // TODO update wallet.transactions numbers
+
+        //           // ! update wallet info
+        //   let mut wallet_profile = ctx
+        //     .wallet_service
+        //     .query_a_wallet(one_wallet.walletId)
+        //     .expect("no such wallet");
+        //   wallet_profile.last_sync_time = now();
+        //   // FIXME this not work as semantics . still 0
+        //   wallet_profile.transactions = one_wallet.history.len() as u64;
+        //   wallet_profile.last_transaction_time = timestamp_ms_float_to_ns(
+        //     one_wallet.history.get(0).unwrap().clone().timestamp,
+        //   );
+        //   ctx
+        //     .wallet_service
+        //     .update_wallet(wallet_profile, get_caller());
+        // }
         return Ok(id);
       }
       Err(msg) => Err(msg),
@@ -43,8 +60,8 @@ fn delete_transaction(id: WalletId) -> Result<WalletId, String> {
     let ret = ctx.wallet_transc_srv.delete_transaction_by_id_impl(id);
     match ret {
       Ok(_) => {
+        // TODO update wallet.transactions numbers
         // TODO delete the id as fast bmap index into the wallet struct.
-
         Ok(id)
       }
       Err(msg) => Err(msg),
@@ -53,7 +70,7 @@ fn delete_transaction(id: WalletId) -> Result<WalletId, String> {
 }
 
 #[query(guard = "user_owner_guard")]
-fn query_all_wallet_transactions(
+fn query_wallets_synced_transactions(
   cmd: HistoryQueryCommand,
 ) -> Vec<SimpleTransaction> {
   CONTEXT.with(|c| {
@@ -127,9 +144,18 @@ fn query_all_transactions() -> Result<HashMap<WalletId, TransactionB>, String> {
 }
 
 #[update(guard = "user_owner_guard")]
-fn update_transaction(data: TransactionB) -> Result<bool, String> {
+fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
+
+    // bind addr
+    let address = match data.t_type.as_str() {
+      "SEND" => data.details.from.clone(),
+      "RECEIVE" => data.details.to.clone(),
+      _ => WalletAddress::default(), // You can handle other cases here
+    };
+    data.address = address;
+
     let ret = ctx.wallet_transc_srv.update_transaction_impl(data);
     match ret {
       Ok(_) => Ok(true),
