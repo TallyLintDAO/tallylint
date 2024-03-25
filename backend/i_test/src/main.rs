@@ -77,16 +77,7 @@ fn test_crud_transactions() {
   query_all_wallet_info(&pic_env, user_admin);
 }
 
-fn tax_calculation(pic_env: &PicEnv, user1: Principal) {
 
-  let ret: Result<bool, String> =
-    pic_env.my_update_call(user1, args, "calculate_tax");
-  match ret {
-    Ok(data) => println!("{:?}", data),
-    Err(err) => println!("{:?}", err),
-  }
-
-}
 
 fn init() -> (PicEnv, Principal) {
   let pic_env = PicEnv::new();

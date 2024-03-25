@@ -153,8 +153,14 @@ pub struct TransactionForTax {
 }
 impl From<TransactionB> for TransactionForTax {
   fn from(transaction_b: TransactionB) -> Self {
+    let action = match transaction_b.t_type.as_str() {
+      "SEND" => "sell".to_string(),
+      "RECEIVE" => "buy".to_string(),
+      _ => "ERROR!".to_string(),
+    };
+
     TransactionForTax {
-      action: transaction_b.t_type,
+      action,
       quantity: transaction_b.details.amount,
       price: transaction_b.details.price,
       profit: Some(transaction_b.details.profit),

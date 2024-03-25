@@ -262,31 +262,46 @@ fn calculate_tax(
   CONTEXT.with(|ctx| {
     let mut ctx = ctx.borrow_mut();
     for one_wallet in wallets {
-      let map = ctx.wallet_transc_srv.query_one_wallet_trans(one_wallet);
-      let vec_data = map
+      let tans_map = ctx.wallet_transc_srv.query_one_wallet_trans(one_wallet);
+      let vec_data = tans_map
         .values()
         .next()
         .expect("wallet transaction empty")
         .clone();
+      if vec_data.is_empty(){
+        return "ERROR :NO TRANSACTIONS ! ".to_string();
+      }
 
       // ! filter if got flag. air drop ...
       let filtered_vec_data: Vec<_> = vec_data
         .into_iter()
         .filter(|one| !one.tag.iter().any(|tag| exclued_tags.contains(tag)))
         .collect();
+      if filtered_vec_data.is_empty(){
+        return "ERROR :NO filtered TRANSACTIONS ! ".to_string();
+      }
+
 
       // ! calculate base on method: fifo lifo.
+      // get tax_transac for calculation
       let tax_transac: Vec<TransactionForTax> = filtered_vec_data
         .clone()
         .into_iter()
         .map(TransactionForTax::from)
         .collect();
+      if tax_transac.is_empty(){
+        return "ERROR :NO tax TRANSACTIONS ! ".to_string();
+      }
+
       let taxed_vec_trans = calculate_gain_or_loss(tax_transac, method.clone());
       if taxed_vec_trans.is_empty(){
         return "ERROR tax calculation abort! no such calculate method ! ".to_string();
       }
       // map tax into transb_db
       let trans_b = map_taxTrans_to_transB(taxed_vec_trans, filtered_vec_data);
+      if trans_b.is_empty(){
+        return "ERROR :NO tax-calculated trans_b TRANSACTIONS ! ".to_string();
+      }
       for one in trans_b {
         let _ = ctx.wallet_transc_srv.update_transaction_impl(one);
       }
