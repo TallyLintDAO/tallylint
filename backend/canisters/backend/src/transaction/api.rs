@@ -166,11 +166,9 @@ fn sync_transaction_record(
       // already newest. nothing append since last time sync"
       // let latest_hash = one_wallet.history[0].hash.clone();
       // ! remove current all.
-      for one_rec in one_wallet.history.clone() {
-        let w_addr = ctx.wallet_service.get_addr_by_id(one_wallet.walletId);
-        ctx.trans_f_srv.delete_all_by_addr(w_addr.clone());
-        ctx.wallet_transc_srv.delete_transaction_by_addr(&w_addr);
-      }
+      let w_addr = ctx.wallet_service.get_addr_by_id(one_wallet.walletId);
+      ctx.trans_f_srv.delete_all_by_addr(w_addr.clone());
+      ctx.wallet_transc_srv.delete_transaction_by_addr(&w_addr);
 
       // ! append records
       for one_rec in one_wallet.history.clone() {
