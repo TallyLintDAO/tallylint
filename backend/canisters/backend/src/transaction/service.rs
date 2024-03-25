@@ -110,23 +110,23 @@ impl TransactionService {
     return false;
   }
 
-
   pub fn delete_all_by_addr(&mut self, addr: String) -> bool {
-    let keys_to_remove: Vec<u64> = self.transactions.iter()
-        .filter(|(_, trans_f)| {
-            (trans_f.t_type == "SEND".to_string() && trans_f.details.from == addr)
-            || trans_f.details.to == addr
-        })
-        .map(|(key, _)| *key)
-        .collect();
+    let keys_to_remove: Vec<u64> = self
+      .transactions
+      .iter()
+      .filter(|(_, trans_f)| {
+        (trans_f.t_type == "SEND".to_string() && trans_f.details.from == addr)
+          || trans_f.details.to == addr
+      })
+      .map(|(key, _)| *key)
+      .collect();
 
     for key in keys_to_remove {
-        self.transactions.remove(&key);
+      self.transactions.remove(&key);
     }
 
     true
-}
-
+  }
 }
 
 impl WalletRecordService {
