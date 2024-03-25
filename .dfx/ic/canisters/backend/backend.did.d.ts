@@ -186,12 +186,12 @@ export interface _SERVICE {
   'query_a_wallet' : ActorMethod<[bigint], Result_5>,
   'query_all_neuron_wallet' : ActorMethod<[], Result_6>,
   'query_all_transactions' : ActorMethod<[], Result_7>,
-  'query_all_wallet_transactions' : ActorMethod<
+  'query_all_wallets' : ActorMethod<[], Result_8>,
+  'query_one_transaction' : ActorMethod<[bigint], Result_9>,
+  'query_wallets_synced_transactions' : ActorMethod<
     [HistoryQueryCommand],
     Array<SimpleTransaction>
   >,
-  'query_all_wallets' : ActorMethod<[], Result_8>,
-  'query_one_transaction' : ActorMethod<[bigint], Result_9>,
   'set_payload_using_dev_machine_file' : ActorMethod<[string], string>,
   'set_payload_using_stable_mem_simple' : ActorMethod<[], string>,
   'set_payload_using_stable_mem_simple_raw' : ActorMethod<[], undefined>,

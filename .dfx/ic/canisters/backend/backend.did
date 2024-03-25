@@ -162,11 +162,11 @@ service : {
   query_a_wallet : (nat64) -> (Result_5) query;
   query_all_neuron_wallet : () -> (Result_6) query;
   query_all_transactions : () -> (Result_7) query;
-  query_all_wallet_transactions : (HistoryQueryCommand) -> (
-      vec SimpleTransaction,
-    ) query;
   query_all_wallets : () -> (Result_8) query;
   query_one_transaction : (nat64) -> (Result_9) query;
+  query_wallets_synced_transactions : (HistoryQueryCommand) -> (
+      vec SimpleTransaction,
+    ) query;
   set_payload_using_dev_machine_file : (text) -> (text);
   set_payload_using_stable_mem_simple : () -> (text);
   set_payload_using_stable_mem_simple_raw : () -> ();
