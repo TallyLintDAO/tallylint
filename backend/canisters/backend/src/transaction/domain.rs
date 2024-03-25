@@ -1,6 +1,6 @@
 pub(crate) use candid::CandidType;
 
-use super::service::{TransactionId, WalletAddress, WalletId};
+use super::service::{WalletId, WalletAddress, WalletId};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
@@ -79,7 +79,7 @@ pub struct DetailsB {
 pub struct TransactionB {
   //
   // backend autogen:
-  pub id: TransactionId,
+  pub id: WalletId,
   //
   pub hash: String,
   pub timestamp: u64, //this is ns format usigned 64bit
@@ -106,7 +106,7 @@ pub struct TransactionB {
 pub struct SimpleTransaction {
   //
   // backend autogen:
-  pub id: TransactionId,
+  pub id: WalletId,
   //
   pub hash: String,
   pub timestamp: u64, //this is ns format usigned 64bit

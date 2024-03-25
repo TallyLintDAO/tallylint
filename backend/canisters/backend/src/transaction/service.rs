@@ -2,7 +2,7 @@
 use candid::{CandidType, Principal};
 use serde::{Deserialize, Serialize};
 
-use std::collections::{BTreeMap, HashMap};
+use std::{any::Any, collections::{BTreeMap, HashMap}};
 
 use super::domain::*;
 
@@ -12,7 +12,7 @@ use crate::{common::context::TimeStamp, TransactionB};
 use crate::CONTEXT;
 
 pub type WalletId = u64;
-pub type TransactionId = u64;
+pub type WalletId = u64;
 pub type WalletAddress = String;
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct AddRecordCommand {
@@ -44,7 +44,7 @@ pub struct AddRecordCommand {
 pub struct EditHistoryCommand {
   pub coin_type: String,
 
-  pub id: TransactionId, //delete id here . dont need.
+  pub id: WalletId, //delete id here . dont need.
   pub principal_id: Option<String>, /* Plug use , need
                           * to convert to
                           * opt_account_id_hex for use. */
@@ -69,11 +69,11 @@ pub struct EditHistoryCommand {
 
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct WalletRecordService {
-  pub records: BTreeMap<TransactionId, TransactionB>,
+  pub records: BTreeMap<WalletId, TransactionB>,
 }
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct TransactionService {
-  pub transactions: BTreeMap<TransactionId, TransactionF>,
+  pub transactions: BTreeMap<WalletId, TransactionF>,
 }
 impl TransactionService {
   // TODO
@@ -100,11 +100,23 @@ impl TransactionService {
     }
   }
 
-  pub fn contains(&mut self, id: TransactionId) -> bool {
+  pub fn contains(&mut self, id: WalletId) -> bool {
     if self.transactions.contains_key(&id) {
       return true;
     }
     return false;
+  }
+
+  pub fn delete_all_by_addr(&mut self, addr:String) -> bool{
+    for one in self.transactions{
+      let trans_f = one.1;
+          if trans_f.t_type=="SEND".to_string()|| trans_f.details.from==addr{
+        self.transactions.remove(&one.0);
+      }else if trans_f.details.to==addr {
+        self.transactions.remove(&one.0);
+      }
+    }
+    return true;
   }
 }
 
@@ -141,7 +153,7 @@ impl WalletRecordService {
 
   pub fn query_one(
     &mut self,
-    id: TransactionId,
+    id: WalletId,
   ) -> Result<TransactionB, String> {
     match self.records.get(&id) {
       Some(transaction) => Ok(transaction.clone()),
@@ -151,7 +163,7 @@ impl WalletRecordService {
 
   pub fn delete_transaction_by_id_impl(
     &mut self,
-    id: TransactionId,
+    id: WalletId,
   ) -> Result<bool, String> {
     if !self.records.contains_key(&id) {
       return Err("transaction record not exsit".to_string());
@@ -201,7 +213,7 @@ impl WalletRecordService {
     one_wallet.insert(addr.clone(), records);
     return one_wallet;
   }
-  pub fn query_all_transactions(&self) -> HashMap<TransactionId, TransactionB> {
+  pub fn query_all_transactions(&self) -> HashMap<WalletId, TransactionB> {
     let mut all_trans = HashMap::new();
     for (id, records) in &self.records {
       all_trans.insert(id.clone(), records.clone());

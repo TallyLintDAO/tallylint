@@ -4,7 +4,7 @@ use std::collections::VecDeque;
 use ic_cdk_macros::{query, update};
 
 use super::domain::*;
-use super::service::{TransactionId, WalletAddress};
+use super::service::{WalletId, WalletAddress};
 use crate::common::context::{get_caller, now};
 use crate::common::guard::admin_guard;
 use crate::common::guard::user_owner_guard;
@@ -15,7 +15,7 @@ use crate::{TransactionB, CONTEXT};
 // TODO use: AddRecordCommand . front end dont need to input
 // id . id gen by backend. TODO 测试 id 正常生成且不冲突
 #[update(guard = "user_owner_guard")]
-fn add_transaction(mut data: TransactionB) -> Result<TransactionId, String> {
+fn add_transaction(mut data: TransactionB) -> Result<WalletId, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     ctx.id = ctx.id + 1;
@@ -36,7 +36,7 @@ fn add_transaction(mut data: TransactionB) -> Result<TransactionId, String> {
 }
 
 #[update(guard = "user_owner_guard")]
-fn delete_transaction(id: TransactionId) -> Result<TransactionId, String> {
+fn delete_transaction(id: WalletId) -> Result<WalletId, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     let ret = ctx.wallet_transc_srv.delete_transaction_by_id_impl(id);
@@ -118,7 +118,7 @@ fn query_all_wallet_transactions(
 
 #[query(guard = "admin_guard")]
 fn query_all_transactions(
-) -> Result<HashMap<TransactionId, TransactionB>, String> {
+) -> Result<HashMap<WalletId, TransactionB>, String> {
   CONTEXT.with(|c| {
     let ctx = c.borrow_mut();
     let rec = ctx.wallet_transc_srv.query_all_transactions();
@@ -139,7 +139,7 @@ fn update_transaction(data: TransactionB) -> Result<bool, String> {
 }
 
 #[query(guard = "user_owner_guard")]
-fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
+fn query_one_transaction(id: WalletId) -> Result<TransactionB, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     let ret = ctx.wallet_transc_srv.query_one(id);
@@ -152,8 +152,8 @@ fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
 
 // TODO
 // 用户点击导入钱包自动调用这个接口.存transacs 到后端
-// #[update(guard = "user_owner_guard")]
-#[update]
+#[update(guard = "user_owner_guard")]
+// #[update]
 fn sync_transaction_record(
   cmd: Vec<SyncTransactionCommand>,
 ) -> Result<bool, String> {
@@ -164,7 +164,12 @@ fn sync_transaction_record(
       // hash一样.一样则返回 "transactions already newest. nothing append since
       // last time sync"
       // let latest_hash = one_wallet.history[0].hash.clone();
-      // ! remove dup:
+      // ! remove current all.
+      for one_rec in one_wallet.history.clone() {
+        let w_addr= ctx.wallet_service.get_addr_by_id(one_wallet.walletId);
+        ctx.trans_f_srv.delete_all_by_addr(w_addr);
+      }
+
 
       // let hash_db=
       // ! append records
@@ -202,7 +207,7 @@ fn sync_transaction_record(
 
 fn convert_trans_f_to_trans_b(
   trans_f: TransactionF,
-  id: TransactionId,
+  id: WalletId,
 ) -> TransactionB {
   let address = match trans_f.t_type.as_str() {
     "SEND" => trans_f.details.from.clone(),
@@ -250,6 +255,7 @@ fn calculate_tax(
       // /home/btwl/code/ic/tax_lint/backend/ohter_test/tax_test/main.rs
       // ! calculate base on method: fifo lifo.
       if method == "fifo".to_string() {
+        // FIXME. using WalletForTax::calculate_gain_or_loss()
         for mut one in filtered_vec_data {
           if one.t_type == "RECEIVE".to_string() {
             one.details.profit = 0.0;

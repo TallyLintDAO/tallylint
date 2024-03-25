@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 
 use super::domain::*;
 
-use crate::{common::context::TimeStamp, transaction::service::TransactionId};
+use crate::{common::context::TimeStamp, transaction::service::WalletId};
 
 #[allow(unused_imports)]
 use crate::CONTEXT;
@@ -59,6 +59,11 @@ impl WalletService {
       // removed successfully
       None => Some("add fail".to_string()),
     }
+  }
+
+  pub fn get_addr_by_id(&mut self,id: WalletId)->WalletAddress{
+self.wallets.get(&id).unwrap().address
+
   }
 
   pub fn update_wallet(
@@ -134,7 +139,7 @@ impl WalletService {
     }
   }
 
-  pub fn add_transaction_index(&self, _id: TransactionId) {
+  pub fn add_transaction_index(&self, _id: WalletId) {
     // self.wallets
   }
 
