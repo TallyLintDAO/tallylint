@@ -1,3 +1,4 @@
+import type { syncedTransaction } from "@/types/sns"
 import type { ApiResult, ApiUserInfo } from "@/types/types"
 import type {
   HistoryQueryParams,
@@ -10,7 +11,6 @@ import { TTL, getCache } from "@/utils/cache"
 import { showMessageError } from "@/utils/message"
 import { getNNS } from "@/utils/nns"
 import { getBackend, getCurrentPrincipal } from "./canister_pool"
-import type { TransactionB } from ".dfx/ic/canisters/backend/backend.did"
 
 //TODO demo阶段用户字段修改频繁，暂时用短缓存时间。
 const userTTL = TTL.minute1 //用户自身信息缓存时长。
@@ -163,14 +163,14 @@ export async function syncWallet(
 
 // 手动添加单条交易记录
 export async function addManualTransaction(
-  transaction: TransactionB,
+  transaction: syncedTransaction,
 ): Promise<ApiResult<boolean>> {
   return getBackend().add_transaction(transaction)
 }
 
 // 编辑单条交易记录
 export async function editUserTransaction(
-  transaction: TransactionB,
+  transaction: syncedTransaction,
 ): Promise<ApiResult<boolean>> {
   return getBackend().update_transaction(transaction)
 }
@@ -180,10 +180,10 @@ export async function getSyncedTransactions(
   params: HistoryQueryParams,
   refresh: boolean,
 ): Promise<SyncedHistory> {
-  return getBackend().query_all_wallet_transactions(params)
+  return getBackend().query_wallets_synced_transactions(params)
   // return await getCache({
   //   key: "USER_SyncedTransactions",
-  //   execute: () => getBackend().query_all_wallet_transactions(params),
+  //   execute: () => getBackend().query_wallets_synced_transactions(params),
   //   ttl: walletTTL,
   //   refresh: refresh, //是否刷新缓存，用于执行增删改操作后的刷新。
   // })
@@ -191,7 +191,7 @@ export async function getSyncedTransactions(
 
 // 删除用户已存储的交易记录
 export async function deleteSyncedTransactions(
-  transactionId: number,
+  transactionId: bigint | number,
 ): Promise<ApiResult<boolean>> {
   return getBackend().delete_transaction(transactionId)
 }

@@ -76,7 +76,11 @@
                   </div>
                   <div v-else>
                     <q-badge color="blue"> SYNCED </q-badge>
-                    {{ distanceFromCurrentDate(props.row.last_sync_time) }}
+                    {{
+                      distanceFromCurrentDate(
+                        Number(props.row.last_sync_time) / MILI_PER_SECOND,
+                      )
+                    }}
                   </div>
                 </div>
               </q-card-section>
@@ -197,6 +201,7 @@
 </template>
 
 <script lang="ts" setup>
+import { MILI_PER_SECOND } from "@/api/constants/ic"
 import { getICPTransactions } from "@/api/rosetta"
 import {
   addUserWallet,
@@ -270,7 +275,6 @@ const walletPrototype = {
 const walletForm = ref<QForm | null>(null)
 
 const rows = ref<WalletInfo[]>([])
-
 onMounted(() => {
   getWallets(false)
 })
@@ -337,7 +341,6 @@ const getWallets = (isRefresh: boolean) => {
         rows.value = res.Ok
         for (const row of rows.value) {
           try {
-            row.transactions = 0
             getICPTransactions(
               { address: row.address, name: "", from: "" },
               true,

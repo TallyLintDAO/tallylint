@@ -1,4 +1,7 @@
-import type { TransactionF } from ".dfx/ic/canisters/backend/backend.did"
+import type {
+  Details,
+  TransactionF,
+} from ".dfx/ic/canisters/backend/backend.did"
 
 export interface SnsInfo {
   canisters: {
@@ -36,3 +39,16 @@ export interface IRCR1Price {
 }
 
 export type InferredTransaction = TransactionF
+
+export type syncedTransaction = {
+  id: bigint
+  tag: Array<string>
+  hash: string
+  memo: string
+  t_type: string
+  comment: string
+  address: string
+  timestamp: number
+  details: Details
+  manual: boolean
+}

@@ -1,4 +1,6 @@
-export const distanceFromCurrentDate = (targetTimestamp: bigint): string => {
+export const distanceFromCurrentDate = (
+  targetTimestamp: bigint | number,
+): string => {
   const targetDate = new Date(Number(targetTimestamp))
   const currentDate = new Date()
   const timeDifference = currentDate.getTime() - targetDate.getTime()
