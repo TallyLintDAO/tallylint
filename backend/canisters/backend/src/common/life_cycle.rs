@@ -170,7 +170,7 @@ fn clean_db() -> bool {
 
 #[cfg(test)]
 mod tests {
-  use crate::common::context::{CanisterContext};
+  use crate::common::context::CanisterContext;
 
   // use futures::executor::block_on;
   use std::fs::File;
@@ -221,7 +221,6 @@ mod tests {
       Err(e) => eprintln!("Failed to parse JSON: {}", e),
     }
   }
-
 
   /**
    * TEST OK

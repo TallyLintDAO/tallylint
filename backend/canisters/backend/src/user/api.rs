@@ -1,5 +1,5 @@
-use crate::{common::guard::admin_guard, UserConfig};
 use crate::CONTEXT;
+use crate::{common::guard::admin_guard, UserConfig};
 use candid::Principal;
 use ic_cdk::api::time;
 use ic_cdk::query;
@@ -49,11 +49,11 @@ fn list_all_user() -> Vec<UserProfile> {
 
 // TODO
 #[update(guard = "user_owner_guard")]
-fn set_user_config(cfg:UserConfig) -> UserConfig {
+fn set_user_config(cfg: UserConfig) -> UserConfig {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     ctx.user_service.add_config(&caller(), cfg);
-    let data=ctx.user_service.get_config(&caller());
+    let data = ctx.user_service.get_config(&caller());
     return data;
   })
 }
@@ -62,8 +62,8 @@ fn set_user_config(cfg:UserConfig) -> UserConfig {
 #[query(guard = "user_owner_guard")]
 fn get_user_config() -> UserConfig {
   CONTEXT.with(|c| {
-     let mut ctx = c.borrow_mut();
-    let data=ctx.user_service.get_config(&caller());
+    let mut ctx = c.borrow_mut();
+    let data = ctx.user_service.get_config(&caller());
     return data;
   })
 }

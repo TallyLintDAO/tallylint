@@ -131,12 +131,16 @@ export interface TransactionF {
 export interface TransactionService {
   'transactions' : Array<[bigint, TransactionF]>,
 }
+export interface UserConfig { 'tax_method' : string }
 export interface UserProfile {
   'owner' : Principal,
   'name' : string,
   'create_time' : bigint,
 }
-export interface UserService { 'users' : Array<[Principal, UserProfile]> }
+export interface UserService {
+  'configs' : Array<[string, UserConfig]>,
+  'users' : Array<[Principal, UserProfile]>,
+}
 export interface WalletAddCommand {
   'from' : string,
   'name' : string,
@@ -180,7 +184,8 @@ export interface _SERVICE {
   'get_neuron_info' : ActorMethod<[bigint], Result_3>,
   'get_payload_from_stable_mem_simple' : ActorMethod<[], string>,
   'get_payload_from_stable_mem_simple_raw' : ActorMethod<[], CanisterContext>,
-  'get_user_config' : ActorMethod<[], Array<UserProfile>>,
+  'get_user_config' : ActorMethod<[], UserConfig>,
+  'greet_test' : ActorMethod<[], string>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
   'query_a_neuron_wallet' : ActorMethod<[bigint], Result_4>,
   'query_a_wallet' : ActorMethod<[bigint], Result_5>,
@@ -197,7 +202,7 @@ export interface _SERVICE {
   'set_payload_using_stable_mem_simple_raw' : ActorMethod<[], undefined>,
   'set_stable_mem_using_payload_simple' : ActorMethod<[], undefined>,
   'set_stable_mem_using_payload_simple_raw' : ActorMethod<[], undefined>,
-  'set_user_config' : ActorMethod<[], Array<UserProfile>>,
+  'set_user_config' : ActorMethod<[UserConfig], UserConfig>,
   'sync_transaction_record' : ActorMethod<
     [Array<SyncTransactionCommand>],
     Result

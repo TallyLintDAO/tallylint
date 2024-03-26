@@ -152,7 +152,7 @@ fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
     let address = match data.t_type.as_str() {
       "SEND" => data.details.from.clone(),
       "RECEIVE" => data.details.to.clone(),
-      _ => WalletAddress::default(), // You can handle other cases here
+      _ => WalletAddress::default(), //should never goes here
     };
     data.address = address;
 
@@ -268,7 +268,7 @@ fn calculate_tax(
         .next()
         .expect("wallet transaction empty")
         .clone();
-      if vec_data.is_empty(){
+      if vec_data.is_empty() {
         return "ERROR :NO TRANSACTIONS ! ".to_string();
       }
 
@@ -277,10 +277,9 @@ fn calculate_tax(
         .into_iter()
         .filter(|one| !one.tag.iter().any(|tag| exclued_tags.contains(tag)))
         .collect();
-      if filtered_vec_data.is_empty(){
+      if filtered_vec_data.is_empty() {
         return "ERROR :NO filtered TRANSACTIONS ! ".to_string();
       }
-
 
       // ! calculate base on method: fifo lifo.
       // get tax_transac for calculation
@@ -289,17 +288,18 @@ fn calculate_tax(
         .into_iter()
         .map(TransactionForTax::from)
         .collect();
-      if tax_transac.is_empty(){
+      if tax_transac.is_empty() {
         return "ERROR :NO tax TRANSACTIONS ! ".to_string();
       }
 
       let taxed_vec_trans = calculate_gain_or_loss(tax_transac, method.clone());
-      if taxed_vec_trans.is_empty(){
-        return "ERROR tax calculation abort! no such calculate method ! ".to_string();
+      if taxed_vec_trans.is_empty() {
+        return "ERROR tax calculation abort! no such calculate method ! "
+          .to_string();
       }
       // map tax into transb_db
       let trans_b = map_taxTrans_to_transB(taxed_vec_trans, filtered_vec_data);
-      if trans_b.is_empty(){
+      if trans_b.is_empty() {
         return "ERROR :NO tax-calculated trans_b TRANSACTIONS ! ".to_string();
       }
       for one in trans_b {
@@ -310,9 +310,8 @@ fn calculate_tax(
   })
 }
 
-
 #[query(guard = "user_owner_guard")]
-pub fn greet_test()->String{
+pub fn greet_test() -> String {
   ic_cdk::println!("got greet_test() call");
   return "hello agent!".to_string();
 }

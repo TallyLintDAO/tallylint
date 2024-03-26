@@ -77,8 +77,6 @@ fn test_crud_transactions() {
   query_all_wallet_info(&pic_env, user_admin);
 }
 
-
-
 fn init() -> (PicEnv, Principal) {
   let pic_env = PicEnv::new();
   let user_admin = Principal::from_text(

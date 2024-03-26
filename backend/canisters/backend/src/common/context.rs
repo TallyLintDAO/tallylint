@@ -19,7 +19,8 @@ use crate::wallet::service::WalletService;
 use serde::{Deserialize, Serialize};
 
 pub type TimeStamp = u64;
-// pub type NeuronId_t = u64;
+
+// #[serde(deny_unknown_fields)] // can consider add this will err handing
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct CanisterContext {
   pub id: u64,
@@ -63,4 +64,91 @@ pub fn get_caller() -> Principal {
 
 pub fn now() -> u64 {
   return ic_cdk::api::time();
+}
+
+#[cfg(test)]
+mod tests {
+  use super::CanisterContext;
+
+  #[test]
+  fn deserialize_with_unknown() {
+    let json = r#"{
+  "id": 10002,
+  "user_service": {
+    "users": {
+      "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae": {
+        "owner": "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
+        "name": "",
+        "create_time": 1711439153466491724
+      }
+    }
+  },
+  "wallet_service": { "wallets": {} },
+  "wallet_transc_srv": { "records": {} },
+  "neuron_service": { "neurons": {} },
+  "trans_f_srv": { "transactions": {} },
+  "time_service": {}
+}"#;
+    // ! time_service  is not in rust type exsiting .
+    // ! default behaviour will just ignore unknown (in rust type no matches for
+    // it). !can set to strict mode  #[serde(deny_unknown_fields)]
+    // can self write warn code to check if got unkonwn field.
+
+    let result: Result<CanisterContext, _> = serde_json::from_str(json);
+
+    match result {
+      Ok(canister_context) => {
+        eprintln!("Deserialization successful: {:?}", canister_context)
+      }
+      Err(e) => eprintln!("1 st Deserialization error: {}", e),
+    }
+  }
+  #[test]
+  fn deserialize_with_lack_of_field_json() {
+    let json = r#"{
+  "id": 10002,
+  "user_service": {
+    "users": {
+      "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae": {
+        "owner": "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
+        "name": "",
+        "create_time": 1711439153466491724
+      }
+    }
+  },
+  "wallet_service": { "wallets": {} },
+  "wallet_transc_srv": { "records": {} },
+  "neuron_service": { "neurons": {} },
+  "trans_f_srv": { "transactions": {} }
+}"#;
+
+    // {
+    //   "id": 10002,
+    //   "user_service": {
+    //     "users": {
+    //       "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae":
+    // {         "owner":
+    // "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
+    //         "name": "",
+    //         "create_time": 1711439153466491724
+    //       }
+    //     },
+    //     "configs": {}  // ! on purpose missing this . deserialize to rust
+    // !must have this annotation  for type or fields: #[serde(default =
+    // "BTreeMap::new")] type need this field   },
+    //   "wallet_service": { "wallets": {} },
+    //   "wallet_transc_srv": { "records": {} },
+    //   "neuron_service": { "neurons": {} },
+    //   "trans_f_srv": { "transactions": {} }
+    // }
+
+    let result: Result<CanisterContext, _> = serde_json::from_str(json);
+
+    match result {
+      Ok(canister_context) => {
+        eprintln!("Deserialization successful: {:?}", canister_context)
+      }
+      Err(e) => eprintln!("2 nd Deserialization error: {}", e),
+    }
+  }
 }

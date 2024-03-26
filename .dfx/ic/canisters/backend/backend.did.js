@@ -124,7 +124,9 @@ export const idlFactory = ({ IDL }) => {
   const NeuronService = IDL.Record({
     'neurons' : IDL.Vec(IDL.Tuple(IDL.Text, NeuronProfile)),
   });
+  const UserConfig = IDL.Record({ 'tax_method' : IDL.Text });
   const UserService = IDL.Record({
+    'configs' : IDL.Vec(IDL.Tuple(IDL.Text, UserConfig)),
     'users' : IDL.Vec(IDL.Tuple(IDL.Principal, UserProfile)),
   });
   const CanisterContext = IDL.Record({
@@ -203,7 +205,8 @@ export const idlFactory = ({ IDL }) => {
         [CanisterContext],
         ['query'],
       ),
-    'get_user_config' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
+    'get_user_config' : IDL.Func([], [UserConfig], ['query']),
+    'greet_test' : IDL.Func([], [IDL.Text], ['query']),
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
     'query_a_neuron_wallet' : IDL.Func([IDL.Nat64], [Result_4], ['query']),
     'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_5], ['query']),
@@ -221,7 +224,7 @@ export const idlFactory = ({ IDL }) => {
     'set_payload_using_stable_mem_simple_raw' : IDL.Func([], [], []),
     'set_stable_mem_using_payload_simple' : IDL.Func([], [], []),
     'set_stable_mem_using_payload_simple_raw' : IDL.Func([], [], []),
-    'set_user_config' : IDL.Func([], [IDL.Vec(UserProfile)], []),
+    'set_user_config' : IDL.Func([UserConfig], [UserConfig], []),
     'sync_transaction_record' : IDL.Func(
         [IDL.Vec(SyncTransactionCommand)],
         [Result],

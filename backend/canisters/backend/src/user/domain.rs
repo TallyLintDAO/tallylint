@@ -10,7 +10,7 @@ pub struct UserProfile {
 
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct UserConfig {
-  pub tax_method: String, 
+  pub tax_method: String,
 }
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct UserInfo {
@@ -29,4 +29,3 @@ impl UserProfile {
     }
   }
 }
-

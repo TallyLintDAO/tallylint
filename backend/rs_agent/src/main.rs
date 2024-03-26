@@ -15,17 +15,17 @@ use std::{env, fs};
 //  ./target/debug/rs_agent 0
 #[tokio::main]
 async fn main() {
-  // regular_update_canister_with_db().await;
-  hello_agent_test().await;
+  regular_update_canister_with_db().await;
+  // hello_agent_test().await;
 }
 
-async fn hello_agent_test()  {
-   let (canister_id, agent, online_mode) = init_agent().await;
-   greet_test(agent, canister_id).await;
-   
+async fn hello_agent_test() {
+  let (canister_id, agent, online_mode) = init_agent().await;
+  greet_test(agent, canister_id).await;
 }
-
+  // TODO lack of err handing in the procedure. might need.
 async fn regular_update_canister_with_db() {
+
   let (canister_id, agent, online_mode) = init_agent().await;
   let ic_or_local: String;
   if online_mode == "0" {
@@ -51,7 +51,8 @@ async fn regular_update_canister_with_db() {
 
   // ! send payload to ic and set payload on ic
   let args = candid::encode_one(payload_now).unwrap();
-  let result = send_payload_and_set(agent.borrow(), canister_id, args).await;
+  let result =
+    set_payload_using_dev_machine_file(agent.borrow(), canister_id, args).await;
   println!("{}", result);
 }
 
@@ -100,7 +101,7 @@ async fn init_agent() -> (Principal, Agent, String) {
   (canister_id, agent, online_mode.to_string())
 }
 
-async fn send_payload_and_set(
+async fn set_payload_using_dev_machine_file(
   agent: &Agent,
   canister_id: Principal,
   my_arg: Vec<u8>,

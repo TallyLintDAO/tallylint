@@ -60,7 +60,6 @@ use std::collections::HashMap;
 
 ic_cdk::export_candid!();
 
-
 // #[cfg(test)]
 // mod tests {
 //   use super::*;
