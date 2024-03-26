@@ -77,6 +77,9 @@
           <q-select
             rounded
             outlined
+            emit-value
+            map-options
+            @update:model-value="getSelectedWalletHistory(selectedWallet)"
             v-model="sort"
             :options="sortOptions"
             label="Sort by"
@@ -93,7 +96,7 @@
       <div v-if="showLoading">
         <q-spinner-cube size="xl" color="primary" />
       </div>
-      <div v-else-if="transactionsList.length == 0">
+      <div v-else-if="maxPage == 0">
         <span>No data available</span>
       </div>
       <div v-else>
@@ -202,7 +205,9 @@
                           </q-item-section>
                         </q-item>
                         <q-item clickable v-close-popup="true">
-                          <q-item-section @click="deleteTransaction(0)">
+                          <q-item-section
+                            @click="deleteTransaction(transaction.id)"
+                          >
                             Delete
                           </q-item-section>
                         </q-item>
@@ -257,12 +262,17 @@
                 <q-input
                   filled
                   label="From Address *"
-                  v-model="transaction.details.from"
+                  v-model.trim="transaction.details.from"
                   class="q-mb-md"
                   :rules="[
                     (val) =>
                       (val && val.length > 0) ||
                       'Please enter the source address',
+                    (val) =>
+                      (val &&
+                        val.length > 0 &&
+                        (val.length === 63 || val.length === 64)) ||
+                      'Please enter Account ID Address',
                   ]"
                   :disable="isEdit"
                 />
@@ -331,11 +341,16 @@
                 <q-input
                   filled
                   label="To Target Address *"
-                  v-model="transaction.details.to"
+                  v-model.trim="transaction.details.to"
                   :rules="[
                     (val) =>
                       (val && val.length > 0) ||
                       'Please enter the target address',
+                    (val) =>
+                      (val &&
+                        val.length > 0 &&
+                        (val.length === 63 || val.length === 64)) ||
+                      'Please enter Account ID Address',
                   ]"
                   :disable="isEdit"
                 />
@@ -356,7 +371,7 @@
             <q-input
               outlined
               label="Transaction Hash *"
-              v-model="transaction.hash"
+              v-model.trim="transaction.hash"
               class="q-mb-md"
               :rules="[
                 (val) =>
@@ -397,6 +412,7 @@
 </template>
 
 <script lang="ts" setup>
+import { MILI_PER_SECOND } from "@/api/constants/ic"
 import { getAllTransactions } from "@/api/rosetta"
 import {
   addManualTransaction,
@@ -404,7 +420,7 @@ import {
   editUserTransaction,
   getUserWallet,
 } from "@/api/user"
-import type { InferredTransaction } from "@/types/sns"
+import type { syncedTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
 import { confirmDialog } from "@/utils/dialog"
@@ -414,13 +430,13 @@ import {
   getTransactionWalletName,
 } from "@/utils/syncedTransactions"
 import type { QForm } from "quasar"
-import { computed, onMounted, ref } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import { useRoute } from "vue-router"
 
 const route = useRoute()
 
 const address = route.params.address
-const transactionsList = ref<InferredTransaction[]>([])
+const transactionsList = ref<syncedTransaction[]>([])
 const transaction = ref({
   id: 0n,
   tag: [],
@@ -447,15 +463,20 @@ const transaction = ref({
   manual: false,
   principal_id: [],
 })
-const type = ref([])
+const type = ref<string[]>([])
 const typeOptions = ["SEND", "RECEIVE"]
-const tag = ref([])
+const tag = ref<string[]>([])
 const tagOptions = ["Reward", "Mining", "Gift"]
 const date = ref("") //采用这个方便判定为空
-const manual = ref([])
+const manual = ref<string[]>([])
 const manualOptions = ["Manual"]
 const sort = ref("Recent")
-const sortOptions = ["Recent", "Oldest first", "Highest gains", "Lowest gains"]
+const sortOptions = [
+  { label: "Recent", value: "date-asc" },
+  { label: "Oldest first", value: "date-desc" },
+  { label: "Highest gains", value: "profit-asc" },
+  { label: "Lowest gains", value: "profit-desc" },
+]
 const tokenList = [
   {
     decimals: 8,
@@ -529,9 +550,9 @@ const shortcuts = [
 ]
 
 const groupedTransactions = (
-  transactions: InferredTransaction[],
+  transactions: syncedTransaction[],
 ): {
-  [date: string]: InferredTransaction[]
+  [date: string]: syncedTransaction[]
 } => {
   const groups = {}
   transactions.forEach((transaction) => {
@@ -546,7 +567,7 @@ const groupedTransactions = (
 //先分页，再分组。
 const paginatedGroups = computed(
   (): {
-    [date: string]: InferredTransaction[]
+    [date: string]: syncedTransaction[]
   } => {
     const start = (currentPage.value - 1) * pageSize.value
     const end = start + pageSize.value
@@ -559,6 +580,17 @@ const paginatedGroups = computed(
           item.timestamp <= Number(date.value[1]),
       )
     }
+    paginatedData = paginatedData.filter(
+      (item) =>
+        //筛选type
+        (type.value.length === 0 || type.value.includes(item.t_type)) &&
+        //筛选tag
+        (tag.value.length === 0 ||
+          item.tag.some((tagItem) => tag.value.includes(tagItem))) &&
+        //筛选manual
+        (manual.value.length === 0 ||
+          (item.manual && manual.value.includes("Manual"))),
+    )
     //在slice分页之前处理页码和数量
     maxPage.value = Math.ceil(paginatedData.length / pageSize.value)
     transactionAmount.value = paginatedData.length
@@ -567,8 +599,17 @@ const paginatedGroups = computed(
   },
 )
 
+// 监听 type, tag 和 manual 变化，如果有任何一个发生变化，强制重新计算 paginatedGroups
+watch([type, tag, manual], () => {
+  paginatedGroups.value // 触发 paginatedGroups 的重新计算
+})
+
 onMounted(() => {
   console.log("route", address)
+  init()
+})
+
+const init = () => {
   getWallets().then(() => {
     let walletsToQuery: WalletTag[]
 
@@ -579,11 +620,12 @@ onMounted(() => {
           address.map((addr) => ({ address: addr, name: "", from: "" }))
         : // 如果 address 是字符串，则构造包含单个地址的数组
           [{ address: address, name: "", from: "" }]
-      //TODO 感觉有bug，待定
+      //TODO 感觉这个初始化有bug，待定
       getAllTransactions(walletsToQuery)
         .then((res) => {
           console.log("getWalletHistory", res)
           if (res.total && res.total != 0) {
+            //@ts-ignore 格式与后端的不太兼容，先忽视吧
             transactionsList.value = res.transactions
             maxPage.value = Math.ceil(res.total / pageSize.value)
             transactionAmount.value = res.total
@@ -598,7 +640,7 @@ onMounted(() => {
       getSelectedWalletHistory(walletsToQuery)
     }
   })
-})
+}
 
 const getWallets = async () => {
   showLoading.value = true
@@ -624,7 +666,8 @@ const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
   selectedWallets.length !== 0
     ? (targetWallets = selectedWallets)
     : (targetWallets = wallets.value)
-  getAllSyncedTransactions(0, 0, ["date-asc"], targetWallets)
+  console.log("sort", sort.value)
+  getAllSyncedTransactions(0, 0, [sort.value], targetWallets)
     .then((res) => {
       console.log("getWalletHistory", res)
       if (res.total && res.total != 0) {
@@ -639,10 +682,39 @@ const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
 }
 
 const openDialog = (action: string, itemInfo?: any) => {
+  //将状态置空
+  transaction.value = {
+    id: 0n,
+    tag: [],
+    hash: "",
+    memo: "",
+    walletName: "",
+    t_type: "",
+    comment: "",
+    address: "",
+    timestamp: 0,
+    details: {
+      to: "",
+      fee: 0,
+      status: "",
+      ledgerCanisterId: "",
+      value: 0,
+      cost: 0,
+      from: "",
+      currency: { decimals: 8, symbol: "ICP" },
+      profit: 0,
+      price: 0,
+      amount: 0,
+    },
+    manual: false,
+    principal_id: [],
+  }
   if (action === "edit" && itemInfo) {
     isEdit.value = true
-    console.log("edit", itemInfo)
-    transaction.value = itemInfo
+    transaction.value = { ...itemInfo }
+    //由于transaction没有memo字段，不满足edit方法的参数，所以这里添加
+    transaction.value.memo = ""
+    transaction.value.address = ""
     //理论上来说item里manual属性会覆盖transaction里的manual属性，所以这里不对manual做修改
   } else {
     //不为edit就是add
@@ -658,7 +730,7 @@ const onSubmit = async () => {
   try {
     if (validationSuccess) {
       if (isEdit.value) {
-        // await editTransaction()
+        await editTransaction()
       } else {
         await addTransaction()
       }
@@ -677,27 +749,29 @@ const onSubmit = async () => {
 
 const addTransaction = async () => {
   console.log("addTransaction", transaction.value)
-
+  const addedTransaction: syncedTransaction = { ...transaction.value }
+  addedTransaction.timestamp *= MILI_PER_SECOND
   const res = await addManualTransaction(transaction.value)
   console.log("res", res)
   if (res.Ok) {
-    showMessageSuccess("add transaction success")
+    showMessageSuccess("Add Transaction Success")
   }
   return
 }
 
 const editTransaction = async () => {
-  console.log("addTransaction", transaction.value)
-
-  const res = await editUserTransaction(transaction.value)
+  console.log("editTransaction", transaction.value)
+  const editedTransaction: syncedTransaction = { ...transaction.value }
+  editedTransaction.timestamp *= MILI_PER_SECOND
+  const res = await editUserTransaction(editedTransaction)
   console.log("res", res)
   if (res.Ok) {
-    showMessageSuccess("add transaction success")
+    showMessageSuccess("Edit Transaction Success")
   }
   return
 }
 
-const deleteTransaction = (transactionId: number) => {
+const deleteTransaction = (transactionId: bigint | number) => {
   confirmDialog({
     title: "Delete Transaction",
     message:
@@ -705,7 +779,9 @@ const deleteTransaction = (transactionId: number) => {
     okMethod: () => {
       deleteSyncedTransactions(transactionId).then((res) => {
         if (res.Ok) {
+          console.log("deleteSyncedTransactions", res)
           showMessageSuccess("delete transaction success")
+          init()
         }
       })
     },
