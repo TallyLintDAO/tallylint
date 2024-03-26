@@ -43,29 +43,6 @@ impl CanisterContext {
   }
 }
 
-#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
-pub struct CanisterDB {
-  pub id: u64,
-  pub users: Vec<UserProfile>,
-  pub wallets: Vec<WalletProfile>,
-  pub records: Vec<TransactionB>,
-  pub neurons: Vec<NeuronProfile>,
-  pub transactions: Vec<TransactionF>,
-}
-
-// impl Default for CanisterContext {
-//   fn default() -> Self {
-//     Self {
-//       id: 10001,
-//       user_service: UserService::default(),
-//       wallet_service: WalletService::default(),
-//       wallet_transc_srv: WalletRecordService::default(),
-//       neuron_service: NeuronService::default(),
-//       trans_f_srv: TransactionService::default(),
-//     }
-//   }
-// }
-
 use std::num::ParseIntError;
 #[allow(dead_code)]
 fn integer_part(value: &str) -> Result<u64, ParseIntError> {

@@ -170,7 +170,7 @@ fn clean_db() -> bool {
 
 #[cfg(test)]
 mod tests {
-  use crate::common::context::{CanisterContext, CanisterDB};
+  use crate::common::context::{CanisterContext};
 
   // use futures::executor::block_on;
   use std::fs::File;
