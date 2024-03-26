@@ -4,6 +4,9 @@ import subprocess
 import sys
 import pexpect
 
+#! WARN this script location should not change.other program ref this script
+
+
 #### preparations
 passwd = os.getenv("DFXPASS_BTWLZ")  # data from /etc/enviroment
 #!WARN: default using -y tag. may empty local db and api

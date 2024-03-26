@@ -6,7 +6,7 @@ use ic_utils::call::AsyncCall;
 use chrono::prelude::*;
 use std::borrow::Borrow;
 use std::fs::{read, File};
-use std::io::Read;
+use std::io::{BufReader, Read};
 use std::{env, fs};
 
 // run canister_on_ic update :
@@ -23,9 +23,8 @@ async fn hello_agent_test() {
   let (canister_id, agent, online_mode) = init_agent().await;
   greet_test(agent, canister_id).await;
 }
-  // TODO lack of err handing in the procedure. might need.
+// TODO lack of err handing in the procedure. might need.
 async fn regular_update_canister_with_db() {
-
   let (canister_id, agent, online_mode) = init_agent().await;
   let ic_or_local: String;
   if online_mode == "0" {
@@ -42,12 +41,12 @@ async fn regular_update_canister_with_db() {
     collect_running_payload_simple(agent.borrow(), canister_id).await;
   save_payload_to_local(payload, now.clone(), ic_or_local.to_owned());
 
-  let payload_now = read_db_from_local(now, ic_or_local.to_owned());
+  let payload_now = read_db_from_local(now.clone(), ic_or_local.to_owned());
 
   // ! deploy ic
   // FIXME. run ok. but  displaying locations bad.  cmds output in real time .
   // TODO just make this output into file .
-  let _ = exec_deploy(ic_or_local.to_owned()).await;
+  exec_deploy(ic_or_local.to_owned(),now).await;
 
   // ! send payload to ic and set payload on ic
   let args = candid::encode_one(payload_now).unwrap();
@@ -205,24 +204,52 @@ fn read_db_from_local(time_tag: String, mode: String) -> String {
   db_json
 }
 
-use std::io::{BufRead, BufReader};
+// TODO put output_with_time_tag and test if run as semantics
+use std::io::{BufRead, BufWriter, Write};
 use std::process::{Command, Stdio};
 
-async fn exec_deploy(ic_or_local: String) -> std::io::Result<()> {
+async fn exec_deploy(ic_or_local: String,time_tag:String) {
+  let dst=format!("/home/btwl/code/ic/tax_lint/db/deploy_cmd/output_{}.ans",time_tag);
+  let output_file = File::create(dst).expect("Could not create file");
+  let mut writer = BufWriter::new(output_file);
+
   let mut child =
     Command::new("/home/btwl/code/ic/tax_lint/backend/scripts/deploy_backend")
       .arg(ic_or_local)
       .stdout(Stdio::piped())
-      .spawn()?;
+      .spawn()
+      .expect("Failed to execute command");
 
   let stdout = child.stdout.take().unwrap();
   let reader = BufReader::new(stdout);
 
   for line in reader.lines() {
-    println!("{}", line?);
+    let line = line.expect("Read error");
+    writeln!(writer, "{}", line).expect("Write error");
   }
 
-  let status = child.wait()?;
+  let status = child.wait().expect("Failed to wait on child");
+
   println!("command exited with: {}", status);
-  Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+  use std::{fs::File, io::Write};
+
+use crate::exec_deploy;
+  use tokio::runtime::Runtime;
+
+  #[test]
+  fn exec_deploy_test() {
+    let mut rt = Runtime::new().unwrap();
+    rt.block_on(exec_deploy("local".to_string(),"time_tag_tesst".to_string()));
+  }
+
+  #[test]
+  fn file_new() -> std::io::Result<()> {
+    let mut file = File::create("example001.txt")?;
+    file.write_all(b"Hello, world!")?;
+    Ok(())
+}
 }
