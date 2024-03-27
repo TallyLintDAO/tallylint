@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use candid::{CandidType, Principal};
-use ic_cdk::api::call::reject_message;
+
 use serde::Serialize;
 use std::collections::BTreeMap;
 

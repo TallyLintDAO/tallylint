@@ -1,20 +1,18 @@
 use crate::{
   transaction::{
-    domain::{TransactionB, TransactionF},
     service::{TransactionService, WalletRecordService},
   },
-  wallet::service::{RecordId, WalletId},
   CONTEXT,
 };
 use candid::{CandidType, Principal};
-use std::collections::BTreeMap;
-use std::iter::FromIterator;
 
-use crate::nns::domain::NeuronProfile;
+
+
+
 use crate::nns::service::NeuronService;
-use crate::user::domain::UserProfile;
+
 use crate::user::service::UserService;
-use crate::wallet::domain::WalletProfile;
+
 use crate::wallet::service::WalletService;
 use serde::{Deserialize, Serialize};
 

@@ -3,7 +3,6 @@ use candid::{CandidType, Principal};
 use serde::{Deserialize, Serialize};
 
 use std::{
-  any::Any,
   collections::{BTreeMap, HashMap},
 };
 
@@ -170,7 +169,7 @@ impl WalletRecordService {
   pub fn delete_transaction_by_addr(&mut self, addr: &WalletAddress) {
     self
       .records
-      .retain(|index, transaction| transaction.address != *addr);
+      .retain(|_index, transaction| transaction.address != *addr);
   }
 
   pub fn delete_transaction_by_id_impl(
