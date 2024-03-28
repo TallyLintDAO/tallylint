@@ -7,5 +7,6 @@ export const NET_ID = {
 }
 export const ROSETTA_URL = "https://rosetta-api.internetcomputer.org"
 export const COINGECKO_URL = "https://api.coingecko.com"
+export const BINANACE_URL = "https://data-api.binance.vision"
 
 export const MILI_PER_SECOND = 1000000
