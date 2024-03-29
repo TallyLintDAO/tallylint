@@ -14,6 +14,8 @@ fn main() {
   // candid-extractor target/wasm32-unknown-unknown/release/backend.wasm
   // >./backend/canisters/backend/backend.did
 
+  // TODO must do  cargo build --release --target wasm32-unknown-unknown --package backend before test !
+
   test_crud_transactions();
   // test_db_update();
 }
@@ -53,30 +55,33 @@ fn test_crud_transactions() {
   // !query payload DB
   // query_payload_db(&pic_env, user_admin);
 
-  set_user_config(&pic_env, user_admin);
-
-  // !calculate_tax
-  calculate_tax(&pic_env, user_admin);
-
+  
   // !simple query transactions
   no_filter_no_sort_simple_transac_query(&pic_env, user_admin);
-
-  // !time range query test
-  time_range_test(&pic_env, user_admin);
-  // !sort method query test
-  sort_method_test(&pic_env, user_admin);
-
+  
   // !edit transacitons:
   // add a new tranc as mannual flag.then add some tag, add a comment
   add_a_completx_transaction(&pic_env, user_admin);
   // tag as 3333 keyword serach if ok
   update_completx_transaction(&pic_env, user_admin);
+    add_a_completx_transaction2(&pic_env, user_admin);
   query_a_completx_transaction(&pic_env, user_admin);
   // !simple query wallet-linked-transactions
   no_filter_no_sort_simple_transac_query(&pic_env, user_admin);
-
+  
   // !query wallet info
   query_all_wallet_info(&pic_env, user_admin);
+
+
+  
+  // !calculate_tax
+  set_user_config(&pic_env, user_admin);
+  calculate_tax(&pic_env, user_admin);
+  // !time range query test
+  time_range_test(&pic_env, user_admin);
+  // !sort method query test
+  sort_method_test(&pic_env, user_admin);
+  
 }
 
 fn init() -> (PicEnv, Principal) {
@@ -328,19 +333,19 @@ fn add_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
   let trans_f = TransactionF {
     hash: "123".to_string(),
     timestamp: 10.0,
-    t_type: "SEND".to_string(),
+    t_type: "RECEIVE".to_string(),
 
     details: Details {
-      amount: 123.8,
+      amount: 10.8,
       cost: 1.0,
       currency: Currency {
         decimals: 2,
         symbol: "ICP".to_string(),
       },
-      fee: 123.8,
-      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+      fee: 1.8,
+      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
         .to_string(),
-      to: "asd".to_string(),
+      from: "asd".to_string(),
       price: 1.0,
       value: 1.0,
       status: "SUCCESS".to_string(),
@@ -361,6 +366,7 @@ fn add_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
     Err(err) => println!("{:?}", err),
   }
 }
+
 // TODO
 fn update_completx_transaction(pic_env: &PicEnv, user1: Principal) {
   let trans_f = TransactionF {
@@ -391,8 +397,8 @@ fn update_completx_transaction(pic_env: &PicEnv, user1: Principal) {
 
   args.manual = true;
   args.comment = "my manualled blabala".to_string();
-  args.tag.push("air drop".to_string());
-  args.tag.push("air drop3333".to_string());
+  args.tag.push("err tag".to_string());
+  args.tag.push("zzzz".to_string());
 
   let ret: Result<bool, String> =
     pic_env.my_update_call_one_arg(user1, args, "update_transaction");
@@ -402,6 +408,44 @@ fn update_completx_transaction(pic_env: &PicEnv, user1: Principal) {
   }
 }
 
+
+fn add_a_completx_transaction2(pic_env: &PicEnv, user1: Principal) {
+  let trans_f = TransactionF {
+    hash: "123".to_string(),
+    timestamp: 101.0,
+    t_type: "SEND".to_string(),
+
+    details: Details {
+      amount: 5.8,
+      cost: 1.0,
+      currency: Currency {
+        decimals: 2,
+        symbol: "ICP".to_string(),
+      },
+      fee: 1.8,
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+        .to_string(),
+      to: "asd".to_string(),
+      price: 2.0,
+      value: 2.0,
+      status: "SUCCESS".to_string(),
+      ledgerCanisterId: "asd".to_string(),
+      profit: 0.0,
+    },
+  };
+
+  let mut args: TransactionB = convert_trans_f_to_trans_b(trans_f, 110050);
+  args.manual = true;
+  args.comment = "my manualled blabala".to_string();
+  args.tag.push("err tag one".to_string());
+  args.tag.push("zzz".to_string());
+  let ret: Result<TransactionId, String> =
+    pic_env.my_update_call_one_arg(user1, args, "add_transaction");
+  match ret {
+    Ok(data) => println!("{:?}", data),
+    Err(err) => println!("{:?}", err),
+  }
+}
 // TODO
 fn query_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
   let ret: Result<TransactionB, String> = pic_env.my_update_call_one_arg(
