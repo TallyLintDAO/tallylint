@@ -97,7 +97,7 @@
         <q-spinner-cube size="xl" color="primary" />
       </div>
       <div v-else-if="maxPage == 0">
-        <span>No data available</span>
+        <span>No transactions already synchronized</span>
       </div>
       <div v-else>
         <q-list bordered separator>
@@ -178,7 +178,7 @@
                   <span>
                     {{ "≈ $" + transaction.details.value }}
                     <q-tooltip>
-                      Market price by CoinGecko
+                      Market price by Binance
                       <br />
                       ${{ transaction.details.price }} / ICP
                     </q-tooltip>
@@ -490,16 +490,6 @@ const tokenList = [
     value: {
       decimals: 8,
       symbol: "ICP",
-    },
-  },
-  {
-    decimals: 8,
-    symbol: "BCP",
-    label: "BCP",
-    icon: "/frontend/assets/dfinity.svg",
-    value: {
-      decimals: 8,
-      symbol: "BCP",
     },
   },
 ]

@@ -1,4 +1,4 @@
-import { BINANACE_URL, COINGECKO_URL } from "@/api/constants/ic"
+import { BINANACE_URL } from "@/api/constants/ic"
 import { TTL, getCache } from "@/utils/cache"
 import { getYearTimestamps } from "@/utils/date"
 import { binarySearchClosestICPPrice } from "@/utils/math"
@@ -24,7 +24,9 @@ export const getICPPriceHistory = async (): Promise<any> => {
     //获取binance的所有ICP价格历史数据，目前coingecko只允许调用一年以内的数据，无法使用。
     const url = `${BINANACE_URL}/api/v3/klines`
     let priceData = []
-    for (const { start, end } of getYearTimestamps()) {
+    for (const {
+      value: { start, end },
+    } of getYearTimestamps()) {
       console.log("start end", start, end)
       const params = {
         symbol: "ICPUSDT",
@@ -64,13 +66,13 @@ export const getICPPriceHistory = async (): Promise<any> => {
     if (priceData) {
     } else {
       showMessageError(
-        "Can not connect CoinGecko api, please check if you have access to CoinGecko",
+        "Can not connect Binance api, please check if you have access to Binance",
       )
       throw new Error("Failed to fetch ICP price data")
     }
   } catch (error) {
     showMessageError(
-      "Can not connect CoinGecko api, please check if you have access to CoinGecko",
+      "Can not connect Binance api, please check if you have access to Binance",
     )
     console.error("Error fetching ICP price data:", error)
     throw error
@@ -79,25 +81,24 @@ export const getICPPriceHistory = async (): Promise<any> => {
 
 export const getICPNowPrice = async (): Promise<number> => {
   try {
-    //获取coingecko的当前ICP历史数据。
-    const url = `${COINGECKO_URL}/api/v3/simple/price`
-    const params = { ids: "internet-computer", vs_currencies: "usd" }
+    //获取Binance的当前ICP历史数据。
+    const url = `${BINANACE_URL}/api/v3/ticker/price`
+    const params = { symbol: "ICPUSDT" }
 
     const response = await axios.get(url, { params })
+    console.log("getICPNowPrice", response)
     if (response.status === 200) {
-      // 解析响应数据
-      // priceData 包含时间戳和价格数据
-      const priceData = response.data["internet-computer"].usd
-      return priceData
+      //直接返回价格
+      return Number(response.data.price)
     } else {
       showMessageError(
-        "Can not connect CoinGecko api, please check if you have access to CoinGecko",
+        "Can not connect Binance api, please check if you have access to Binance",
       )
       throw new Error("Failed to fetch ICP price data")
     }
   } catch (error) {
     showMessageError(
-      "Can not connect CoinGecko api, please check if you have access to CoinGecko",
+      "Can not connect Binance api, please check if you have access to Binance",
     )
     console.error("Error fetching ICP price data:", error)
     throw error
