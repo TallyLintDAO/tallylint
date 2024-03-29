@@ -13,7 +13,8 @@ fn main() {
   // candid-extractor target/wasm32-unknown-unknown/release/backend.wasm
   // >./backend/canisters/backend/backend.did
 
-  // TODO must do  cargo build --release --target wasm32-unknown-unknown --package backend before test !
+  // TODO must do  cargo build --release --target wasm32-unknown-unknown
+  // --package backend before test !
 
   test_crud_transactions();
   // test_db_update();
@@ -57,25 +58,22 @@ fn test_crud_transactions() {
   // !query payload DB
   // query_payload_db(&pic_env, user_admin);
 
-  
   // !simple query transactions
   no_filter_no_sort_simple_transac_query(&pic_env, user_admin);
-  
+
   // !edit transacitons:
   // add a new tranc as mannual flag.then add some tag, add a comment
   add_a_completx_transaction(&pic_env, user_admin);
   // tag as 3333 keyword serach if ok
   update_completx_transaction(&pic_env, user_admin);
-    add_a_completx_transaction2(&pic_env, user_admin);
+  add_a_completx_transaction2(&pic_env, user_admin);
   query_a_completx_transaction(&pic_env, user_admin);
   // !simple query wallet-linked-transactions
   no_filter_no_sort_simple_transac_query(&pic_env, user_admin);
-  
+
   // !query wallet info
   query_all_wallet_info(&pic_env, user_admin);
 
-
-  
   // !calculate_tax
   set_user_config(&pic_env, user_admin);
   calculate_tax(&pic_env, user_admin);
@@ -83,7 +81,6 @@ fn test_crud_transactions() {
   time_range_test(&pic_env, user_admin);
   // !sort method query test
   sort_method_test(&pic_env, user_admin);
-  
 }
 
 fn init() -> (PicEnv, Principal) {
@@ -411,7 +408,6 @@ fn update_completx_transaction(pic_env: &PicEnv, user1: Principal) {
     Err(err) => println!("{:?}", err),
   }
 }
-
 
 fn add_a_completx_transaction2(pic_env: &PicEnv, user1: Principal) {
   let trans_f = TransactionF {
