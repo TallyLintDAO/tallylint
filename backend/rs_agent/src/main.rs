@@ -44,9 +44,7 @@ async fn regular_update_canister_with_db() {
   let payload_now = read_db_from_local(now.clone(), ic_or_local.to_owned());
 
   // ! deploy ic
-  // FIXME. run ok. but  displaying locations bad.  cmds output in real time .
-  // TODO just make this output into file .
-  exec_deploy(ic_or_local.to_owned(),now).await;
+  exec_deploy(ic_or_local.to_owned(), now).await;
 
   // ! send payload to ic and set payload on ic
   let args = candid::encode_one(payload_now).unwrap();
@@ -208,8 +206,11 @@ fn read_db_from_local(time_tag: String, mode: String) -> String {
 use std::io::{BufRead, BufWriter, Write};
 use std::process::{Command, Stdio};
 
-async fn exec_deploy(ic_or_local: String,time_tag:String) {
-  let dst=format!("/home/btwl/code/ic/tax_lint/db/deploy_cmd/output_{}.ans",time_tag);
+async fn exec_deploy(ic_or_local: String, time_tag: String) {
+  let dst = format!(
+    "/home/btwl/code/ic/tax_lint/db/deploy_cmd/output_{}.ans",
+    time_tag
+  );
   let output_file = File::create(dst).expect("Could not create file");
   let mut writer = BufWriter::new(output_file);
 
@@ -237,13 +238,16 @@ async fn exec_deploy(ic_or_local: String,time_tag:String) {
 mod tests {
   use std::{fs::File, io::Write};
 
-use crate::exec_deploy;
+  use crate::exec_deploy;
   use tokio::runtime::Runtime;
 
   #[test]
   fn exec_deploy_test() {
     let mut rt = Runtime::new().unwrap();
-    rt.block_on(exec_deploy("local".to_string(),"time_tag_tesst".to_string()));
+    rt.block_on(exec_deploy(
+      "local".to_string(),
+      "time_tag_tesst".to_string(),
+    ));
   }
 
   #[test]
@@ -251,5 +255,5 @@ use crate::exec_deploy;
     let mut file = File::create("example001.txt")?;
     file.write_all(b"Hello, world!")?;
     Ok(())
-}
+  }
 }

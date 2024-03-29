@@ -111,7 +111,7 @@ type TransactionF = record {
 type TransactionService = record {
   transactions : vec record { nat64; TransactionF };
 };
-type UserConfig = record { tax_method : text };
+type UserConfig = record { tax_method : text; exclude_tags : vec text };
 type UserProfile = record {
   owner : principal;
   name : text;
@@ -149,7 +149,7 @@ service : () -> {
   add_transaction : (TransactionB) -> (Result_1);
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_2);
-  calculate_tax : (vec text, text, vec text) -> (text);
+  calculate_tax : () -> (text);
   clean_db : () -> (bool);
   collect_running_payload_simple : () -> (text) query;
   collect_running_payload_simple_raw : () -> (text) query;
@@ -161,7 +161,7 @@ service : () -> {
   get_payload_from_stable_mem_simple : () -> (text) query;
   get_payload_from_stable_mem_simple_raw : () -> (CanisterContext) query;
   get_user_config : () -> (UserConfig) query;
-  greet_test : () -> (text) query;
+  greet_test_agent : () -> (text) query;
   list_all_user : () -> (vec UserProfile);
   query_a_neuron_wallet : (nat64) -> (Result_4) query;
   query_a_wallet : (nat64) -> (Result_5) query;

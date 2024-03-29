@@ -53,6 +53,8 @@ fn test_crud_transactions() {
   // !query payload DB
   // query_payload_db(&pic_env, user_admin);
 
+  set_user_config(&pic_env, user_admin);
+
   // !calculate_tax
   calculate_tax(&pic_env, user_admin);
 
@@ -128,8 +130,11 @@ fn get_payload_from_my_server(pic_env: &PicEnv, user_admin: Principal) {
 
 fn send_payload_string_to_canister(pic_env: &PicEnv, user_admin: Principal) {
   let data=read_db_to_string_from_local_json_file("/home/btwl/code/ic/tax_lint/backend/i_test/new_ctx_struct_all_ic_data.json".to_owned());
-  let reply: String =
-    pic_env.my_update_call(user_admin, data, "send_payload_string_to_canister");
+  let reply: String = pic_env.my_update_call_one_arg(
+    user_admin,
+    data,
+    "send_payload_string_to_canister",
+  );
   println!("{:?}", reply);
 }
 
@@ -143,7 +148,7 @@ fn add_wallet(pic_env: &PicEnv, user_admin: Principal) {
     name: "w1".to_string(),
   };
   let ret: Result<bool, String> =
-    pic_env.my_update_call(user_admin, args, "add_wallet");
+    pic_env.my_update_call_one_arg(user_admin, args, "add_wallet");
   match ret {
     Ok(_) => println!("ok"),
     Err(_) => println!("err"),
@@ -311,7 +316,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   };
   let args: Vec<SyncTransactionCommand> = vec![sync_transaction_command];
   let ret: Result<bool, String> =
-    pic_env.my_update_call(user1, args, "sync_transaction_record");
+    pic_env.my_update_call_one_arg(user1, args, "sync_transaction_record");
   match ret {
     Ok(data) => println!("{:?}", data),
     Err(err) => println!("{:?}", err),
@@ -350,7 +355,7 @@ fn add_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
   args.tag.push("air drop".to_string());
   args.tag.push("air drop2222".to_string());
   let ret: Result<TransactionId, String> =
-    pic_env.my_update_call(user1, args, "add_transaction");
+    pic_env.my_update_call_one_arg(user1, args, "add_transaction");
   match ret {
     Ok(data) => println!("{:?}", data),
     Err(err) => println!("{:?}", err),
@@ -390,7 +395,7 @@ fn update_completx_transaction(pic_env: &PicEnv, user1: Principal) {
   args.tag.push("air drop3333".to_string());
 
   let ret: Result<bool, String> =
-    pic_env.my_update_call(user1, args, "update_transaction");
+    pic_env.my_update_call_one_arg(user1, args, "update_transaction");
   match ret {
     Ok(data) => println!("{:?}", data),
     Err(err) => println!("{:?}", err),
@@ -399,8 +404,11 @@ fn update_completx_transaction(pic_env: &PicEnv, user1: Principal) {
 
 // TODO
 fn query_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
-  let ret: Result<TransactionB, String> =
-    pic_env.my_update_call(user1, 10016 as u64, "query_one_transaction");
+  let ret: Result<TransactionB, String> = pic_env.my_update_call_one_arg(
+    user1,
+    10016 as u64,
+    "query_one_transaction",
+  );
   match ret {
     Ok(data) => println!("{:?}", data),
     Err(err) => println!("{:?}", err),
@@ -428,17 +436,22 @@ fn no_filter_no_sort_simple_transac_query(pic_env: &PicEnv, user1: Principal) {
   println!("{:?}", ret);
 }
 fn calculate_tax(pic_env: &PicEnv, user1: Principal) {
-  let args = candid::encode_args((
-    vec![
-      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-        .to_string(),
-    ],
-    "fifo".to_string(),
-    vec!["none".to_string()],
-  ))
-  .unwrap();
-  let ret: String =
-    pic_env.my_update_call_many_args(user1, args, "calculate_tax");
+  let ret: String = pic_env.my_update_call_no_arg(user1, "calculate_tax");
+  println!("{:?}", ret);
+}
+
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct UserConfig {
+  pub tax_method: String,
+  pub exclude_tags: Vec<String>,
+}
+fn set_user_config(pic_env: &PicEnv, user1: Principal) {
+  let args = UserConfig {
+    tax_method: "fifo".to_string(),
+    exclude_tags: vec!["air drop".to_string(), "XX1".to_string()],
+  };
+  let ret: UserConfig =
+    pic_env.my_update_call_one_arg(user1, args, "set_user_config");
   println!("{:?}", ret);
 }
 
@@ -596,7 +609,7 @@ impl PicEnv {
     PicEnv { pic, canister_id }
   }
 
-  fn my_update_call<
+  fn my_update_call_one_arg<
     ArgsType: candid::CandidType,
     ResponseType: candid::CandidType + DeserializeOwned,
   >(
@@ -718,7 +731,7 @@ mod tests {
     };
 
     let ret: Result<bool, String> =
-      pic_env.my_update_call(user1, args, "add_wallet");
+      pic_env.my_update_call_one_arg(user1, args, "add_wallet");
 
     match ret {
       Ok(_) => eprintln!("ok"),

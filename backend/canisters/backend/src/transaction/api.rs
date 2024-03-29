@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-
+use ic_cdk::caller;
 use ic_cdk_macros::{query, update};
 
 use super::domain::*;
@@ -253,14 +253,14 @@ fn convert_trans_f_to_trans_b(
   }
 }
 
+// Nedd set para in user config . cal_method and exclude_tags
 #[update(guard = "user_owner_guard")]
-fn calculate_tax(
-  wallets: Vec<WalletAddress>,
-  method: String,
-  exclued_tags: Vec<String>,
-) -> String {
+fn calculate_tax() -> String {
   CONTEXT.with(|ctx| {
     let mut ctx = ctx.borrow_mut();
+    let wallets = ctx.wallet_service.get_all_addr_by_user(caller());
+    let exclued_tags = ctx.user_service.get_config(&caller()).exclude_tags;
+
     for one_wallet in wallets {
       let tans_map = ctx.wallet_transc_srv.query_one_wallet_trans(one_wallet);
       let vec_data = tans_map
@@ -291,7 +291,7 @@ fn calculate_tax(
       if tax_transac.is_empty() {
         return "ERROR :NO tax TRANSACTIONS ! ".to_string();
       }
-
+      let method = ctx.user_service.get_config(&caller()).tax_method;
       let taxed_vec_trans = calculate_gain_or_loss(tax_transac, method.clone());
       if taxed_vec_trans.is_empty() {
         return "ERROR tax calculation abort! no such calculate method ! "
@@ -311,7 +311,7 @@ fn calculate_tax(
 }
 
 #[query(guard = "user_owner_guard")]
-pub fn greet_test() -> String {
+pub fn greet_test_agent() -> String {
   ic_cdk::println!("got greet_test() call");
   return "hello agent!".to_string();
 }

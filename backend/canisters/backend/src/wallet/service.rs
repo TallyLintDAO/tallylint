@@ -64,6 +64,15 @@ impl WalletService {
   pub fn get_addr_by_id(&mut self, id: WalletId) -> WalletAddress {
     self.wallets.get(&id).unwrap().address.clone()
   }
+  pub fn get_all_addr_by_user(&mut self, user: Principal) -> Vec<String> {
+    let addresses: Vec<String> = self
+      .wallets
+      .values()
+      .filter(|profile| &profile.holder == &user)
+      .map(|profile| profile.address.clone())
+      .collect();
+    addresses
+  }
 
   pub fn update_wallet(
     &mut self,
