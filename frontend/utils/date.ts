@@ -17,3 +17,26 @@ export const distanceFromCurrentDate = (
     return "Today"
   }
 }
+
+interface YearTimestamp {
+  year: number
+  start: number
+  end: number
+}
+
+export const getYearTimestamps = () => {
+  const currentYear = new Date().getFullYear()
+  const timestamps: YearTimestamp[] = []
+
+  for (let year = 2021; year <= currentYear; year++) {
+    const startOfYear = new Date(year, 0, 1) // January 1st
+    const endOfYear = new Date(year, 11, 31, 23, 59, 59) // December 31st, 23:59:59
+    timestamps.push({
+      year: year,
+      start: startOfYear.getTime(),
+      end: endOfYear.getTime(),
+    })
+  }
+
+  return timestamps
+}

@@ -204,7 +204,11 @@
                             Edit
                           </q-item-section>
                         </q-item>
-                        <q-item clickable v-close-popup="true">
+                        <q-item
+                          v-if="transaction.manual"
+                          clickable
+                          v-close-popup="true"
+                        >
                           <q-item-section
                             @click="deleteTransaction(transaction.id)"
                           >
@@ -612,9 +616,8 @@ onMounted(() => {
 const init = () => {
   getWallets().then(() => {
     let walletsToQuery: WalletTag[]
-
     if (address) {
-      // 如果 address 存在，则是单独查询某一钱包，直接查询
+      // 如果 address 存在，则是单独使用api查询某一钱包，否则直接查询后端罐子
       walletsToQuery = Array.isArray(address)
         ? // 如果 address 是数组，则直接使用
           address.map((addr) => ({ address: addr, name: "", from: "" }))
@@ -666,7 +669,6 @@ const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
   selectedWallets.length !== 0
     ? (targetWallets = selectedWallets)
     : (targetWallets = wallets.value)
-  console.log("sort", sort.value)
   getAllSyncedTransactions(0, 0, [sort.value], targetWallets)
     .then((res) => {
       console.log("getWalletHistory", res)

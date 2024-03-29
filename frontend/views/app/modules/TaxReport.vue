@@ -29,7 +29,7 @@
                   {{ walletAmount }} wallet{{ walletAmount !== 1 ? "s" : "" }}
                 </q-badge>
                 <q-badge color="blue" v-if="historyList.length !== 0">
-                  {{ historyList.length }} transaction{{
+                  {{ historyList.length }} synced transaction{{
                     historyList.length !== 1 ? "s" : ""
                   }}
                 </q-badge>
@@ -129,13 +129,6 @@
               <q-skeleton v-if="userConfigLoading" type="text" />
               <q-item-section v-else side>Universal</q-item-section>
             </q-item>
-            <q-item clickable v-ripple>
-              <q-item-section overline>
-                Gains on crypto → crypto trades?
-              </q-item-section>
-              <q-skeleton v-if="userConfigLoading" type="text" />
-              <q-item-section v-else side>Yes</q-item-section>
-            </q-item>
           </q-list>
         </q-card>
       </div>
@@ -143,9 +136,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { getAllTransactions } from "@/api/rosetta"
 import { getUserAllWallets } from "@/api/user"
 import type { InferredTransaction } from "@/types/sns"
+import { getAllSyncedTransactions } from "@/utils/syncedTransactions"
 import { exportFile } from "quasar"
 import { onMounted, ref } from "vue"
 
@@ -173,7 +166,7 @@ const getWalletHistory = async () => {
   walletLoading.value = true
   const wallets = await getUserAllWallets()
   walletAmount.value = wallets.length
-  getAllTransactions(wallets)
+  getAllSyncedTransactions(0, 0, [], wallets)
     .then((res) => {
       console.log("getWalletHistory", res)
       if (res.total && res.total != 0) {
