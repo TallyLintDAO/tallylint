@@ -18,23 +18,24 @@ export const distanceFromCurrentDate = (
   }
 }
 
-interface YearTimestamp {
-  year: number
-  start: number
-  end: number
+export interface YearTimestamp {
+  label: number | string
+  value: { start: number; end: number }
 }
 
-export const getYearTimestamps = () => {
+export const getYearTimestamps = (): YearTimestamp[] => {
   const currentYear = new Date().getFullYear()
   const timestamps: YearTimestamp[] = []
-
+  //从ICP的2021年上线开始，至今。
   for (let year = 2021; year <= currentYear; year++) {
     const startOfYear = new Date(year, 0, 1) // January 1st
     const endOfYear = new Date(year, 11, 31, 23, 59, 59) // December 31st, 23:59:59
     timestamps.push({
-      year: year,
-      start: startOfYear.getTime(),
-      end: endOfYear.getTime(),
+      label: year,
+      value: {
+        start: startOfYear.getTime(),
+        end: endOfYear.getTime(),
+      },
     })
   }
 

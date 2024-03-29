@@ -195,3 +195,8 @@ export async function deleteSyncedTransactions(
 ): Promise<ApiResult<boolean>> {
   return getBackend().delete_transaction(transactionId)
 }
+
+// 获取用户税务报告的相关利润
+export async function getUserTaxProfit(): Promise<ApiResult<any>> {
+  return getBackend().calculate_tax()
+}
