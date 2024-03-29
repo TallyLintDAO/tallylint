@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use candid::{CandidType, Decode, Encode, Nat, Principal};
 #[allow(unused_imports)]
 #[allow(unused_imports)]
@@ -19,8 +20,9 @@ async fn main() {
   // hello_agent_test().await;
 }
 
+#[allow(dead_code)]
 async fn hello_agent_test() {
-  let (canister_id, agent, online_mode) = init_agent().await;
+  let (canister_id, agent, _online_mode) = init_agent().await;
   greet_test(agent, canister_id).await;
 }
 // TODO lack of err handing in the procedure. might need.
@@ -243,7 +245,7 @@ mod tests {
 
   #[test]
   fn exec_deploy_test() {
-    let mut rt = Runtime::new().unwrap();
+    let rt = Runtime::new().unwrap();
     rt.block_on(exec_deploy(
       "local".to_string(),
       "time_tag_tesst".to_string(),

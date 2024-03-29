@@ -1,6 +1,5 @@
 use client::{setup::CanisterId, unwrap_response};
 use std::{
-  collections::HashMap,
   fs::{read, File},
   io::Read,
 };
@@ -19,11 +18,11 @@ fn main() {
   test_crud_transactions();
   // test_db_update();
 }
-
+#[allow(dead_code)]
 fn test_db_update() {
   let (pic_env, user_admin) = init();
   user_register(&pic_env, user_admin);
-  let terminal_args: Vec<String> = std::env::args().collect();
+  let _terminal_args: Vec<String> = std::env::args().collect();
 
   // get_payload_from_dropbox(&pic_env, user_admin, terminal_args[1].clone());
   // get_payload_from_my_server(&pic_env, user_admin);
@@ -31,11 +30,14 @@ fn test_db_update() {
 }
 
 use candid::{encode_one, CandidType, Principal};
+
+#[allow(unused_imports)]
 use pocket_ic::{PocketIc, UserError, WasmResult};
 use rand::random;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_bytes::ByteBuf;
 
+#[allow(unused_imports)]
 use crate::client::{rng::random_principal, setup::TERA};
 
 fn test_crud_transactions() {
@@ -111,6 +113,7 @@ fn user_register(pic_env: &PicEnv, user_admin: Principal) {
     Err(_) => println!("err"),
   }
 }
+#[allow(dead_code)]
 fn get_payload_from_dropbox(
   pic_env: &PicEnv,
   user_admin: Principal,
@@ -127,6 +130,7 @@ fn get_payload_from_dropbox(
   println!("{:?}", reply);
 }
 
+#[allow(dead_code)]
 fn get_payload_from_my_server(pic_env: &PicEnv, user_admin: Principal) {
   let reply: String =
     pic_env.my_update_call_no_arg(user_admin, "get_payload_from_my_server");
@@ -459,6 +463,7 @@ fn query_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
   }
 }
 
+#[allow(dead_code)]
 fn query_payload_db(pic_env: &PicEnv, user1: Principal) {
   let ret: String =
     pic_env.my_query_call_no_arg(user1, "collect_running_payload");

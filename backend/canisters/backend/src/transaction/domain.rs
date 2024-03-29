@@ -261,6 +261,7 @@ pub fn calculate_gain_or_loss(
   processed_transactions
 }
 
+#[allow(non_snake_case)]
 pub fn map_taxTrans_to_transB(
   trans_tax: Vec<TransactionForTax>,
   mut trans_b: Vec<TransactionB>,

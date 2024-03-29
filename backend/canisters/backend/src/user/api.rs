@@ -73,7 +73,6 @@ fn user_quantity() -> u32 {
   CONTEXT.with(|c| {
     let ctx = c.borrow_mut();
     let num = ctx.user_service.user_quantity();
-    let _test = 1;
     return num;
   })
 }
