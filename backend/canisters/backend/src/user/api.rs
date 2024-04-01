@@ -1,4 +1,4 @@
-use crate::CONTEXT;
+use crate::lifecycle::init::CONTEXT;
 use crate::{common::guard::admin_guard, UserConfig};
 use candid::Principal;
 use ic_cdk::api::time;

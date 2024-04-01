@@ -6,7 +6,7 @@ use super::domain::*;
 
 use crate::common::guard::user_owner_guard;
 
-use crate::CONTEXT;
+use crate::lifecycle::init::CONTEXT;
 
 const MAX_WALLET_NAME_LENGTH: usize = 64;
 const ACCOUNT_ID_LENGTH: usize = 64;

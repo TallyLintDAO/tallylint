@@ -11,7 +11,7 @@ use crate::{
 };
 
 #[allow(unused_imports)]
-use crate::CONTEXT;
+use crate::lifecycle::init::CONTEXT;
 
 pub type WalletAddress = String;
 #[derive(Debug, Clone, CandidType, Deserialize)]

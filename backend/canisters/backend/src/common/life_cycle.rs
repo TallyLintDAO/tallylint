@@ -20,7 +20,7 @@ use super::context::CanisterContext;
 
 use crate::common::guard::admin_guard;
 
-use crate::CONTEXT;
+use crate::lifecycle::init::CONTEXT;
 
 #[init]
 fn init() {

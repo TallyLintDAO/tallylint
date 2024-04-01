@@ -12,7 +12,8 @@ use crate::common::guard::user_owner_guard;
 use crate::common::times::timestamp_ms_float_to_ns;
 use crate::wallet::domain::HistoryQueryCommand;
 use crate::wallet::service::WalletId;
-use crate::{MySummary, TransactionB, CONTEXT};
+use crate::{MySummary, TransactionB};
+use crate::lifecycle::init::CONTEXT;
 
 // TODO use: AddRecordCommand . front end dont need to input
 // id . id gen by backend. TODO 测试 id 正常生成且不冲突
@@ -146,6 +147,28 @@ fn query_all_transactions() -> Result<HashMap<WalletId, TransactionB>, String> {
 
 #[update(guard = "user_owner_guard")]
 fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
+  CONTEXT.with(|c| {
+    let mut ctx = c.borrow_mut();
+
+    // bind addr
+    let address = match data.t_type.as_str() {
+      "SEND" => data.details.from.clone(),
+      "RECEIVE" => data.details.to.clone(),
+      _ => WalletAddress::default(), //should never goes here
+    };
+    data.address = address;
+
+    let ret = ctx.wallet_transc_srv.update_transaction_impl(data);
+    match ret {
+      Ok(_) => Ok(true),
+      Err(msg) => Err(msg),
+    }
+  })
+}
+
+// TODO 联系前端要什么样子的接口
+#[update(guard = "user_owner_guard")]
+fn update_transaction_tag(mut data: TransactionB) -> Result<bool, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
 

@@ -9,7 +9,7 @@ use super::domain::*;
 use crate::common::context::TimeStamp;
 
 #[allow(unused_imports)]
-use crate::CONTEXT;
+use crate::lifecycle::init::CONTEXT;
 
 pub type RecordId = u64;
 pub type WalletId = u64;

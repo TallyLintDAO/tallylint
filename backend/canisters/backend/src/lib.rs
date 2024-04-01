@@ -10,10 +10,8 @@ pub mod transaction;
 pub mod user;
 pub mod wallet;
 
-use crate::common::context::CanisterContext;
-thread_local! {
-  static CONTEXT: RefCell<CanisterContext> = RefCell::new(CanisterContext::new());
-}
+
+
 
 #[allow(unused_imports)]
 use crate::nns::api::*;

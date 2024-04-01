@@ -1,6 +1,6 @@
 use ic_cdk::caller;
 
-use crate::CONTEXT;
+use crate::lifecycle::init::CONTEXT;
 
 use super::constants::{GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
 

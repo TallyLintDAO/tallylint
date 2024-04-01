@@ -1,6 +1,6 @@
 use crate::{
   transaction::service::{TransactionService, WalletRecordService},
-  CONTEXT,
+  
 };
 use candid::{CandidType, Principal};
 
@@ -10,6 +10,8 @@ use crate::user::service::UserService;
 
 use crate::wallet::service::WalletService;
 use serde::{Deserialize, Serialize};
+
+use crate::lifecycle::init::CONTEXT;
 
 pub type TimeStamp = u64;
 
