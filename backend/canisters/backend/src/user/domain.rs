@@ -30,3 +30,12 @@ impl UserProfile {
     }
   }
 }
+
+impl UserConfig {
+  pub fn new(tax_method: String, exclude_tags: Vec<String>) -> UserConfig {
+    UserConfig {
+      tax_method,
+      exclude_tags,
+    }
+  }
+}

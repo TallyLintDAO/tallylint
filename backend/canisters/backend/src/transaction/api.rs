@@ -273,12 +273,17 @@ fn calculate_tax() -> String {
       }
 
       // ! filter if got flag. air drop ...
-      let filtered_vec_data: Vec<_> = vec_data
-        .into_iter()
-        .filter(|one| !one.tag.iter().any(|tag| exclued_tags.contains(tag)))
-        .collect();
-      if filtered_vec_data.is_empty() {
-        return "ERROR :NO filtered TRANSACTIONS ! ".to_string();
+      let filtered_vec_data: Vec<TransactionB>;
+      if !exclued_tags.is_empty() {
+        filtered_vec_data = vec_data
+          .into_iter()
+          .filter(|one| !one.tag.iter().any(|tag| exclued_tags.contains(tag)))
+          .collect();
+        if filtered_vec_data.is_empty() {
+          return "ERROR :NO filtered TRANSACTIONS ! ".to_string();
+        }
+      } else {
+        filtered_vec_data = vec_data;
       }
 
       // ! calculate base on method: fifo lifo.

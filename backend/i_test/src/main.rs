@@ -49,6 +49,7 @@ fn test_crud_transactions() {
   user_register(&pic_env, user_admin);
   // !add_wallet
   add_wallet(&pic_env, user_admin);
+  add_wallet2(&pic_env, user_admin);
 
   // !query wallet info
   query_all_wallet_info(&pic_env, user_admin);
@@ -160,6 +161,22 @@ fn add_wallet(pic_env: &PicEnv, user_admin: Principal) {
     Err(_) => println!("err"),
   }
 }
+fn add_wallet2(pic_env: &PicEnv, user_admin: Principal) {
+  let args = WalletAddCommand {
+    address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf730"
+      .to_string(),
+    principal_id: None, /* This is set to None as per your structure. You
+                         * might need to set it as per your requirements. */
+    from: "NNS".to_string(),
+    name: "w2".to_string(),
+  };
+  let ret: Result<bool, String> =
+    pic_env.my_update_call_one_arg(user_admin, args, "add_wallet");
+  match ret {
+    Ok(_) => println!("ok"),
+    Err(_) => println!("err"),
+  }
+}
 
 fn query_all_wallet_info(pic_env: &PicEnv, user_admin: Principal) {
   let ret: Result<Vec<WalletProfile>, Vec<WalletProfile>> =
@@ -195,7 +212,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   };
   let transaction2 = TransactionF {
     hash: "12z33".to_string(),
-    timestamp: 210.0,
+    timestamp: 210.111111,
     t_type: "SEND".to_string(),
 
     details: Details {
@@ -308,6 +325,52 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       profit: 0.0,
     },
   };
+    let transaction22 = TransactionF {
+    hash: "123".to_string(),
+    timestamp: 901.111333,
+    t_type: "RECEIVE".to_string(),
+
+    details: Details {
+      amount: 2.0,
+      cost: 12.0,
+      currency: Currency {
+        decimals: 2,
+        symbol: "ICP".to_string(),
+      },
+      fee: 123.8,
+      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf730"
+        .to_string(),
+      from: "asd".to_string(),
+      price: 6.0,
+      value: 6.0,
+      status: "SUCCESS".to_string(),
+      ledgerCanisterId: "asd".to_string(),
+      profit: 0.0,
+    },
+  };
+  let transaction23 = TransactionF {
+    hash: "123".to_string(),
+    timestamp: 902.111335,
+    t_type: "SEND".to_string(),
+
+    details: Details {
+      amount: 8.0,
+      cost: 112.0,
+      currency: Currency {
+        decimals: 2,
+        symbol: "ICP".to_string(),
+      },
+      fee: 123.8,
+      to: "asd".to_string(),
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf730"
+        .to_string(),
+      price: 14.0,
+      value: 14.0,
+      status: "SUCCESS".to_string(),
+      ledgerCanisterId: "asd".to_string(),
+      profit: 0.0,
+    },
+  };
   let sync_transaction_command = SyncTransactionCommand {
     // todo this id should get from last op of `query_all_wallets`
     walletId: 10002,
@@ -320,7 +383,15 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       transaction6,
     ],
   };
-  let args: Vec<SyncTransactionCommand> = vec![sync_transaction_command];
+  let sync_transaction_command2 = SyncTransactionCommand {
+    // todo this id should get from last op of `query_all_wallets`
+    walletId: 10003,
+    history: vec![
+      transaction22,
+      transaction23
+    ],
+  };
+  let args: Vec<SyncTransactionCommand> = vec![sync_transaction_command,sync_transaction_command2];
   let ret: Result<bool, String> =
     pic_env.my_update_call_one_arg(user1, args, "sync_transaction_record");
   match ret {
@@ -505,6 +576,8 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
     address: vec![
       "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
         .to_string(),
+      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf730"
+        .to_string(),
     ],
     from_time: 0,
     to_time: 0,
@@ -524,6 +597,8 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
   let args = HistoryQueryCommand {
     address: vec![
       "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
+        .to_string(),
+      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf730"
         .to_string(),
     ],
     from_time: 0,

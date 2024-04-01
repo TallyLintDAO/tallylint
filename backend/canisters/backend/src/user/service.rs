@@ -56,7 +56,13 @@ impl UserService {
   }
 
   pub fn get_config(&mut self, owner: &Principal) -> UserConfig {
-    self.configs.get(&owner.to_string()).unwrap().clone()
+    let default_config = UserConfig::new("fifo".to_string(), Vec::new());
+    self.update_config(&owner, default_config.clone());
+    self
+      .configs
+      .get(&owner.to_string())
+      .unwrap_or(&default_config)
+      .clone()
   }
 
   pub fn update_config(
