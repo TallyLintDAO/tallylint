@@ -5,7 +5,7 @@ use ic_cdk::api::time;
 use ic_cdk::query;
 use ic_cdk_macros::update;
 /**
- * IMPORTANT INFO
+ * !IMPORTANT INFO
 自动登录和自动注册.api名称定了.注释描述一下在这里.
  */
 #[update]
@@ -16,7 +16,7 @@ fn auto_register_user() -> Result<UserProfile, String> {
     if caller == Principal::anonymous() {
       return Err(String::from("AnonymousNotAllowRegistering"));
     }
-    // init a defautl config for user if config not exsit 
+    // init a defautl config for user if config not exsit
     ctx.user_service.get_config(&caller);
     match ctx.user_service.get_user(&caller) {
       Some(profile) => Ok(profile),
@@ -49,7 +49,6 @@ fn list_all_user() -> Vec<UserProfile> {
   })
 }
 
-// TODO
 #[update(guard = "user_owner_guard")]
 fn set_user_config(cfg: UserConfig) -> UserConfig {
   CONTEXT.with(|c| {
@@ -60,7 +59,6 @@ fn set_user_config(cfg: UserConfig) -> UserConfig {
   })
 }
 
-// TODO
 #[query(guard = "user_owner_guard")]
 fn get_user_config() -> UserConfig {
   CONTEXT.with(|c| {
@@ -78,12 +76,6 @@ fn user_quantity() -> u32 {
     return num;
   })
 }
-
-// #[query(guard = "user_owner_guard")]
-// fn get_ledger_id(p: Principal) -> u32 {
-//   let id: u32 = 0;
-//   return id;
-// }
 
 //   The replica returned a replica error: Replica Error:
 // reject code CanisterError, reject message IC0504:

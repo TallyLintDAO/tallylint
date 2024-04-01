@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use ic_cdk::caller;
 use ic_cdk_macros::{query, update};
+use serde::{Deserialize, Serialize};
 
 use super::domain::*;
 use super::service::WalletAddress;
@@ -319,4 +320,27 @@ fn calculate_tax() -> String {
 pub fn greet_test_agent() -> String {
   ic_cdk::println!("got greet_test() call");
   return "hello agent!".to_string();
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct MySummary {
+  pub capital_gain_or_loss: f64,
+  pub ohter_gain: f64,
+  pub income: f64,
+  pub costs_expenses: f64,
+  pub gifts_dotations_lost_coins: f64,
+}
+
+#[update(guard = "user_owner_guard")]
+fn my_summary() -> MySummary {
+  let mut my_summary = MySummary {
+    capital_gain_or_loss: 0.0,
+    ohter_gain: 0.0,
+    income: 0.0,
+    costs_expenses: 0.0,
+    gifts_dotations_lost_coins: 0.0,
+  };
+  my_summary.capital_gain_or_loss=0.1;
+  return my_summary;
 }
