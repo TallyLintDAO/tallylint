@@ -4,8 +4,6 @@ thread_local! {
   pub static STATE: RefCell<CanisterContext> = RefCell::new(CanisterContext::new());
 }
 
-
-
 pub mod common;
 pub mod nns;
 pub mod tools;
