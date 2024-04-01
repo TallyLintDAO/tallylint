@@ -333,14 +333,47 @@ pub struct MySummary {
 }
 
 #[update(guard = "user_owner_guard")]
-fn my_summary() -> MySummary {
-  let mut my_summary = MySummary {
-    capital_gain_or_loss: 0.0,
-    ohter_gain: 0.0,
-    income: 0.0,
-    costs_expenses: 0.0,
-    gifts_dotations_lost_coins: 0.0,
-  };
-  my_summary.capital_gain_or_loss=0.1;
-  return my_summary;
+fn my_summary() -> Result<MySummary, String> {
+  CONTEXT.with(|ctx| {
+    let mut my_summary = MySummary {
+      capital_gain_or_loss: 0.0,
+      // TODO this other_gain not solve yet. business not understands yet.
+      ohter_gain: 0.0,
+      income: 0.0,
+      // TODO this costs_expenses not solve yet. business not understands yet.
+      costs_expenses: 0.0,
+      gifts_dotations_lost_coins: 0.0,
+    };
+    my_summary.capital_gain_or_loss = 0.1;
+    let mut ctx = ctx.borrow_mut();
+    let wallets = ctx.wallet_service.get_all_addr_by_user(caller());
+    let mut all_trans = Vec::new();
+    // get all trans by wallet addr into a vec and iter to sum all get profit.
+    for one_wallet in wallets {
+      let mut vec_trans = ctx
+        .wallet_transc_srv
+        .query_one_wallet_trans(one_wallet)
+        .values()
+        .next()
+        .expect("wallet transaction empty")
+        .clone();
+      if vec_trans.is_empty() {
+        return Err("ERROR :NO TRANSACTIONS ! ".to_string());
+      }
+      all_trans.append(&mut vec_trans);
+    }
+    for data in all_trans {
+      my_summary.capital_gain_or_loss =
+        my_summary.capital_gain_or_loss + data.details.profit;
+      // data.tag
+      if data.tag.contains(&"air drop".to_string()) {
+        my_summary.income += data.details.amount * data.details.price;
+      }
+      // TODO gift donations lost_coins ... 
+      if data.tag.contains(&"gift".to_string()) {
+        my_summary.costs_expenses += data.details.amount * data.details.price;
+      }
+    }
+    return Ok(my_summary);
+  })
 }

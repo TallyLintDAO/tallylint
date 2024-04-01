@@ -35,6 +35,8 @@ use crate::transaction::domain::TransactionB;
 use crate::transaction::domain::TransactionF;
 
 #[allow(unused_imports)]
+use crate::transaction::api::MySummary;
+#[allow(unused_imports)]
 use crate::wallet::domain::*;
 #[allow(unused_imports)]
 use crate::wallet::service::RecordId;

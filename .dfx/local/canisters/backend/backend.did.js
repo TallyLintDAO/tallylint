@@ -95,8 +95,16 @@ export const idlFactory = ({ IDL }) => {
   const TransactionService = IDL.Record({
     'transactions' : IDL.Vec(IDL.Tuple(IDL.Nat64, TransactionF)),
   });
+  const MySummary = IDL.Record({
+    'gifts_dotations_lost_coins' : IDL.Float64,
+    'costs_expenses' : IDL.Float64,
+    'income' : IDL.Float64,
+    'capital_gain_or_loss' : IDL.Float64,
+    'ohter_gain' : IDL.Float64,
+  });
   const WalletRecordService = IDL.Record({
     'records' : IDL.Vec(IDL.Tuple(IDL.Nat64, TransactionB)),
+    'my_summary' : IDL.Vec(IDL.Tuple(IDL.Nat64, MySummary)),
   });
   const WalletProfile = IDL.Record({
     'id' : IDL.Nat64,
@@ -140,21 +148,22 @@ export const idlFactory = ({ IDL }) => {
     'neuron_service' : NeuronService,
     'user_service' : UserService,
   });
-  const Result_4 = IDL.Variant({ 'Ok' : NeuronProfile, 'Err' : IDL.Text });
-  const Result_5 = IDL.Variant({ 'Ok' : WalletProfile, 'Err' : IDL.Text });
-  const Result_6 = IDL.Variant({
+  const Result_4 = IDL.Variant({ 'Ok' : MySummary, 'Err' : IDL.Text });
+  const Result_5 = IDL.Variant({ 'Ok' : NeuronProfile, 'Err' : IDL.Text });
+  const Result_6 = IDL.Variant({ 'Ok' : WalletProfile, 'Err' : IDL.Text });
+  const Result_7 = IDL.Variant({
     'Ok' : IDL.Vec(NeuronProfile),
     'Err' : IDL.Vec(NeuronProfile),
   });
-  const Result_7 = IDL.Variant({
+  const Result_8 = IDL.Variant({
     'Ok' : IDL.Vec(IDL.Tuple(IDL.Nat64, TransactionB)),
     'Err' : IDL.Text,
   });
-  const Result_8 = IDL.Variant({
+  const Result_9 = IDL.Variant({
     'Ok' : IDL.Vec(WalletProfile),
     'Err' : IDL.Vec(WalletProfile),
   });
-  const Result_9 = IDL.Variant({ 'Ok' : TransactionB, 'Err' : IDL.Text });
+  const Result_10 = IDL.Variant({ 'Ok' : TransactionB, 'Err' : IDL.Text });
   const HistoryQueryCommand = IDL.Record({
     'from_time' : IDL.Nat64,
     'to_time' : IDL.Nat64,
@@ -207,12 +216,13 @@ export const idlFactory = ({ IDL }) => {
     'get_user_config' : IDL.Func([], [UserConfig], ['query']),
     'greet_test_agent' : IDL.Func([], [IDL.Text], ['query']),
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
-    'query_a_neuron_wallet' : IDL.Func([IDL.Nat64], [Result_4], ['query']),
-    'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_5], ['query']),
-    'query_all_neuron_wallet' : IDL.Func([], [Result_6], ['query']),
-    'query_all_transactions' : IDL.Func([], [Result_7], ['query']),
-    'query_all_wallets' : IDL.Func([], [Result_8], ['query']),
-    'query_one_transaction' : IDL.Func([IDL.Nat64], [Result_9], ['query']),
+    'my_summary' : IDL.Func([], [Result_4], []),
+    'query_a_neuron_wallet' : IDL.Func([IDL.Nat64], [Result_5], ['query']),
+    'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_6], ['query']),
+    'query_all_neuron_wallet' : IDL.Func([], [Result_7], ['query']),
+    'query_all_transactions' : IDL.Func([], [Result_8], ['query']),
+    'query_all_wallets' : IDL.Func([], [Result_9], ['query']),
+    'query_one_transaction' : IDL.Func([IDL.Nat64], [Result_10], ['query']),
     'query_wallets_synced_transactions' : IDL.Func(
         [HistoryQueryCommand],
         [IDL.Vec(SimpleTransaction)],

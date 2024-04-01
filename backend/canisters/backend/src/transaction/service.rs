@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use std::collections::{BTreeMap, HashMap};
 
-use super::domain::*;
+use super::{api::MySummary, domain::*};
 
 use crate::{
   common::context::TimeStamp, wallet::service::WalletId, TransactionB,
@@ -70,6 +70,8 @@ pub struct EditHistoryCommand {
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct WalletRecordService {
   pub records: BTreeMap<WalletId, TransactionB>,
+  #[serde(default = "BTreeMap::new")]
+  pub my_summary: BTreeMap<u64, MySummary>,
 }
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct TransactionService {
@@ -142,6 +144,7 @@ impl WalletRecordService {
   pub fn new() -> Self {
     WalletRecordService {
       records: BTreeMap::new(),
+      my_summary: BTreeMap::new(),
     }
   }
   pub fn update_transaction_impl(
