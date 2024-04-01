@@ -6,7 +6,7 @@ use super::domain::*;
 
 use crate::common::guard::user_owner_guard;
 
-use crate::lifecycle::init::CONTEXT;
+use crate::STATE;
 
 const MAX_WALLET_NAME_LENGTH: usize = 64;
 const ACCOUNT_ID_LENGTH: usize = 64;
@@ -15,7 +15,7 @@ use ic_cdk::api::time;
 #[update]
 // #[update(guard = "user_owner_guard")]
 fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     if cmd.name.len() > MAX_WALLET_NAME_LENGTH {
       return Err(String::from("Wallet name exceeds maximum length 64"));
     }
@@ -62,7 +62,7 @@ fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
 // TODO  字段还未全部实现方法.只有定义.
 #[update(guard = "user_owner_guard")]
 fn update_wallet(cmd: WalletUpdateCommand) -> Result<bool, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     if cmd.name.len() > MAX_WALLET_NAME_LENGTH {
       return Err(String::from("Wallet name exceeds maximum length 64"));
     }
@@ -96,7 +96,7 @@ fn update_wallet(cmd: WalletUpdateCommand) -> Result<bool, String> {
 #[query(guard = "user_owner_guard")]
 // #[query]
 fn query_a_wallet(id: u64) -> Result<WalletProfile, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let ctx = c.borrow_mut();
     let wallet = match ctx.wallet_service.query_a_wallet(id) {
       Some(wallet) => wallet.clone(),
@@ -110,7 +110,7 @@ fn query_a_wallet(id: u64) -> Result<WalletProfile, String> {
 
 #[query(guard = "user_owner_guard")]
 fn query_all_wallets() -> Result<Vec<WalletProfile>, Vec<WalletProfile>> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let ctx = c.borrow_mut();
     let user = caller();
     let wallets = ctx.wallet_service.query_wallet_array(user);
@@ -120,7 +120,7 @@ fn query_all_wallets() -> Result<Vec<WalletProfile>, Vec<WalletProfile>> {
 
 #[update(guard = "user_owner_guard")]
 fn delete_wallet(id: u64) -> Result<bool, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     ctx
       .wallet_service

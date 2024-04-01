@@ -10,9 +10,6 @@ use crate::{
   common::context::TimeStamp, wallet::service::WalletId, TransactionB,
 };
 
-#[allow(unused_imports)]
-use crate::lifecycle::init::CONTEXT;
-
 pub type WalletAddress = String;
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct AddRecordCommand {

@@ -20,8 +20,7 @@ use super::context::CanisterContext;
 
 use crate::common::guard::admin_guard;
 
-use crate::lifecycle::init::CONTEXT;
-
+use crate::STATE;
 #[init]
 fn init() {
   ic_cdk::setup();
@@ -65,7 +64,7 @@ fn set_stable_mem_using_payload_simple() {
 
 #[update(guard = "admin_guard")]
 fn set_stable_mem_using_payload_simple_raw() {
-  CONTEXT.with(|ctx| {
+  STATE.with(|ctx| {
     stable_save((ctx,)).expect("stable_save() fail!!!!");
   });
 }
@@ -90,7 +89,7 @@ fn set_payload_using_stable_mem_simple() -> String {
       format!("!!!! deserialize_error: !!!! {:?}", e)
     }
     Ok(db_json) => {
-      CONTEXT.with(|s| {
+      STATE.with(|s| {
         let mut state = s.borrow_mut();
         *state = db_json;
       });
@@ -101,7 +100,7 @@ fn set_payload_using_stable_mem_simple() -> String {
 
 #[update(guard = "admin_guard")]
 fn set_payload_using_stable_mem_simple_raw() {
-  CONTEXT.with(|s| {
+  STATE.with(|s| {
     let ctx = get_payload_from_stable_mem_simple_raw();
     let mut state = s.borrow_mut();
     *state = ctx;
@@ -134,7 +133,7 @@ pub fn set_payload_using_dev_machine_file(payload: String) -> String {
       return ret;
     }
     Ok(db_json) => {
-      CONTEXT.with(|s| {
+      STATE.with(|s| {
         let mut state = s.borrow_mut();
         *state = db_json;
       });
@@ -147,7 +146,7 @@ pub fn set_payload_using_dev_machine_file(payload: String) -> String {
 #[query(guard = "admin_guard")]
 pub fn collect_running_payload_simple() -> String {
   let mut json: String = String::new();
-  CONTEXT.with(|ctx| {
+  STATE.with(|ctx| {
     json = serde_json::to_string(&ctx).unwrap();
   });
   return json;
@@ -156,7 +155,7 @@ pub fn collect_running_payload_simple() -> String {
 #[query(guard = "admin_guard")]
 pub fn collect_running_payload_simple_raw() -> String {
   let mut json: String = String::new();
-  CONTEXT.with(|ctx| {
+  STATE.with(|ctx| {
     json = format!(r#"{}"#, serde_json::to_string(&ctx).unwrap());
   });
   return json;

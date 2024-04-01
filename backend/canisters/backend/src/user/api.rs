@@ -1,4 +1,4 @@
-use crate::lifecycle::init::CONTEXT;
+use crate::STATE;
 use crate::{common::guard::admin_guard, UserConfig};
 use candid::Principal;
 use ic_cdk::api::time;
@@ -10,7 +10,7 @@ use ic_cdk_macros::update;
  */
 #[update]
 fn auto_register_user() -> Result<UserProfile, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     let caller = caller();
     if caller == Principal::anonymous() {
@@ -42,7 +42,7 @@ use crate::common::guard::user_owner_guard;
 use crate::user::domain::UserProfile;
 #[update(guard = "admin_guard")]
 fn list_all_user() -> Vec<UserProfile> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let context = c.borrow();
     let users = Vec::from_iter(context.user_service.users.values().cloned());
     return users;
@@ -51,7 +51,7 @@ fn list_all_user() -> Vec<UserProfile> {
 
 #[update(guard = "user_owner_guard")]
 fn set_user_config(cfg: UserConfig) -> UserConfig {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     ctx.user_service.add_config(&caller(), cfg);
     let data = ctx.user_service.get_config(&caller());
@@ -61,7 +61,7 @@ fn set_user_config(cfg: UserConfig) -> UserConfig {
 
 #[query(guard = "user_owner_guard")]
 fn get_user_config() -> UserConfig {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     let data = ctx.user_service.get_config(&caller());
     return data;
@@ -70,7 +70,7 @@ fn get_user_config() -> UserConfig {
 
 #[query(guard = "admin_guard")]
 fn user_quantity() -> u32 {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let ctx = c.borrow_mut();
     let num = ctx.user_service.user_quantity();
     return num;

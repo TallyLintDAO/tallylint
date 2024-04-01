@@ -1,42 +1,45 @@
-#[allow(unused_imports)]
-use candid::{CandidType, Principal};
-#[allow(unused_imports)]
-use serde::Deserialize;
+// TODO if need unit test for each function. 
+// can construct a test env for ic code. 
 
-pub trait Environment {
-  fn now(&self) -> u64;
-  fn caller(&self) -> Principal;
-  fn canister_id(&self) -> Principal;
-}
+// #[allow(unused_imports)]
+// use candid::{CandidType, Principal};
+// #[allow(unused_imports)]
+// use serde::Deserialize;
 
-pub struct CanisterEnvironment {}
+// pub trait Environment {
+//   fn now(&self) -> u64;
+//   fn caller(&self) -> Principal;
+//   fn canister_id(&self) -> Principal;
+// }
 
-impl Environment for CanisterEnvironment {
-  fn now(&self) -> u64 {
-    ic_cdk::api::time()
-  }
+// pub struct CanisterEnvironment {}
 
-  fn caller(&self) -> Principal {
-    ic_cdk::caller()
-  }
+// impl Environment for CanisterEnvironment {
+//   fn now(&self) -> u64 {
+//     ic_cdk::api::time()
+//   }
 
-  fn canister_id(&self) -> Principal {
-    ic_cdk::id()
-  }
-}
+//   fn caller(&self) -> Principal {
+//     ic_cdk::caller()
+//   }
 
-pub struct EmptyEnvironment {}
+//   fn canister_id(&self) -> Principal {
+//     ic_cdk::id()
+//   }
+// }
 
-impl Environment for EmptyEnvironment {
-  fn now(&self) -> u64 {
-    ic_cdk::api::time()
-  }
+// pub struct EmptyEnvironment {}
 
-  fn caller(&self) -> Principal {
-    ic_cdk::caller()
-  }
+// impl Environment for EmptyEnvironment {
+//   fn now(&self) -> u64 {
+//     ic_cdk::api::time()
+//   }
 
-  fn canister_id(&self) -> Principal {
-    ic_cdk::id()
-  }
-}
+//   fn caller(&self) -> Principal {
+//     ic_cdk::caller()
+//   }
+
+//   fn canister_id(&self) -> Principal {
+//     ic_cdk::id()
+//   }
+// }

@@ -4,7 +4,7 @@
 )]
 use std::{borrow::BorrowMut, collections::BTreeMap};
 
-use crate::lifecycle::init::CONTEXT;
+use crate::STATE;
 use candid::Principal;
 #[allow(unused_imports)]
 use candid::{self, CandidType, Decode, Deserialize, Encode};
@@ -79,7 +79,7 @@ use super::service::NeuronService;
 
 #[update(guard = "user_owner_guard")]
 fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     let user = caller();
     let time = time();
@@ -107,7 +107,7 @@ fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
 
 #[update(guard = "user_owner_guard")]
 fn delete_neuron_wallet(id: u64) -> Result<bool, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     let user = caller();
     let mut service = ctx.neuron_service.borrow_mut();
@@ -122,7 +122,7 @@ fn delete_neuron_wallet(id: u64) -> Result<bool, String> {
 
 #[update(guard = "user_owner_guard")]
 fn update_neuron_wallet(cmd: NeuronUpdateCommand) -> Result<bool, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     let user = caller();
     let mut service = ctx.neuron_service.borrow_mut();
@@ -139,7 +139,7 @@ fn update_neuron_wallet(cmd: NeuronUpdateCommand) -> Result<bool, String> {
 
 #[query(guard = "user_owner_guard")]
 fn query_all_neuron_wallet() -> Result<Vec<NeuronProfile>, Vec<NeuronProfile>> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let ctx = c.borrow_mut();
     let user = caller();
     let neurons = ctx
@@ -154,7 +154,7 @@ fn query_all_neuron_wallet() -> Result<Vec<NeuronProfile>, Vec<NeuronProfile>> {
 
 #[query(guard = "user_owner_guard")]
 fn query_a_neuron_wallet(id: u64) -> Result<NeuronProfile, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     let user = caller();
     let mut ns = ctx.neuron_service.borrow_mut();

@@ -1,12 +1,12 @@
 use ic_cdk::caller;
 
-use crate::lifecycle::init::CONTEXT;
+use crate::STATE;
 
 use super::constants::{GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
 
 #[allow(dead_code)]
 pub fn has_user_guard() -> Result<(), String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let ctx = c.borrow();
     let caller = caller();
     ctx
@@ -18,7 +18,7 @@ pub fn has_user_guard() -> Result<(), String> {
 }
 
 pub fn user_owner_guard() -> Result<(), String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let ctx = c.borrow();
     let caller = caller();
     if ctx.user_service.is_owner(&caller) {

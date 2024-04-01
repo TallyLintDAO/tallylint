@@ -8,7 +8,7 @@ use crate::user::service::UserService;
 use crate::wallet::service::WalletService;
 use serde::{Deserialize, Serialize};
 
-use crate::lifecycle::init::CONTEXT;
+use crate::STATE;
 
 pub type TimeStamp = u64;
 
@@ -44,7 +44,7 @@ fn integer_part(value: &str) -> Result<u64, ParseIntError> {
 }
 
 pub fn generate_id() -> u64 {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     ctx.id = ctx.id + 1;
     ctx.id

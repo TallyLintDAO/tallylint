@@ -9,16 +9,17 @@ use crate::common::context::{get_caller, now};
 use crate::common::guard::admin_guard;
 use crate::common::guard::user_owner_guard;
 use crate::common::times::timestamp_ms_float_to_ns;
-use crate::lifecycle::init::CONTEXT;
+// use crate::STATE;
 use crate::wallet::domain::HistoryQueryCommand;
 use crate::wallet::service::WalletId;
 use crate::{MySummary, TransactionB};
+use crate::STATE;
 
 // TODO use: AddRecordCommand . front end dont need to input
 // id . id gen by backend. TODO 测试 id 正常生成且不冲突
 #[update(guard = "user_owner_guard")]
 fn add_transaction(mut data: TransactionB) -> Result<WalletId, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     ctx.id = ctx.id + 1;
     let id = ctx.id;
@@ -56,7 +57,7 @@ fn add_transaction(mut data: TransactionB) -> Result<WalletId, String> {
 
 #[update(guard = "user_owner_guard")]
 fn delete_transaction(id: WalletId) -> Result<WalletId, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     let ret = ctx.wallet_transc_srv.delete_transaction_by_id_impl(id);
     match ret {
@@ -74,7 +75,7 @@ fn delete_transaction(id: WalletId) -> Result<WalletId, String> {
 fn query_wallets_synced_transactions(
   cmd: HistoryQueryCommand,
 ) -> Vec<SimpleTransaction> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let ctx = c.borrow();
     let mut all_transactions = Vec::new();
 
@@ -137,7 +138,7 @@ fn query_wallets_synced_transactions(
 
 #[query(guard = "admin_guard")]
 fn query_all_transactions() -> Result<HashMap<WalletId, TransactionB>, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let ctx = c.borrow_mut();
     let rec = ctx.wallet_transc_srv.query_all_transactions();
     return Ok(rec);
@@ -146,7 +147,7 @@ fn query_all_transactions() -> Result<HashMap<WalletId, TransactionB>, String> {
 
 #[update(guard = "user_owner_guard")]
 fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let mut ctx = c.borrow_mut();
 
     // bind addr
@@ -168,7 +169,7 @@ fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
 // TODO 联系前端要什么样子的接口
 #[update(guard = "user_owner_guard")]
 fn update_transaction_tag(mut data: TransactionB) -> Result<bool, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let mut ctx = c.borrow_mut();
 
     // bind addr
@@ -189,7 +190,7 @@ fn update_transaction_tag(mut data: TransactionB) -> Result<bool, String> {
 
 #[query(guard = "user_owner_guard")]
 fn query_one_transaction(id: WalletId) -> Result<TransactionB, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     let ret = ctx.wallet_transc_srv.query_one(id);
     match ret {
@@ -206,7 +207,7 @@ fn query_one_transaction(id: WalletId) -> Result<TransactionB, String> {
 fn sync_transaction_record(
   cmd: Vec<SyncTransactionCommand>,
 ) -> Result<bool, String> {
-  CONTEXT.with(|c| {
+  STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     for one_wallet in cmd {
       // FIXME fix already exsit transac . 检查最近一条的hash是否和db上的.
@@ -279,7 +280,7 @@ fn convert_trans_f_to_trans_b(
 // Nedd set para in user config . cal_method and exclude_tags
 #[update(guard = "user_owner_guard")]
 fn calculate_tax() -> String {
-  CONTEXT.with(|ctx| {
+  STATE.with(|ctx| {
     let mut ctx = ctx.borrow_mut();
     let wallets = ctx.wallet_service.get_all_addr_by_user(caller());
     let exclued_tags = ctx.user_service.get_config(&caller()).exclude_tags;
@@ -346,7 +347,7 @@ pub fn greet_test_agent() -> String {
 
 #[update(guard = "user_owner_guard")]
 fn my_summary() -> Result<MySummary, String> {
-  CONTEXT.with(|ctx| {
+  STATE.with(|ctx| {
     // donation loan_fee margin_fee tax loan_payment
     // margin_payment realted_PL gift lost
     let mut my_summary = MySummary {
