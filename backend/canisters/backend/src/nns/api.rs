@@ -4,6 +4,7 @@
 )]
 use std::{borrow::BorrowMut, collections::BTreeMap};
 
+use crate::lifecycle::init::CONTEXT;
 use candid::Principal;
 #[allow(unused_imports)]
 use candid::{self, CandidType, Decode, Deserialize, Encode};
@@ -11,9 +12,6 @@ use ic_cdk::api::time;
 use ic_cdk::{api::call::CallResult, caller};
 use ic_cdk_macros::{query, update};
 use serde::Serialize;
-use crate::lifecycle::init::CONTEXT;
-
-
 
 /*
 independent query neuron info .
@@ -72,10 +70,7 @@ pub struct GovernanceError {
   pub error_type: i32,
 }
 
-use crate::{
-  common::guard::user_owner_guard, nns::domain::*,
-  wallet::domain::WalletProfile, 
-};
+use crate::{common::guard::user_owner_guard, nns::domain::*, wallet::domain::WalletProfile};
 
 use super::service::NeuronService;
 

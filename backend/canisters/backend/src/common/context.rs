@@ -1,7 +1,4 @@
-use crate::{
-  transaction::service::{TransactionService, WalletRecordService},
-  
-};
+use crate::transaction::service::{TransactionService, WalletRecordService};
 use candid::{CandidType, Principal};
 
 use crate::nns::service::NeuronService;

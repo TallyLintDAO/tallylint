@@ -112,50 +112,39 @@ fn user_register(pic_env: &PicEnv, user_admin: Principal) {
   }
 }
 #[allow(dead_code)]
-fn get_payload_from_dropbox(
-  pic_env: &PicEnv,
-  user_admin: Principal,
-  token: String,
-) {
+fn get_payload_from_dropbox(pic_env: &PicEnv, user_admin: Principal, token: String) {
   // 1u64 is a literal that represents an unsigned 64-bit integer with a value
   // of 1
   let args = candid::encode_args((token, "02")).unwrap();
-  let reply: String = pic_env.my_update_call_many_args(
-    user_admin,
-    args,
-    "get_payload_from_dropbox",
-  );
+  let reply: String =
+    pic_env.my_update_call_many_args(user_admin, args, "get_payload_from_dropbox");
   println!("{:?}", reply);
 }
 
 #[allow(dead_code)]
 fn get_payload_from_my_server(pic_env: &PicEnv, user_admin: Principal) {
-  let reply: String =
-    pic_env.my_update_call_no_arg(user_admin, "get_payload_from_my_server");
+  let reply: String = pic_env.my_update_call_no_arg(user_admin, "get_payload_from_my_server");
   println!("{:?}", reply);
 }
 
 fn send_payload_string_to_canister(pic_env: &PicEnv, user_admin: Principal) {
-  let data=read_db_to_string_from_local_json_file("/home/btwl/code/ic/tax_lint/backend/i_test/new_ctx_struct_all_ic_data.json".to_owned());
-  let reply: String = pic_env.my_update_call_one_arg(
-    user_admin,
-    data,
-    "send_payload_string_to_canister",
+  let data = read_db_to_string_from_local_json_file(
+    "/home/btwl/code/ic/tax_lint/backend/i_test/new_ctx_struct_all_ic_data.json".to_owned(),
   );
+  let reply: String =
+    pic_env.my_update_call_one_arg(user_admin, data, "send_payload_string_to_canister");
   println!("{:?}", reply);
 }
 
 fn add_wallet(pic_env: &PicEnv, user_admin: Principal) {
   let args = WalletAddCommand {
-    address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-      .to_string(),
+    address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
     principal_id: None, /* This is set to None as per your structure. You
                          * might need to set it as per your requirements. */
     from: "NNS".to_string(),
     name: "w1".to_string(),
   };
-  let ret: Result<bool, String> =
-    pic_env.my_update_call_one_arg(user_admin, args, "add_wallet");
+  let ret: Result<bool, String> = pic_env.my_update_call_one_arg(user_admin, args, "add_wallet");
   match ret {
     Ok(_) => println!("ok"),
     Err(_) => println!("err"),
@@ -163,15 +152,13 @@ fn add_wallet(pic_env: &PicEnv, user_admin: Principal) {
 }
 fn add_wallet2(pic_env: &PicEnv, user_admin: Principal) {
   let args = WalletAddCommand {
-    address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf730"
-      .to_string(),
+    address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf730".to_string(),
     principal_id: None, /* This is set to None as per your structure. You
                          * might need to set it as per your requirements. */
     from: "NNS".to_string(),
     name: "w2".to_string(),
   };
-  let ret: Result<bool, String> =
-    pic_env.my_update_call_one_arg(user_admin, args, "add_wallet");
+  let ret: Result<bool, String> = pic_env.my_update_call_one_arg(user_admin, args, "add_wallet");
   match ret {
     Ok(_) => println!("ok"),
     Err(_) => println!("err"),
@@ -201,8 +188,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       },
       fee: 0.8,
       from: "asd".to_string(),
-      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-        .to_string(),
+      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
       price: 5.0,
       value: 5.0,
       status: "SUCCESS".to_string(),
@@ -223,8 +209,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
         symbol: "ICP".to_string(),
       },
       fee: 123.8,
-      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-        .to_string(),
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
       to: "asd".to_string(),
       price: 8.0,
       value: 8.0,
@@ -246,8 +231,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
         symbol: "ICP".to_string(),
       },
       fee: 123.8,
-      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-        .to_string(),
+      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
       from: "asd".to_string(),
       price: 20.0,
       value: 20.0,
@@ -269,8 +253,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
         symbol: "ICP".to_string(),
       },
       fee: 123.8,
-      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-        .to_string(),
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
       to: "asd".to_string(),
       price: 4.0,
       value: 4.0,
@@ -292,8 +275,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
         symbol: "ICP".to_string(),
       },
       fee: 123.8,
-      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-        .to_string(),
+      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
       from: "asd".to_string(),
       price: 6.0,
       value: 6.0,
@@ -316,8 +298,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       },
       fee: 123.8,
       to: "asd".to_string(),
-      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-        .to_string(),
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
       price: 14.0,
       value: 14.0,
       status: "SUCCESS".to_string(),
@@ -338,8 +319,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
         symbol: "ICP".to_string(),
       },
       fee: 123.8,
-      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf730"
-        .to_string(),
+      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf730".to_string(),
       from: "asd".to_string(),
       price: 6.0,
       value: 6.0,
@@ -362,8 +342,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       },
       fee: 123.8,
       to: "asd".to_string(),
-      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf730"
-        .to_string(),
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf730".to_string(),
       price: 14.0,
       value: 14.0,
       status: "SUCCESS".to_string(),
@@ -388,8 +367,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
     walletId: 10003,
     history: vec![transaction22, transaction23],
   };
-  let args: Vec<SyncTransactionCommand> =
-    vec![sync_transaction_command, sync_transaction_command2];
+  let args: Vec<SyncTransactionCommand> = vec![sync_transaction_command, sync_transaction_command2];
   let ret: Result<bool, String> =
     pic_env.my_update_call_one_arg(user1, args, "sync_transaction_record");
   match ret {
@@ -413,8 +391,7 @@ fn add_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
         symbol: "ICP".to_string(),
       },
       fee: 1.8,
-      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-        .to_string(),
+      to: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
       from: "asd".to_string(),
       price: 1.0,
       value: 1.0,
@@ -452,8 +429,7 @@ fn update_completx_transaction(pic_env: &PicEnv, user1: Principal) {
         symbol: "ICP".to_string(),
       },
       fee: 123.8,
-      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-        .to_string(),
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
       to: "asd".to_string(),
       price: 1.0,
       value: 1.0,
@@ -470,8 +446,7 @@ fn update_completx_transaction(pic_env: &PicEnv, user1: Principal) {
   args.tag.push("err tag".to_string());
   args.tag.push("zzzz".to_string());
 
-  let ret: Result<bool, String> =
-    pic_env.my_update_call_one_arg(user1, args, "update_transaction");
+  let ret: Result<bool, String> = pic_env.my_update_call_one_arg(user1, args, "update_transaction");
   match ret {
     Ok(data) => println!("{:?}", data),
     Err(err) => println!("{:?}", err),
@@ -492,8 +467,7 @@ fn add_a_completx_transaction2(pic_env: &PicEnv, user1: Principal) {
         symbol: "ICP".to_string(),
       },
       fee: 1.8,
-      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-        .to_string(),
+      from: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
       to: "asd".to_string(),
       price: 2.0,
       value: 2.0,
@@ -517,11 +491,8 @@ fn add_a_completx_transaction2(pic_env: &PicEnv, user1: Principal) {
 }
 // TODO
 fn query_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
-  let ret: Result<TransactionB, String> = pic_env.my_update_call_one_arg(
-    user1,
-    10016 as u64,
-    "query_one_transaction",
-  );
+  let ret: Result<TransactionB, String> =
+    pic_env.my_update_call_one_arg(user1, 10016 as u64, "query_one_transaction");
   match ret {
     Ok(data) => println!("{:?}", data),
     Err(err) => println!("{:?}", err),
@@ -530,17 +501,13 @@ fn query_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
 
 #[allow(dead_code)]
 fn query_payload_db(pic_env: &PicEnv, user1: Principal) {
-  let ret: String =
-    pic_env.my_query_call_no_arg(user1, "collect_running_payload");
+  let ret: String = pic_env.my_query_call_no_arg(user1, "collect_running_payload");
   println!("{:?}", ret);
 }
 
 fn no_filter_no_sort_simple_transac_query(pic_env: &PicEnv, user1: Principal) {
   let args: HistoryQueryCommand = HistoryQueryCommand {
-    address: (vec![
-      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-        .to_string(),
-    ]),
+    address: (vec!["307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string()]),
     from_time: 0, // Replace with your actual timestamp
     to_time: 0,   // Replace with your actual timestamp
     sort_method: None,
@@ -564,29 +531,23 @@ fn set_user_config(pic_env: &PicEnv, user1: Principal) {
     tax_method: "fifo".to_string(),
     exclude_tags: vec!["air drop".to_string(), "XX1".to_string()],
   };
-  let ret: UserConfig =
-    pic_env.my_update_call_one_arg(user1, args, "set_user_config");
+  let ret: UserConfig = pic_env.my_update_call_one_arg(user1, args, "set_user_config");
   println!("{:?}", ret);
 }
 
 fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
   let args_sort_method: HistoryQueryCommand = HistoryQueryCommand {
     address: vec![
-      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-        .to_string(),
-      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf730"
-        .to_string(),
+      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
+      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf730".to_string(),
     ],
     from_time: 0,
     to_time: 0,
     sort_method: Some("date-desc".to_string()), /* Change to your desired
                                                  * sort method */
   };
-  let ret_sort_method: Vec<SimpleTransaction> = pic_env.my_query_call(
-    user1,
-    args_sort_method,
-    "query_wallets_synced_transactions",
-  );
+  let ret_sort_method: Vec<SimpleTransaction> =
+    pic_env.my_query_call(user1, args_sort_method, "query_wallets_synced_transactions");
   print_red_header(
     "====date-desc Sort method query result: ".to_string(),
     format!("{:?}", ret_sort_method),
@@ -594,10 +555,8 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
 
   let args = HistoryQueryCommand {
     address: vec![
-      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-        .to_string(),
-      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf730"
-        .to_string(),
+      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
+      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf730".to_string(),
     ],
     from_time: 0,
     to_time: 0,
@@ -615,19 +574,13 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
 
 fn time_range_test(pic_env: &PicEnv, user1: Principal) {
   let args_time_range: HistoryQueryCommand = HistoryQueryCommand {
-    address: vec![
-      "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-        .to_string(),
-    ],
+    address: vec!["307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string()],
     from_time: 100_000_000, // ns as u64   ms to ns append  6 zero
     to_time: 500_000_000,
     sort_method: None,
   };
-  let ret_time_range: Vec<SimpleTransaction> = pic_env.my_query_call(
-    user1,
-    args_time_range,
-    "query_wallets_synced_transactions",
-  );
+  let ret_time_range: Vec<SimpleTransaction> =
+    pic_env.my_query_call(user1, args_time_range, "query_wallets_synced_transactions");
   println!(" should be 3 result . full 6 result");
   print_red_header(
     "====Time range query result: ".to_string(),
@@ -719,7 +672,8 @@ impl PicEnv {
 
     pic.add_cycles(canister_id, 20 * TERA);
 
-    let wasm_file_path = "/home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm";
+    let wasm_file_path =
+      "/home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm";
     let wasm_bytes = read(wasm_file_path).expect("wasm file not exsit");
 
     let _ = pic.reinstall_canister(canister_id, wasm_bytes, vec![], None);
@@ -748,9 +702,7 @@ impl PicEnv {
     return ret;
   }
 
-  fn my_update_call_many_args<
-    ResponseType: candid::CandidType + DeserializeOwned,
-  >(
+  fn my_update_call_many_args<ResponseType: candid::CandidType + DeserializeOwned>(
     &self,
     user: Principal,
     args: Vec<u8>,
@@ -763,9 +715,7 @@ impl PicEnv {
     return ret;
   }
 
-  fn my_update_call_no_arg<
-    ResponseType: candid::CandidType + DeserializeOwned,
-  >(
+  fn my_update_call_no_arg<ResponseType: candid::CandidType + DeserializeOwned>(
     &self,
     user: Principal,
     method: &str,
@@ -804,21 +754,16 @@ impl PicEnv {
     let ret: ResponseType = unwrap_response(ret_raw);
     return ret;
   }
-  fn my_query_call_no_arg<
-    ResponseType: candid::CandidType + DeserializeOwned,
-  >(
+  fn my_query_call_no_arg<ResponseType: candid::CandidType + DeserializeOwned>(
     &self,
     user: Principal,
     method: &str,
   ) -> ResponseType {
     print_red("####Executing:  ".to_owned() + method);
 
-    let ret_raw = self.pic.query_call(
-      self.canister_id,
-      user,
-      method,
-      encode_one(()).unwrap(),
-    );
+    let ret_raw = self
+      .pic
+      .query_call(self.canister_id, user, method, encode_one(()).unwrap());
 
     let ret: ResponseType = unwrap_response(ret_raw);
     return ret;
@@ -833,23 +778,19 @@ mod tests {
   fn test_query_transactions2() {
     let pic_env = PicEnv::new();
     // this is admin BTWL
-    let user1 = Principal::from_text(
-      "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
-    )
-    .unwrap();
+    let user1 =
+      Principal::from_text("b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae")
+        .unwrap();
 
     let args = WalletAddCommand {
-      address:
-        "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739"
-          .to_string(),
+      address: "307b116d3afaebde45e59b1cf4ec717f30059c10eeb5f8e93d3316d2562cf739".to_string(),
       principal_id: None, /* This is set to None as per your structure. You
                            * might need to set it as per your requirements. */
       from: "NNS".to_string(),
       name: "w1".to_string(),
     };
 
-    let ret: Result<bool, String> =
-      pic_env.my_update_call_one_arg(user1, args, "add_wallet");
+    let ret: Result<bool, String> = pic_env.my_update_call_one_arg(user1, args, "add_wallet");
 
     match ret {
       Ok(_) => eprintln!("ok"),
@@ -970,10 +911,7 @@ pub struct HistoryQueryCommand {
                                     * profit-desc */
 }
 
-fn convert_trans_f_to_trans_b(
-  trans_f: TransactionF,
-  id: TransactionId,
-) -> TransactionB {
+fn convert_trans_f_to_trans_b(trans_f: TransactionF, id: TransactionId) -> TransactionB {
   let address = match trans_f.t_type.as_str() {
     "SEND" => trans_f.details.from.clone(),
     "RECEIVE" => trans_f.details.to.clone(),

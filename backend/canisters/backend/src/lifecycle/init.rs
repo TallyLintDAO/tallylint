@@ -26,8 +26,8 @@ pub struct Args {
   // pub wasm_version: BuildVersion,
   pub test_mode: bool,
 }
-use crate::RefCell;
 use crate::common::context::CanisterContext;
+use crate::RefCell;
 thread_local! {
   pub static CONTEXT: RefCell<CanisterContext> = RefCell::new(CanisterContext::new());
 }

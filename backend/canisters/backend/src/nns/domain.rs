@@ -45,4 +45,3 @@ pub struct NeuronProfile {
 fn default_update_time() -> u64 {
   0
 }
-

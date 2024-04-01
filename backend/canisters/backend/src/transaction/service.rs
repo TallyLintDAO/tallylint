@@ -6,9 +6,7 @@ use std::collections::{BTreeMap, HashMap};
 
 use super::domain::*;
 
-use crate::{
-  common::context::TimeStamp, wallet::service::WalletId, TransactionB,
-};
+use crate::{common::context::TimeStamp, wallet::service::WalletId, TransactionB};
 
 #[allow(unused_imports)]
 use crate::lifecycle::init::CONTEXT;
@@ -79,11 +77,7 @@ pub struct TransactionService {
 }
 impl TransactionService {
   // TODO
-  pub fn add_transaction_record(
-    &mut self,
-    id: u64,
-    profile: TransactionF,
-  ) -> Result<bool, String> {
+  pub fn add_transaction_record(&mut self, id: u64, profile: TransactionF) -> Result<bool, String> {
     if self.transactions.contains_key(&id) {
       return Err("transaction record already exsit".to_string());
     }
@@ -129,10 +123,7 @@ impl TransactionService {
 }
 
 impl WalletRecordService {
-  pub fn add_transaction_impl(
-    &mut self,
-    profile: TransactionB,
-  ) -> Result<bool, String> {
+  pub fn add_transaction_impl(&mut self, profile: TransactionB) -> Result<bool, String> {
     let id = profile.id;
     self.records.insert(profile.id, profile);
     if self.records.contains_key(&id) {
@@ -147,10 +138,7 @@ impl WalletRecordService {
       my_summary: BTreeMap::new(),
     }
   }
-  pub fn update_transaction_impl(
-    &mut self,
-    profile: TransactionB,
-  ) -> Result<bool, String> {
+  pub fn update_transaction_impl(&mut self, profile: TransactionB) -> Result<bool, String> {
     let id = profile.id;
     self.records.insert(profile.id, profile);
     if self.records.contains_key(&id) {
@@ -173,10 +161,7 @@ impl WalletRecordService {
       .retain(|_index, transaction| transaction.address != *addr);
   }
 
-  pub fn delete_transaction_by_id_impl(
-    &mut self,
-    id: WalletId,
-  ) -> Result<bool, String> {
+  pub fn delete_transaction_by_id_impl(&mut self, id: WalletId) -> Result<bool, String> {
     if !self.records.contains_key(&id) {
       return Err("transaction record not exsit".to_string());
     }

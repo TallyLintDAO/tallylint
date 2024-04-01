@@ -19,10 +19,7 @@ pub struct UserService {
 }
 
 impl UserService {
-  pub fn insert_user(
-    &mut self,
-    user: UserProfile,
-  ) -> Result<UserProfile, String> {
+  pub fn insert_user(&mut self, user: UserProfile) -> Result<UserProfile, String> {
     let owner = user.owner;
     match self.users.get(&owner) {
       Some(_) => Err(String::from(" UserAlreadyExists")),
@@ -69,11 +66,7 @@ impl UserService {
     }
   }
 
-  pub fn update_config(
-    &mut self,
-    owner: &Principal,
-    data: UserConfig,
-  ) -> String {
+  pub fn update_config(&mut self, owner: &Principal, data: UserConfig) -> String {
     self.configs.insert(owner.to_string(), data);
     return "update_config ok".to_string();
   }

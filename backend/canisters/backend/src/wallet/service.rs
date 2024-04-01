@@ -40,11 +40,7 @@ pub struct TransactionRecord {
 }
 
 impl WalletService {
-  pub fn add_wallet(
-    &mut self,
-    profile: WalletProfile,
-    user: Principal,
-  ) -> Option<String> {
+  pub fn add_wallet(&mut self, profile: WalletProfile, user: Principal) -> Option<String> {
     let user_wallets = self.query_wallet_array(user);
     if user_wallets
       .iter()
@@ -74,11 +70,7 @@ impl WalletService {
     addresses
   }
 
-  pub fn update_wallet(
-    &mut self,
-    profile: WalletProfile,
-    user: Principal,
-  ) -> Option<String> {
+  pub fn update_wallet(&mut self, profile: WalletProfile, user: Principal) -> Option<String> {
     let user_wallets = self.query_wallet_array(user);
 
     if let Some(wallet) = user_wallets

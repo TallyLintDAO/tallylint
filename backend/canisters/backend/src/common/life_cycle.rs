@@ -110,15 +110,13 @@ fn set_payload_using_stable_mem_simple_raw() {
 
 #[query(guard = "admin_guard")]
 pub fn get_payload_from_stable_mem_simple() -> String {
-  let (db_json,): (String,) =
-    stable_restore().expect("failed to exec stable_restore()");
+  let (db_json,): (String,) = stable_restore().expect("failed to exec stable_restore()");
   return db_json;
 }
 
 #[query(guard = "admin_guard")]
 pub fn get_payload_from_stable_mem_simple_raw() -> CanisterContext {
-  let (raw_ctx,): (CanisterContext,) =
-    stable_restore().expect("failed to exec stable_restore()");
+  let (raw_ctx,): (CanisterContext,) = stable_restore().expect("failed to exec stable_restore()");
   return raw_ctx;
 }
 
@@ -178,11 +176,9 @@ mod tests {
   #[test]
   fn test_deserialize() {
     let db_json = read_db_to_string_from_local_json_file(
-      "/home/btwl/code/ic/tax_lint/backend/i_test/pl_01_no_newline.json"
-        .to_owned(),
+      "/home/btwl/code/ic/tax_lint/backend/i_test/pl_01_no_newline.json".to_owned(),
     );
-    let payload_result: Result<CanisterContext, _> =
-      serde_json::from_str(&db_json);
+    let payload_result: Result<CanisterContext, _> = serde_json::from_str(&db_json);
     match payload_result {
       Ok(payload) => eprintln!("PLID is :{}", payload.id),
       Err(e) => eprintln!("Failed to parse JSON: {}", e),
@@ -203,8 +199,7 @@ mod tests {
     let ctx: CanisterContext = CanisterContext::new();
     let db_json = serde_json::to_string(&ctx).expect("serialize_err");
 
-    let payload_result: Result<CanisterContext, _> =
-      serde_json::from_str(&db_json);
+    let payload_result: Result<CanisterContext, _> = serde_json::from_str(&db_json);
     match payload_result {
       Ok(payload) => eprintln!("PLID is :{}", payload.id),
       Err(e) => eprintln!("Failed to parse JSON: {}", e),
@@ -214,8 +209,7 @@ mod tests {
   #[test]
   fn test_deserialize_complex() {
     let db_json = "xx".to_string();
-    let payload_result: Result<CanisterContext, _> =
-      serde_json::from_str(&db_json);
+    let payload_result: Result<CanisterContext, _> = serde_json::from_str(&db_json);
     match payload_result {
       Ok(payload) => eprintln!("PLID is :{}", payload.id),
       Err(e) => eprintln!("Failed to parse JSON: {}", e),
@@ -228,11 +222,10 @@ mod tests {
   #[test]
   fn new_struct_deserial() {
     let db_json = read_db_to_string_from_local_json_file(
-    "/home/btwl/code/ic/tax_lint/backend/i_test/new_ctx_struct_all_ic_data.json".to_owned(),
-  );
+      "/home/btwl/code/ic/tax_lint/backend/i_test/new_ctx_struct_all_ic_data.json".to_owned(),
+    );
 
-    let payload_result: Result<CanisterContext, _> =
-      serde_json::from_str(&db_json);
+    let payload_result: Result<CanisterContext, _> = serde_json::from_str(&db_json);
     match payload_result {
       Ok(payload) => eprintln!("PLID is :{}", payload.id),
       Err(e) => eprintln!("Failed to parse JSON: {}", e),

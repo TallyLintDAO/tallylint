@@ -162,27 +162,13 @@ pub fn install_canister<P: CandidType>(
 
 const INIT_CYCLES_BALANCE: u128 = 1_000 * TERA;
 
-pub fn create_canister(
-  env: &mut PocketIc,
-  controller: Principal,
-) -> CanisterId {
+pub fn create_canister(env: &mut PocketIc, controller: Principal) -> CanisterId {
   let canister_id = env.create_canister_with_settings(Some(controller), None);
   env.add_cycles(canister_id, INIT_CYCLES_BALANCE);
   canister_id
 }
 
-#[derive(
-  CandidType,
-  Serialize,
-  Deserialize,
-  Clone,
-  Copy,
-  PartialEq,
-  Eq,
-  PartialOrd,
-  Ord,
-  Hash,
-)]
+#[derive(CandidType, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct UserId(CanisterId);
 
 impl UserId {

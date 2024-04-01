@@ -50,11 +50,7 @@ pub fn init(enable_trace: bool) {
   }
 }
 
-pub fn init_with_logs(
-  enable_trace: bool,
-  logs: Vec<LogEntry>,
-  traces: Vec<LogEntry>,
-) {
+pub fn init_with_logs(enable_trace: bool, logs: Vec<LogEntry>, traces: Vec<LogEntry>) {
   init(enable_trace);
 
   for log in logs {

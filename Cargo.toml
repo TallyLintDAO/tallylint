@@ -4,15 +4,15 @@ members = [
     "backend/canisters/backend",
 
     #### lib
-    "backend/lib/canister_tracing_macros",
-    "backend/lib/canister_logger",
-    "backend/lib/canister_time",
-    "backend/lib/candid_gen",
-    "backend/lib/serializer",
-    "backend/lib/stable_memory",
+    # "backend/lib/canister_tracing_macros",
+    # "backend/lib/canister_logger",
+    # "backend/lib/canister_time",
+    # "backend/lib/candid_gen",
+    # "backend/lib/serializer",
+    # "backend/lib/stable_memory",
     # "backend/lib/canister_agent_utils",
     # "backend/lib/my_types",
-    "backend/lib/canister_upgrader",
+    # "backend/lib/canister_upgrader",
     # "backend/lib/sha256_versions",
 
     # test to mock a ic-repica local and exec wasm canister code .
@@ -33,7 +33,7 @@ ic-stable-structures = "0.6.0"
 
 
 
-proc-macro2 = "1.0.69"
+# proc-macro2 = "1.0.69"
 quote = "1.0.33"
 syn = "2.0.39"
 candid = "0.10.3"

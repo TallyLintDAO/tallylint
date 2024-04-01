@@ -12,9 +12,9 @@ struct MethodAttribute {
 #[proc_macro]
 pub fn generate_candid_method(input: TokenStream) -> TokenStream {
   let inputs = parse_macro_input!(input with Punctuated::<Ident, Token![,]>::parse_terminated)
-        .into_iter()
-        .map(|i| i.to_string())
-        .collect();
+    .into_iter()
+    .map(|i| i.to_string())
+    .collect();
 
   let attribute = get_method_attribute(inputs);
 
@@ -38,9 +38,9 @@ pub fn generate_candid_method(input: TokenStream) -> TokenStream {
 #[proc_macro]
 pub fn generate_candid_method_no_args(input: TokenStream) -> TokenStream {
   let inputs = parse_macro_input!(input with Punctuated::<Ident, Token![,]>::parse_terminated)
-        .into_iter()
-        .map(|i| i.to_string())
-        .collect();
+    .into_iter()
+    .map(|i| i.to_string())
+    .collect();
 
   let attribute = get_method_attribute(inputs);
 

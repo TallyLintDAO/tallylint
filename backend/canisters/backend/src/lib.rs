@@ -10,9 +10,6 @@ pub mod transaction;
 pub mod user;
 pub mod wallet;
 
-
-
-
 #[allow(unused_imports)]
 use crate::nns::api::*;
 #[allow(unused_imports)]
@@ -49,9 +46,8 @@ use ic_cdk::api::management_canister::http_request::*;
 #[allow(unused_imports)]
 use ic_cdk::api::management_canister::{
   main::{
-    canister_info, canister_status, create_canister, install_code,
-    update_settings, CanisterInfoRequest, CanisterInfoResponse,
-    CanisterStatusResponse,
+    canister_info, canister_status, create_canister, install_code, update_settings,
+    CanisterInfoRequest, CanisterInfoResponse, CanisterStatusResponse,
   },
   provisional::{CanisterIdRecord, CanisterSettings},
 };
@@ -59,11 +55,9 @@ use ic_cdk::api::management_canister::{
 use std::collections::HashMap;
 
 #[allow(unused_imports)]
-use crate::lifecycle::init::CONTEXT;
-#[allow(unused_imports)]
 use crate::common::context::CanisterContext;
-
-
+#[allow(unused_imports)]
+use crate::lifecycle::init::CONTEXT;
 
 ic_cdk::export_candid!();
 
