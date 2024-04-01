@@ -4,8 +4,8 @@ thread_local! {
   pub static STATE: RefCell<CanisterContext> = RefCell::new(CanisterContext::new());
 }
 
-pub mod c2c;
-pub mod c_http;
+
+
 pub mod common;
 pub mod nns;
 pub mod tools;
@@ -13,8 +13,6 @@ pub mod transaction;
 pub mod user;
 pub mod wallet;
 
-#[allow(unused_imports)]
-use crate::c_http::api::*;
 #[allow(unused_imports)]
 use crate::nns::api::*;
 #[allow(unused_imports)]
