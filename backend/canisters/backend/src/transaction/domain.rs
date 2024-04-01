@@ -267,7 +267,11 @@ pub fn map_taxTrans_to_transB(
   mut trans_b: Vec<TransactionB>,
 ) -> Vec<TransactionB> {
   for (trans_tax, trans_b) in trans_tax.iter().zip(trans_b.iter_mut()) {
-    trans_b.t_type = trans_tax.action.clone();
+    match trans_tax.action.as_str() {
+      "sell" => trans_b.t_type = "SEND".to_string(),
+      "buy" => trans_b.t_type = "RECEIVE".to_string(),
+      _ => (),
+    }
     trans_b.details.amount = trans_tax.quantity;
     trans_b.details.price = trans_tax.price;
     if let Some(profit) = trans_tax.profit {
