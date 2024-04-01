@@ -197,6 +197,38 @@
                   <q-icon size="sm" name="more_vert"
                     ><q-menu>
                       <q-list style="min-width: 100px">
+                        <div v-if="transaction.t_type === 'SEND'">
+                          <q-item clickable v-close-popup="true">
+                            <q-item-section @click="tagTransaction('gift')">
+                              Tag As Gift
+                            </q-item-section>
+                          </q-item>
+                          <q-item clickable v-close-popup="true">
+                            <q-item-section @click="tagTransaction('lost')">
+                              Tag As Lost
+                            </q-item-section>
+                          </q-item>
+                        </div>
+                        <div v-if="transaction.t_type === 'RECEIVED'">
+                          <q-item clickable v-close-popup="true">
+                            <q-item-section @click="tagTransaction('reward')">
+                              Tag As Reward
+                            </q-item-section>
+                          </q-item>
+                          <q-item clickable v-close-popup="true">
+                            <q-item-section @click="tagTransaction('airdrop')">
+                              Tag As Airdrop
+                            </q-item-section>
+                          </q-item>
+                        </div>
+                        <q-separator />
+                        <q-item
+                          v-if="transaction.tag.length > 0"
+                          clickable
+                          v-close-popup="true"
+                        >
+                          <q-item-section> Remove Tag </q-item-section>
+                        </q-item>
                         <q-item clickable v-close-popup="true">
                           <q-item-section
                             @click="openDialog('edit', transaction)"
@@ -761,6 +793,10 @@ const editTransaction = async () => {
     showMessageSuccess("Edit Transaction Success")
   }
   return
+}
+
+const tagTransaction = (tag: string) => {
+  console.log("tag", tag)
 }
 
 const deleteTransaction = (transactionId: bigint | number) => {

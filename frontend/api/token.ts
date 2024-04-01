@@ -24,10 +24,11 @@ export const getICPPriceHistory = async (): Promise<any> => {
     //获取binance的所有ICP价格历史数据，目前coingecko只允许调用一年以内的数据，无法使用。
     const url = `${BINANACE_URL}/api/v3/klines`
     let priceData = []
+    //由于币安一次只能请求500条数据，所以这里就分别请求每年的ICP价格历史再组装。
     for (const {
       value: { start, end },
     } of getYearTimestamps()) {
-      console.log("start end", start, end)
+      //获取从2021年开始的每年数据
       const params = {
         symbol: "ICPUSDT",
         startTime: start,

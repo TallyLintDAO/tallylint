@@ -85,9 +85,10 @@
           <q-separator />
           <q-card-section>
             Note: This is just an indication of your taxable gains. Download a
-            Tax Report to see your short/long-term proceeds, cost-basis,
+            Tax Report to see your every transaction profit and cost.
+            <!-- Tax Report to see your short/long-term proceeds, cost-basis,
             disposals and detailed calculations that you can use in your
-            official tax returns.
+            official tax returns. -->
           </q-card-section>
         </q-card>
         <q-card>
