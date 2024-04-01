@@ -9,7 +9,6 @@ use crate::common::context::{get_caller, now};
 use crate::common::guard::admin_guard;
 use crate::common::guard::user_owner_guard;
 use crate::common::times::timestamp_ms_float_to_ns;
-// use crate::STATE;
 use crate::wallet::domain::HistoryQueryCommand;
 use crate::wallet::service::WalletId;
 use crate::STATE;
@@ -23,7 +22,6 @@ fn add_transaction(mut data: TransactionB) -> Result<WalletId, String> {
     let mut ctx = c.borrow_mut();
     ctx.id = ctx.id + 1;
     let id = ctx.id;
-
     data.id = id;
     let id = data.id;
     let ret = ctx.wallet_transc_srv.add_transaction_impl(data.clone());
