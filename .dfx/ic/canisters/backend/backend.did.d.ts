@@ -41,6 +41,13 @@ export interface KnownNeuronData {
   'name' : string,
   'description' : [] | [string],
 }
+export interface MySummary {
+  'gifts_dotations_lost_coins' : number,
+  'costs_expenses' : number,
+  'income' : number,
+  'capital_gain_or_loss' : number,
+  'ohter_gain' : number,
+}
 export interface NeuronAddCommand {
   'from' : string,
   'name' : string,
@@ -80,22 +87,24 @@ export type Result = { 'Ok' : boolean } |
   { 'Err' : string };
 export type Result_1 = { 'Ok' : bigint } |
   { 'Err' : string };
+export type Result_10 = { 'Ok' : TransactionB } |
+  { 'Err' : string };
 export type Result_2 = { 'Ok' : UserProfile } |
   { 'Err' : string };
 export type Result_3 = { 'Ok' : [CustomResult1] } |
   { 'Err' : [RejectionCode, string] };
-export type Result_4 = { 'Ok' : NeuronProfile } |
+export type Result_4 = { 'Ok' : MySummary } |
   { 'Err' : string };
-export type Result_5 = { 'Ok' : WalletProfile } |
+export type Result_5 = { 'Ok' : NeuronProfile } |
   { 'Err' : string };
-export type Result_6 = { 'Ok' : Array<NeuronProfile> } |
+export type Result_6 = { 'Ok' : WalletProfile } |
+  { 'Err' : string };
+export type Result_7 = { 'Ok' : Array<NeuronProfile> } |
   { 'Err' : Array<NeuronProfile> };
-export type Result_7 = { 'Ok' : Array<[bigint, TransactionB]> } |
+export type Result_8 = { 'Ok' : Array<[bigint, TransactionB]> } |
   { 'Err' : string };
-export type Result_8 = { 'Ok' : Array<WalletProfile> } |
+export type Result_9 = { 'Ok' : Array<WalletProfile> } |
   { 'Err' : Array<WalletProfile> };
-export type Result_9 = { 'Ok' : TransactionB } |
-  { 'Err' : string };
 export interface SimpleTransaction {
   'id' : bigint,
   'tag' : Array<string>,
@@ -164,6 +173,7 @@ export interface WalletProfile {
 }
 export interface WalletRecordService {
   'records' : Array<[bigint, TransactionB]>,
+  'my_summary' : Array<[bigint, MySummary]>,
 }
 export interface WalletService { 'wallets' : Array<[bigint, WalletProfile]> }
 export interface WalletUpdateCommand {
@@ -190,12 +200,13 @@ export interface _SERVICE {
   'get_user_config' : ActorMethod<[], UserConfig>,
   'greet_test_agent' : ActorMethod<[], string>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
-  'query_a_neuron_wallet' : ActorMethod<[bigint], Result_4>,
-  'query_a_wallet' : ActorMethod<[bigint], Result_5>,
-  'query_all_neuron_wallet' : ActorMethod<[], Result_6>,
-  'query_all_transactions' : ActorMethod<[], Result_7>,
-  'query_all_wallets' : ActorMethod<[], Result_8>,
-  'query_one_transaction' : ActorMethod<[bigint], Result_9>,
+  'my_summary' : ActorMethod<[], Result_4>,
+  'query_a_neuron_wallet' : ActorMethod<[bigint], Result_5>,
+  'query_a_wallet' : ActorMethod<[bigint], Result_6>,
+  'query_all_neuron_wallet' : ActorMethod<[], Result_7>,
+  'query_all_transactions' : ActorMethod<[], Result_8>,
+  'query_all_wallets' : ActorMethod<[], Result_9>,
+  'query_one_transaction' : ActorMethod<[bigint], Result_10>,
   'query_wallets_synced_transactions' : ActorMethod<
     [HistoryQueryCommand],
     Array<SimpleTransaction>
@@ -212,6 +223,7 @@ export interface _SERVICE {
   >,
   'update_neuron_wallet' : ActorMethod<[NeuronUpdateCommand], Result>,
   'update_transaction' : ActorMethod<[TransactionB], Result>,
+  'update_transaction_tag' : ActorMethod<[TransactionB], Result>,
   'update_wallet' : ActorMethod<[WalletUpdateCommand], Result>,
   'user_quantity' : ActorMethod<[], number>,
 }
