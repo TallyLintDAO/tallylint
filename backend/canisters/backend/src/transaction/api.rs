@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use ic_cdk::caller;
 use ic_cdk_macros::{query, update};
-use serde::{Deserialize, Serialize};
+
 
 use super::domain::*;
 use super::service::WalletAddress;

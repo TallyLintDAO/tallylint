@@ -11,6 +11,9 @@ use ic_cdk::api::time;
 use ic_cdk::{api::call::CallResult, caller};
 use ic_cdk_macros::{query, update};
 use serde::Serialize;
+use crate::lifecycle::init::CONTEXT;
+
+
 
 /*
 independent query neuron info .
@@ -71,7 +74,7 @@ pub struct GovernanceError {
 
 use crate::{
   common::guard::user_owner_guard, nns::domain::*,
-  wallet::domain::WalletProfile, CONTEXT,
+  wallet::domain::WalletProfile, 
 };
 
 use super::service::NeuronService;
