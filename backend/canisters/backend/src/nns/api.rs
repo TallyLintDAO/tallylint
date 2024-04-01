@@ -70,7 +70,10 @@ pub struct GovernanceError {
   pub error_type: i32,
 }
 
-use crate::{common::guard::user_owner_guard, nns::domain::*, wallet::domain::WalletProfile};
+use crate::{
+  common::guard::user_owner_guard, nns::domain::*,
+  wallet::domain::WalletProfile,
+};
 
 use super::service::NeuronService;
 

@@ -28,7 +28,8 @@ pub fn now_nanos(env: &PocketIc) -> TimestampMillis {
 
 pub fn local_bin() -> PathBuf {
   let mut file_path = PathBuf::from(
-    std::env::var("CARGO_MANIFEST_DIR").expect("Failed to read CARGO_MANIFEST_DIR env variable"),
+    std::env::var("CARGO_MANIFEST_DIR")
+      .expect("Failed to read CARGO_MANIFEST_DIR env variable"),
   );
   file_path.push("wasms");
   file_path

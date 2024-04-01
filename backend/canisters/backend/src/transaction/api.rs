@@ -71,7 +71,9 @@ fn delete_transaction(id: WalletId) -> Result<WalletId, String> {
 }
 
 #[query(guard = "user_owner_guard")]
-fn query_wallets_synced_transactions(cmd: HistoryQueryCommand) -> Vec<SimpleTransaction> {
+fn query_wallets_synced_transactions(
+  cmd: HistoryQueryCommand,
+) -> Vec<SimpleTransaction> {
   CONTEXT.with(|c| {
     let ctx = c.borrow();
     let mut all_transactions = Vec::new();
@@ -96,7 +98,8 @@ fn query_wallets_synced_transactions(cmd: HistoryQueryCommand) -> Vec<SimpleTran
     // !filter if time range
     if cmd.from_time != 0 && cmd.to_time != 0 {
       simple_trans.retain(|transaction| {
-        transaction.timestamp >= cmd.from_time && transaction.timestamp <= cmd.to_time
+        transaction.timestamp >= cmd.from_time
+          && transaction.timestamp <= cmd.to_time
       });
     }
 
@@ -200,7 +203,9 @@ fn query_one_transaction(id: WalletId) -> Result<TransactionB, String> {
 // 用户点击导入钱包自动调用这个接口.存transacs 到后端
 #[update(guard = "user_owner_guard")]
 // #[update]
-fn sync_transaction_record(cmd: Vec<SyncTransactionCommand>) -> Result<bool, String> {
+fn sync_transaction_record(
+  cmd: Vec<SyncTransactionCommand>,
+) -> Result<bool, String> {
   CONTEXT.with(|c| {
     let mut ctx = c.borrow_mut();
     for one_wallet in cmd {
@@ -235,8 +240,9 @@ fn sync_transaction_record(cmd: Vec<SyncTransactionCommand>) -> Result<bool, Str
       wallet_profile.last_sync_time = now();
       // FIXME this not work as semantics . still 0
       wallet_profile.transactions = one_wallet.history.len() as u64;
-      wallet_profile.last_transaction_time =
-        timestamp_ms_float_to_ns(one_wallet.history.get(0).unwrap().clone().timestamp);
+      wallet_profile.last_transaction_time = timestamp_ms_float_to_ns(
+        one_wallet.history.get(0).unwrap().clone().timestamp,
+      );
       ctx
         .wallet_service
         .update_wallet(wallet_profile, get_caller());
@@ -246,7 +252,10 @@ fn sync_transaction_record(cmd: Vec<SyncTransactionCommand>) -> Result<bool, Str
   })
 }
 
-fn convert_trans_f_to_trans_b(trans_f: TransactionF, id: WalletId) -> TransactionB {
+fn convert_trans_f_to_trans_b(
+  trans_f: TransactionF,
+  id: WalletId,
+) -> TransactionB {
   let address = match trans_f.t_type.as_str() {
     "SEND" => trans_f.details.from.clone(),
     "RECEIVE" => trans_f.details.to.clone(),
@@ -313,7 +322,8 @@ fn calculate_tax() -> String {
       let method = ctx.user_service.get_config(&caller()).tax_method;
       let taxed_vec_trans = calculate_gain_or_loss(tax_transac, method.clone());
       if taxed_vec_trans.is_empty() {
-        return "ERROR tax calculation abort! no such calculate method ! ".to_string();
+        return "ERROR tax calculation abort! no such calculate method ! "
+          .to_string();
       }
       // map tax into transb_db
       let trans_b = map_taxTrans_to_transB(taxed_vec_trans, filtered_vec_data);
@@ -367,7 +377,8 @@ fn my_summary() -> Result<MySummary, String> {
       all_trans.append(&mut vec_trans);
     }
     for data in all_trans {
-      my_summary.capital_gain_or_loss = my_summary.capital_gain_or_loss + data.details.profit;
+      my_summary.capital_gain_or_loss =
+        my_summary.capital_gain_or_loss + data.details.profit;
       // data.tag
       if data.tag.contains(&"air drop".to_string()) {
         my_summary.income += data.details.amount * data.details.price;

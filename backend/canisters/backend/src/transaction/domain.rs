@@ -243,11 +243,13 @@ pub fn calculate_gain_or_loss(
     } else if transaction.action == "sell" {
       match method.as_str() {
         "fifo" => {
-          transaction.profit = Some(wft.sell_fifo(transaction.quantity, transaction.price));
+          transaction.profit =
+            Some(wft.sell_fifo(transaction.quantity, transaction.price));
           processed_transactions.push(transaction);
         }
         "lifo" => {
-          transaction.profit = Some(wft.sell_lifo(transaction.quantity, transaction.price));
+          transaction.profit =
+            Some(wft.sell_lifo(transaction.quantity, transaction.price));
           processed_transactions.push(transaction);
         }
         _ => {

@@ -91,8 +91,8 @@ async fn get_balance() -> u64 {
 
 use ic_cdk::api::caller;
 use ic_ledger_types::{
-  account_balance, AccountBalanceArgs, AccountIdentifier, Tokens, DEFAULT_SUBACCOUNT,
-  MAINNET_LEDGER_CANISTER_ID,
+  account_balance, AccountBalanceArgs, AccountIdentifier, Tokens,
+  DEFAULT_SUBACCOUNT, MAINNET_LEDGER_CANISTER_ID,
 };
 
 async fn check_callers_balance() -> Tokens {
@@ -117,11 +117,16 @@ mod tests {
     // above is not . or it is ? some how transform? let
     // p = String::from("
     // b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae");
-    let p = String::from("rintb-5nazg-thqf4-rnq2c-6geuh-ufcjx-fsfm7-qinyq-ma2gb-5rgny-7ae");
+    let p = String::from(
+      "rintb-5nazg-thqf4-rnq2c-6geuh-ufcjx-fsfm7-qinyq-ma2gb-5rgny-7ae",
+    );
     // len should be 56 or 64 (56 is 64-8  <8 - symbol in
     // total? > )
     let _len = p.len();
-    let account = AccountIdentifier::new(&Principal::from_text(p).unwrap(), &DEFAULT_SUBACCOUNT);
+    let account = AccountIdentifier::new(
+      &Principal::from_text(p).unwrap(),
+      &DEFAULT_SUBACCOUNT,
+    );
     let addr = account.to_hex();
     println!("addr is {}", addr);
     assert!(false); //:   ! means macro here. ! is not "not"

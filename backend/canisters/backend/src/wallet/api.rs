@@ -136,9 +136,10 @@ fn get_account_id(hex_str: String) -> AccountIdentifier {
     return account.unwrap();
   }
   // err handle:
-  let empty_account_identifier =
-    AccountIdentifier::from_hex("0000000000000000000000000000000000000000000000000000000000000000")
-      .unwrap();
+  let empty_account_identifier = AccountIdentifier::from_hex(
+    "0000000000000000000000000000000000000000000000000000000000000000",
+  )
+  .unwrap();
   return empty_account_identifier;
 }
 
@@ -154,13 +155,17 @@ mod tests {
         "b76rz-axcfs-swjig-bzzpx-yt5g7-2vcpg-wmb7i-2mz7s-upd4f-mag4c-yae",
       )),
       name: String::from("My Wallet"),
-      address: String::from("868d0e5ed0d4a61c11c8c16e699af338058197a4e433a5b3fd582a1f31aaa5c3"),
+      address: String::from(
+        "868d0e5ed0d4a61c11c8c16e699af338058197a4e433a5b3fd582a1f31aaa5c3",
+      ),
       from: String::from("Plug"),
     };
     let _cm2 = WalletAddCommand {
       principal_id: None,
       name: String::from("My Wallet"),
-      address: String::from("868d0e5ed0d4a61c11c8c16e699af338058197a4e433a5b3fd582a1f31aaa5c3"),
+      address: String::from(
+        "868d0e5ed0d4a61c11c8c16e699af338058197a4e433a5b3fd582a1f31aaa5c3",
+      ),
       from: String::from("NNS"),
     };
     // not work locally : https://forum.dfinity.org/t/guys-how-do-you-debug-your-rust-backend-canister/22965

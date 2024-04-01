@@ -27,7 +27,10 @@ use self::setup::{CanisterId, UserId, TERA};
 
 const INIT_CYCLES_BALANCE: u128 = 1_000 * TERA;
 
-pub fn create_canister(env: &mut PocketIc, controller: Principal) -> CanisterId {
+pub fn create_canister(
+  env: &mut PocketIc,
+  controller: Principal,
+) -> CanisterId {
   let canister_id = env.create_canister_with_settings(Some(controller), None);
   env.add_cycles(canister_id, INIT_CYCLES_BALANCE);
   canister_id
@@ -46,11 +49,19 @@ pub fn create_canister_with_id(
   canister_id
 }
 
-pub fn start_canister(env: &mut PocketIc, sender: Principal, canister_id: CanisterId) {
+pub fn start_canister(
+  env: &mut PocketIc,
+  sender: Principal,
+  canister_id: CanisterId,
+) {
   env.start_canister(canister_id, Some(sender)).unwrap();
 }
 
-pub fn stop_canister(env: &mut PocketIc, sender: Principal, canister_id: CanisterId) {
+pub fn stop_canister(
+  env: &mut PocketIc,
+  sender: Principal,
+  canister_id: CanisterId,
+) {
   env.stop_canister(canister_id, Some(sender)).unwrap();
 }
 

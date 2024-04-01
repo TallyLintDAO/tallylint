@@ -42,7 +42,13 @@ macro_rules! generate_update_call {
       let method_name = stringify!($method_name);
 
       // $crate: is a special variable that refers to the current crate
-      $crate::client::execute_update(env, sender, canister_id, method_name, args)
+      $crate::client::execute_update(
+        env,
+        sender,
+        canister_id,
+        method_name,
+        args,
+      )
     }
   };
 }

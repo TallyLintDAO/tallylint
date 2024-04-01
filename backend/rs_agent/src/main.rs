@@ -39,7 +39,8 @@ async fn regular_update_canister_with_db() {
 
   // ! save payload to dev machine file and read to rust
   let now = Local::now().format("%Y_%m_%d_%H_%M_%S").to_string();
-  let payload = collect_running_payload_simple(agent.borrow(), canister_id).await;
+  let payload =
+    collect_running_payload_simple(agent.borrow(), canister_id).await;
   save_payload_to_local(payload, now.clone(), ic_or_local.to_owned());
 
   let payload_now = read_db_from_local(now.clone(), ic_or_local.to_owned());
@@ -49,7 +50,8 @@ async fn regular_update_canister_with_db() {
 
   // ! send payload to ic and set payload on ic
   let args = candid::encode_one(payload_now).unwrap();
-  let result = set_payload_using_dev_machine_file(agent.borrow(), canister_id, args).await;
+  let result =
+    set_payload_using_dev_machine_file(agent.borrow(), canister_id, args).await;
   println!("{}", result);
 }
 
@@ -72,8 +74,10 @@ async fn init_agent() -> (Principal, Agent, String) {
   let url_local = String::from("http://127.0.0.1:40010");
   let url_ic = String::from("https://ic0.app/");
 
-  let canister_id_local = Principal::from_text("bkyz2-fmaaa-aaaaa-qaaaq-cai").unwrap();
-  let canister_id_ic = Principal::from_text("v7g7o-oiaaa-aaaag-qcj3q-cai").unwrap();
+  let canister_id_local =
+    Principal::from_text("bkyz2-fmaaa-aaaaa-qaaaq-cai").unwrap();
+  let canister_id_ic =
+    Principal::from_text("v7g7o-oiaaa-aaaag-qcj3q-cai").unwrap();
   let url;
   let canister_id;
 
@@ -110,7 +114,10 @@ async fn set_payload_using_dev_machine_file(
   result
 }
 
-async fn collect_running_payload_simple(agent: &Agent, canister_id: Principal) -> String {
+async fn collect_running_payload_simple(
+  agent: &Agent,
+  canister_id: Principal,
+) -> String {
   let response = agent
     .query(&canister_id, "collect_running_payload_simple")
     .with_arg(candid::encode_one(()).unwrap())
@@ -148,8 +155,8 @@ use ic_agent::{Agent, Identity};
 
 pub async fn build_ic_agent(url: String, identity: Box<dyn Identity>) -> Agent {
   let mainnet = is_mainnet(&url);
-  let transport =
-    ReqwestHttpReplicaV2Transport::create(url).expect("Failed to create Reqwest transport");
+  let transport = ReqwestHttpReplicaV2Transport::create(url)
+    .expect("Failed to create Reqwest transport");
   let timeout = std::time::Duration::from_secs(60 * 5);
 
   let agent = Agent::builder()
@@ -173,7 +180,8 @@ pub fn is_mainnet(url: &str) -> bool {
 
 pub fn get_dfx_identity(name: &str) -> Box<dyn Identity> {
   let logger = slog::Logger::root(slog::Discard, slog::o!());
-  let mut identity_manager = dfx_core::identity::IdentityManager::new(&logger, &None).unwrap();
+  let mut identity_manager =
+    dfx_core::identity::IdentityManager::new(&logger, &None).unwrap();
   identity_manager
     .instantiate_identity_from_name(name, &logger)
     .unwrap()
@@ -185,7 +193,8 @@ fn read_db_from_local(time_tag: String, mode: String) -> String {
     mode, time_tag
   );
   println!("reading: {}", file_name);
-  let mut file = File::open(file_name.clone()).expect("Unable to open the file");
+  let mut file =
+    File::open(file_name.clone()).expect("Unable to open the file");
   let mut db_json = String::new();
   file
     .read_to_string(&mut db_json)
@@ -207,11 +216,12 @@ async fn exec_deploy(ic_or_local: String, time_tag: String) {
   let output_file = File::create(dst).expect("Could not create file");
   let mut writer = BufWriter::new(output_file);
 
-  let mut child = Command::new("/home/btwl/code/ic/tax_lint/backend/scripts/deploy_backend")
-    .arg(ic_or_local)
-    .stdout(Stdio::piped())
-    .spawn()
-    .expect("Failed to execute command");
+  let mut child =
+    Command::new("/home/btwl/code/ic/tax_lint/backend/scripts/deploy_backend")
+      .arg(ic_or_local)
+      .stdout(Stdio::piped())
+      .spawn()
+      .expect("Failed to execute command");
 
   let stdout = child.stdout.take().unwrap();
   let reader = BufReader::new(stdout);

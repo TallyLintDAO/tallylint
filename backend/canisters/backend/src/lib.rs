@@ -46,8 +46,9 @@ use ic_cdk::api::management_canister::http_request::*;
 #[allow(unused_imports)]
 use ic_cdk::api::management_canister::{
   main::{
-    canister_info, canister_status, create_canister, install_code, update_settings,
-    CanisterInfoRequest, CanisterInfoResponse, CanisterStatusResponse,
+    canister_info, canister_status, create_canister, install_code,
+    update_settings, CanisterInfoRequest, CanisterInfoResponse,
+    CanisterStatusResponse,
   },
   provisional::{CanisterIdRecord, CanisterSettings},
 };

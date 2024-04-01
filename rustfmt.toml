@@ -1,6 +1,6 @@
 # rustfmt.toml
 edition = "2018"
-max_width = 100
+max_width = 80
 hard_tabs = false
 tab_spaces = 2
 newline_style = "Auto"

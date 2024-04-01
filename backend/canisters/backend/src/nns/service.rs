@@ -21,7 +21,10 @@ impl NeuronService {
     None
   }
 
-  pub fn search_by_owner(&self, target_owner: Principal) -> Vec<&NeuronProfile> {
+  pub fn search_by_owner(
+    &self,
+    target_owner: Principal,
+  ) -> Vec<&NeuronProfile> {
     self
       .neurons
       .values()
