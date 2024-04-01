@@ -1,5 +1,5 @@
-// TODO if need unit test for each function. 
-// can construct a test env for ic code. 
+// TODO if need unit test for each function.
+// can construct a test env for ic code.
 
 // #[allow(unused_imports)]
 // use candid::{CandidType, Principal};

@@ -14,13 +14,13 @@ pub mod user;
 pub mod wallet;
 
 #[allow(unused_imports)]
+use crate::c_http::api::*;
+#[allow(unused_imports)]
 use crate::nns::api::*;
 #[allow(unused_imports)]
 use crate::nns::domain::*;
 #[allow(unused_imports)]
-use crate::user::domain::*;
-#[allow(unused_imports)]
-use crate::c_http::api::*;
+use crate::transaction::domain::MySummary;
 #[allow(unused_imports)]
 use crate::transaction::domain::SimpleTransaction;
 #[allow(unused_imports)]
@@ -30,7 +30,7 @@ use crate::transaction::domain::TransactionB;
 #[allow(unused_imports)]
 use crate::transaction::domain::TransactionF;
 #[allow(unused_imports)]
-use crate::transaction::domain::MySummary;
+use crate::user::domain::*;
 #[allow(unused_imports)]
 use crate::wallet::domain::*;
 #[allow(unused_imports)]
