@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use std::collections::{BTreeMap, HashMap};
 
-use super::{api::MySummary, domain::*};
+use super::domain::*;
 
 use crate::{
   common::context::TimeStamp, wallet::service::WalletId, TransactionB,

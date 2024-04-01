@@ -12,7 +12,7 @@ use crate::common::guard::user_owner_guard;
 use crate::common::times::timestamp_ms_float_to_ns;
 use crate::wallet::domain::HistoryQueryCommand;
 use crate::wallet::service::WalletId;
-use crate::{TransactionB, CONTEXT};
+use crate::{MySummary, TransactionB, CONTEXT};
 
 // TODO use: AddRecordCommand . front end dont need to input
 // id . id gen by backend. TODO 测试 id 正常生成且不冲突
@@ -322,19 +322,12 @@ pub fn greet_test_agent() -> String {
   return "hello agent!".to_string();
 }
 
-#[allow(non_snake_case)]
-#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
-pub struct MySummary {
-  pub capital_gain_or_loss: f64,
-  pub ohter_gain: f64,
-  pub income: f64,
-  pub costs_expenses: f64,
-  pub gifts_dotations_lost_coins: f64,
-}
 
 #[update(guard = "user_owner_guard")]
 fn my_summary() -> Result<MySummary, String> {
   CONTEXT.with(|ctx| {
+    // donation loan_fee margin_fee tax loan_payment
+    // margin_payment realted_PL gift lost
     let mut my_summary = MySummary {
       capital_gain_or_loss: 0.0,
       // TODO this other_gain not solve yet. business not understands yet.
@@ -369,8 +362,11 @@ fn my_summary() -> Result<MySummary, String> {
       if data.tag.contains(&"air drop".to_string()) {
         my_summary.income += data.details.amount * data.details.price;
       }
-      // TODO gift donations lost_coins ... 
-      if data.tag.contains(&"gift".to_string()) {
+      // TODO gift donations lost_coins ...
+      if data.tag.contains(&"gift".to_string())
+        || data.tag.contains(&"donation".to_string())
+        || data.tag.contains(&"lost_coins".to_string())
+      {
         my_summary.costs_expenses += data.details.amount * data.details.price;
       }
     }

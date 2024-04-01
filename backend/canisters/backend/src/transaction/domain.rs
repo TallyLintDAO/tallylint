@@ -69,6 +69,8 @@ pub struct TransactionB {
   pub address: WalletAddress,
 
   pub tag: Vec<String>,
+  // donation loan_fee margin_fee tax loan_payment
+  // margin_payment realted_PL gift lost
   pub manual: bool, // if this trasac is manual import
   pub comment: String,
   // TODO , considering wallet_amount :
@@ -279,4 +281,17 @@ pub fn map_taxTrans_to_transB(
     }
   }
   trans_b
+}
+
+
+
+
+#[allow(non_snake_case)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct MySummary {
+  pub capital_gain_or_loss: f64,
+  pub ohter_gain: f64,
+  pub income: f64,
+  pub costs_expenses: f64,
+  pub gifts_dotations_lost_coins: f64,
 }
