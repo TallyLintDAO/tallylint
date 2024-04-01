@@ -124,7 +124,10 @@ export const idlFactory = ({ IDL }) => {
   const NeuronService = IDL.Record({
     'neurons' : IDL.Vec(IDL.Tuple(IDL.Text, NeuronProfile)),
   });
-  const UserConfig = IDL.Record({ 'tax_method' : IDL.Text });
+  const UserConfig = IDL.Record({
+    'tax_method' : IDL.Text,
+    'exclude_tags' : IDL.Vec(IDL.Text),
+  });
   const UserService = IDL.Record({
     'configs' : IDL.Vec(IDL.Tuple(IDL.Text, UserConfig)),
     'users' : IDL.Vec(IDL.Tuple(IDL.Principal, UserProfile)),
@@ -186,11 +189,7 @@ export const idlFactory = ({ IDL }) => {
     'add_transaction' : IDL.Func([TransactionB], [Result_1], []),
     'add_wallet' : IDL.Func([WalletAddCommand], [Result], []),
     'auto_register_user' : IDL.Func([], [Result_2], []),
-    'calculate_tax' : IDL.Func(
-        [IDL.Vec(IDL.Text), IDL.Text, IDL.Vec(IDL.Text)],
-        [IDL.Text],
-        [],
-      ),
+    'calculate_tax' : IDL.Func([], [IDL.Text], []),
     'clean_db' : IDL.Func([], [IDL.Bool], []),
     'collect_running_payload_simple' : IDL.Func([], [IDL.Text], ['query']),
     'collect_running_payload_simple_raw' : IDL.Func([], [IDL.Text], ['query']),
@@ -206,7 +205,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_user_config' : IDL.Func([], [UserConfig], ['query']),
-    'greet_test' : IDL.Func([], [IDL.Text], ['query']),
+    'greet_test_agent' : IDL.Func([], [IDL.Text], ['query']),
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
     'query_a_neuron_wallet' : IDL.Func([IDL.Nat64], [Result_4], ['query']),
     'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_5], ['query']),

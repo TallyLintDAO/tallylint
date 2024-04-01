@@ -131,7 +131,10 @@ export interface TransactionF {
 export interface TransactionService {
   'transactions' : Array<[bigint, TransactionF]>,
 }
-export interface UserConfig { 'tax_method' : string }
+export interface UserConfig {
+  'tax_method' : string,
+  'exclude_tags' : Array<string>,
+}
 export interface UserProfile {
   'owner' : Principal,
   'name' : string,
@@ -173,7 +176,7 @@ export interface _SERVICE {
   'add_transaction' : ActorMethod<[TransactionB], Result_1>,
   'add_wallet' : ActorMethod<[WalletAddCommand], Result>,
   'auto_register_user' : ActorMethod<[], Result_2>,
-  'calculate_tax' : ActorMethod<[Array<string>, string, Array<string>], string>,
+  'calculate_tax' : ActorMethod<[], string>,
   'clean_db' : ActorMethod<[], boolean>,
   'collect_running_payload_simple' : ActorMethod<[], string>,
   'collect_running_payload_simple_raw' : ActorMethod<[], string>,
@@ -185,7 +188,7 @@ export interface _SERVICE {
   'get_payload_from_stable_mem_simple' : ActorMethod<[], string>,
   'get_payload_from_stable_mem_simple_raw' : ActorMethod<[], CanisterContext>,
   'get_user_config' : ActorMethod<[], UserConfig>,
-  'greet_test' : ActorMethod<[], string>,
+  'greet_test_agent' : ActorMethod<[], string>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
   'query_a_neuron_wallet' : ActorMethod<[bigint], Result_4>,
   'query_a_wallet' : ActorMethod<[bigint], Result_5>,

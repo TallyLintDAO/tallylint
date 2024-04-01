@@ -325,7 +325,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
       profit: 0.0,
     },
   };
-    let transaction22 = TransactionF {
+  let transaction22 = TransactionF {
     hash: "123".to_string(),
     timestamp: 901.111333,
     t_type: "RECEIVE".to_string(),
@@ -386,12 +386,10 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   let sync_transaction_command2 = SyncTransactionCommand {
     // todo this id should get from last op of `query_all_wallets`
     walletId: 10003,
-    history: vec![
-      transaction22,
-      transaction23
-    ],
+    history: vec![transaction22, transaction23],
   };
-  let args: Vec<SyncTransactionCommand> = vec![sync_transaction_command,sync_transaction_command2];
+  let args: Vec<SyncTransactionCommand> =
+    vec![sync_transaction_command, sync_transaction_command2];
   let ret: Result<bool, String> =
     pic_env.my_update_call_one_arg(user1, args, "sync_transaction_record");
   match ret {

@@ -16,6 +16,8 @@ fn auto_register_user() -> Result<UserProfile, String> {
     if caller == Principal::anonymous() {
       return Err(String::from("AnonymousNotAllowRegistering"));
     }
+    // init a defautl config for user if config not exsit 
+    ctx.user_service.get_config(&caller);
     match ctx.user_service.get_user(&caller) {
       Some(profile) => Ok(profile),
       None => {

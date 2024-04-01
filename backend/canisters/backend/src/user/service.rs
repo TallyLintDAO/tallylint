@@ -56,13 +56,17 @@ impl UserService {
   }
 
   pub fn get_config(&mut self, owner: &Principal) -> UserConfig {
-    let default_config = UserConfig::new("fifo".to_string(), Vec::new());
-    self.update_config(&owner, default_config.clone());
-    self
-      .configs
-      .get(&owner.to_string())
-      .unwrap_or(&default_config)
-      .clone()
+    // Try to get the config
+    match self.configs.get(&owner.to_string()) {
+      // If the config exists, return it
+      Some(config) => config.clone(),
+      // If the config does not exist, set a default config and return it
+      None => {
+        let default_config = UserConfig::new("fifo".to_string(), Vec::new());
+        self.update_config(&owner, default_config.clone());
+        default_config
+      }
+    }
   }
 
   pub fn update_config(
