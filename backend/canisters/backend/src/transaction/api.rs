@@ -8,7 +8,9 @@ use super::service::WalletAddress;
 use crate::common::context::{get_caller, now, TimeStamp};
 use crate::common::guard::admin_guard;
 use crate::common::guard::user_owner_guard;
-use crate::common::times::timestamp_ms_float_to_ns;
+use crate::common::times::{
+  timestamp_ms_float_to_ms_u64, timestamp_ms_float_to_ns,
+};
 use crate::wallet::domain::HistoryQueryCommand;
 use crate::wallet::service::WalletId;
 use crate::STATE;
@@ -212,6 +214,7 @@ fn sync_transaction_record(
       // already newest. nothing append since last time sync"
       // let latest_hash = one_wallet.history[0].hash.clone();
       // ! remove current all.
+      // FIXME 这个同步行为会删除所有手动记录
       let w_addr = ctx.wallet_service.get_addr_by_id(one_wallet.walletId);
       ctx.trans_f_srv.delete_all_by_addr(w_addr.clone());
       ctx.wallet_transc_srv.delete_transaction_by_addr(&w_addr);
@@ -262,7 +265,7 @@ fn convert_trans_f_to_trans_b(
   TransactionB {
     id,
     hash: trans_f.hash,
-    timestamp: timestamp_ms_float_to_ns(trans_f.timestamp),
+    timestamp: timestamp_ms_float_to_ms_u64(trans_f.timestamp),
     t_type: trans_f.t_type,
     details: trans_f.details.clone(),
     memo: String::new(),
@@ -374,7 +377,7 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
       all_trans.append(&mut vec_trans);
     }
 
-    // filter by time range 
+    // filter by time range
     let filtered_trans: Vec<TransactionB>;
     if start == 0 || end == 0 {
       filtered_trans = all_trans;
@@ -383,6 +386,9 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
         .into_iter()
         .filter(|trans| trans.timestamp >= start && trans.timestamp <= end)
         .collect();
+      if filtered_trans.is_empty() {
+        return Err("ERROR :year filter empty ! ".to_string());
+      }
     };
 
     for data in filtered_trans {

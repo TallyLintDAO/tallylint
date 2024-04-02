@@ -62,7 +62,7 @@ pub struct TransactionB {
   pub id: WalletId,
   //
   pub hash: String,
-  pub timestamp: u64, //front end pass in its f64 ms . store in rust us u64 ms
+  pub timestamp: u64, // !front end pass in its f64 ms . store in rust us u64 ms. trunc after decial digits
   pub t_type: String, //  transaction type : "SEND", "RECEIVE"
   pub details: Details,
   pub memo: String,
@@ -115,7 +115,7 @@ pub struct SimpleTransaction {
   pub id: WalletId,
   //
   pub hash: String,
-  pub timestamp: u64, //this is ns format usigned 64bit
+  pub timestamp: u64, //this is ms format usigned 64bit
   pub t_type: String, //  transaction type : "SEND", "RECEIVE"
   pub details: Details,
   pub tag: Vec<String>,

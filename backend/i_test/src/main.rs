@@ -82,6 +82,9 @@ fn test_crud_transactions() {
   time_range_test(&pic_env, user_admin);
   // !sort method query test
   sort_method_test(&pic_env, user_admin);
+
+  my_summary_test(&pic_env, user_admin);
+  my_summary_test2(&pic_env, user_admin);
 }
 
 fn init() -> (PicEnv, Principal) {
@@ -192,7 +195,7 @@ fn query_all_wallet_info(pic_env: &PicEnv, user_admin: Principal) {
 fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   let transaction1 = TransactionF {
     hash: "123".to_string(),
-    timestamp: 10.0,
+    timestamp: 1735660799001.0,
     t_type: "RECEIVE".to_string(),
     details: Details {
       amount: 10.0,
@@ -214,7 +217,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   };
   let transaction2 = TransactionF {
     hash: "12z33".to_string(),
-    timestamp: 210.111111,
+    timestamp: 1735660799021.111111,
     t_type: "SEND".to_string(),
 
     details: Details {
@@ -237,7 +240,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   };
   let transaction3 = TransactionF {
     hash: "123".to_string(),
-    timestamp: 211.0,
+    timestamp: 1735660799023.0,
     t_type: "RECEIVE".to_string(),
 
     details: Details {
@@ -260,7 +263,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   };
   let transaction4 = TransactionF {
     hash: "123".to_string(),
-    timestamp: 222.0,
+    timestamp: 1735660799028.0,
     t_type: "SEND".to_string(),
 
     details: Details {
@@ -283,7 +286,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   };
   let transaction5 = TransactionF {
     hash: "123".to_string(),
-    timestamp: 3333.0,
+    timestamp: 1735660799029.0,
     t_type: "RECEIVE".to_string(),
 
     details: Details {
@@ -306,7 +309,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   };
   let transaction6 = TransactionF {
     hash: "123".to_string(),
-    timestamp: 1000.0,
+    timestamp: 1704038400001.0,
     t_type: "SEND".to_string(),
 
     details: Details {
@@ -329,7 +332,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   };
   let transaction22 = TransactionF {
     hash: "123".to_string(),
-    timestamp: 901.111333,
+    timestamp: 1704038400009.111333,
     t_type: "RECEIVE".to_string(),
 
     details: Details {
@@ -613,6 +616,50 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
     "====profit-desc Sort method query result: ".to_string(),
     format!("{:?}", res),
   );
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct MySummary {
+  pub capital_gain_or_loss: f64,
+  pub other_gain: f64,
+  pub income: f64,
+  pub costs_expenses: f64,
+  pub gifts_dotations_lost_coins: f64,
+}
+
+fn my_summary_test(pic_env: &PicEnv, user1: Principal) {
+  // 2024 yearly  range
+  let start = 1735660u64;
+  // let start = 1735660799000u64;  // ms u64
+  let end = 1704038400000u64;
+  let args = candid::encode_args((start, end)).unwrap();
+  let res: Result<MySummary, String> =
+    pic_env.my_update_call_many_args(user1, args, "my_summary");
+  match res {
+    Ok(summary) => {
+      println!("ok: {:?}", summary);
+    }
+    Err(error) => {
+      println!("err: {}", error);
+    }
+  }
+}
+fn my_summary_test2(pic_env: &PicEnv, user1: Principal) {
+  // 2024 yearly  range
+  let start = 0u64;
+  let end = 0u64;
+  let args = candid::encode_args((start, end)).unwrap();
+  let res: Result<MySummary, String> =
+    pic_env.my_update_call_many_args(user1, args, "my_summary");
+  match res {
+    Ok(summary) => {
+      println!("ok: {:?}", summary);
+    }
+    Err(error) => {
+      println!("err: {}", error);
+    }
+  }
 }
 
 fn time_range_test(pic_env: &PicEnv, user1: Principal) {
