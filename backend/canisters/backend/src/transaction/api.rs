@@ -173,7 +173,10 @@ fn update_transaction_tag(id: u64, tag: String) -> Result<bool, String> {
     if ret.is_ok() {
       let mut one = ret.unwrap();
       one.tag.push(tag);
-      ctx.wallet_transc_srv.update_transaction_impl(one).expect("update err");
+      ctx
+        .wallet_transc_srv
+        .update_transaction_impl(one)
+        .expect("update err");
       return Ok(true);
     } else {
       return Err("no such transaction".to_string());

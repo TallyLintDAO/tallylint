@@ -2,7 +2,7 @@
   debug_assertions,
   allow(dead_code, unused_imports, unused_variables, unused_mut)
 )]
-use std::{borrow::BorrowMut, collections::BTreeMap};
+use std::borrow::BorrowMut;
 
 use crate::STATE;
 use candid::Principal;
@@ -70,12 +70,7 @@ pub struct GovernanceError {
   pub error_type: i32,
 }
 
-use crate::{
-  common::guard::user_owner_guard, nns::domain::*,
-  wallet::domain::WalletProfile,
-};
-
-use super::service::NeuronService;
+use crate::{common::guard::user_owner_guard, nns::domain::*};
 
 #[update(guard = "user_owner_guard")]
 fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
@@ -85,7 +80,7 @@ fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
     let time = time();
     let id = ctx.id;
 
-    let mut service = ctx.neuron_service.borrow_mut();
+    let service = ctx.neuron_service.borrow_mut();
     let addr = cmd.address.clone();
     if service.neurons.contains_key(&addr) {
       return Err("neuron addr duplicated".to_string());
@@ -99,7 +94,7 @@ fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
       address: cmd.address,
       update_time: time,
     };
-    let ret = service.neurons.insert(addr, profile);
+    let _ret = service.neurons.insert(addr, profile);
     ctx.id = id + 1;
     return Ok(true);
   })
@@ -109,8 +104,7 @@ fn add_neuron_wallet(cmd: NeuronAddCommand) -> Result<bool, String> {
 fn delete_neuron_wallet(id: u64) -> Result<bool, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
-    let user = caller();
-    let mut service = ctx.neuron_service.borrow_mut();
+    let service = ctx.neuron_service.borrow_mut();
     let profile = service.search_by_id(id);
     if profile.is_none() {
       return Err("no neuron find by id ".to_string());
@@ -124,9 +118,8 @@ fn delete_neuron_wallet(id: u64) -> Result<bool, String> {
 fn update_neuron_wallet(cmd: NeuronUpdateCommand) -> Result<bool, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
-    let user = caller();
-    let mut service = ctx.neuron_service.borrow_mut();
-    let mut profile = service.search_by_id(cmd.id);
+    let service = ctx.neuron_service.borrow_mut();
+    let profile = service.search_by_id(cmd.id);
     if profile.is_none() {
       return Err("no neuron find by id ".to_string());
     }
@@ -156,8 +149,7 @@ fn query_all_neuron_wallet() -> Result<Vec<NeuronProfile>, Vec<NeuronProfile>> {
 fn query_a_neuron_wallet(id: u64) -> Result<NeuronProfile, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
-    let user = caller();
-    let mut ns = ctx.neuron_service.borrow_mut();
+    let ns = ctx.neuron_service.borrow_mut();
     let a_neuron = ns.search_by_id(id);
     if a_neuron.is_none() {
       return Err("no neuron find by id".to_string());
