@@ -52,19 +52,25 @@
             <q-item clickable v-ripple>
               <q-item-section>Capital gains / P&L</q-item-section>
               <q-skeleton v-if="walletLoading" type="text" />
-              <q-item-section v-else side>$ 0</q-item-section>
+              <q-item-section v-else side
+                >$ {{ taxReportData.capital_gain_or_loss }}</q-item-section
+              >
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section>
                 Other gains (futures, derivatives etc)
               </q-item-section>
               <q-skeleton v-if="walletLoading" type="text" />
-              <q-item-section v-else side>$ 0</q-item-section>
+              <q-item-section v-else side
+                >$ {{ taxReportData.other_gain }}</q-item-section
+              >
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section overline>Income</q-item-section>
               <q-skeleton v-if="walletLoading" type="text" />
-              <q-item-section v-else side>$ 0</q-item-section>
+              <q-item-section v-else side
+                >$ {{ taxReportData.income }}</q-item-section
+              >
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section>
@@ -72,14 +78,19 @@
                 <!-- <q-icon name="warning" /> -->
               </q-item-section>
               <q-skeleton v-if="walletLoading" type="text" />
-              <q-item-section v-else side>$ 0</q-item-section>
+              <q-item-section v-else side
+                >$ {{ taxReportData.costs_expenses }}</q-item-section
+              >
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section>
                 <q-item-label>Gifts, donations & lost coins</q-item-label>
               </q-item-section>
               <q-skeleton v-if="walletLoading" type="text" />
-              <q-item-section v-else side>$ 0</q-item-section>
+              <q-item-section v-else side
+                >$
+                {{ taxReportData.gifts_dotations_lost_coins }}</q-item-section
+              >
             </q-item>
           </q-list>
           <q-separator />
@@ -149,7 +160,8 @@
 </template>
 <script setup lang="ts">
 import { getUserAllWallets, getUserTaxProfit } from "@/api/user"
-import type { syncedTransaction } from "@/types/sns"
+import type { SyncedTransaction } from "@/types/sns"
+import type { TaxReportData } from "@/types/user"
 import { YearTimestamp, getYearTimestamps } from "@/utils/date"
 import { getAllSyncedTransactions } from "@/utils/syncedTransactions"
 import { exportFile } from "quasar"
@@ -162,9 +174,17 @@ const dateOptions: YearTimestamp[] = getYearTimestamps().reverse()
 dateOptions.push({ label: "All", value: { start: 0, end: 0 } })
 const selectedYear = ref(dateOptions[0].value)
 
-const historyList = ref<syncedTransaction[]>([])
+const historyList = ref<SyncedTransaction[]>([])
 const transactionAmount = ref(0)
 const walletAmount = ref(0)
+
+const taxReportData = ref<TaxReportData>({
+  capital_gain_or_loss: 0,
+  costs_expenses: 0,
+  gifts_dotations_lost_coins: 0,
+  income: 0,
+  other_gain: 0,
+})
 
 onMounted(() => {
   getWalletHistory()
@@ -172,27 +192,31 @@ onMounted(() => {
 })
 
 const getTaxProfit = async () => {
-  const res = await getUserTaxProfit()
+  walletLoading.value = true
+  const res = await getUserTaxProfit(
+    selectedYear.value.start,
+    selectedYear.value.end,
+  )
   console.log("getTaxProfit", res)
+  if (res.Ok) {
+    taxReportData.value = res.Ok
+  }
+  walletLoading.value = false
 }
 
 const getWalletHistory = async () => {
-  walletLoading.value = true
   const wallets = await getUserAllWallets()
   walletAmount.value = wallets.length
-  getAllSyncedTransactions(0, 0, [], wallets)
-    .then((res) => {
-      if (res.total && res.total != 0) {
-        historyList.value = res.transactions
-        transactionAmount.value = filterData.value.length
-      }
-    })
-    .finally(() => {
-      walletLoading.value = false
-    })
+  getAllSyncedTransactions(0, 0, [], wallets).then((res) => {
+    if (res.total && res.total != 0) {
+      historyList.value = res.transactions
+      transactionAmount.value = filterData.value.length
+    }
+  })
 }
 
-const filterData = computed((): syncedTransaction[] => {
+const filterData = computed((): SyncedTransaction[] => {
+  console.log("selectedYear", selectedYear.value)
   let filterData = historyList.value
   // 按选定的日期区间过滤记录
   if (selectedYear.value.start !== 0) {
@@ -209,6 +233,7 @@ const filterData = computed((): syncedTransaction[] => {
 // 监听 selectedYear 变化，如果有任何一个发生变化，强制重新计算 paginatedGroups
 watch(selectedYear, () => {
   filterData.value // 触发 filterData 的重新计算
+  getTaxProfit()
 })
 
 const exportToCSV = async () => {

@@ -1,7 +1,7 @@
 import type { Details } from ".dfx/ic/canisters/backend/backend.did"
 import { MILI_PER_SECOND } from "@/api/constants/ic"
 import { getSyncedTransactions } from "@/api/user"
-import type { syncedTransaction } from "@/types/sns"
+import type { SyncedTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 
 //批量获取多个地址的交易记录
@@ -10,7 +10,7 @@ export const getAllSyncedTransactions = async (
   to_time: number,
   sort_method: string[],
   wallets: WalletTag[],
-): Promise<{ total: number; transactions: syncedTransaction[] }> => {
+): Promise<{ total: number; transactions: SyncedTransaction[] }> => {
   const addresses = wallets.map((walletTag) => walletTag.address)
   try {
     const res = await getSyncedTransactions(
