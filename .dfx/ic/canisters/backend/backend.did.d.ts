@@ -200,7 +200,7 @@ export interface _SERVICE {
   'get_user_config' : ActorMethod<[], UserConfig>,
   'greet_test_agent' : ActorMethod<[], string>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
-  'my_summary' : ActorMethod<[], Result_4>,
+  'my_summary' : ActorMethod<[bigint, bigint], Result_4>,
   'query_a_neuron_wallet' : ActorMethod<[bigint], Result_5>,
   'query_a_wallet' : ActorMethod<[bigint], Result_6>,
   'query_all_neuron_wallet' : ActorMethod<[], Result_7>,

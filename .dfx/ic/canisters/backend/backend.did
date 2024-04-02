@@ -172,7 +172,7 @@ service : {
   get_user_config : () -> (UserConfig) query;
   greet_test_agent : () -> (text) query;
   list_all_user : () -> (vec UserProfile);
-  my_summary : () -> (Result_4);
+  my_summary : (nat64, nat64) -> (Result_4);
   query_a_neuron_wallet : (nat64) -> (Result_5) query;
   query_a_wallet : (nat64) -> (Result_6) query;
   query_all_neuron_wallet : () -> (Result_7) query;

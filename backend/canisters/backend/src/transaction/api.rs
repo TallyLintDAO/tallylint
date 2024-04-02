@@ -5,7 +5,7 @@ use ic_cdk_macros::{query, update};
 
 use super::domain::*;
 use super::service::WalletAddress;
-use crate::common::context::{get_caller, now};
+use crate::common::context::{get_caller, now, TimeStamp};
 use crate::common::guard::admin_guard;
 use crate::common::guard::user_owner_guard;
 use crate::common::times::timestamp_ms_float_to_ns;
@@ -342,7 +342,7 @@ pub fn greet_test_agent() -> String {
 }
 
 #[update(guard = "user_owner_guard")]
-fn my_summary() -> Result<MySummary, String> {
+fn my_summary(from: TimeStamp, to: TimeStamp) -> Result<MySummary, String> {
   STATE.with(|ctx| {
     // donation loan_fee margin_fee tax loan_payment
     // margin_payment realted_PL gift lost
@@ -373,7 +373,12 @@ fn my_summary() -> Result<MySummary, String> {
       }
       all_trans.append(&mut vec_trans);
     }
-    for data in all_trans {
+    let filtered_trans: Vec<TransactionB> = all_trans
+      .into_iter()
+      .filter(|trans| trans.timestamp >= from && trans.timestamp <= to)
+      .collect();
+
+    for data in filtered_trans {
       my_summary.capital_gain_or_loss =
         my_summary.capital_gain_or_loss + data.details.profit;
       // data.tag
