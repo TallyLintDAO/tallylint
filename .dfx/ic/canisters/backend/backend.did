@@ -31,11 +31,11 @@ type HistoryQueryCommand = record {
 };
 type KnownNeuronData = record { name : text; description : opt text };
 type MySummary = record {
+  other_gain : float64;
   gifts_dotations_lost_coins : float64;
   costs_expenses : float64;
   income : float64;
   capital_gain_or_loss : float64;
-  ohter_gain : float64;
 };
 type NeuronAddCommand = record { from : text; name : text; address : text };
 type NeuronId = record { id : vec nat8 };

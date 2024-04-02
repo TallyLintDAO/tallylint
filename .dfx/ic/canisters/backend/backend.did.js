@@ -96,11 +96,11 @@ export const idlFactory = ({ IDL }) => {
     'transactions' : IDL.Vec(IDL.Tuple(IDL.Nat64, TransactionF)),
   });
   const MySummary = IDL.Record({
+    'other_gain' : IDL.Float64,
     'gifts_dotations_lost_coins' : IDL.Float64,
     'costs_expenses' : IDL.Float64,
     'income' : IDL.Float64,
     'capital_gain_or_loss' : IDL.Float64,
-    'ohter_gain' : IDL.Float64,
   });
   const WalletRecordService = IDL.Record({
     'records' : IDL.Vec(IDL.Tuple(IDL.Nat64, TransactionB)),

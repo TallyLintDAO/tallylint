@@ -350,7 +350,7 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
     let mut my_summary = MySummary {
       capital_gain_or_loss: 0.0,
       // TODO this other_gain not solve yet. business not understands yet.
-      ohter_gain: 0.0,
+      other_gain: 0.0,
       income: 0.0,
       // TODO this costs_expenses not solve yet. business not understands yet.
       costs_expenses: 0.0,
