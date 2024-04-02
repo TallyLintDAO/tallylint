@@ -12,6 +12,8 @@ pub mod user;
 pub mod wallet;
 
 #[allow(unused_imports)]
+use crate::common::context::TimeStamp;
+#[allow(unused_imports)]
 use crate::nns::api::*;
 #[allow(unused_imports)]
 use crate::nns::domain::*;
@@ -50,7 +52,5 @@ use ic_cdk::api::management_canister::{
 };
 #[allow(unused_imports)]
 use std::collections::HashMap;
-#[allow(unused_imports)]
-use crate::common::context::TimeStamp;
 
 ic_cdk::export_candid!();

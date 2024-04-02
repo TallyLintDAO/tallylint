@@ -216,7 +216,7 @@ export const idlFactory = ({ IDL }) => {
     'get_user_config' : IDL.Func([], [UserConfig], ['query']),
     'greet_test_agent' : IDL.Func([], [IDL.Text], ['query']),
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
-    'my_summary' : IDL.Func([], [Result_4], []),
+    'my_summary' : IDL.Func([IDL.Nat64, IDL.Nat64], [Result_4], []),
     'query_a_neuron_wallet' : IDL.Func([IDL.Nat64], [Result_5], ['query']),
     'query_a_wallet' : IDL.Func([IDL.Nat64], [Result_6], ['query']),
     'query_all_neuron_wallet' : IDL.Func([], [Result_7], ['query']),

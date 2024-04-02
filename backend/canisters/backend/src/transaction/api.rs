@@ -341,8 +341,9 @@ pub fn greet_test_agent() -> String {
   return "hello agent!".to_string();
 }
 
+// if start or end is 0. calculate all trans.
 #[update(guard = "user_owner_guard")]
-fn my_summary(from: TimeStamp, to: TimeStamp) -> Result<MySummary, String> {
+fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
   STATE.with(|ctx| {
     // donation loan_fee margin_fee tax loan_payment
     // margin_payment realted_PL gift lost
@@ -355,7 +356,6 @@ fn my_summary(from: TimeStamp, to: TimeStamp) -> Result<MySummary, String> {
       costs_expenses: 0.0,
       gifts_dotations_lost_coins: 0.0,
     };
-    my_summary.capital_gain_or_loss = 0.1;
     let mut ctx = ctx.borrow_mut();
     let wallets = ctx.wallet_service.get_all_addr_by_user(caller());
     let mut all_trans = Vec::new();
@@ -373,10 +373,14 @@ fn my_summary(from: TimeStamp, to: TimeStamp) -> Result<MySummary, String> {
       }
       all_trans.append(&mut vec_trans);
     }
-    let filtered_trans: Vec<TransactionB> = all_trans
-      .into_iter()
-      .filter(|trans| trans.timestamp >= from && trans.timestamp <= to)
-      .collect();
+    let filtered_trans: Vec<TransactionB> = if start == 0 || end == 0 {
+      all_trans
+    } else {
+      all_trans
+        .into_iter()
+        .filter(|trans| trans.timestamp >= start && trans.timestamp <= end)
+        .collect()
+    };
 
     for data in filtered_trans {
       my_summary.capital_gain_or_loss =
@@ -385,7 +389,6 @@ fn my_summary(from: TimeStamp, to: TimeStamp) -> Result<MySummary, String> {
       if data.tag.contains(&"air drop".to_string()) {
         my_summary.income += data.details.amount * data.details.price;
       }
-      // TODO gift donations lost_coins ...
       if data.tag.contains(&"gift".to_string())
         || data.tag.contains(&"donation".to_string())
         || data.tag.contains(&"lost_coins".to_string())
