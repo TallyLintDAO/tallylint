@@ -42,11 +42,11 @@ export interface KnownNeuronData {
   'description' : [] | [string],
 }
 export interface MySummary {
+  'other_gain' : number,
   'gifts_dotations_lost_coins' : number,
   'costs_expenses' : number,
   'income' : number,
   'capital_gain_or_loss' : number,
-  'ohter_gain' : number,
 }
 export interface NeuronAddCommand {
   'from' : string,

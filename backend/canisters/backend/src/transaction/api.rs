@@ -373,19 +373,21 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
       }
       all_trans.append(&mut vec_trans);
     }
-    let filtered_trans: Vec<TransactionB> = if start == 0 || end == 0 {
-      all_trans
+
+    // filter by time range 
+    let filtered_trans: Vec<TransactionB>;
+    if start == 0 || end == 0 {
+      filtered_trans = all_trans;
     } else {
-      all_trans
+      filtered_trans = all_trans
         .into_iter()
         .filter(|trans| trans.timestamp >= start && trans.timestamp <= end)
-        .collect()
+        .collect();
     };
 
     for data in filtered_trans {
       my_summary.capital_gain_or_loss =
         my_summary.capital_gain_or_loss + data.details.profit;
-      // data.tag
       if data.tag.contains(&"air drop".to_string()) {
         my_summary.income += data.details.amount * data.details.price;
       }
