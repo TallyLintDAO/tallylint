@@ -223,7 +223,7 @@ export interface _SERVICE {
   >,
   'update_neuron_wallet' : ActorMethod<[NeuronUpdateCommand], Result>,
   'update_transaction' : ActorMethod<[TransactionB], Result>,
-  'update_transaction_tag' : ActorMethod<[TransactionB], Result>,
+  'update_transaction_tag' : ActorMethod<[bigint, string], Result>,
   'update_wallet' : ActorMethod<[WalletUpdateCommand], Result>,
   'user_quantity' : ActorMethod<[], number>,
 }

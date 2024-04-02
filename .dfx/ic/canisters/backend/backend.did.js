@@ -241,7 +241,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'update_neuron_wallet' : IDL.Func([NeuronUpdateCommand], [Result], []),
     'update_transaction' : IDL.Func([TransactionB], [Result], []),
-    'update_transaction_tag' : IDL.Func([TransactionB], [Result], []),
+    'update_transaction_tag' : IDL.Func([IDL.Nat64, IDL.Text], [Result], []),
     'update_wallet' : IDL.Func([WalletUpdateCommand], [Result], []),
     'user_quantity' : IDL.Func([], [IDL.Nat32], ['query']),
   });

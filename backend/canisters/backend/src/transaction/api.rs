@@ -166,22 +166,17 @@ fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
 
 // TODO 联系前端要什么样子的接口
 #[update(guard = "user_owner_guard")]
-fn update_transaction_tag(mut data: TransactionB) -> Result<bool, String> {
+fn update_transaction_tag(id: u64, tag: String) -> Result<bool, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
-
-    // bind addr
-    let address = match data.t_type.as_str() {
-      "SEND" => data.details.from.clone(),
-      "RECEIVE" => data.details.to.clone(),
-      _ => WalletAddress::default(), //should never goes here
-    };
-    data.address = address;
-
-    let ret = ctx.wallet_transc_srv.update_transaction_impl(data);
-    match ret {
-      Ok(_) => Ok(true),
-      Err(msg) => Err(msg),
+    let ret = ctx.wallet_transc_srv.query_one(id);
+    if ret.is_ok() {
+      let mut one = ret.unwrap();
+      one.tag.push(tag);
+      ctx.wallet_transc_srv.update_transaction_impl(one).expect("update err");
+      return Ok(true);
+    } else {
+      return Err("no such transaction".to_string());
     }
   })
 }

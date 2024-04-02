@@ -191,7 +191,7 @@ service : {
   sync_transaction_record : (vec SyncTransactionCommand) -> (Result);
   update_neuron_wallet : (NeuronUpdateCommand) -> (Result);
   update_transaction : (TransactionB) -> (Result);
-  update_transaction_tag : (TransactionB) -> (Result);
+  update_transaction_tag : (nat64, text) -> (Result);
   update_wallet : (WalletUpdateCommand) -> (Result);
   user_quantity : () -> (nat32) query;
 }
