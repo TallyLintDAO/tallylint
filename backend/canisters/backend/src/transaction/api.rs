@@ -8,9 +8,7 @@ use super::service::WalletAddress;
 use crate::common::context::{get_caller, now, TimeStamp};
 use crate::common::guard::admin_guard;
 use crate::common::guard::user_owner_guard;
-use crate::common::times::{
-  timestamp_ms_float_to_ms_u64, timestamp_ms_float_to_ns,
-};
+use crate::common::times::timestamp_ms_float_to_ms_u64;
 use crate::wallet::domain::HistoryQueryCommand;
 use crate::wallet::service::WalletId;
 use crate::STATE;
@@ -27,6 +25,10 @@ fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
     let ret = ctx.wallet_transc_srv.add_transaction_impl(data.clone());
     match ret {
       Ok(_) => {
+        // update wallet info 
+        let mut cur_wallet=ctx.wallet_service.get_by_addr(data.address);
+        cur_wallet.transactions=cur_wallet.transactions+1;
+        ctx.wallet_service.update_wallet(cur_wallet, caller());
         return Ok(id);
       }
       Err(msg) => {
@@ -42,7 +44,12 @@ fn delete_transaction(id: WalletId) -> Result<WalletId, String> {
     let mut ctx = c.borrow_mut();
     let ret = ctx.wallet_transc_srv.delete_transaction_by_id_impl(id);
     match ret {
-      Ok(_) => Ok(id),
+      Ok(_) =>{
+        let w_addr=ctx.wallet_service.get_addr_by_id(id);
+        let mut cur_wallet=ctx.wallet_service.get_by_addr(w_addr);
+        cur_wallet.transactions=cur_wallet.transactions-1;
+        ctx.wallet_service.update_wallet(cur_wallet, caller());
+         Ok(id)},
       Err(msg) => Err(msg),
     }
   })
@@ -206,7 +213,7 @@ fn sync_transaction_record(
         .expect("no such wallet");
       wallet_profile.last_sync_time = now();
       wallet_profile.transactions = one_wallet.history.len() as u64;
-      wallet_profile.last_transaction_time = timestamp_ms_float_to_ns(
+      wallet_profile.last_transaction_time = timestamp_ms_float_to_ms_u64(
         one_wallet.history.get(0).unwrap().clone().timestamp,
       );
       ctx
@@ -341,7 +348,7 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
       all_trans.append(&mut vec_trans);
     }
 
-    // filter by time range
+    // filter by year range
     let filtered_trans: Vec<TransactionB>;
     if start == 0 || end == 0 {
       filtered_trans = all_trans;
@@ -357,7 +364,6 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
         );
       }
     };
-
 
     for data in filtered_trans {
       if data.tag.is_empty() {

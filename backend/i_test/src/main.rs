@@ -431,7 +431,7 @@ fn add_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
 
   let mut args: TransactionB = convert_trans_f_to_trans_b(trans_f, 110050);
   args.manual = true;
-  args.comment = "my manualled blabala".to_string();
+  args.comment = "__test_add01".to_string();
   args.tag.push("air drop".to_string());
   args.tag.push("gift".to_string());
   let ret: Result<TransactionId, String> =
@@ -618,21 +618,12 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
   );
 }
 
-#[allow(non_snake_case)]
-#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
-pub struct MySummary {
-  pub capital_gain_or_loss: f64,
-  pub other_gain: f64,
-  pub income: f64,
-  pub costs_expenses: f64,
-  pub gifts_dotations_lost_coins: f64,
-}
 
+// should be 4 trans 
 fn my_summary_test(pic_env: &PicEnv, user1: Principal) {
   // 2024 yearly  range
-  let end = 1735660799_000u64;
-  // let start = 1735660799000u64;  // ms u64
-  let start = 1704038400_000u64;
+  let start = 1704038400_000u64; // 2023-12-31T16:00:00.000Z
+  let end   = 1735660799_000u64;  //2024-12-31T15:59:59.000Z
   let args = candid::encode_args((start, end)).unwrap();
   let res: Result<MySummary, String> =
     pic_env.my_update_call_many_args(user1, args, "my_summary");
@@ -1081,4 +1072,15 @@ pub struct SimpleTransaction {
   // rates是标记某个交易历史找不到对应的价格记录，
   // 例如某个NFT的交易价格查不到，
   // 就会被自动标记为missing rates
+}
+
+
+#[allow(non_snake_case)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct MySummary {
+  pub capital_gain_or_loss: f64,
+  pub other_gain: f64,
+  pub income: f64,
+  pub costs_expenses: f64,
+  pub gifts_dotations_lost_coins: f64,
 }
