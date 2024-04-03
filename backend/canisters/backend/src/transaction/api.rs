@@ -27,7 +27,6 @@ fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
     let ret = ctx.wallet_transc_srv.add_transaction_impl(data.clone());
     match ret {
       Ok(_) => {
-
         return Ok(id);
       }
       Err(msg) => {
@@ -43,9 +42,7 @@ fn delete_transaction(id: WalletId) -> Result<WalletId, String> {
     let mut ctx = c.borrow_mut();
     let ret = ctx.wallet_transc_srv.delete_transaction_by_id_impl(id);
     match ret {
-      Ok(_) => {
-        Ok(id)
-      }
+      Ok(_) => Ok(id),
       Err(msg) => Err(msg),
     }
   })
@@ -177,7 +174,6 @@ fn query_one_transaction(id: WalletId) -> Result<TransactionB, String> {
   })
 }
 
-
 #[update(guard = "user_owner_guard")]
 // #[update]
 fn sync_transaction_record(
@@ -186,7 +182,6 @@ fn sync_transaction_record(
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     for one_wallet in cmd {
-
       let w_addr = ctx.wallet_service.get_addr_by_id(one_wallet.walletId);
       ctx.trans_f_srv.delete_all_by_addr(w_addr.clone());
       ctx.wallet_transc_srv.delete_transaction_by_addr(&w_addr);
@@ -362,6 +357,7 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
         );
       }
     };
+
 
     for data in filtered_trans {
       if data.tag.is_empty() {
