@@ -25,9 +25,9 @@ fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
     let ret = ctx.wallet_transc_srv.add_transaction_impl(data.clone());
     match ret {
       Ok(_) => {
-        // update wallet info 
-        let mut cur_wallet=ctx.wallet_service.get_by_addr(data.address);
-        cur_wallet.transactions=cur_wallet.transactions+1;
+        // update wallet info
+        let mut cur_wallet = ctx.wallet_service.get_by_addr(data.address);
+        cur_wallet.transactions = cur_wallet.transactions + 1;
         ctx.wallet_service.update_wallet(cur_wallet, caller());
         return Ok(id);
       }
@@ -44,12 +44,26 @@ fn delete_transaction(id: WalletId) -> Result<WalletId, String> {
     let mut ctx = c.borrow_mut();
     let ret = ctx.wallet_transc_srv.delete_transaction_by_id_impl(id);
     match ret {
-      Ok(_) =>{
-        let w_addr=ctx.wallet_service.get_addr_by_id(id);
-        let mut cur_wallet=ctx.wallet_service.get_by_addr(w_addr);
-        cur_wallet.transactions=cur_wallet.transactions-1;
+      Ok(_) => {
+        let w_addr = ctx.wallet_service.get_addr_by_id(id);
+        let mut cur_wallet = ctx.wallet_service.get_by_addr(w_addr);
+        cur_wallet.transactions = cur_wallet.transactions - 1;
         ctx.wallet_service.update_wallet(cur_wallet, caller());
-         Ok(id)},
+        Ok(id)
+      }
+      Err(msg) => Err(msg),
+    }
+  })
+}
+
+
+#[query(guard = "user_owner_guard")]
+fn query_one_transaction(id: WalletId) -> Result<TransactionB, String> {
+  STATE.with(|c| {
+    let mut ctx = c.borrow_mut();
+    let ret = ctx.wallet_transc_srv.query_one(id);
+    match ret {
+      Ok(t) => Ok(t),
       Err(msg) => Err(msg),
     }
   })
@@ -169,17 +183,7 @@ fn update_transaction_tag(id: u64, tag: String) -> Result<bool, String> {
   })
 }
 
-#[query(guard = "user_owner_guard")]
-fn query_one_transaction(id: WalletId) -> Result<TransactionB, String> {
-  STATE.with(|c| {
-    let mut ctx = c.borrow_mut();
-    let ret = ctx.wallet_transc_srv.query_one(id);
-    match ret {
-      Ok(t) => Ok(t),
-      Err(msg) => Err(msg),
-    }
-  })
-}
+
 
 #[update(guard = "user_owner_guard")]
 // #[update]
@@ -225,29 +229,7 @@ fn sync_transaction_record(
   })
 }
 
-fn convert_trans_f_to_trans_b(
-  trans_f: TransactionF,
-  id: WalletId,
-) -> TransactionB {
-  let address = match trans_f.t_type.as_str() {
-    "SEND" => trans_f.details.from.clone(),
-    "RECEIVE" => trans_f.details.to.clone(),
-    _ => WalletAddress::default(), // You can handle other cases here
-  };
 
-  TransactionB {
-    id,
-    hash: trans_f.hash,
-    timestamp: timestamp_ms_float_to_ms_u64(trans_f.timestamp),
-    t_type: trans_f.t_type,
-    details: trans_f.details.clone(),
-    memo: String::new(),
-    address,
-    tag: Vec::new(),
-    manual: false,
-    comment: String::new(),
-  }
-}
 
 // Nedd set para in user config . cal_method and exclude_tags
 #[update(guard = "user_owner_guard")]
@@ -311,11 +293,6 @@ fn calculate_tax() -> String {
   })
 }
 
-#[query(guard = "user_owner_guard")]
-pub fn greet_test_agent() -> String {
-  ic_cdk::println!("got greet_test() call");
-  return "hello agent!".to_string();
-}
 
 // if start or end is 0. calculate all trans.
 #[update(guard = "user_owner_guard")]
@@ -343,7 +320,7 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
         .expect("wallet transaction empty")
         .clone();
       if vec_trans.is_empty() {
-        return Err("ERROR :NO TRANSACTIONS ! ".to_string());
+        return Err("NO TRANSACTIONS!".to_string());
       }
       all_trans.append(&mut vec_trans);
     }
@@ -365,6 +342,7 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
       }
     };
 
+    // cal summary
     for data in filtered_trans {
       if data.tag.is_empty() {
         my_summary.capital_gain_or_loss =
@@ -382,6 +360,40 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
     return Ok(my_summary);
   })
 }
+
+
+fn convert_trans_f_to_trans_b(
+  trans_f: TransactionF,
+  id: WalletId,
+) -> TransactionB {
+  let address = match trans_f.t_type.as_str() {
+    "SEND" => trans_f.details.from.clone(),
+    "RECEIVE" => trans_f.details.to.clone(),
+    _ => WalletAddress::default(), // You can handle other cases here
+  };
+
+  TransactionB {
+    id,
+    hash: trans_f.hash,
+    timestamp: timestamp_ms_float_to_ms_u64(trans_f.timestamp),
+    t_type: trans_f.t_type,
+    details: trans_f.details.clone(),
+    memo: String::new(),
+    address,
+    tag: Vec::new(),
+    manual: false,
+    comment: String::new(),
+  }
+}
+
+
+#[query(guard = "user_owner_guard")]
+pub fn greet_test_agent() -> String {
+  ic_cdk::println!("got greet_test() call");
+  return "hello agent!".to_string();
+}
+
+
 
 // The test module
 #[cfg(test)]

@@ -74,7 +74,12 @@ impl WalletService {
     addresses
   }
   pub fn get_by_addr(&mut self, addr: String) -> WalletProfile {
-      self.wallets.values().find(|profile| profile.address == addr).expect("wallet of this addr not exsit").clone()
+    self
+      .wallets
+      .values()
+      .find(|profile| profile.address == addr)
+      .expect("wallet of this addr not exsit")
+      .clone()
   }
 
   pub fn update_wallet(

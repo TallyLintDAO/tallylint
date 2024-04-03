@@ -618,12 +618,11 @@ fn sort_method_test(pic_env: &PicEnv, user1: Principal) {
   );
 }
 
-
-// should be 4 trans 
+// should be 4 trans
 fn my_summary_test(pic_env: &PicEnv, user1: Principal) {
   // 2024 yearly  range
   let start = 1704038400_000u64; // 2023-12-31T16:00:00.000Z
-  let end   = 1735660799_000u64;  //2024-12-31T15:59:59.000Z
+  let end = 1735660799_000u64; //2024-12-31T15:59:59.000Z
   let args = candid::encode_args((start, end)).unwrap();
   let res: Result<MySummary, String> =
     pic_env.my_update_call_many_args(user1, args, "my_summary");
@@ -1073,7 +1072,6 @@ pub struct SimpleTransaction {
   // 例如某个NFT的交易价格查不到，
   // 就会被自动标记为missing rates
 }
-
 
 #[allow(non_snake_case)]
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
