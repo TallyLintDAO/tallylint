@@ -165,10 +165,22 @@
                   </span>
                 </div>
                 <div class="col">
-                  <q-icon size="md" name="arrow_forward" />
+                  <q-icon
+                    v-if="transaction.t_type === 'RECEIVE'"
+                    size="md"
+                    name="arrow_back"
+                  />
+                  <q-icon v-else size="md" name="arrow_forward" />
                 </div>
                 <div class="col">
-                  {{ showUsername("", transaction.details.to || "") }}
+                  {{
+                    showUsername(
+                      "",
+                      transaction.t_type === "RECEIVE"
+                        ? transaction.details.from
+                        : transaction.details.to || "",
+                    )
+                  }}
                   <a
                     :href="
                       'https://dashboard.internetcomputer.org/transaction/' +
@@ -661,7 +673,6 @@ const init = () => {
       //TODO 感觉这个初始化有bug，待定
       getAllTransactions(walletsToQuery)
         .then((res) => {
-          console.log("getWalletHistory", res)
           if (res.total && res.total != 0) {
             //@ts-ignore 格式与后端的不太兼容，先忽视吧
             transactionsList.value = res.transactions
@@ -792,6 +803,7 @@ const addTransaction = async () => {
   console.log("res", res)
   if (res.Ok) {
     showMessageSuccess("Add Transaction Success")
+    getSelectedWalletHistory(selectedWallet.value)
   }
   return
 }
