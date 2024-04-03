@@ -128,7 +128,11 @@
                     size="md"
                     name="arrow_downward"
                   />
-                  {{ transaction.t_type }}
+                  <span v-if="transaction.tag.length > 0">
+                    {{ transaction.tag[0] }}
+                  </span>
+                  <span v-else> {{ transaction.t_type }}</span>
+
                   <br />
                   {{
                     new Date(Number(transaction.timestamp)).toLocaleTimeString(
@@ -199,24 +203,32 @@
                       <q-list style="min-width: 100px">
                         <div v-if="transaction.t_type === 'SEND'">
                           <q-item clickable v-close-popup="true">
-                            <q-item-section @click="tagTransaction('gift')">
+                            <q-item-section
+                              @click="tagTransaction(transaction.id, 'Gift')"
+                            >
                               Tag As Gift
                             </q-item-section>
                           </q-item>
                           <q-item clickable v-close-popup="true">
-                            <q-item-section @click="tagTransaction('lost')">
+                            <q-item-section
+                              @click="tagTransaction(transaction.id, 'Lost')"
+                            >
                               Tag As Lost
                             </q-item-section>
                           </q-item>
                         </div>
                         <div v-if="transaction.t_type === 'RECEIVED'">
                           <q-item clickable v-close-popup="true">
-                            <q-item-section @click="tagTransaction('reward')">
+                            <q-item-section
+                              @click="tagTransaction(transaction.id, 'Reward')"
+                            >
                               Tag As Reward
                             </q-item-section>
                           </q-item>
                           <q-item clickable v-close-popup="true">
-                            <q-item-section @click="tagTransaction('airdrop')">
+                            <q-item-section
+                              @click="tagTransaction(transaction.id, 'Airdrop')"
+                            >
                               Tag As Airdrop
                             </q-item-section>
                           </q-item>
@@ -455,8 +467,9 @@ import {
   deleteSyncedTransactions,
   editUserTransaction,
   getUserWallet,
+  setTransactionTag,
 } from "@/api/user"
-import type { syncedTransaction } from "@/types/sns"
+import type { SyncedTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
 import { confirmDialog } from "@/utils/dialog"
@@ -472,7 +485,7 @@ import { useRoute } from "vue-router"
 const route = useRoute()
 
 const address = route.params.address
-const transactionsList = ref<syncedTransaction[]>([])
+const transactionsList = ref<SyncedTransaction[]>([])
 const transaction = ref({
   id: 0n,
   tag: [],
@@ -502,7 +515,7 @@ const transaction = ref({
 const type = ref<string[]>([])
 const typeOptions = ["SEND", "RECEIVE"]
 const tag = ref<string[]>([])
-const tagOptions = ["Reward", "Mining", "Gift"]
+const tagOptions = ["Reward", "Lost", "Gift", "Airdrop"]
 const date = ref("") //采用这个方便判定为空
 const manual = ref<string[]>([])
 const manualOptions = ["Manual"]
@@ -576,9 +589,9 @@ const shortcuts = [
 ]
 
 const groupedTransactions = (
-  transactions: syncedTransaction[],
+  transactions: SyncedTransaction[],
 ): {
-  [date: string]: syncedTransaction[]
+  [date: string]: SyncedTransaction[]
 } => {
   const groups = {}
   transactions.forEach((transaction) => {
@@ -593,7 +606,7 @@ const groupedTransactions = (
 //先分页，再分组。
 const paginatedGroups = computed(
   (): {
-    [date: string]: syncedTransaction[]
+    [date: string]: SyncedTransaction[]
   } => {
     const start = (currentPage.value - 1) * pageSize.value
     const end = start + pageSize.value
@@ -773,7 +786,7 @@ const onSubmit = async () => {
 
 const addTransaction = async () => {
   console.log("addTransaction", transaction.value)
-  const addedTransaction: syncedTransaction = { ...transaction.value }
+  const addedTransaction: SyncedTransaction = { ...transaction.value }
   addedTransaction.timestamp *= MILI_PER_SECOND
   const res = await addManualTransaction(transaction.value)
   console.log("res", res)
@@ -785,7 +798,7 @@ const addTransaction = async () => {
 
 const editTransaction = async () => {
   console.log("editTransaction", transaction.value)
-  const editedTransaction: syncedTransaction = { ...transaction.value }
+  const editedTransaction: SyncedTransaction = { ...transaction.value }
   editedTransaction.timestamp *= MILI_PER_SECOND
   const res = await editUserTransaction(editedTransaction)
   console.log("res", res)
@@ -795,8 +808,14 @@ const editTransaction = async () => {
   return
 }
 
-const tagTransaction = (tag: string) => {
+const tagTransaction = (transactionId: bigint | number, tag: string) => {
   console.log("tag", tag)
+  setTransactionTag(transactionId, tag).then((res) => {
+    if (res.Ok) {
+      showMessageSuccess(`Tag ${tag} set success`)
+      getSelectedWalletHistory(selectedWallet.value)
+    }
+  })
 }
 
 const deleteTransaction = (transactionId: bigint | number) => {
@@ -835,4 +854,4 @@ const deleteTransaction = (transactionId: bigint | number) => {
   }
 }
 </style>
-@/utils/syncedTransactions
+@/utils/SyncedTransactions

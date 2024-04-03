@@ -40,7 +40,7 @@ export interface IRCR1Price {
 
 export type InferredTransaction = TransactionF
 
-export type syncedTransaction = {
+export type SyncedTransaction = {
   id: bigint
   tag: Array<string>
   hash: string

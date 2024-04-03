@@ -1,8 +1,9 @@
-import type { syncedTransaction } from "@/types/sns"
+import type { SyncedTransaction } from "@/types/sns"
 import type { ApiResult, ApiUserInfo } from "@/types/types"
 import type {
   HistoryQueryParams,
   SyncedHistory,
+  TaxReportData,
   WalletInfo,
   WalletTag,
   syncWalletParam,
@@ -163,16 +164,24 @@ export async function syncWallet(
 
 // 手动添加单条交易记录
 export async function addManualTransaction(
-  transaction: syncedTransaction,
+  transaction: SyncedTransaction,
 ): Promise<ApiResult<boolean>> {
   return getBackend().add_transaction(transaction)
 }
 
 // 编辑单条交易记录
 export async function editUserTransaction(
-  transaction: syncedTransaction,
+  transaction: SyncedTransaction,
 ): Promise<ApiResult<boolean>> {
   return getBackend().update_transaction(transaction)
+}
+
+// 单独设置用户交易记录的tag
+export async function setTransactionTag(
+  id: bigint | number,
+  tag: string,
+): Promise<ApiResult<TaxReportData>> {
+  return getBackend().update_transaction_tag(id, tag)
 }
 
 // 查询用户已存储的交易记录
@@ -197,6 +206,9 @@ export async function deleteSyncedTransactions(
 }
 
 // 获取用户税务报告的相关利润
-export async function getUserTaxProfit(): Promise<ApiResult<any>> {
-  return getBackend().calculate_tax()
+export async function getUserTaxProfit(
+  start: number,
+  end: number,
+): Promise<ApiResult<TaxReportData>> {
+  return getBackend().my_summary(start, end)
 }
