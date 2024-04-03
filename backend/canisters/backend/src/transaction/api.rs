@@ -353,11 +353,9 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
     // margin_payment realted_PL gift lost
     let mut my_summary = MySummary {
       capital_gain_or_loss: 0.0,
-      // TODO this other_gain not solve yet. business not understands yet.
-      other_gain: 0.0,
+      other_gain: 0.0, // TODO  final stage work
       income: 0.0,
-      // TODO this costs_expenses not solve yet. business not understands yet.
-      costs_expenses: 0.0,
+      costs_expenses: 0.0, // TODO  final stage work
       gifts_dotations_lost_coins: 0.0,
     };
     let mut ctx = ctx.borrow_mut();
@@ -388,21 +386,27 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
         .filter(|trans| trans.timestamp >= start && trans.timestamp <= end)
         .collect();
       if filtered_trans.is_empty() {
-        return Err("ERROR :year filter empty ! ".to_string());
+        return Err(
+          "year filter empty! no transaction this year or timestamp input err"
+            .to_string(),
+        );
       }
     };
 
+    //TODO  tags should be fixed enum as agreement
+    // Reward", "Lost", "Gift", "Airdrop
     for data in filtered_trans {
-      my_summary.capital_gain_or_loss =
-        my_summary.capital_gain_or_loss + data.details.profit;
-      if data.tag.contains(&"air drop".to_string()) {
+      if data.tag.is_empty() {
+        my_summary.capital_gain_or_loss =
+          my_summary.capital_gain_or_loss + data.details.profit;
+      } else if data.tag.contains(&"Airdrop".to_string()) {
         my_summary.income += data.details.amount * data.details.price;
-      }
-      if data.tag.contains(&"gift".to_string())
-        || data.tag.contains(&"donation".to_string())
-        || data.tag.contains(&"lost_coins".to_string())
+      } else if data.tag.contains(&"Gift".to_string())
+        || data.tag.contains(&"Donation".to_string())
+        || data.tag.contains(&"Lost".to_string())
       {
-        my_summary.costs_expenses += data.details.amount * data.details.price;
+        my_summary.gifts_dotations_lost_coins +=
+          data.details.amount * data.details.price;
       }
     }
     return Ok(my_summary);
