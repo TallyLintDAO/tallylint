@@ -433,7 +433,7 @@ fn add_a_completx_transaction(pic_env: &PicEnv, user1: Principal) {
   args.manual = true;
   args.comment = "my manualled blabala".to_string();
   args.tag.push("air drop".to_string());
-  args.tag.push("air drop2222".to_string());
+  args.tag.push("gift".to_string());
   let ret: Result<TransactionId, String> =
     pic_env.my_update_call_one_arg(user1, args, "add_transaction");
   match ret {
