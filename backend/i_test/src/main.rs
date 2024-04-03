@@ -217,7 +217,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   };
   let transaction2 = TransactionF {
     hash: "12z33".to_string(),
-    timestamp: 1735660799021.111111,
+    timestamp: 1704038400_015.111111,
     t_type: "SEND".to_string(),
 
     details: Details {
@@ -240,7 +240,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   };
   let transaction3 = TransactionF {
     hash: "123".to_string(),
-    timestamp: 1735660799023.0,
+    timestamp: 1704038400_007.0,
     t_type: "RECEIVE".to_string(),
 
     details: Details {
@@ -263,7 +263,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   };
   let transaction4 = TransactionF {
     hash: "123".to_string(),
-    timestamp: 1735660799028.0,
+    timestamp: 1704038400_002.0,
     t_type: "SEND".to_string(),
 
     details: Details {
@@ -286,7 +286,7 @@ fn sync_transactions_from_front_end(pic_env: &PicEnv, user1: Principal) {
   };
   let transaction5 = TransactionF {
     hash: "123".to_string(),
-    timestamp: 1735660799029.0,
+    timestamp: 1704038400_001.0,
     t_type: "RECEIVE".to_string(),
 
     details: Details {
@@ -630,9 +630,9 @@ pub struct MySummary {
 
 fn my_summary_test(pic_env: &PicEnv, user1: Principal) {
   // 2024 yearly  range
-  let start = 1735660u64;
+  let end = 1735660799_000u64;
   // let start = 1735660799000u64;  // ms u64
-  let end = 1704038400000u64;
+  let start = 1704038400_000u64;
   let args = candid::encode_args((start, end)).unwrap();
   let res: Result<MySummary, String> =
     pic_env.my_update_call_many_args(user1, args, "my_summary");
@@ -646,7 +646,7 @@ fn my_summary_test(pic_env: &PicEnv, user1: Principal) {
   }
 }
 fn my_summary_test2(pic_env: &PicEnv, user1: Principal) {
-  // 2024 yearly  range
+  // get all
   let start = 0u64;
   let end = 0u64;
   let args = candid::encode_args((start, end)).unwrap();

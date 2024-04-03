@@ -42,17 +42,18 @@ async fn regular_update_canister_with_db() {
   let payload =
     collect_running_payload_simple(agent.borrow(), canister_id).await;
   save_payload_to_local(payload, now.clone(), ic_or_local.to_owned());
-
-  let payload_now = read_db_from_local(now.clone(), ic_or_local.to_owned());
+  // payload_2024_04_02_15_54_26
+  //   let now="2024_04_02_15_54_26".to_string();
+  let _payload_now = read_db_from_local(now.clone(), ic_or_local.to_owned());
 
   // ! deploy ic
   exec_deploy(ic_or_local.to_owned(), now).await;
 
   // ! send payload to ic and set payload on ic
-  let args = candid::encode_one(payload_now).unwrap();
-  let result =
-    set_payload_using_dev_machine_file(agent.borrow(), canister_id, args).await;
-  println!("{}", result);
+  // let args = candid::encode_one(payload_now).unwrap();
+  // let result =
+  //   set_payload_using_dev_machine_file(agent.borrow(), canister_id, args).await;
+  // println!("{}", result);
 }
 
 fn save_payload_to_local(payload: String, time_tag: String, mode: String) {

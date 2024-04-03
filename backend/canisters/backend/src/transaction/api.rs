@@ -19,7 +19,7 @@ use crate::{MySummary, TransactionB};
 // TODO use: AddRecordCommand . front end dont need to input
 // id . id gen by backend. TODO 测试 id 正常生成且不冲突
 #[update(guard = "user_owner_guard")]
-fn add_transaction(mut data: TransactionB) -> Result<WalletId, String> {
+fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     ctx.id = ctx.id + 1;
@@ -33,24 +33,25 @@ fn add_transaction(mut data: TransactionB) -> Result<WalletId, String> {
         // ctx.index_service.add_transaction_index(id);
         // TODO update wallet.transactions numbers
 
-        //           // ! update wallet info
-        //   let mut wallet_profile = ctx
-        //     .wallet_service
-        //     .query_a_wallet(one_wallet.walletId)
-        //     .expect("no such wallet");
-        //   wallet_profile.last_sync_time = now();
-        //   // FIXME this not work as semantics . still 0
-        //   wallet_profile.transactions = one_wallet.history.len() as u64;
-        //   wallet_profile.last_transaction_time = timestamp_ms_float_to_ns(
-        //     one_wallet.history.get(0).unwrap().clone().timestamp,
-        //   );
-        //   ctx
-        //     .wallet_service
-        //     .update_wallet(wallet_profile, get_caller());
-        // }
+        // // ! update wallet info
+        // let mut wallet_profile = ctx
+        //   .wallet_service
+        //   .query_a_wallet(one_wallet.walletId)
+        //   .expect("no such wallet");
+        // wallet_profile.last_sync_time = now();
+        // // FIXME this not work as semantics . still 0
+        // wallet_profile.transactions = one_wallet.history.len() as u64;
+        // wallet_profile.last_transaction_time = timestamp_ms_float_to_ns(
+        //   one_wallet.history.get(0).unwrap().clone().timestamp,
+        // );
+        // ctx
+        //   .wallet_service
+        //   .update_wallet(wallet_profile, get_caller());
         return Ok(id);
       }
-      Err(msg) => Err(msg),
+      Err(msg) => {
+        return Err(msg);
+      }
     }
   })
 }
@@ -406,4 +407,23 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
     }
     return Ok(my_summary);
   })
+}
+
+// The test module
+#[cfg(test)]
+mod tests {
+
+  // Test case functions
+  #[test]
+  fn time_test() {
+    let str = "ok11111111111111111111111".to_string();
+    if 1735660799_001u64 >= 1735660799_000u64
+      && 1704038400_000u64 <= 1735660799_001u64
+    {
+      eprintln!("{}", str);
+      assert!(true);
+    } else {
+      assert!(false);
+    }
+  }
 }

@@ -48,12 +48,14 @@ fn pre_upgrade() {
   //  dfx canister call  backend do_pre_upgrade_and_print_db --network ic
   // TODO
   // ! also better save data to dropbox as backup better !
+  set_stable_mem_using_payload_simple();
 }
 
 #[post_upgrade]
 fn post_upgrade() {
   // THIS will not print msg. not call from `update` flag.
   // my_post_upgrade();
+  set_payload_using_stable_mem_simple();
 }
 
 #[update(guard = "admin_guard")]
