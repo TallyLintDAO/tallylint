@@ -16,8 +16,6 @@ use crate::wallet::service::WalletId;
 use crate::STATE;
 use crate::{MySummary, TransactionB};
 
-// TODO use: AddRecordCommand . front end dont need to input
-// id . id gen by backend. TODO 测试 id 正常生成且不冲突
 #[update(guard = "user_owner_guard")]
 fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
   STATE.with(|c| {
@@ -29,24 +27,7 @@ fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
     let ret = ctx.wallet_transc_srv.add_transaction_impl(data.clone());
     match ret {
       Ok(_) => {
-        // TODO save the id as fast bmap index into the wallet struct.
-        // ctx.index_service.add_transaction_index(id);
-        // TODO update wallet.transactions numbers
 
-        // // ! update wallet info
-        // let mut wallet_profile = ctx
-        //   .wallet_service
-        //   .query_a_wallet(one_wallet.walletId)
-        //   .expect("no such wallet");
-        // wallet_profile.last_sync_time = now();
-        // // FIXME this not work as semantics . still 0
-        // wallet_profile.transactions = one_wallet.history.len() as u64;
-        // wallet_profile.last_transaction_time = timestamp_ms_float_to_ns(
-        //   one_wallet.history.get(0).unwrap().clone().timestamp,
-        // );
-        // ctx
-        //   .wallet_service
-        //   .update_wallet(wallet_profile, get_caller());
         return Ok(id);
       }
       Err(msg) => {
@@ -63,8 +44,6 @@ fn delete_transaction(id: WalletId) -> Result<WalletId, String> {
     let ret = ctx.wallet_transc_srv.delete_transaction_by_id_impl(id);
     match ret {
       Ok(_) => {
-        // TODO update wallet.transactions numbers
-        // TODO delete the id as fast bmap index into the wallet struct.
         Ok(id)
       }
       Err(msg) => Err(msg),
@@ -167,7 +146,6 @@ fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
   })
 }
 
-// TODO 联系前端要什么样子的接口
 #[update(guard = "user_owner_guard")]
 fn update_transaction_tag(id: u64, tag: String) -> Result<bool, String> {
   STATE.with(|c| {
@@ -199,8 +177,7 @@ fn query_one_transaction(id: WalletId) -> Result<TransactionB, String> {
   })
 }
 
-// TODO
-// 用户点击导入钱包自动调用这个接口.存transacs 到后端
+
 #[update(guard = "user_owner_guard")]
 // #[update]
 fn sync_transaction_record(
@@ -209,13 +186,7 @@ fn sync_transaction_record(
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     for one_wallet in cmd {
-      // FIXME fix already exsit transac . 检查最近一条的hash是否和db上的.
-      // TODO WARN:remove 是临时方案.应该前端每次传增量数据.
-      // 才不必要传过量数据,花费不合理 hash一样.一样则返回 "transactions
-      // already newest. nothing append since last time sync"
-      // let latest_hash = one_wallet.history[0].hash.clone();
-      // ! remove current all.
-      // FIXME 这个同步行为会删除所有手动记录
+
       let w_addr = ctx.wallet_service.get_addr_by_id(one_wallet.walletId);
       ctx.trans_f_srv.delete_all_by_addr(w_addr.clone());
       ctx.wallet_transc_srv.delete_transaction_by_addr(&w_addr);
@@ -239,7 +210,6 @@ fn sync_transaction_record(
         .query_a_wallet(one_wallet.walletId)
         .expect("no such wallet");
       wallet_profile.last_sync_time = now();
-      // FIXME this not work as semantics . still 0
       wallet_profile.transactions = one_wallet.history.len() as u64;
       wallet_profile.last_transaction_time = timestamp_ms_float_to_ns(
         one_wallet.history.get(0).unwrap().clone().timestamp,
@@ -393,8 +363,6 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
       }
     };
 
-    //TODO  tags should be fixed enum as agreement
-    // Reward", "Lost", "Gift", "Airdrop
     for data in filtered_trans {
       if data.tag.is_empty() {
         my_summary.capital_gain_or_loss =
