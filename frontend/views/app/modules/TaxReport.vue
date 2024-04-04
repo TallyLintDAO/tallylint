@@ -200,6 +200,14 @@ const getTaxProfit = async () => {
   console.log("getTaxProfit", res)
   if (res.Ok) {
     taxReportData.value = res.Ok
+  } else {
+    taxReportData.value = {
+      capital_gain_or_loss: 0,
+      costs_expenses: 0,
+      gifts_dotations_lost_coins: 0,
+      income: 0,
+      other_gain: 0,
+    }
   }
   walletLoading.value = false
 }
