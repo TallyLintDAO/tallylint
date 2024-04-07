@@ -25,7 +25,7 @@ export const getAllSyncedTransactions = async (
 
     const transactions = res.map((transaction) => ({
       ...transaction,
-      timestamp: Number(transaction.timestamp) / MILI_PER_SECOND,
+      timestamp: Number(transaction.timestamp),
     }))
     console.log("getSyncedTransactions", transactions)
     return { total: transactions.length, transactions: transactions }

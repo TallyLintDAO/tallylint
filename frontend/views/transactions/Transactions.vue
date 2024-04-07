@@ -165,10 +165,28 @@
                   </span>
                 </div>
                 <div class="col">
-                  <q-icon size="md" name="arrow_forward" />
+                  <q-icon
+                    v-if="transaction.t_type === 'RECEIVE'"
+                    size="md"
+                    class="text-green-6"
+                    name="arrow_back"
+                  />
+                  <q-icon
+                    v-else
+                    size="md"
+                    class="text-red-5"
+                    name="arrow_forward"
+                  />
                 </div>
                 <div class="col">
-                  {{ showUsername("", transaction.details.to || "") }}
+                  {{
+                    showUsername(
+                      "",
+                      transaction.t_type === "RECEIVE"
+                        ? transaction.details.from
+                        : transaction.details.to || "",
+                    )
+                  }}
                   <a
                     :href="
                       'https://dashboard.internetcomputer.org/transaction/' +
@@ -460,7 +478,6 @@
 </template>
 
 <script lang="ts" setup>
-import { MILI_PER_SECOND } from "@/api/constants/ic"
 import { getAllTransactions } from "@/api/rosetta"
 import {
   addManualTransaction,
@@ -638,8 +655,8 @@ const paginatedGroups = computed(
   },
 )
 
-// 监听 type, tag 和 manual 变化，如果有任何一个发生变化，强制重新计算 paginatedGroups
-watch([type, tag, manual], () => {
+// 监听 date, type, tag 和 manual 变化，如果有任何一个发生变化，强制重新计算 paginatedGroups
+watch([date, type, tag, manual], () => {
   paginatedGroups.value // 触发 paginatedGroups 的重新计算
 })
 
@@ -661,7 +678,6 @@ const init = () => {
       //TODO 感觉这个初始化有bug，待定
       getAllTransactions(walletsToQuery)
         .then((res) => {
-          console.log("getWalletHistory", res)
           if (res.total && res.total != 0) {
             //@ts-ignore 格式与后端的不太兼容，先忽视吧
             transactionsList.value = res.transactions
@@ -787,11 +803,12 @@ const onSubmit = async () => {
 const addTransaction = async () => {
   console.log("addTransaction", transaction.value)
   const addedTransaction: SyncedTransaction = { ...transaction.value }
-  addedTransaction.timestamp *= MILI_PER_SECOND
+  // addedTransaction.timestamp *= MILI_PER_SECOND
   const res = await addManualTransaction(transaction.value)
   console.log("res", res)
   if (res.Ok) {
     showMessageSuccess("Add Transaction Success")
+    getSelectedWalletHistory(selectedWallet.value)
   }
   return
 }
@@ -799,7 +816,7 @@ const addTransaction = async () => {
 const editTransaction = async () => {
   console.log("editTransaction", transaction.value)
   const editedTransaction: SyncedTransaction = { ...transaction.value }
-  editedTransaction.timestamp *= MILI_PER_SECOND
+  // editedTransaction.timestamp *= MILI_PER_SECOND
   const res = await editUserTransaction(editedTransaction)
   console.log("res", res)
   if (res.Ok) {

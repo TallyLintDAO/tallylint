@@ -89,6 +89,28 @@ export async function getUserAllWallets(): Promise<WalletTag[]> {
   }
 }
 
+// 获得当前用户登记的钱包信息
+export async function getUserWalletsTag(): Promise<WalletTag[]> {
+  try {
+    const userWallets = await getUserWallet(false)
+    if (userWallets.Ok) {
+      const mapToWallet = (wallet: { name: any; address: any; from: any }) => ({
+        name: wallet.name,
+        address: wallet.address,
+        from: wallet.from,
+      })
+      const userWalletList = userWallets.Ok.map(mapToWallet)
+
+      return userWalletList
+    } else {
+      throw new Error("Failed to fetch user wallets wallets")
+    }
+  } catch (error) {
+    showMessageError(String(error))
+    throw error
+  }
+}
+
 // 编辑用户钱包
 export async function editUserWallet(
   walletId: bigint,

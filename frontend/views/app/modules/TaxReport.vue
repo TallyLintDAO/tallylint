@@ -159,7 +159,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { getUserAllWallets, getUserTaxProfit } from "@/api/user"
+import { getUserTaxProfit, getUserWalletsTag } from "@/api/user"
 import type { SyncedTransaction } from "@/types/sns"
 import type { TaxReportData } from "@/types/user"
 import { YearTimestamp, getYearTimestamps } from "@/utils/date"
@@ -200,12 +200,20 @@ const getTaxProfit = async () => {
   console.log("getTaxProfit", res)
   if (res.Ok) {
     taxReportData.value = res.Ok
+  } else {
+    taxReportData.value = {
+      capital_gain_or_loss: 0,
+      costs_expenses: 0,
+      gifts_dotations_lost_coins: 0,
+      income: 0,
+      other_gain: 0,
+    }
   }
   walletLoading.value = false
 }
 
 const getWalletHistory = async () => {
-  const wallets = await getUserAllWallets()
+  const wallets = await getUserWalletsTag()
   walletAmount.value = wallets.length
   getAllSyncedTransactions(0, 0, [], wallets).then((res) => {
     if (res.total && res.total != 0) {
