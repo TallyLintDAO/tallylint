@@ -5,6 +5,7 @@ import DashBoard from "@/views/app/modules/Dashboard.vue"
 import NNS from "@/views/app/modules/NNS.vue"
 import Wallet from "@/views/app/modules/Wallet.vue"
 import TaxReport from "@/views/app/modules/TaxReport.vue"
+import Settings from "@/views/app/modules/Settings.vue"
 import Home from "@/views/home/Home.vue"
 import Transactions from "@/views/transactions/Transactions.vue"
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router"
@@ -41,6 +42,7 @@ const routes: Array<RouteRecordRaw> = [
       { path: "transactions/:address?", component: Transactions },
       { path: "neurons", component: NNS },
       { path: "taxReport", component: TaxReport },
+      { path: "settings", component: Settings },
     ],
   },
   ...errors,
