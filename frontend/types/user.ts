@@ -44,6 +44,7 @@ export interface syncWalletParam {
 }
 
 export interface WalletTag {
+  id: number
   address: string
   name: string
   from: string
@@ -76,7 +77,7 @@ export interface HistoryQueryParams {
   from_time: number
   to_time: number
   sort_method: string[]
-  address: string[]
+  wids: number[]
 }
 
 export type SyncedHistory = TransactionB[]

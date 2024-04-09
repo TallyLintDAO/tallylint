@@ -284,14 +284,19 @@ const syncAllWallet = async () => {
   let syncTransactionArray: syncWalletParam[] = []
   // 创建一个 Promise 数组，用于存放每个 getICPTransactions() 的 Promise
   const promises = rows.value.map(async (row, index) => {
+    console.log("row", row)
     const res = await getICPTransactions(
-      { address: row.address, name: "test", from: "" },
+      {
+        id: Number(row.id),
+        address: row.address,
+        name: row.name,
+        from: row.from,
+      },
       true,
     )
     //将钱包数据同步
     console.log(`getICPTransactions ${index + 1}`, res)
     syncTransactionArray.push({ walletId: row.id, history: res.transactions })
-    // syncTransactionArray.push([row.id, res.transactions])
   })
   // 使用 Promise.all() 等待所有的请求完成
   await Promise.all(promises).catch((error) => {
@@ -342,7 +347,7 @@ const getWallets = (isRefresh: boolean) => {
         for (const row of rows.value) {
           try {
             getICPTransactions(
-              { address: row.address, name: "", from: "" },
+              { id: Number(row.id), address: row.address, name: "", from: "" },
               true,
             ).then((res) => {
               // 将查询得到的transactions绑定回原数组中的now_transactions，表明现在的交易数有多少

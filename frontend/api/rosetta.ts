@@ -163,6 +163,7 @@ export const formatIcpTransaccion = async (
     )
       transaction.details.status = operation.status
 
+    transaction.wid = wallet.id
     transaction.t_type =
       transaction.details.to === wallet.address ? "RECEIVE" : "SEND"
     //直接输出真实的数量，不再使用浮点数
@@ -250,7 +251,7 @@ const initialWalletHistory = {
 //根据交易历史，手动生成钱包历史
 export const getWalletHistory = async (accountAddress: string) => {
   const res = await getICPTransactions(
-    { address: accountAddress, name: "", from: "" },
+    { id: 0, address: accountAddress, name: "", from: "" },
     true,
   )
   // 倒序交易数组，以确保最早的交易在前面
@@ -298,7 +299,12 @@ export const getAllWalletDailyBalance = async (
   //先获取所有历史记录，再统计钱包余额
   const walletPromises = wallets.map(async (wallet) => {
     const res = await getICPTransactions(
-      { address: wallet.address, name: wallet.name, from: wallet.from },
+      {
+        id: Number(wallet.id),
+        address: wallet.address,
+        name: wallet.name,
+        from: wallet.from,
+      },
       true,
     )
     return res.transactions
