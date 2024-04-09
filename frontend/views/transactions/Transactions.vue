@@ -258,9 +258,7 @@
                           v-close-popup="true"
                         >
                           <q-item-section
-                            @click="
-                              removeTransactionTag(transaction.id)
-                            "
+                            @click="removeTransactionTag(transaction.id)"
                           >
                             Remove Tag
                           </q-item-section>
@@ -507,6 +505,7 @@ import { useRoute } from "vue-router"
 const route = useRoute()
 
 const address = route.params.address
+const wid = route.params.wid
 const transactionsList = ref<SyncedTransaction[]>([])
 const transaction = ref({
   id: 0n,
@@ -673,13 +672,14 @@ onMounted(() => {
 const init = () => {
   getWallets().then(() => {
     let walletsToQuery: WalletTag[]
+    //TODO address应改为wid
     if (address) {
       // 如果 route address 存在，则是单独使用api查询某一钱包，否则直接查询后端罐子
       walletsToQuery = Array.isArray(address)
         ? // 如果 address 是数组，则直接使用
-          address.map((addr) => ({ address: addr, name: "", from: "" }))
+          address.map((addr) => ({ id: 0, address: addr, name: "", from: "" }))
         : // 如果 address 是字符串，则构造包含单个地址的数组
-          [{ address: address, name: "", from: "" }]
+          [{ id: 0, address: address, name: "", from: "" }]
     } else {
       // 如果 address 不存在，则默认使用canister查询IC数据库
       walletsToQuery = wallets.value
