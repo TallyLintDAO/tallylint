@@ -59,7 +59,7 @@ fn delete_transaction(id: WalletId) -> Result<WalletId, String> {
 }
 
 #[query(guard = "user_owner_guard")]
-fn query_one_transaction(id: WalletId) -> Result<TransactionB, String> {
+fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     let ret = ctx.wallet_transc_srv.query_one(id);
@@ -78,7 +78,7 @@ fn query_wallets_synced_transactions(
     let ctx = c.borrow();
     let mut all_transactions = Vec::new();
 
-    // !get all recs
+    // !get all rec
     for wid in cmd.wids {
       let rec = ctx
         .wallet_transc_srv
@@ -88,12 +88,18 @@ fn query_wallets_synced_transactions(
         .unwrap_or(Vec::new());
       all_transactions.extend(rec);
     }
+    if all_transactions.is_empty() {
+      panic!("err! no wallets transacitons");
+    }
 
     // !delete unwant field
     let mut simple_trans: Vec<SimpleTransaction> = all_transactions
       .into_iter()
       .map(TransactionB::trim)
       .collect();
+    if simple_trans.is_empty() {
+      panic!("err! no simple transacitons");
+    }
 
     // !filter if time range
     if cmd.from_time != 0 && cmd.to_time != 0 {
@@ -101,6 +107,9 @@ fn query_wallets_synced_transactions(
         transaction.timestamp >= cmd.from_time
           && transaction.timestamp <= cmd.to_time
       });
+    }
+    if simple_trans.is_empty() {
+      panic!("err! no time range transacitons");
     }
 
     // ! sort if need
@@ -187,11 +196,12 @@ fn update_transaction_tag(id: u64, tag: String) -> Result<bool, String> {
 #[update(guard = "user_owner_guard")]
 // #[update]
 fn sync_transaction_record(
-  cmd: Vec<SyncTransactionCommand>,
+  data: Vec<SyncTransactionCommand>,
 ) -> Result<bool, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
-    for one_wallet in cmd {
+    for one_wallet in data {
+      // FIXME
       let w_addr = ctx.wallet_service.get_addr_by_id(one_wallet.walletId);
       ctx.trans_f_srv.delete_all_by_addr(w_addr.clone());
       ctx.wallet_transc_srv.delete_transaction_by_addr(&w_addr);
@@ -212,8 +222,9 @@ fn sync_transaction_record(
       // ! update wallet info
       let mut wallet_profile = ctx
         .wallet_service
-        .query_a_wallet(one_wallet.walletId)
+        .query_a_wallet_by_id(one_wallet.walletId)
         .expect("no such wallet");
+      // FIXME use ms u64 .
       wallet_profile.last_sync_time = now();
       wallet_profile.transactions = one_wallet.history.len() as u64;
       wallet_profile.last_transaction_time = timestamp_ms_float_to_ns(
@@ -359,7 +370,7 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
 
 fn convert_trans_f_to_trans_b(
   trans_f: TransactionF,
-  id: WalletId,
+  id: TransactionId,
 ) -> TransactionB {
   let address = match trans_f.t_type.as_str() {
     "SEND" => trans_f.details.from.clone(),
@@ -369,7 +380,7 @@ fn convert_trans_f_to_trans_b(
 
   TransactionB {
     id,
-    wid: id,
+    wid: trans_f.wid,
     hash: trans_f.hash,
     timestamp: timestamp_ms_float_to_ms_u64(trans_f.timestamp),
     t_type: trans_f.t_type,

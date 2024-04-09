@@ -55,7 +55,8 @@ fn pre_upgrade() {
 fn post_upgrade() {
   // THIS will not print msg. not call from `update` flag.
   // my_post_upgrade();
-  set_payload_using_stable_mem_simple();
+  let ret = set_payload_using_stable_mem_simple();
+  // if ret
 }
 
 #[update(guard = "admin_guard")]
@@ -88,7 +89,9 @@ fn set_payload_using_stable_mem_simple() -> String {
   let ret = serde_json::from_str::<CanisterContext>(&db_json);
   match ret {
     Err(e) => {
-      format!("!!!! deserialize_error: !!!! {:?}", e)
+      let ret = format!("!!!! deserialize_error: !!!! {:?}", e);
+      panic!("{}", ret);
+      //FIXME  should panic :abort update ic code here
     }
     Ok(db_json) => {
       STATE.with(|s| {

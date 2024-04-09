@@ -66,7 +66,7 @@ pub struct EditHistoryCommand {
 
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct WalletRecordService {
-  pub records: BTreeMap<WalletId, TransactionB>,
+  pub records: BTreeMap<TransactionId, TransactionB>,
   #[serde(default = "BTreeMap::new")]
   pub my_summary: BTreeMap<u64, MySummary>,
 }
@@ -81,9 +81,9 @@ impl TransactionService {
     id: u64,
     profile: TransactionF,
   ) -> Result<bool, String> {
-    if self.transactions.contains_key(&id) {
-      return Err("transaction record already exsit".to_string());
-    }
+    // if self.transactions.contains_key(&id) {
+    //   return Err("transaction record already exsit".to_string());
+    // }
 
     self.transactions.insert(id, profile);
 
@@ -144,8 +144,8 @@ impl WalletRecordService {
     &mut self,
     profile: TransactionB,
   ) -> Result<bool, String> {
-    let id = profile.wid;
-    self.records.insert(profile.wid, profile);
+    let id =profile.id;
+    self.records.insert(id, profile);
     if self.records.contains_key(&id) {
       return Ok(true);
     } else {
@@ -234,23 +234,25 @@ impl WalletRecordService {
     one_wallet.insert(addr.clone(), records);
     return one_wallet;
   }
+
   pub fn query_one_wallet_trans_by_wallet_id(
     &self,
-    id: WalletId,
+    wid: WalletId,
   ) -> HashMap<WalletId, Vec<TransactionB>> {
     let mut one_wallet = HashMap::new();
     let records: Vec<TransactionB> = self
       .records
       .values()
-      .filter(|record| record.wid == id)
+      .filter(|record| record.wid == wid)
       .cloned()
       .collect();
     if records.is_empty() {
       return HashMap::new();
     }
-    one_wallet.insert(id.clone(), records);
+    one_wallet.insert(wid.clone(), records);
     return one_wallet;
   }
+
   pub fn query_all_transactions(&self) -> HashMap<WalletId, TransactionB> {
     let mut all_trans = HashMap::new();
     for (id, records) in &self.records {

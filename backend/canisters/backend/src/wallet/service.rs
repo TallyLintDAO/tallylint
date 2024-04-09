@@ -113,7 +113,7 @@ impl WalletService {
     }
   }
 
-  pub fn query_a_wallet(&self, id: WalletId) -> Option<WalletProfile> {
+  pub fn query_a_wallet_by_id(&self, id: WalletId) -> Option<WalletProfile> {
     let wallet = self.wallets.get(&id);
     return wallet.cloned();
   }

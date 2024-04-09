@@ -55,8 +55,8 @@ async fn regular_update_canister_with_db() {
   // ! send payload to ic and set payload on ic
   let args = candid::encode_one(payload_now).unwrap();
   let result =
-    set_payload_using_dev_machine_file(agent.borrow(), canister_id,
-  args).await; println!("{}", result);
+    set_payload_using_dev_machine_file(agent.borrow(), canister_id, args).await;
+  println!("{}", result);
 }
 
 fn save_payload_to_local(payload: String, time_tag: String, mode: String) {

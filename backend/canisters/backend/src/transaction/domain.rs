@@ -37,6 +37,8 @@ pub struct TransactionF {
   pub details: Details,
 }
 
+pub type TransactionId = u64;
+
 // TODO multi profit type
 #[allow(non_snake_case)]
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
@@ -288,32 +290,28 @@ pub struct MySummary {
   pub gifts_dotations_lost_coins: f64,
 }
 
-
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use serde_json::json;
+  use super::*;
+  use serde_json::json;
 
+  #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+  pub struct Test1 {
+    pub id: u64,
+    pub tag: Option<String>,
+  }
 
-    #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
-pub struct Test1 {
+  #[test]
+  fn test_transaction_b_serialization() {
+    let transaction_b = Test1 {
+      id: 1,
 
-  pub id: u64,
-  pub tag: Option<String>,
+      tag: Some("donation".to_string()),
+    };
 
-}
-
-    #[test]
-    fn test_transaction_b_serialization() {
-        let transaction_b = Test1 {
-            id: 1,
-
-            tag: Some("donation".to_string()),
-        };
-
-        let data = serde_json::to_string(&transaction_b).unwrap();
-        eprint!("{}", data);
-        assert_eq!(1,0);
-// {"id":1,"tag":"donation"}
-    }
+    let data = serde_json::to_string(&transaction_b).unwrap();
+    eprint!("{}", data);
+    assert_eq!(1, 0);
+    // {"id":1,"tag":"donation"}
+  }
 }
