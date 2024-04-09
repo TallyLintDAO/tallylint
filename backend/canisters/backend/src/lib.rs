@@ -52,5 +52,7 @@ use ic_cdk::api::management_canister::{
 };
 #[allow(unused_imports)]
 use std::collections::HashMap;
+#[allow(unused_imports)]
+use crate::transaction::domain::TransactionId;
 
 ic_cdk::export_candid!();
