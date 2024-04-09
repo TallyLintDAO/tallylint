@@ -21,7 +21,8 @@ export const idlFactory = ({ IDL }) => {
   });
   const TransactionB = IDL.Record({
     'id' : IDL.Nat64,
-    'tag' : IDL.Vec(IDL.Text),
+    'tag' : IDL.Opt(IDL.Text),
+    'wid' : IDL.Nat64,
     'hash' : IDL.Text,
     'memo' : IDL.Text,
     't_type' : IDL.Text,
@@ -87,6 +88,7 @@ export const idlFactory = ({ IDL }) => {
     'Err' : IDL.Tuple(RejectionCode, IDL.Text),
   });
   const TransactionF = IDL.Record({
+    'wid' : IDL.Nat64,
     'hash' : IDL.Text,
     't_type' : IDL.Text,
     'timestamp' : IDL.Float64,
@@ -167,12 +169,12 @@ export const idlFactory = ({ IDL }) => {
   const HistoryQueryCommand = IDL.Record({
     'from_time' : IDL.Nat64,
     'to_time' : IDL.Nat64,
+    'wids' : IDL.Vec(IDL.Nat64),
     'sort_method' : IDL.Opt(IDL.Text),
-    'address' : IDL.Vec(IDL.Text),
   });
   const SimpleTransaction = IDL.Record({
     'id' : IDL.Nat64,
-    'tag' : IDL.Vec(IDL.Text),
+    'tag' : IDL.Opt(IDL.Text),
     'hash' : IDL.Text,
     't_type' : IDL.Text,
     'comment' : IDL.Text,

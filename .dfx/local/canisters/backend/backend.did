@@ -26,8 +26,8 @@ type GovernanceError = record { error_message : text; error_type : int32 };
 type HistoryQueryCommand = record {
   from_time : nat64;
   to_time : nat64;
+  wids : vec nat64;
   sort_method : opt text;
-  address : vec text;
 };
 type KnownNeuronData = record { name : text; description : opt text };
 type MySummary = record {
@@ -86,7 +86,7 @@ type Result_8 = variant { Ok : vec record { nat64; TransactionB }; Err : text };
 type Result_9 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
 type SimpleTransaction = record {
   id : nat64;
-  tag : vec text;
+  tag : opt text;
   hash : text;
   t_type : text;
   comment : text;
@@ -100,7 +100,8 @@ type SyncTransactionCommand = record {
 };
 type TransactionB = record {
   id : nat64;
-  tag : vec text;
+  tag : opt text;
+  wid : nat64;
   hash : text;
   memo : text;
   t_type : text;
@@ -111,6 +112,7 @@ type TransactionB = record {
   manual : bool;
 };
 type TransactionF = record {
+  wid : nat64;
   hash : text;
   t_type : text;
   timestamp : float64;

@@ -28,6 +28,8 @@ pub struct SyncTransactionCommand {
 #[allow(non_snake_case)]
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct TransactionF {
+  #[serde(default)]
+  pub wid: WalletId,
   pub hash: String,
   pub timestamp: f64, // TODO check ns or ms as unit
   pub t_type: String, //  transaction type : "SEND", "RECEIVE"
@@ -59,7 +61,9 @@ pub struct DetailsB {
 pub struct TransactionB {
   //
   // backend autogen:
-  pub id: WalletId,
+  pub id: u64,
+  #[serde(default)]
+  pub wid: WalletId,
   //
   pub hash: String,
   pub timestamp: u64, /* !front end pass in its f64 ms . store in rust us
@@ -68,21 +72,11 @@ pub struct TransactionB {
   pub details: Details,
   pub memo: String,
   pub address: WalletAddress,
-
-  pub tag: Vec<String>,
+  pub tag: Option<String>,
   // donation loan_fee margin_fee tax loan_payment
   // margin_payment realted_PL gift lost
   pub manual: bool, // if this trasac is manual import
   pub comment: String,
-  // TODO , considering wallet_amount :
-  // pub wallet_amount:u32,
-  // pub warning:String,
-  // TODO: Warning（用户是否标记某些记录为missing cost,
-  // missing rates）这条字段先只做出来，不用,
-  // 解释：比如missing
-  // rates是标记某个交易历史找不到对应的价格记录，
-  // 例如某个NFT的交易价格查不到，
-  // 就会被自动标记为missing rates
 }
 
 #[allow(non_snake_case)]
@@ -119,7 +113,7 @@ pub struct SimpleTransaction {
   pub timestamp: u64, //this is ms format usigned 64bit
   pub t_type: String, //  transaction type : "SEND", "RECEIVE"
   pub details: Details,
-  pub tag: Vec<String>,
+  pub tag: Option<String>,
   pub manual: bool, // if this trasac is manual import
   pub comment: String,
   // TODO , considering wallet_amount :
@@ -292,4 +286,34 @@ pub struct MySummary {
   pub income: f64,
   pub costs_expenses: f64,
   pub gifts_dotations_lost_coins: f64,
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+
+    #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct Test1 {
+
+  pub id: u64,
+  pub tag: Option<String>,
+
+}
+
+    #[test]
+    fn test_transaction_b_serialization() {
+        let transaction_b = Test1 {
+            id: 1,
+
+            tag: Some("donation".to_string()),
+        };
+
+        let data = serde_json::to_string(&transaction_b).unwrap();
+        eprint!("{}", data);
+        assert_eq!(1,0);
+// {"id":1,"tag":"donation"}
+    }
 }

@@ -8,12 +8,15 @@ use super::service::WalletAddress;
 use crate::common::context::{get_caller, now, TimeStamp};
 use crate::common::guard::admin_guard;
 use crate::common::guard::user_owner_guard;
-use crate::common::times::{timestamp_ms_float_to_ms_u64, timestamp_ms_float_to_ns};
+use crate::common::times::{
+  timestamp_ms_float_to_ms_u64, timestamp_ms_float_to_ns,
+};
 use crate::wallet::domain::HistoryQueryCommand;
 use crate::wallet::service::WalletId;
 use crate::STATE;
 use crate::{MySummary, TransactionB};
 
+//前端必须指定加到哪个钱包.如果不加到任何钱包就是用户的taxlint专有钱包
 #[update(guard = "user_owner_guard")]
 fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
   STATE.with(|c| {
@@ -21,7 +24,6 @@ fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
     ctx.id = ctx.id + 1;
     let id = ctx.id;
     data.id = id;
-    let id = data.id;
     let ret = ctx.wallet_transc_srv.add_transaction_impl(data.clone());
     match ret {
       Ok(_) => {
@@ -56,7 +58,6 @@ fn delete_transaction(id: WalletId) -> Result<WalletId, String> {
   })
 }
 
-
 #[query(guard = "user_owner_guard")]
 fn query_one_transaction(id: WalletId) -> Result<TransactionB, String> {
   STATE.with(|c| {
@@ -78,11 +79,11 @@ fn query_wallets_synced_transactions(
     let mut all_transactions = Vec::new();
 
     // !get all recs
-    for addr in cmd.address {
+    for wid in cmd.wids {
       let rec = ctx
         .wallet_transc_srv
-        .query_one_wallet_trans(addr.clone())
-        .get(&addr)
+        .query_one_wallet_trans_by_wallet_id(wid.clone())
+        .get(&wid)
         .cloned()
         .unwrap_or(Vec::new());
       all_transactions.extend(rec);
@@ -171,7 +172,7 @@ fn update_transaction_tag(id: u64, tag: String) -> Result<bool, String> {
     let ret = ctx.wallet_transc_srv.query_one(id);
     if ret.is_ok() {
       let mut one = ret.unwrap();
-      one.tag.push(tag);
+      one.tag = Some(tag);
       ctx
         .wallet_transc_srv
         .update_transaction_impl(one)
@@ -182,8 +183,6 @@ fn update_transaction_tag(id: u64, tag: String) -> Result<bool, String> {
     }
   })
 }
-
-
 
 #[update(guard = "user_owner_guard")]
 // #[update]
@@ -228,8 +227,6 @@ fn sync_transaction_record(
     Ok(true)
   })
 }
-
-
 
 // Nedd set para in user config . cal_method and exclude_tags
 #[update(guard = "user_owner_guard")]
@@ -293,7 +290,6 @@ fn calculate_tax() -> String {
   })
 }
 
-
 // if start or end is 0. calculate all trans.
 #[update(guard = "user_owner_guard")]
 fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
@@ -344,14 +340,14 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
 
     // cal summary
     for data in filtered_trans {
-      if data.tag.is_empty() {
+      if data.tag.is_none() {
         my_summary.capital_gain_or_loss =
           my_summary.capital_gain_or_loss + data.details.profit;
-      } else if data.tag.contains(&"Airdrop".to_string()) {
+      } else if data.tag == Some("Airdrop".to_string()) {
         my_summary.income += data.details.amount * data.details.price;
-      } else if data.tag.contains(&"Gift".to_string())
-        || data.tag.contains(&"Donation".to_string())
-        || data.tag.contains(&"Lost".to_string())
+      } else if data.tag == Some("Gift".to_string())
+        || data.tag == Some("Donation".to_string())
+        || data.tag == Some("Lost".to_string())
       {
         my_summary.gifts_dotations_lost_coins +=
           data.details.amount * data.details.price;
@@ -360,7 +356,6 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
     return Ok(my_summary);
   })
 }
-
 
 fn convert_trans_f_to_trans_b(
   trans_f: TransactionF,
@@ -374,26 +369,24 @@ fn convert_trans_f_to_trans_b(
 
   TransactionB {
     id,
+    wid: id,
     hash: trans_f.hash,
     timestamp: timestamp_ms_float_to_ms_u64(trans_f.timestamp),
     t_type: trans_f.t_type,
     details: trans_f.details.clone(),
     memo: String::new(),
     address,
-    tag: Vec::new(),
+    tag: None,
     manual: false,
     comment: String::new(),
   }
 }
-
 
 #[query(guard = "user_owner_guard")]
 pub fn greet_test_agent() -> String {
   ic_cdk::println!("got greet_test() call");
   return "hello agent!".to_string();
 }
-
-
 
 // The test module
 #[cfg(test)]

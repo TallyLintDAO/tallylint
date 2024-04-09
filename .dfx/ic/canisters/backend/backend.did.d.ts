@@ -34,8 +34,8 @@ export interface GovernanceError {
 export interface HistoryQueryCommand {
   'from_time' : bigint,
   'to_time' : bigint,
+  'wids' : BigUint64Array | bigint[],
   'sort_method' : [] | [string],
-  'address' : Array<string>,
 }
 export interface KnownNeuronData {
   'name' : string,
@@ -107,7 +107,7 @@ export type Result_9 = { 'Ok' : Array<WalletProfile> } |
   { 'Err' : Array<WalletProfile> };
 export interface SimpleTransaction {
   'id' : bigint,
-  'tag' : Array<string>,
+  'tag' : [] | [string],
   'hash' : string,
   't_type' : string,
   'comment' : string,
@@ -121,7 +121,8 @@ export interface SyncTransactionCommand {
 }
 export interface TransactionB {
   'id' : bigint,
-  'tag' : Array<string>,
+  'tag' : [] | [string],
+  'wid' : bigint,
   'hash' : string,
   'memo' : string,
   't_type' : string,
@@ -132,6 +133,7 @@ export interface TransactionB {
   'manual' : boolean,
 }
 export interface TransactionF {
+  'wid' : bigint,
   'hash' : string,
   't_type' : string,
   'timestamp' : number,

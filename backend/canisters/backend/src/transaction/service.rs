@@ -123,6 +123,20 @@ impl TransactionService {
 
     true
   }
+  pub fn delete_all_by_wid(&mut self, id: WalletId) -> bool {
+    let keys_to_remove: Vec<u64> = self
+      .transactions
+      .iter()
+      .filter(|(_, trans_f)| trans_f.wid == id)
+      .map(|(key, _)| *key)
+      .collect();
+
+    for key in keys_to_remove {
+      self.transactions.remove(&key);
+    }
+
+    true
+  }
 }
 
 impl WalletRecordService {
@@ -130,8 +144,8 @@ impl WalletRecordService {
     &mut self,
     profile: TransactionB,
   ) -> Result<bool, String> {
-    let id = profile.id;
-    self.records.insert(profile.id, profile);
+    let id = profile.wid;
+    self.records.insert(profile.wid, profile);
     if self.records.contains_key(&id) {
       return Ok(true);
     } else {
@@ -148,8 +162,8 @@ impl WalletRecordService {
     &mut self,
     profile: TransactionB,
   ) -> Result<bool, String> {
-    let id = profile.id;
-    self.records.insert(profile.id, profile);
+    let id = profile.wid;
+    self.records.insert(profile.wid, profile);
     if self.records.contains_key(&id) {
       return Ok(true);
     } else {
@@ -203,8 +217,6 @@ impl WalletRecordService {
   //   return Err("nothing".to_string());
   // }
 
-  // TODO make sort method work.
-  //
   pub fn query_one_wallet_trans(
     &self,
     addr: WalletAddress,
@@ -220,6 +232,23 @@ impl WalletRecordService {
       return HashMap::new();
     }
     one_wallet.insert(addr.clone(), records);
+    return one_wallet;
+  }
+  pub fn query_one_wallet_trans_by_wallet_id(
+    &self,
+    id: WalletId,
+  ) -> HashMap<WalletId, Vec<TransactionB>> {
+    let mut one_wallet = HashMap::new();
+    let records: Vec<TransactionB> = self
+      .records
+      .values()
+      .filter(|record| record.wid == id)
+      .cloned()
+      .collect();
+    if records.is_empty() {
+      return HashMap::new();
+    }
+    one_wallet.insert(id.clone(), records);
     return one_wallet;
   }
   pub fn query_all_transactions(&self) -> HashMap<WalletId, TransactionB> {

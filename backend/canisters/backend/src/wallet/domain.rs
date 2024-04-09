@@ -85,7 +85,7 @@ impl Default for WalletAddCommand {
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct HistoryQueryCommand {
   // Primary key
-  pub address: Vec<WalletAddress>,
+  pub wids: Vec<WalletId>,
   pub from_time: TimeStamp,
   pub to_time: TimeStamp,
   // pub t_type: Option<String>, /* transaction_type SEND or

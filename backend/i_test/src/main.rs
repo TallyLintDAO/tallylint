@@ -956,6 +956,7 @@ pub struct Currency {
   pub decimals: u8,   //代币精度
   pub symbol: String, //代币符号，例如'ICP'，'CHAT'
 }
+
 pub type WalletId = u64;
 pub type TransactionId = u64;
 pub type WalletAddress = String;
