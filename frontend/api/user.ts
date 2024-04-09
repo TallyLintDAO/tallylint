@@ -57,6 +57,7 @@ export async function getUserWallet(
 
 // 获得当前用户登记的钱包信息
 export async function getUserAllWallets(): Promise<WalletTag[]> {
+  //TODO 好像用不上这方法了
   try {
     const [userWallets, neuronWallets, nnsWallets] = await Promise.all([
       getUserWallet(false),
@@ -65,7 +66,13 @@ export async function getUserAllWallets(): Promise<WalletTag[]> {
     ])
 
     if (userWallets.Ok && neuronWallets.Ok) {
-      const mapToWallet = (wallet: { name: any; address: any; from: any }) => ({
+      const mapToWallet = (wallet: {
+        id: any
+        name: any
+        address: any
+        from: any
+      }) => ({
+        id: wallet.id,
         name: wallet.name,
         address: wallet.address,
         from: wallet.from,
@@ -74,6 +81,7 @@ export async function getUserAllWallets(): Promise<WalletTag[]> {
       const userWalletList = userWallets.Ok.map(mapToWallet)
       const neuronWalletList = neuronWallets.Ok.map(mapToWallet)
       const nnsWalletList = nnsWallets.map((wallet, index) => ({
+        id: 0,
         name: "hotkey " + (index + 1),
         address: wallet.address,
         from: "hotkey",
@@ -94,7 +102,13 @@ export async function getUserWalletsTag(): Promise<WalletTag[]> {
   try {
     const userWallets = await getUserWallet(false)
     if (userWallets.Ok) {
-      const mapToWallet = (wallet: { name: any; address: any; from: any }) => ({
+      const mapToWallet = (wallet: {
+        id: any
+        name: any
+        address: any
+        from: any
+      }) => ({
+        id: wallet.id,
         name: wallet.name,
         address: wallet.address,
         from: wallet.from,

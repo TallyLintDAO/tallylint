@@ -1,5 +1,4 @@
 import type { Details } from ".dfx/ic/canisters/backend/backend.did"
-import { MILI_PER_SECOND } from "@/api/constants/ic"
 import { getSyncedTransactions } from "@/api/user"
 import type { SyncedTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
@@ -11,16 +10,23 @@ export const getAllSyncedTransactions = async (
   sort_method: string[],
   wallets: WalletTag[],
 ): Promise<{ total: number; transactions: SyncedTransaction[] }> => {
-  const addresses = wallets.map((walletTag) => walletTag.address)
+  const ids = wallets.map((walletTag) => walletTag.id)
   try {
     const res = await getSyncedTransactions(
       {
         from_time,
         to_time,
         sort_method,
-        address: addresses,
+        wids: ids,
       },
       true,
+    )
+    console.log(
+      "getAllSyncedTransactions",
+      from_time,
+      to_time,
+      sort_method,
+      ids,
     )
 
     const transactions = res.map((transaction) => ({

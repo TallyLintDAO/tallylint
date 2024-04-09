@@ -257,7 +257,13 @@
                           clickable
                           v-close-popup="true"
                         >
-                          <q-item-section> Remove Tag </q-item-section>
+                          <q-item-section
+                            @click="
+                              removeTransactionTag(transaction.id)
+                            "
+                          >
+                            Remove Tag
+                          </q-item-section>
                         </q-item>
                         <q-item clickable v-close-popup="true">
                           <q-item-section
@@ -478,7 +484,6 @@
 </template>
 
 <script lang="ts" setup>
-import { getAllTransactions } from "@/api/rosetta"
 import {
   addManualTransaction,
   deleteSyncedTransactions,
@@ -669,37 +674,31 @@ const init = () => {
   getWallets().then(() => {
     let walletsToQuery: WalletTag[]
     if (address) {
-      // 如果 address 存在，则是单独使用api查询某一钱包，否则直接查询后端罐子
+      // 如果 route address 存在，则是单独使用api查询某一钱包，否则直接查询后端罐子
       walletsToQuery = Array.isArray(address)
         ? // 如果 address 是数组，则直接使用
           address.map((addr) => ({ address: addr, name: "", from: "" }))
         : // 如果 address 是字符串，则构造包含单个地址的数组
           [{ address: address, name: "", from: "" }]
-      //TODO 感觉这个初始化有bug，待定
-      getAllTransactions(walletsToQuery)
-        .then((res) => {
-          if (res.total && res.total != 0) {
-            //@ts-ignore 格式与后端的不太兼容，先忽视吧
-            transactionsList.value = res.transactions
-            maxPage.value = Math.ceil(res.total / pageSize.value)
-            transactionAmount.value = res.total
-          }
-        })
-        .finally(() => {
-          showLoading.value = false
-        })
     } else {
       // 如果 address 不存在，则默认使用canister查询IC数据库
       walletsToQuery = wallets.value
-      getSelectedWalletHistory(walletsToQuery)
     }
+    getSelectedWalletHistory(walletsToQuery)
   })
 }
 
 const getWallets = async () => {
   showLoading.value = true
   const userWallets = await getUserWallet(false)
-  const mapToWallet = (wallet: { name: any; address: any; from: any }) => ({
+  console.log("userWallets", userWallets)
+  const mapToWallet = (wallet: {
+    id: bigint
+    name: string
+    address: string
+    from: string
+  }) => ({
+    id: Number(wallet.id),
     name: wallet.name,
     address: wallet.address,
     from: wallet.from,
@@ -832,6 +831,16 @@ const tagTransaction = (transactionId: bigint | number, tag: string) => {
       showMessageSuccess(`Tag ${tag} set success`)
       getSelectedWalletHistory(selectedWallet.value)
     }
+  })
+}
+
+const removeTransactionTag = (transactionId: bigint | number) => {
+  confirmDialog({
+    title: "Delete Transaction Tag",
+    message: "Are you sure delete this tag? Deleted tag can't restore",
+    okMethod: () => {
+      //TODO
+    },
   })
 }
 
