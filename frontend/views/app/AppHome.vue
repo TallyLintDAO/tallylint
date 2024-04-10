@@ -104,7 +104,7 @@ const menuItems = [
   { icon: "star", label: "Neurons", route: "/app/neurons" },
   { icon: "swap_horiz", label: "Transactions", route: "/app/transactions" },
   { icon: "receipt_long", label: "Tax Report", route: "/app/taxReport" },
-  { icon: "settings", label: "Settings", route: "/app/settings" },
+  // { icon: "settings", label: "Settings", route: "/app/settings" },
   // { icon: "send", label: "Email Set", route: "" },
 ]
 const leftDrawerOpen = ref(false)
