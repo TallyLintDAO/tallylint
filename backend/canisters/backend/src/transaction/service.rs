@@ -162,8 +162,8 @@ impl WalletRecordService {
     &mut self,
     profile: TransactionB,
   ) -> Result<bool, String> {
-    let id = profile.wid;
-    self.records.insert(profile.wid, profile);
+    let id = profile.id;
+    self.records.insert(profile.id, profile);
     if self.records.contains_key(&id) {
       return Ok(true);
     } else {

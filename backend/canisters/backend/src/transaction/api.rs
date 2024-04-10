@@ -178,9 +178,9 @@ fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
 fn update_transaction_tag(id: u64, tag: String) -> Result<bool, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
-    let ret = ctx.wallet_transc_srv.query_one(id);
-    if ret.is_ok() {
-      let mut one = ret.unwrap();
+    let one_trans = ctx.wallet_transc_srv.query_one(id);
+    if one_trans.is_ok() {
+      let mut one = one_trans.unwrap();
       one.tag = Some(tag);
       ctx
         .wallet_transc_srv
