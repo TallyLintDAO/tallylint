@@ -213,6 +213,7 @@ export interface _SERVICE {
     [HistoryQueryCommand],
     Array<SimpleTransaction>
   >,
+  'remove_transaction_tag' : ActorMethod<[bigint], Result>,
   'set_payload_using_dev_machine_file' : ActorMethod<[string], string>,
   'set_payload_using_stable_mem_simple' : ActorMethod<[], string>,
   'set_payload_using_stable_mem_simple_raw' : ActorMethod<[], undefined>,

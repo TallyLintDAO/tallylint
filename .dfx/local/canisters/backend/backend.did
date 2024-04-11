@@ -184,6 +184,7 @@ service : {
   query_wallets_synced_transactions : (HistoryQueryCommand) -> (
       vec SimpleTransaction,
     ) query;
+  remove_transaction_tag : (nat64) -> (Result);
   set_payload_using_dev_machine_file : (text) -> (text);
   set_payload_using_stable_mem_simple : () -> (text);
   set_payload_using_stable_mem_simple_raw : () -> ();

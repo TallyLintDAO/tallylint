@@ -114,11 +114,16 @@ fn query_wallets_synced_transactions(
 
     // ! sort if need
     if cmd.sort_method.is_none() {
-      return simple_trans;
+      simple_trans.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
     };
     let method = cmd.sort_method.unwrap();
     if method == String::from("date-asc") {
       simple_trans.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
+      for window in simple_trans.windows(2) {
+        let a = &window[0];
+        let b = &window[1];
+        assert!(a.timestamp <= b.timestamp, "Transactions are not sorted in ascending order by timestamp");
+      }
     }
     if method == String::from("date-desc") {
       simple_trans.sort_by(|a, b| b.timestamp.cmp(&a.timestamp));
@@ -182,6 +187,25 @@ fn update_transaction_tag(id: u64, tag: String) -> Result<bool, String> {
     if one_trans.is_ok() {
       let mut one = one_trans.unwrap();
       one.tag = Some(tag);
+      ctx
+        .wallet_transc_srv
+        .update_transaction_impl(one)
+        .expect("update err");
+      return Ok(true);
+    } else {
+      return Err("no such transaction".to_string());
+    }
+  })
+}
+
+#[update(guard = "user_owner_guard")]
+fn remove_transaction_tag(id: u64) -> Result<bool, String> {
+  STATE.with(|c| {
+    let mut ctx = c.borrow_mut();
+    let one_trans = ctx.wallet_transc_srv.query_one(id);
+    if one_trans.is_ok() {
+      let mut one = one_trans.unwrap();
+      one.tag = None;
       ctx
         .wallet_transc_srv
         .update_transaction_impl(one)

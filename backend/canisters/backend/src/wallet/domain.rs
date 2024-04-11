@@ -88,9 +88,8 @@ pub struct HistoryQueryCommand {
   pub wids: Vec<WalletId>,
   pub from_time: TimeStamp,
   pub to_time: TimeStamp,
-  // pub t_type: Option<String>, /* transaction_type SEND or
-  //  * RECEIVE or BOTH */ //! front end do
-  // pub tag: Option<Vec<String>>,   //! front end do
+
+  
   pub sort_method: Option<String>, /*by date-asc or date-desc
                                     * or profit-asc
                                     * profit-desc */

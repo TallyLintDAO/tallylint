@@ -230,6 +230,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(SimpleTransaction)],
         ['query'],
       ),
+    'remove_transaction_tag' : IDL.Func([IDL.Nat64], [Result], []),
     'set_payload_using_dev_machine_file' : IDL.Func([IDL.Text], [IDL.Text], []),
     'set_payload_using_stable_mem_simple' : IDL.Func([], [IDL.Text], []),
     'set_payload_using_stable_mem_simple_raw' : IDL.Func([], [], []),
