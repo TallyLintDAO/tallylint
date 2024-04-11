@@ -37,7 +37,9 @@
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>{{ scope.opt.name }}</q-item-label>
-                  <q-item-label caption>Synced</q-item-label>
+                  <q-item-label caption v-if="scope.opt.last_sync_time !== 0"
+                    >Synced</q-item-label
+                  >
                 </q-item-section>
               </q-item>
             </template>
@@ -97,7 +99,10 @@
         <q-spinner-cube size="xl" color="primary" />
       </div>
       <div v-else-if="maxPage == 0">
-        <span>No transactions already synchronized</span>
+        <span
+          >No transactions already synchronized, please synchronize transaction
+          history of your wallet on Wallet page</span
+        >
       </div>
       <div v-else>
         <q-list bordered separator>
@@ -235,7 +240,7 @@
                             </q-item-section>
                           </q-item>
                         </div>
-                        <div v-if="transaction.t_type === 'RECEIVED'">
+                        <div v-if="transaction.t_type === 'RECEIVE'">
                           <q-item clickable v-close-popup="true">
                             <q-item-section
                               @click="tagTransaction(transaction.id, 'Reward')"
@@ -257,9 +262,7 @@
                           clickable
                           v-close-popup="true"
                         >
-                          <q-item-section
-                            @click="removeTransactionTag(transaction.id)"
-                          >
+                          <q-item-section @click="removeTag(transaction.id)">
                             Remove Tag
                           </q-item-section>
                         </q-item>
@@ -329,6 +332,59 @@
                     {{ isEdit ? "Auto Import" : "Manual" }}
                   </div>
                 </div>
+                <q-select
+                  v-model="transactionWallet"
+                  filled
+                  class="q-mb-md"
+                  option-label="name"
+                  option-value="address"
+                  :options="wallets"
+                  label="Select Wallet"
+                >
+                  <template v-slot:selected-item="scope">
+                    <q-item style="padding-left: 0">
+                      <q-item-section avatar>
+                        <img
+                          class="head-icon"
+                          src="@/assets/dfinity.svg"
+                          alt="NNS Icon"
+                        />
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label>{{ scope.opt.name }}</q-item-label>
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-item-label caption>{{
+                          showUsername("", scope.opt.address)
+                        }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                  <template v-slot:option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section avatar>
+                        <img
+                          class="head-icon"
+                          src="@/assets/dfinity.svg"
+                          alt="NNS Icon"
+                        />
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label>{{ scope.opt.name }}</q-item-label>
+                        <q-item-label
+                          caption
+                          v-if="scope.opt.last_sync_time !== 0"
+                          >Synced</q-item-label
+                        >
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-item-label caption>{{
+                          showUsername("", scope.opt.address)
+                        }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
                 <q-input
                   filled
                   label="From Address *"
@@ -402,7 +458,19 @@
                       size="md"
                       name="arrow_downward"
                     />
-                    RECEIVE
+                    <q-select
+                      style="padding-bottom: 0"
+                      filled
+                      v-model="transaction.t_type"
+                      :options="typeOptions"
+                      label="Type *"
+                      :rules="[
+                        (val) =>
+                          (val && val.length > 0) ||
+                          'Please select transaction type',
+                      ]"
+                      :disable="isEdit"
+                    />
                   </div>
                   <div class="text-grey text-caption row items-center">
                     {{ isEdit ? "Auto Import" : "Manual" }}
@@ -410,7 +478,7 @@
                 </div>
                 <q-input
                   filled
-                  label="To Target Address *"
+                  label="Target Address *"
                   v-model.trim="transaction.details.to"
                   :rules="[
                     (val) =>
@@ -487,6 +555,7 @@ import {
   deleteSyncedTransactions,
   editUserTransaction,
   getUserWallet,
+  removeTransactionTag,
   setTransactionTag,
 } from "@/api/user"
 import type { SyncedTransaction } from "@/types/sns"
@@ -514,7 +583,7 @@ const transaction = ref({
   hash: "",
   memo: "",
   walletName: "",
-  t_type: "",
+  t_type: "SEND",
   comment: "",
   address: "",
   timestamp: 0,
@@ -541,10 +610,11 @@ const tagOptions = ["Reward", "Lost", "Gift", "Airdrop"]
 const date = ref("") //采用这个方便判定为空
 const manual = ref<string[]>([])
 const manualOptions = ["Manual"]
+//TODO sort的默认值有问题
 const sort = ref("Recent")
 const sortOptions = [
-  { label: "Recent", value: "date-asc" },
-  { label: "Oldest first", value: "date-desc" },
+  { label: "Recent", value: "date-desc" },
+  { label: "Oldest first", value: "date-asc" },
   { label: "Highest gains", value: "profit-asc" },
   { label: "Lowest gains", value: "profit-desc" },
 ]
@@ -561,6 +631,7 @@ const tokenList = [
   },
 ]
 const selectedWallet = ref<WalletTag[]>([]) //用户选择的钱包
+const transactionWallet = ref<WalletTag>() //编辑，增加dialog中用户选择的钱包
 const wallets = ref<WalletTag[]>([])
 const form = ref<QForm | null>(null)
 
@@ -698,11 +769,13 @@ const getWallets = async () => {
     name: string
     address: string
     from: string
+    last_sync_time: number
   }) => ({
     id: Number(wallet.id),
     name: wallet.name,
     address: wallet.address,
     from: wallet.from,
+    last_sync_time: wallet.last_sync_time,
   })
   if (userWallets.Ok) {
     wallets.value = userWallets.Ok.map(mapToWallet)
@@ -720,7 +793,7 @@ const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
   selectedWallets.length !== 0
     ? (targetWallets = selectedWallets)
     : (targetWallets = wallets.value)
-  getAllSyncedTransactions(0, 0, [sort.value], targetWallets)
+  getAllSyncedTransactions(0, 0, ["date-desc"], targetWallets)
     .then((res) => {
       console.log("getWalletHistory", res)
       if (res.total && res.total != 0) {
@@ -743,7 +816,7 @@ const openDialog = (action: string, itemInfo?: any) => {
     hash: "",
     memo: "",
     walletName: "",
-    t_type: "",
+    t_type: "SEND",
     comment: "",
     address: "",
     timestamp: 0,
@@ -835,12 +908,12 @@ const tagTransaction = (transactionId: bigint | number, tag: string) => {
   })
 }
 
-const removeTransactionTag = (transactionId: bigint | number) => {
+const removeTag = (transactionId: bigint | number) => {
   confirmDialog({
     title: "Delete Transaction Tag",
     message: "Are you sure delete this tag? Deleted tag can't restore",
     okMethod: () => {
-      setTransactionTag(transactionId, "").then((res) => {
+      removeTransactionTag(transactionId).then((res) => {
         if (res.Ok) {
           showMessageSuccess(`Tag delete success`)
           getSelectedWalletHistory(selectedWallet.value)

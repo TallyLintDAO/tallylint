@@ -215,7 +215,8 @@ const getTaxProfit = async () => {
 const getWalletHistory = async () => {
   const wallets = await getUserWalletsTag()
   walletAmount.value = wallets.length
-  getAllSyncedTransactions(0, 0, [], wallets).then((res) => {
+  //最新的排最上面
+  getAllSyncedTransactions(0, 0, ["date-desc"], wallets).then((res) => {
     if (res.total && res.total != 0) {
       historyList.value = res.transactions
       transactionAmount.value = filterData.value.length

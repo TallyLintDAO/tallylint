@@ -220,6 +220,13 @@ export async function setTransactionTag(
   return getBackend().update_transaction_tag(id, tag)
 }
 
+// 删除用户交易记录的tag
+export async function removeTransactionTag(
+  id: bigint | number,
+): Promise<ApiResult<TaxReportData>> {
+  return getBackend().remove_transaction_tag(id)
+}
+
 // 查询用户已存储的交易记录
 export async function getSyncedTransactions(
   params: HistoryQueryParams,

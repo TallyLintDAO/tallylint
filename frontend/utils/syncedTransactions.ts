@@ -21,19 +21,11 @@ export const getAllSyncedTransactions = async (
       },
       true,
     )
-    console.log(
-      "getAllSyncedTransactions",
-      from_time,
-      to_time,
-      sort_method,
-      ids,
-    )
 
     const transactions = res.map((transaction) => ({
       ...transaction,
       timestamp: Number(transaction.timestamp),
     }))
-    console.log("getSyncedTransactions", transactions)
     return { total: transactions.length, transactions: transactions }
   } catch (error) {
     console.error("Error fetching transactions:", error)

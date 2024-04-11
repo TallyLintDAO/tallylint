@@ -48,6 +48,7 @@ export interface WalletTag {
   address: string
   name: string
   from: string
+  last_sync_time?: number
 }
 
 export interface NNSNeuron {

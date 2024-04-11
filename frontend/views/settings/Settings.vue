@@ -1,7 +1,7 @@
 <template>
   <div class="settings-container">
     <div class="row">
-      <div class="col-md-12 col-lg-6">
+      <div class="col-md-12 col-lg-8">
         <q-card class="my-card">
           <q-card-section>
             <div class="text-h6">Portfolio settings</div>
