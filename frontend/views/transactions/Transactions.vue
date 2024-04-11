@@ -509,6 +509,7 @@ const wid = route.params.wid
 const transactionsList = ref<SyncedTransaction[]>([])
 const transaction = ref({
   id: 0n,
+  wid: 0n,
   tag: [],
   hash: "",
   memo: "",
@@ -737,6 +738,7 @@ const openDialog = (action: string, itemInfo?: any) => {
   //将状态置空
   transaction.value = {
     id: 0n,
+    wid: 0n,
     tag: [],
     hash: "",
     memo: "",
@@ -800,9 +802,10 @@ const onSubmit = async () => {
 }
 
 const addTransaction = async () => {
-  console.log("addTransaction", transaction.value)
-  const addedTransaction: SyncedTransaction = { ...transaction.value }
+  console.log("addTransaction", wallets.value)
+  transaction.value.wid = BigInt(wallets.value[0].id)
   // addedTransaction.timestamp *= MILI_PER_SECOND
+  console.log("addTransaction", transaction.value)
   const res = await addManualTransaction(transaction.value)
   console.log("res", res)
   if (res.Ok) {
@@ -814,9 +817,7 @@ const addTransaction = async () => {
 
 const editTransaction = async () => {
   console.log("editTransaction", transaction.value)
-  const editedTransaction: SyncedTransaction = { ...transaction.value }
-  // editedTransaction.timestamp *= MILI_PER_SECOND
-  const res = await editUserTransaction(editedTransaction)
+  const res = await editUserTransaction(transaction.value)
   console.log("res", res)
   if (res.Ok) {
     showMessageSuccess("Edit Transaction Success")
@@ -839,7 +840,12 @@ const removeTransactionTag = (transactionId: bigint | number) => {
     title: "Delete Transaction Tag",
     message: "Are you sure delete this tag? Deleted tag can't restore",
     okMethod: () => {
-      //TODO
+      setTransactionTag(transactionId, "").then((res) => {
+        if (res.Ok) {
+          showMessageSuccess(`Tag delete success`)
+          getSelectedWalletHistory(selectedWallet.value)
+        }
+      })
     },
   })
 }
