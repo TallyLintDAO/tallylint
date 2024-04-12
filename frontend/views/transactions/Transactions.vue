@@ -18,7 +18,6 @@
         <div class="header-left row q-gutter-md">
           <q-select
             v-model="selectedWallet"
-            @update:model-value="getSelectedWalletHistory(selectedWallet)"
             use-chips
             multiple
             option-label="name"
@@ -79,9 +78,6 @@
           <q-select
             rounded
             outlined
-            emit-value
-            map-options
-            @update:model-value="getSelectedWalletHistory(selectedWallet)"
             v-model="sort"
             :options="sortOptions"
             label="Sort by"
@@ -304,29 +300,12 @@
     <q-dialog v-model="dialogVisible">
       <q-card style="min-width: 450px">
         <q-card-section>
-          <div class="text-h6">
-            {{ isEdit ? "Edit Transaction" : "Add Transaction" }}
-          </div>
-        </q-card-section>
-        <q-card-section class="q-pt-none">
           <q-form @submit="onSubmit" ref="form" class="q-gutter-md">
-            <q-select
-              filled
-              v-model="transaction.t_type"
-              :options="typeOptions"
-              label="Type *"
-              :rules="[
-                (val) =>
-                  (val && val.length > 0) || 'Please select transaction type',
-              ]"
-              :disable="isEdit"
-            />
             <q-card flat bordered class="my-card">
               <q-card-section>
                 <div class="text-h6 row justify-between q-mb-md">
-                  <div class="row items-center">
-                    <q-icon class="text-red-5" size="md" name="arrow_upward" />
-                    Send
+                  <div class="text-h6">
+                    {{ isEdit ? "Edit Transaction" : "Add Transaction" }}
                   </div>
                   <div class="text-grey text-caption row items-center">
                     {{ isEdit ? "Auto Import" : "Manual" }}
@@ -335,11 +314,10 @@
                 <q-select
                   v-model="transactionWallet"
                   filled
-                  class="q-mb-md"
-                  option-label="name"
-                  option-value="address"
                   :options="wallets"
-                  label="Select Wallet"
+                  :disable="isEdit"
+                  label="Select Wallet *"
+                  :rules="[(val) => val || 'Please select wallet']"
                 >
                   <template v-slot:selected-item="scope">
                     <q-item style="padding-left: 0">
@@ -385,23 +363,6 @@
                     </q-item>
                   </template>
                 </q-select>
-                <q-input
-                  filled
-                  label="From Address *"
-                  v-model.trim="transaction.details.from"
-                  class="q-mb-md"
-                  :rules="[
-                    (val) =>
-                      (val && val.length > 0) ||
-                      'Please enter the source address',
-                    (val) =>
-                      (val &&
-                        val.length > 0 &&
-                        (val.length === 63 || val.length === 64)) ||
-                      'Please enter Account ID Address',
-                  ]"
-                  :disable="isEdit"
-                />
                 <q-input
                   filled
                   label="Amount of tokens"
@@ -454,9 +415,16 @@
                 <div class="text-h6 row justify-between q-mb-md">
                   <div class="row items-center">
                     <q-icon
-                      class="text-green-6"
+                      v-if="transaction.t_type === 'SEND'"
+                      class="text-red-5"
                       size="md"
                       name="arrow_downward"
+                    />
+                    <q-icon
+                      v-else
+                      class="text-green-6"
+                      size="md"
+                      name="arrow_upward"
                     />
                     <q-select
                       style="padding-bottom: 0"
@@ -479,7 +447,7 @@
                 <q-input
                   filled
                   label="Target Address *"
-                  v-model.trim="transaction.details.to"
+                  v-model.trim="targetAddress"
                   :rules="[
                     (val) =>
                       (val && val.length > 0) ||
@@ -610,13 +578,13 @@ const tagOptions = ["Reward", "Lost", "Gift", "Airdrop"]
 const date = ref("") //采用这个方便判定为空
 const manual = ref<string[]>([])
 const manualOptions = ["Manual"]
-//TODO sort的默认值有问题
-const sort = ref("Recent")
+const sort = ref({ label: "Recent", value: "date-desc" })
 const sortOptions = [
   { label: "Recent", value: "date-desc" },
   { label: "Oldest first", value: "date-asc" },
-  { label: "Highest gains", value: "profit-asc" },
-  { label: "Lowest gains", value: "profit-desc" },
+  //TODO 获取利润排序的分组有点问题，因为是按日期分的页，所以同一日期的顺序会乱
+  { label: "Highest gains", value: "profit-desc" },
+  { label: "Lowest gains", value: "profit-asc" },
 ]
 const tokenList = [
   {
@@ -630,10 +598,12 @@ const tokenList = [
     },
   },
 ]
-const selectedWallet = ref<WalletTag[]>([]) //用户选择的钱包
-const transactionWallet = ref<WalletTag>() //编辑，增加dialog中用户选择的钱包
-const wallets = ref<WalletTag[]>([])
+
 const form = ref<QForm | null>(null)
+const selectedWallet = ref<WalletTag[]>([]) //用户选择的钱包
+const wallets = ref<WalletTag[]>([])
+const transactionWallet = ref<WalletTag | null>(null) //编辑，增加dialog 中用户选择的钱包
+const targetAddress = ref() //编辑，增加dialog 中用户输入的目标地址
 
 const showLoading = ref(false)
 const loading = ref(false)
@@ -735,6 +705,10 @@ const paginatedGroups = computed(
 watch([date, type, tag, manual], () => {
   paginatedGroups.value // 触发 paginatedGroups 的重新计算
 })
+//监听排序，被选择的钱包数值变化，触发查询
+watch([sort, selectedWallet], () => {
+  getSelectedWalletHistory(selectedWallet.value)
+})
 
 onMounted(() => {
   console.log("route", address)
@@ -744,7 +718,7 @@ onMounted(() => {
 const init = () => {
   getWallets().then(() => {
     let walletsToQuery: WalletTag[]
-    //TODO address应改为wid
+    //TODO route address应改为wid
     if (address) {
       // 如果 route address 存在，则是单独使用api查询某一钱包，否则直接查询后端罐子
       walletsToQuery = Array.isArray(address)
@@ -787,13 +761,12 @@ const getWallets = async () => {
 const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
   showLoading.value = true
   currentPage.value = 1
-
   let targetWallets: WalletTag[]
   //如果没有选择任何钱包，则查询所有钱包
   selectedWallets.length !== 0
     ? (targetWallets = selectedWallets)
     : (targetWallets = wallets.value)
-  getAllSyncedTransactions(0, 0, ["date-desc"], targetWallets)
+  getAllSyncedTransactions(0, 0, [sort.value.value], targetWallets)
     .then((res) => {
       console.log("getWalletHistory", res)
       if (res.total && res.total != 0) {
@@ -809,6 +782,8 @@ const getSelectedWalletHistory = async (selectedWallets: WalletTag[]) => {
 
 const openDialog = (action: string, itemInfo?: any) => {
   //将状态置空
+  targetAddress.value = ""
+  transactionWallet.value = null
   transaction.value = {
     id: 0n,
     wid: 0n,
@@ -836,6 +811,7 @@ const openDialog = (action: string, itemInfo?: any) => {
     manual: false,
     principal_id: [],
   }
+
   if (action === "edit" && itemInfo) {
     isEdit.value = true
     transaction.value = { ...itemInfo }
@@ -843,6 +819,19 @@ const openDialog = (action: string, itemInfo?: any) => {
     transaction.value.memo = ""
     transaction.value.address = ""
     //理论上来说item里manual属性会覆盖transaction里的manual属性，所以这里不对manual做修改
+    if (itemInfo.t_type === "SEND") {
+      targetAddress.value = itemInfo.details.to
+      transactionWallet.value =
+        wallets.value.find(
+          (wallet) => wallet.address === itemInfo.details.from,
+        ) || null
+    } else if (itemInfo.t_type === "RECEIVE") {
+      targetAddress.value = itemInfo.details.from
+      transactionWallet.value =
+        wallets.value.find(
+          (wallet) => wallet.address === itemInfo.details.to,
+        ) || null
+    }
   } else {
     //不为edit就是add
     isEdit.value = false
@@ -853,9 +842,21 @@ const openDialog = (action: string, itemInfo?: any) => {
 
 const onSubmit = async () => {
   loading.value = true
+  console.log("trans", transactionWallet.value)
   const validationSuccess = await form.value?.validate()
+
   try {
     if (validationSuccess) {
+      if (transactionWallet.value) {
+        const { details } = transaction.value
+        const { address } = transactionWallet.value
+        //根据type的类型，将details的from和to填入，不能新建任何变量，保证解构的变量details能修改引用的transaction.value值
+        details.from =
+          transaction.value.t_type === "SEND" ? address : targetAddress.value
+        details.to =
+          transaction.value.t_type === "SEND" ? targetAddress.value : address
+      }
+
       if (isEdit.value) {
         await editTransaction()
       } else {
