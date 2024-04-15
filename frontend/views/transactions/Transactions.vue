@@ -133,6 +133,13 @@
                     {{ transaction.tag[0] }}
                   </span>
                   <span v-else> {{ transaction.t_type }}</span>
+                  <q-badge
+                    v-if="transaction.manual"
+                    rounded
+                    class="q-ml-sm"
+                    color="primary"
+                    label="M"
+                  />
 
                   <br />
                   {{
@@ -293,7 +300,7 @@
           :max="maxPage"
           direction-links
           boundary-links
-          class="justify-center"
+          class="justify-center q-mt-md"
         />
       </div>
     </div>
