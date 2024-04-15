@@ -541,7 +541,6 @@ import { useRoute } from "vue-router"
 
 const route = useRoute()
 
-const address = route.params.address
 const wid = route.params.wid
 const transactionsList = ref<SyncedTransaction[]>([])
 const transaction = ref({
@@ -711,26 +710,21 @@ watch([sort, selectedWallet], () => {
 })
 
 onMounted(() => {
-  console.log("route", address)
+  console.log("route", wid)
   init()
 })
 
 const init = () => {
   getWallets().then(() => {
-    let walletsToQuery: WalletTag[]
-    //TODO route address应改为wid
-    if (address) {
-      // 如果 route address 存在，则是单独使用api查询某一钱包，否则直接查询后端罐子
-      walletsToQuery = Array.isArray(address)
-        ? // 如果 address 是数组，则直接使用
-          address.map((addr) => ({ id: 0, address: addr, name: "", from: "" }))
-        : // 如果 address 是字符串，则构造包含单个地址的数组
-          [{ id: 0, address: address, name: "", from: "" }]
+    if (wid) {
+      // 如果 route wid 存在，则单独查询wid相关的交易记录，如果查不到相关钱包id，即传入空值
+      selectedWallet.value = wallets.value.filter((item) => {
+        return item.id === Number(wid)
+      })
     } else {
-      // 如果 address 不存在，则默认使用canister查询IC数据库
-      walletsToQuery = wallets.value
+      // 如果 wid 不存在，则默认使用canister查询IC数据库全部内容
+      getSelectedWalletHistory(wallets.value)
     }
-    getSelectedWalletHistory(walletsToQuery)
   })
 }
 

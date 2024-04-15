@@ -105,9 +105,11 @@
                 >
                   <q-item-section>
                     <q-item-label>{{ col.label }}</q-item-label>
-                    <q-item-label v-if="col.name === 'address'" caption>
-                      <router-link :to="'/app/transactions/' + col.value">
-                        {{ col.value }}
+                    <q-item-label v-if="col.name === 'id'" caption>
+                      <router-link
+                        :to="'/app/transactions/' + Number(col.value)"
+                      >
+                        {{ props.row.address }}
                       </router-link>
                     </q-item-label>
                     <q-item-label
@@ -220,10 +222,10 @@ import { onMounted, ref, watch } from "vue"
 
 const columns = [
   {
-    name: "address",
+    name: "id",
     required: true,
-    label: "Address",
-    field: (row) => row.address,
+    label: "Address", //用钱包id作为的超链接，label用address方便识别
+    field: "id",
   },
   { name: "from", label: "From", field: "from" },
   { name: "name", label: "Name", field: "name" },

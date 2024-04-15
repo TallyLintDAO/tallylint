@@ -96,12 +96,7 @@
                 <q-item v-for="col in props.cols" :key="col.name">
                   <q-item-section>
                     <q-item-label>{{ col.label }}</q-item-label>
-                    <q-item-label v-if="col.name === 'address'" caption>
-                      <router-link :to="'/app/transactions/' + col.value">
-                        {{ col.value }}
-                      </router-link>
-                    </q-item-label>
-                    <q-item-label v-else caption>{{ col.value }}</q-item-label>
+                    <q-item-label caption>{{ col.value }}</q-item-label>
                   </q-item-section>
                 </q-item>
                 <!-- 有值才显示 -->

@@ -2,11 +2,11 @@ import { initAuth } from "@/api/auth"
 import { setCurrentIdentity } from "@/api/canister_pool"
 import App from "@/views/app/AppHome.vue"
 import DashBoard from "@/views/app/modules/Dashboard.vue"
-import NNS from "@/views/app/modules/NNS.vue"
-import Wallet from "@/views/app/modules/Wallet.vue"
+import Neurons from "@/views/app/modules/Neurons.vue"
 import TaxReport from "@/views/app/modules/TaxReport.vue"
-import Settings from "@/views/settings/Settings.vue"
+import Wallet from "@/views/app/modules/Wallet.vue"
 import Home from "@/views/home/Home.vue"
+import Settings from "@/views/settings/Settings.vue"
 import Transactions from "@/views/transactions/Transactions.vue"
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router"
 import errors from "./modules/errors"
@@ -39,8 +39,8 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       { name: "App", path: "", component: DashBoard },
       { path: "wallet", component: Wallet },
-      { path: "transactions/:address?", component: Transactions },
-      { path: "neurons", component: NNS },
+      { path: "transactions/:wid?", component: Transactions },
+      { path: "neurons", component: Neurons },
       { path: "taxReport", component: TaxReport },
       { path: "settings", component: Settings },
     ],
