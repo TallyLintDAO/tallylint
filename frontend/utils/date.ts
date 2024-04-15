@@ -19,8 +19,8 @@ export const distanceFromCurrentDate = (
 }
 
 export interface YearTimestamp {
-  label: number | string
-  value: { start: number; end: number }
+  year: number | string
+  timestamp: { start: number; end: number }
 }
 
 export const getYearTimestamps = (): YearTimestamp[] => {
@@ -31,8 +31,8 @@ export const getYearTimestamps = (): YearTimestamp[] => {
     const startOfYear = new Date(year, 0, 1) // January 1st
     const endOfYear = new Date(year, 11, 31, 23, 59, 59) // December 31st, 23:59:59
     timestamps.push({
-      label: year,
-      value: {
+      year: year,
+      timestamp: {
         start: startOfYear.getTime(),
         end: endOfYear.getTime(),
       },

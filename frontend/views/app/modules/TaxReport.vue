@@ -6,20 +6,19 @@
         outlined
         v-model="selectedYear"
         :options="dateOptions"
-        emit-value
-        map-options
+        option-label="year"
         style="max-width: 200px; font-size: 2.125rem"
       />
     </div>
     <div
-      v-if="selectedYear.start !== 0"
+      v-if="selectedYear.timestamp.start !== 0"
       class="text-subtitle2 q-mb-md text-grey"
     >
       {{
         `Jan 1, ${new Date(
-          selectedYear.start,
+          selectedYear.timestamp.start,
         ).getFullYear()} to Dec 31, ${new Date(
-          selectedYear.start,
+          selectedYear.timestamp.start,
         ).getFullYear()}`
       }}
     </div>
@@ -171,8 +170,8 @@ const walletLoading = ref(false)
 const userConfigLoading = ref(false)
 // 初始化日期选项数组，包含当前年份以及前三年的年份
 const dateOptions: YearTimestamp[] = getYearTimestamps().reverse()
-dateOptions.push({ label: "All", value: { start: 0, end: 0 } })
-const selectedYear = ref(dateOptions[0].value)
+dateOptions.push({ year: "All", timestamp: { start: 0, end: 0 } })
+const selectedYear = ref(dateOptions[0])
 
 const historyList = ref<SyncedTransaction[]>([])
 const transactionAmount = ref(0)
@@ -194,8 +193,8 @@ onMounted(() => {
 const getTaxProfit = async () => {
   walletLoading.value = true
   const res = await getUserTaxProfit(
-    selectedYear.value.start,
-    selectedYear.value.end,
+    selectedYear.value.timestamp.start,
+    selectedYear.value.timestamp.end,
   )
   console.log("getTaxProfit", res)
   if (res.Ok) {
@@ -228,11 +227,11 @@ const filterData = computed((): SyncedTransaction[] => {
   console.log("selectedYear", selectedYear.value)
   let filterData = historyList.value
   // 按选定的日期区间过滤记录
-  if (selectedYear.value.start !== 0) {
+  if (selectedYear.value.timestamp.start !== 0) {
     filterData = filterData.filter(
       (item) =>
-        item.timestamp >= Number(selectedYear.value.start) &&
-        item.timestamp <= Number(selectedYear.value.end),
+        item.timestamp >= Number(selectedYear.value.timestamp.start) &&
+        item.timestamp <= Number(selectedYear.value.timestamp.end),
     )
   }
   transactionAmount.value = filterData.length
@@ -290,7 +289,11 @@ const exportToCSV = async () => {
   const todayDate = new Date().toLocaleDateString("fr-CH").replace(/\./g, "")
   const fileName = "Tax_Data_All_Wallet"
   // 使用 exportFile 函数导出 CSV 文件
-  exportFile(`${todayDate}_${fileName}.csv`, csvContent, "text/csv")
+  exportFile(
+    `${selectedYear.value.year}_${fileName}_${todayDate}.csv`,
+    csvContent,
+    "text/csv",
+  )
 }
 </script>
 
