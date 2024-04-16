@@ -26,7 +26,7 @@ export const getICPPriceHistory = async (): Promise<any> => {
     let priceData = []
     //由于币安一次只能请求500条数据，所以这里就分别请求每年的ICP价格历史再组装。
     for (const {
-      value: { start, end },
+      timestamp: { start, end },
     } of getYearTimestamps()) {
       //获取从2021年开始的每年数据
       const params = {

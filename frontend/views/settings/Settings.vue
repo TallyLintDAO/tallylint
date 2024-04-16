@@ -8,8 +8,77 @@
           </q-card-section>
 
           <q-card-section class="q-pt-none">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            <q-form @submit="onSubmit" ref="form" class="q-gutter-md">
+              <q-list>
+                <q-item>
+                  <q-item-section>
+                    <q-item-label> Base currency </q-item-label>
+                    <q-item-label caption>
+                      <q-select
+                        v-model="currencyModel"
+                        filled
+                        option-label="code"
+                        option-value="code"
+                        :options="currencys"
+                        label="Select Base Currency *"
+                        :rules="[(val) => val || 'Please select base currency']"
+                      >
+                        <template v-slot:option="scope">
+                          <q-item v-bind="scope.itemProps">
+                            <q-item-section>
+                              <q-item-label>{{ scope.opt.code }}</q-item-label>
+                              <q-item-label caption>{{
+                                scope.opt.name
+                              }}</q-item-label>
+                            </q-item-section>
+                          </q-item>
+                        </template></q-select
+                      >
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item>
+                  <q-item-section>
+                    <q-item-label> Timezone for reports </q-item-label>
+                    <q-item-label caption>
+                      <q-select
+                        v-model="currencyModel"
+                        filled
+                        :options="currencys"
+                        label="Select Timezone *"
+                        :rules="[(val) => val || 'Please select timezone']"
+                      ></q-select>
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item>
+                  <q-item-section>
+                    <q-item-label> Cost basis method </q-item-label>
+                    <q-item-label caption>
+                      <q-select
+                        v-model="currencyModel"
+                        filled
+                        :options="currencys"
+                        label="Select cost basis method *"
+                        :rules="[
+                          (val) => val || 'Please select cost basis method',
+                        ]"
+                      ></q-select>
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+
+              <div class="q-gutter-sm justify-end flex">
+                <q-btn flat label="Cancel" v-close-popup="true" />
+                <q-btn
+                  :loading="loading"
+                  label="Save"
+                  type="submit"
+                  color="primary"
+                />
+              </div>
+            </q-form>
           </q-card-section>
         </q-card>
       </div>
@@ -18,10 +87,29 @@
 </template>
 
 <script lang="ts" setup>
+import baseCurrencies from "@/utils/currencys"
+import type { QForm } from "quasar"
 import { ref } from "vue"
 
-const tab = ref("mails")
-const splitterModel = ref(20)
+const form = ref<QForm | null>(null)
+const loading = ref(false)
+const currencys = baseCurrencies
+const currencyModel = ref()
+const onSubmit = async () => {
+  loading.value = true
+  const validationSuccess = await form.value?.validate()
+
+  try {
+    if (validationSuccess) {
+    } else {
+      // 数据验证失败
+      // 用户至少输入了一个无效值
+    }
+  } catch (error) {
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <style lang="scss">
