@@ -324,7 +324,7 @@
                   :options="wallets"
                   :disable="isEdit"
                   label="Select Wallet *"
-                  :rules="[(val) => val || 'Please select wallet']"
+                  :rules="[(val) => !!val || 'Please select wallet']"
                 >
                   <template v-slot:selected-item="scope">
                     <q-item style="padding-left: 0">

@@ -17,11 +17,14 @@
                       <q-select
                         v-model="currencyModel"
                         filled
+                        @update:model-value="getPrice()"
                         option-label="code"
                         option-value="code"
                         :options="currencys"
                         label="Select Base Currency *"
-                        :rules="[(val) => val || 'Please select base currency']"
+                        :rules="[
+                          (val) => !!val || 'Please select base currency',
+                        ]"
                       >
                         <template v-slot:option="scope">
                           <q-item v-bind="scope.itemProps">
@@ -46,7 +49,7 @@
                         filled
                         :options="currencys"
                         label="Select Timezone *"
-                        :rules="[(val) => val || 'Please select timezone']"
+                        :rules="[(val) => !!val || 'Please select timezone']"
                       ></q-select>
                     </q-item-label>
                   </q-item-section>
@@ -56,12 +59,12 @@
                     <q-item-label> Cost basis method </q-item-label>
                     <q-item-label caption>
                       <q-select
-                        v-model="currencyModel"
+                        v-model="costMethod"
                         filled
-                        :options="currencys"
+                        :options="costMethodOption"
                         label="Select cost basis method *"
                         :rules="[
-                          (val) => val || 'Please select cost basis method',
+                          (val) => !!val || 'Please select cost basis method',
                         ]"
                       ></q-select>
                     </q-item-label>
@@ -87,14 +90,23 @@
 </template>
 
 <script lang="ts" setup>
-import baseCurrencies from "@/utils/currencys"
+import { getBaseCurrencyPrice } from "@/api/baseCurrencies"
+import baseCurrencies from "@/utils/currencies"
 import type { QForm } from "quasar"
-import { ref } from "vue"
+import { onMounted, ref } from "vue"
 
 const form = ref<QForm | null>(null)
 const loading = ref(false)
 const currencys = baseCurrencies
 const currencyModel = ref()
+const costMethod = ref("FIFO")
+const costMethodOption = ["FIFO", "LIFO", "HIFO"]
+
+onMounted(() => {})
+const getPrice = () => {
+  getBaseCurrencyPrice(currencyModel.value.code)
+}
+
 const onSubmit = async () => {
   loading.value = true
   const validationSuccess = await form.value?.validate()
@@ -116,3 +128,4 @@ const onSubmit = async () => {
 .settings-container {
 }
 </style>
+@/utils/currencies
