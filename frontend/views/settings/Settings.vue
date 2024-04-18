@@ -17,15 +17,24 @@
                       <q-select
                         v-model="currencyModel"
                         filled
-                        @update:model-value="getPrice()"
+                        use-input
+                        input-debounce="0"
                         option-label="code"
                         option-value="code"
-                        :options="currencys"
+                        :options="currencies"
                         label="Select Base Currency *"
                         :rules="[
                           (val) => !!val || 'Please select base currency',
                         ]"
+                        @filter="filterCurrencies"
                       >
+                        <template v-slot:no-option>
+                          <q-item>
+                            <q-item-section class="text-grey">
+                              No results
+                            </q-item-section>
+                          </q-item>
+                        </template>
                         <template v-slot:option="scope">
                           <q-item v-bind="scope.itemProps">
                             <q-item-section>
@@ -35,8 +44,8 @@
                               }}</q-item-label>
                             </q-item-section>
                           </q-item>
-                        </template></q-select
-                      >
+                        </template>
+                      </q-select>
                     </q-item-label>
                   </q-item-section>
                 </q-item>
@@ -45,12 +54,23 @@
                     <q-item-label> Timezone for reports </q-item-label>
                     <q-item-label caption>
                       <q-select
-                        v-model="currencyModel"
+                        v-model="timezone"
                         filled
-                        :options="currencys"
+                        use-input
+                        input-debounce="0"
+                        :options="timezoneList"
                         label="Select Timezone *"
                         :rules="[(val) => !!val || 'Please select timezone']"
-                      ></q-select>
+                        @filter="filterTimezone"
+                      >
+                        <template v-slot:no-option>
+                          <q-item>
+                            <q-item-section class="text-grey">
+                              No results
+                            </q-item-section>
+                          </q-item>
+                        </template>
+                      </q-select>
                     </q-item-label>
                   </q-item-section>
                 </q-item>
@@ -90,21 +110,32 @@
 </template>
 
 <script lang="ts" setup>
-import { getBaseCurrencyPrice } from "@/api/baseCurrencies"
+import { getBaseCurrencyPriceCache } from "@/api/baseCurrencies"
 import baseCurrencies from "@/utils/currencies"
+import moment from "moment-timezone"
 import type { QForm } from "quasar"
 import { onMounted, ref } from "vue"
 
 const form = ref<QForm | null>(null)
 const loading = ref(false)
-const currencys = baseCurrencies
+
+const currencies = ref(baseCurrencies)
 const currencyModel = ref()
+const timezoneList = ref(moment.tz.names())
+const timezone = ref()
 const costMethod = ref("FIFO")
 const costMethodOption = ["FIFO", "LIFO", "HIFO"]
 
-onMounted(() => {})
+onMounted(() => {
+  // 获取时区列表
+  const guess = moment.tz.guess()
+  const timezoneList = moment.tz.names()
+
+  console.log(guess)
+  console.log(timezoneList)
+})
 const getPrice = () => {
-  getBaseCurrencyPrice(currencyModel.value.code)
+  getBaseCurrencyPriceCache(currencyModel.value.code)
 }
 
 const onSubmit = async () => {
@@ -121,6 +152,23 @@ const onSubmit = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const filterCurrencies = (val, update) => {
+  update(() => {
+    const needle = val.toLowerCase()
+    currencies.value = baseCurrencies.filter(({ code }) =>
+      code.toLowerCase().includes(needle),
+    )
+  })
+}
+const filterTimezone = (val, update) => {
+  update(() => {
+    const needle = val.toLowerCase()
+    timezoneList.value = moment.tz
+      .names()
+      .filter((v) => v.toLowerCase().includes(needle))
+  })
 }
 </script>
 
