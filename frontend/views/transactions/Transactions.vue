@@ -142,12 +142,7 @@
                   />
 
                   <br />
-                  {{
-                    new Date(Number(transaction.timestamp)).toLocaleTimeString(
-                      "en-US",
-                      { hour12: false },
-                    )
-                  }}
+                  {{ showCustomTimezoneTime(transaction.timestamp) }}
                 </div>
                 <div class="col">
                   <div class="flex-y-center q-gutter-sm">
@@ -536,6 +531,7 @@ import {
 import type { SyncedTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
+import { showCustomTimezoneDate, showCustomTimezoneTime } from "@/utils/date"
 import { confirmDialog } from "@/utils/dialog"
 import { showMessageError, showMessageSuccess } from "@/utils/message"
 import {
@@ -664,7 +660,7 @@ const groupedTransactions = (
 } => {
   const groups = {}
   transactions.forEach((transaction) => {
-    const date = new Date(Number(transaction.timestamp)).toLocaleDateString()
+    const date = showCustomTimezoneDate(transaction.timestamp)
     if (!groups[date]) {
       groups[date] = []
     }

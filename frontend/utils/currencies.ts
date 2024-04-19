@@ -1,3 +1,5 @@
+import { getBaseCurrencyPriceCache } from "@/api/baseCurrencies"
+
 export interface baseCurrency {
   code: string
   name: string
@@ -53,5 +55,23 @@ export const baseCurrencies: baseCurrency[] = [
   { code: "VND", name: "Vietnamese Dong" },
   { code: "ZAR", name: "South African Rand" },
 ]
+
+// 缓存在内存中的汇率
+let cachedRate
+
+// 提前获取 rate
+getBaseCurrencyPriceCache("EUR").then(({ rate }) => {
+  cachedRate = rate
+})
+
+export const convertCurrency = (amount: number) => {
+  // timestamp 留作后续新功能的冗余参数，方便到时候改
+  const currencyCode = "EUR"
+  const amountConverted = Number((amount * cachedRate).toFixed(2))
+  return new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency: currencyCode,
+  }).format(amountConverted)
+}
 
 export default baseCurrencies

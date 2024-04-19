@@ -1,3 +1,5 @@
+import moment from "moment-timezone"
+
 export const distanceFromCurrentDate = (
   targetTimestamp: bigint | number,
 ): string => {
@@ -40,4 +42,18 @@ export const getYearTimestamps = (): YearTimestamp[] => {
   }
 
   return timestamps
+}
+
+// 设置默认时区，通过设置默认时区，可以影响到使用moment转换的所有时间
+moment.tz.setDefault(moment.tz.guess())
+
+//只返回时分秒
+export const showCustomTimezoneTime = (timestamp: number | bigint): any => {
+  const time = moment(Number(timestamp)).format("HH:mm:ss")
+  return time
+}
+//只返回年月日
+export const showCustomTimezoneDate = (timestamp: number | bigint): any => {
+  const date = moment(Number(timestamp)).format("YYYY/MM/DD")
+  return date
 }

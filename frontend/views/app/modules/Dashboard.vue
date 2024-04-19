@@ -42,6 +42,9 @@
                 <q-item clickable v-ripple="true">
                   <q-item-section>Received</q-item-section>
                   <q-item-section side>$ {{ received }}</q-item-section>
+                  <q-item-section side>{{
+                    convertCurrency(received)
+                  }}</q-item-section>
                 </q-item>
                 <q-item clickable v-ripple="true">
                   <q-item-section>Sent</q-item-section>
@@ -127,19 +130,18 @@
 </template>
 
 <script lang="ts" setup>
-import { getAllTransactionsICRC1 } from "@/api/icrc1"
 import {
   getAllWalletDailyBalance,
   getDailyBalanceValue,
   getICPBalance,
   getWalletHistory,
 } from "@/api/rosetta"
-import { getAllSNSInfo } from "@/api/sns"
 import { getICPNowPrice } from "@/api/token"
 import { getUserWallet } from "@/api/user"
 import Progress from "@/components/Progress.vue"
 import type { TableColumn } from "@/types/model"
 import type { Wallet, WalletHistory } from "@/types/user"
+import { convertCurrency } from "@/utils/currencies"
 import { showMessageError } from "@/utils/message"
 import type { EChartsType } from "echarts"
 import * as echarts from "echarts"
