@@ -41,6 +41,7 @@
 <script lang="ts" setup>
 import type { TableColumn } from "@/types/model"
 import type { Wallet } from "@/types/user"
+import { convertCurrency } from "@/utils/currencies"
 import { calculatePercent } from "@/utils/math"
 import { computed } from "vue"
 const props = defineProps({
@@ -72,7 +73,7 @@ const columns: TableColumn[] = [
   {
     name: "balance",
     required: true,
-    // sortable: true, 排序会导致颜色匹配出现问题
+    // sortable: true, 排序会导致颜色匹配出现问题，先不用
     label: "Balance",
     field: "balance",
     align: "left",
@@ -105,8 +106,7 @@ const computedBalancePercent = computed(() => {
   const res = props.wallets.map((wallet) => {
     const token = wallet.tokens.find((t) => t.symbol === props.symbol)
     const balance = token ? token.balance : 0
-    // totalBalance.value += balance
-    const value = (balance * props.price).toFixed(2)
+    const value = convertCurrency(balance * props.price)
     const percentage = calculatePercent(balance, props.totalBalance)
     return { name: wallet.name, balance, value, percentage }
   })

@@ -1,4 +1,5 @@
-import { getBaseCurrencyPriceCache } from "@/api/baseCurrencies"
+import { getUserCurrencyCode } from "@/api/user"
+import { numberToFixed } from "./math"
 
 export interface baseCurrency {
   code: string
@@ -56,18 +57,22 @@ export const baseCurrencies: baseCurrency[] = [
   { code: "ZAR", name: "South African Rand" },
 ]
 
-// 缓存在内存中的汇率
-let cachedRate
-
-// 提前获取 rate
-getBaseCurrencyPriceCache("EUR").then(({ rate }) => {
-  cachedRate = rate
+// 用户所选择的货币符号代码
+let currencyCode = "USD"
+//获取用户设置的货币代码
+getUserCurrencyCode().then((code) => {
+  currencyCode = code
 })
+//手动设置货币代码
+export const setCurrencyCode = (code: string) => {
+  currencyCode = code
+}
 
+//将数字转换为对应货币适合的格式，且添加对应的货币符号
 export const convertCurrency = (amount: number) => {
-  // timestamp 留作后续新功能的冗余参数，方便到时候改
-  const currencyCode = "EUR"
-  const amountConverted = Number((amount * cachedRate).toFixed(2))
+  // 此方法应用于展示金额时更改样式和增加货币代码， rate应在展示之前，刚获取数据时进行修改，而不是在这里。
+  const amountConverted = numberToFixed(amount, 2)
+  //设置为undefined，不对地区做限制
   return new Intl.NumberFormat(undefined, {
     style: "currency",
     currency: currencyCode,

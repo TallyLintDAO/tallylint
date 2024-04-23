@@ -41,18 +41,21 @@
               <q-list>
                 <q-item clickable v-ripple="true">
                   <q-item-section>Received</q-item-section>
-                  <q-item-section side>$ {{ received }}</q-item-section>
-                  <q-item-section side>{{
-                    convertCurrency(received)
-                  }}</q-item-section>
+                  <q-item-section side>
+                    {{ convertCurrency(received) }}
+                  </q-item-section>
                 </q-item>
                 <q-item clickable v-ripple="true">
                   <q-item-section>Sent</q-item-section>
-                  <q-item-section side>$ {{ sent }}</q-item-section>
+                  <q-item-section side>
+                    {{ convertCurrency(received) }}
+                  </q-item-section>
                 </q-item>
                 <q-item clickable v-ripple="true">
                   <q-item-section>Gains</q-item-section>
-                  <q-item-section side>$ {{ gains }}</q-item-section>
+                  <q-item-section side>
+                    {{ convertCurrency(gains) }}
+                  </q-item-section>
                 </q-item>
               </q-list>
             </q-item-section>
@@ -61,75 +64,81 @@
       </div>
     </div>
     <div class="row">
-      <q-card flat bordered>
-        <q-item>
-          <q-item-section>
-            <q-item-label caption style="font-size: 1rem">
-              Holdings
-            </q-item-label>
-            <q-table
-              :rows="rows"
-              :columns="columns"
-              row-key="name"
-              :rowsPerPageOptions="[0]"
-              hide-pagination
-              flat
-            >
-              <template v-slot:header="props">
-                <q-tr :props="props">
-                  <q-th auto-width />
-                  <q-th
-                    v-for="col in props.cols"
-                    :key="col.name"
-                    :props="props"
-                  >
-                    {{ col.label }}
-                  </q-th>
-                </q-tr>
-              </template>
+      <div class="col-7">
+        <q-card flat bordered>
+          <q-item>
+            <q-item-section>
+              <q-item-label caption style="font-size: 1rem">
+                Holdings
+              </q-item-label>
+              <q-table
+                :rows="rows"
+                :columns="columns"
+                row-key="name"
+                :rowsPerPageOptions="[0]"
+                hide-pagination
+                flat
+              >
+                <template v-slot:header="props">
+                  <q-tr :props="props">
+                    <q-th auto-width />
+                    <q-th
+                      v-for="col in props.cols"
+                      :key="col.name"
+                      :props="props"
+                    >
+                      {{ col.label }}
+                    </q-th>
+                  </q-tr>
+                </template>
 
-              <template v-slot:body="props">
-                <q-tr :props="props">
-                  <q-td auto-width>
-                    <q-btn
-                      size="sm"
-                      color="primary"
-                      round
-                      dense
-                      @click="props.expand = !props.expand"
-                      :icon="props.expand ? 'remove' : 'add'"
-                    />
-                  </q-td>
-                  <q-td
-                    v-for="col in props.cols"
-                    :key="col.name"
-                    :props="props"
-                  >
-                    {{ col.value }}
-                  </q-td>
-                </q-tr>
-                <q-tr v-show="props.expand" :props="props" no-hover>
-                  <q-td colspan="100%">
-                    <div class="text-left">
-                      <Progress
-                        :wallets="wallets"
-                        :symbol="props.row.token"
-                        :price="props.row.price"
-                        :totalBalance="icpBalance"
+                <template v-slot:body="props">
+                  <q-tr :props="props">
+                    <q-td auto-width>
+                      <q-btn
+                        size="sm"
+                        color="primary"
+                        round
+                        dense
+                        @click="props.expand = !props.expand"
+                        :icon="props.expand ? 'remove' : 'add'"
                       />
-                    </div>
-                  </q-td>
-                </q-tr>
-              </template>
-            </q-table>
-          </q-item-section>
-        </q-item>
-      </q-card>
+                    </q-td>
+                    <q-td
+                      v-for="col in props.cols"
+                      :key="col.name"
+                      :props="props"
+                    >
+                      <template v-if="col.name === 'price'">
+                        {{ convertCurrency(col.value) }}
+                      </template>
+                      <template v-else> {{ col.value }}</template>
+                    </q-td>
+                  </q-tr>
+                  <q-tr v-show="props.expand" :props="props" no-hover>
+                    <q-td colspan="100%">
+                      <div class="text-left">
+                        <Progress
+                          :wallets="wallets"
+                          :symbol="props.row.token"
+                          :price="props.row.price"
+                          :totalBalance="icpBalance"
+                        />
+                      </div>
+                    </q-td>
+                  </q-tr>
+                </template>
+              </q-table>
+            </q-item-section>
+          </q-item>
+        </q-card>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { getUserCurrencyRate } from "@/api/baseCurrencies"
 import {
   getAllWalletDailyBalance,
   getDailyBalanceValue,
@@ -236,17 +245,20 @@ const columns: TableColumn[] = [
 
 const wallets = ref<Wallet[]>([])
 const icpBalance = ref(0)
+const rate = ref(1)
 const rows = ref<any[]>([
   {
     token: "ICP",
     balance: 0,
     cost: 0,
     price: 0,
-    value: 0,
+    value: "0",
   },
 ])
 
-onMounted(() => {
+onMounted(async () => {
+  //如果获取汇率的过程中发生了错误或者返回的结果中没有汇率，则使用原值
+  rate.value = (await getUserCurrencyRate()).rate || rate.value
   initECharts()
   getWallet()
   getICPPrice()
@@ -289,16 +301,16 @@ watch(
       0,
     )
     rows.value[0].balance = icpBalance.value.toFixed(8)
-    rows.value[0].value = (rows.value[0].balance * rows.value[0].price).toFixed(
-      2,
+    rows.value[0].value = convertCurrency(
+      Number((rows.value[0].balance * rows.value[0].price).toFixed(2)),
     )
   },
 )
 
-const getICPPrice = () => {
-  getICPNowPrice().then((res) => {
-    rows.value[0].price = res
-  })
+const getICPPrice = async () => {
+  const res = await getICPNowPrice()
+  //需要用到price作为计算，没法将它直接转换为货币符号
+  rows.value[0].price = Number((res * rate.value).toFixed(2))
 }
 
 const getWallet = async () => {
@@ -383,11 +395,14 @@ const getDetail = () => {
         sent.value += transaction.amount * transaction.price
       }
     })
+
     //保留小数点
-    received.value = Number(received.value.toFixed(2))
-    sent.value = Number(sent.value.toFixed(2))
+    received.value = Number((received.value * rate.value).toFixed(2))
+    sent.value = Number((sent.value * rate.value).toFixed(2))
     //gain暂且使用这种简单的方式计算
-    gains.value = Number((received.value - sent.value).toFixed(2))
+    gains.value = Number(
+      ((received.value - sent.value) * rate.value).toFixed(2),
+    )
   }
 }
 // 初始化 ECharts 实例

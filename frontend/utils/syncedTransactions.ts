@@ -1,7 +1,9 @@
 import type { Details } from ".dfx/ic/canisters/backend/backend.did"
+import { getUserCurrencyRate } from "@/api/baseCurrencies"
 import { getSyncedTransactions } from "@/api/user"
 import type { SyncedTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
+import { numberToFixed } from "./math"
 
 //批量获取多个地址的交易记录
 export const getAllSyncedTransactions = async (
@@ -21,10 +23,18 @@ export const getAllSyncedTransactions = async (
       },
       true,
     )
-
+    //如果获取汇率的过程中发生了错误或者返回的结果中没有汇率，则使用原值
+    const rate = (await getUserCurrencyRate()).rate || 1
     const transactions = res.map((transaction) => ({
       ...transaction,
       timestamp: Number(transaction.timestamp),
+      details: {
+        ...transaction.details,
+        price: numberToFixed(transaction.details.price * rate, 2),
+        cost: numberToFixed(transaction.details.cost * rate, 2),
+        profit: numberToFixed(transaction.details.profit * rate, 2),
+        value: numberToFixed(transaction.details.value * rate, 2),
+      },
     }))
     return { total: transactions.length, transactions: transactions }
   } catch (error) {

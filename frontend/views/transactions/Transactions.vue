@@ -164,7 +164,9 @@
                   {{ transaction.details.amount }}
                   <br />
                   <span v-if="transaction.t_type === 'SEND'">
-                    {{ "$" + transaction.details.cost + " cost basis" }}
+                    {{
+                      convertCurrency(transaction.details.cost) + " cost basis"
+                    }}
                   </span>
                 </div>
                 <div class="col">
@@ -317,9 +319,9 @@
                   v-model="transactionWallet"
                   filled
                   :options="wallets"
-                  :disable="isEdit"
                   label="Select Wallet *"
                   :rules="[(val) => !!val || 'Please select wallet']"
+                  :disable="!transaction.manual && isEdit"
                 >
                   <template v-slot:selected-item="scope">
                     <q-item style="padding-left: 0">
@@ -354,8 +356,9 @@
                         <q-item-label
                           caption
                           v-if="scope.opt.last_sync_time !== 0"
-                          >Synced</q-item-label
                         >
+                          Synced
+                        </q-item-label>
                       </q-item-section>
                       <q-item-section side>
                         <q-item-label caption>{{
@@ -371,7 +374,7 @@
                   type="number"
                   v-model.number="transaction.details.amount"
                   class="q-mb-md"
-                  :disable="isEdit"
+                  :disable="!transaction.manual && isEdit"
                 >
                   <template v-slot:before>
                     <q-select
@@ -381,7 +384,7 @@
                       :options="tokenList"
                       label="Token"
                       style="min-width: 100px"
-                      :disable="isEdit"
+                      :disable="!transaction.manual && isEdit"
                     >
                       <template v-slot:option="scope">
                         <q-item v-bind="scope.itemProps">
@@ -407,7 +410,7 @@
                   label="Token Price"
                   type="number"
                   v-model.number="transaction.details.price"
-                  :disable="isEdit"
+                  :disable="!transaction.manual && isEdit"
                 />
               </q-card-section>
 
@@ -439,7 +442,7 @@
                           (val && val.length > 0) ||
                           'Please select transaction type',
                       ]"
-                      :disable="isEdit"
+                      :disable="!transaction.manual && isEdit"
                     />
                   </div>
                   <div class="text-grey text-caption row items-center">
@@ -460,7 +463,7 @@
                         (val.length === 63 || val.length === 64)) ||
                       'Please enter Account ID Address',
                   ]"
-                  :disable="isEdit"
+                  :disable="!transaction.manual && isEdit"
                 />
               </q-card-section>
             </q-card>
@@ -474,7 +477,7 @@
                   (val && val.length > 0) ||
                   'Please enter the transaction datetime',
               ]"
-              :disabled="isEdit"
+              :disable="!transaction.manual && isEdit"
             />
             <q-input
               outlined
@@ -486,7 +489,7 @@
                   (val && val.length > 0) ||
                   'Please enter the transaction hash',
               ]"
-              :disable="isEdit"
+              :disable="!transaction.manual && isEdit"
             />
             <q-input
               outlined
@@ -531,6 +534,7 @@ import {
 import type { SyncedTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
+import { convertCurrency } from "@/utils/currencies"
 import { showCustomTimezoneDate, showCustomTimezoneTime } from "@/utils/date"
 import { confirmDialog } from "@/utils/dialog"
 import { showMessageError, showMessageSuccess } from "@/utils/message"
@@ -652,13 +656,16 @@ const shortcuts = [
     },
   },
 ]
-
+//TODO 按每一日，将数据分组，如果使用按时间排序以外的方法排序，会造成同一天里包含错误排序的数据
 const groupedTransactions = (
   transactions: SyncedTransaction[],
 ): {
   [date: string]: SyncedTransaction[]
 } => {
   const groups = {}
+  // if (sort.value.value !== "date-desc" && sort.value.value !== "date-asc") {
+  //   return groups
+  // }
   transactions.forEach((transaction) => {
     const date = showCustomTimezoneDate(transaction.timestamp)
     if (!groups[date]) {

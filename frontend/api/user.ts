@@ -255,3 +255,8 @@ export async function getUserTaxProfit(
 ): Promise<ApiResult<TaxReportData>> {
   return getBackend().my_summary(start, end)
 }
+
+// 获取用户所设置的货币代码
+export async function getUserCurrencyCode(): Promise<any> {
+  return "USD"
+}

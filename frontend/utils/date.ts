@@ -44,7 +44,7 @@ export const getYearTimestamps = (): YearTimestamp[] => {
   return timestamps
 }
 
-// 设置默认时区，通过设置默认时区，可以影响到使用moment转换的所有时间
+//TODO 设置moment的默认时区，通过设置默认时区，可以影响到使用moment转换的所有时间。先用guess撑着，后面用户选啥设置啥
 moment.tz.setDefault(moment.tz.guess())
 
 //只返回时分秒

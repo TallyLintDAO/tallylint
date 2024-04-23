@@ -1,5 +1,13 @@
 import type { IRCR1Price } from "@/types/sns"
 
+//指定目标数字保留几位小数
+export const numberToFixed = (
+  amount: number,
+  toFixedNumber: number,
+): number => {
+  return Number(amount.toFixed(toFixedNumber))
+}
+
 // 将目标数值和现有数值转化为百分比（保留2位小数），满100%则计算为100%
 export function calculatePercent(
   currentValue: number | bigint,
