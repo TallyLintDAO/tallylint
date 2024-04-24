@@ -258,5 +258,5 @@ export async function getUserTaxProfit(
 
 // 获取用户所设置的货币代码
 export async function getUserCurrencyCode(): Promise<any> {
-  return "USD"
+  return "EUR"
 }

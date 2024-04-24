@@ -164,9 +164,8 @@
                   {{ transaction.details.amount }}
                   <br />
                   <span v-if="transaction.t_type === 'SEND'">
-                    {{
-                      convertCurrency(transaction.details.cost) + " cost basis"
-                    }}
+                    <CurrencyUSD :amount="transaction.details.cost" />
+                    cost basis
                   </span>
                 </div>
                 <div class="col">
@@ -531,10 +530,10 @@ import {
   removeTransactionTag,
   setTransactionTag,
 } from "@/api/user"
+import CurrencyUSD from "@/components/CurrencyUSD.vue"
 import type { SyncedTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
-import { convertCurrency } from "@/utils/currencies"
 import { showCustomTimezoneDate, showCustomTimezoneTime } from "@/utils/date"
 import { confirmDialog } from "@/utils/dialog"
 import { showMessageError, showMessageSuccess } from "@/utils/message"
