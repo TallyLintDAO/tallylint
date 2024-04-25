@@ -51,25 +51,25 @@
             <q-item clickable v-ripple>
               <q-item-section>Capital gains / P&L</q-item-section>
               <q-skeleton v-if="walletLoading" type="text" />
-              <q-item-section v-else side
-                >$ {{ taxReportData.capital_gain_or_loss }}</q-item-section
-              >
+              <q-item-section v-else side>
+                <CurrencyUSD :amount="taxReportData.capital_gain_or_loss" />
+              </q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section>
                 Other gains (futures, derivatives etc)
               </q-item-section>
               <q-skeleton v-if="walletLoading" type="text" />
-              <q-item-section v-else side
-                >$ {{ taxReportData.other_gain }}</q-item-section
-              >
+              <q-item-section v-else side>
+                <CurrencyUSD :amount="taxReportData.other_gain" />
+              </q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section overline>Income</q-item-section>
               <q-skeleton v-if="walletLoading" type="text" />
-              <q-item-section v-else side
-                >$ {{ taxReportData.income }}</q-item-section
-              >
+              <q-item-section v-else side>
+                <CurrencyUSD :amount="taxReportData.income" />
+              </q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section>
@@ -77,19 +77,20 @@
                 <!-- <q-icon name="warning" /> -->
               </q-item-section>
               <q-skeleton v-if="walletLoading" type="text" />
-              <q-item-section v-else side
-                >$ {{ taxReportData.costs_expenses }}</q-item-section
-              >
+              <q-item-section v-else side>
+                <CurrencyUSD :amount="taxReportData.costs_expenses" />
+              </q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section>
                 <q-item-label>Gifts, donations & lost coins</q-item-label>
               </q-item-section>
               <q-skeleton v-if="walletLoading" type="text" />
-              <q-item-section v-else side
-                >$
-                {{ taxReportData.gifts_dotations_lost_coins }}</q-item-section
-              >
+              <q-item-section v-else side>
+                <CurrencyUSD
+                  :amount="taxReportData.gifts_dotations_lost_coins"
+                />
+              </q-item-section>
             </q-item>
           </q-list>
           <q-separator />
@@ -110,6 +111,17 @@
               Free For Now
             </q-banner>
             <br />
+            <div class="q-mb-xs">
+              <span class="text-body1">Report Base Currency:</span>
+              <br />
+              <q-radio
+                v-model="currency"
+                :val="userBaseCurrency"
+                :label="userBaseCurrency"
+              />
+              <q-radio v-model="currency" val="USD" label="USD" />
+            </div>
+
             <q-btn
               color="primary"
               icon="file_download"
@@ -158,16 +170,25 @@
   </div>
 </template>
 <script setup lang="ts">
-import { getUserTaxProfit, getUserWalletsTag } from "@/api/user"
+import { rate } from "@/api/baseCurrencies"
+import {
+  getUserCurrencyCode,
+  getUserTaxProfit,
+  getUserWalletsTag,
+} from "@/api/user"
+import CurrencyUSD from "@/components/CurrencyUSD.vue"
 import type { SyncedTransaction } from "@/types/sns"
 import type { TaxReportData } from "@/types/user"
 import { YearTimestamp, getYearTimestamps } from "@/utils/date"
+import { numberToFixed } from "@/utils/math"
 import { getAllSyncedTransactions } from "@/utils/syncedTransactions"
+import moment from "moment-timezone"
 import { exportFile } from "quasar"
 import { computed, onMounted, ref, watch } from "vue"
 
 const walletLoading = ref(false)
 const userConfigLoading = ref(false)
+
 // 初始化日期选项数组，包含当前年份以及前三年的年份
 const dateOptions: YearTimestamp[] = getYearTimestamps().reverse()
 dateOptions.push({ year: "All", timestamp: { start: 0, end: 0 } })
@@ -176,6 +197,8 @@ const selectedYear = ref(dateOptions[0])
 const historyList = ref<SyncedTransaction[]>([])
 const transactionAmount = ref(0)
 const walletAmount = ref(0)
+const currency = ref() //用户选择税务报告所导出的单位为USD还是自选的货币
+const userBaseCurrency = ref("Selected Base Currency")
 
 const taxReportData = ref<TaxReportData>({
   capital_gain_or_loss: 0,
@@ -188,6 +211,13 @@ const taxReportData = ref<TaxReportData>({
 onMounted(() => {
   getWalletHistory()
   getTaxProfit()
+  getUserCurrencyCode().then((res) => {
+    userBaseCurrency.value = res
+    currency.value = res
+  })
+  console.log("1713916951000", moment.locale())
+  console.log("1713916951000", moment(1713916951000).format("LLL"))
+  console.log("1713916951000", moment().format("LLL"))
 })
 
 const getTaxProfit = async () => {
@@ -260,6 +290,11 @@ const exportToCSV = async () => {
     "Income",
     "Profit",
   ]
+  let exportRate = 1
+  if (currency.value !== "USD") {
+    //如果用户选择使用他自己选择的货币汇率，则对即将导出的报告金额使用转换
+    exportRate = rate
+  }
 
   // 生成包含列名和数据的数组
   const data = [
@@ -269,16 +304,17 @@ const exportToCSV = async () => {
       transaction.t_type,
       transaction.details.status,
       //Time format fixed to Switzerland
-      new Date(Number(transaction.timestamp)).toLocaleString("fr-CH"),
+      moment(transaction.timestamp).format("LLL"), // 25. April 2024 17:30
+      // new Date(Number(transaction.timestamp)).toLocaleString("fr-CH"),
       transaction.details?.from,
       transaction.details?.to,
       transaction.details.amount,
       transaction.details.fee,
       "",
-      transaction.details.price,
-      transaction.details.cost,
-      transaction.details.value,
-      transaction.details.profit,
+      numberToFixed(transaction.details.price * exportRate, 2),
+      numberToFixed(transaction.details.cost * exportRate, 2),
+      numberToFixed(transaction.details.value * exportRate, 2),
+      numberToFixed(transaction.details.profit * exportRate, 2),
     ]),
   ]
 

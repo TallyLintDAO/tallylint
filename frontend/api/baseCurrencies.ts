@@ -4,6 +4,16 @@ import { showMessageError } from "@/utils/message"
 import axios from "axios"
 import { getUserCurrencyCode } from "./user"
 
+//全局存储rate变量，方便调用
+export let rate: number
+export let rate_time_last_update: number
+;(async () => {
+  const { rate: initialRate, time_last_update_unix: initialTime } =
+    await getUserCurrencyRate()
+  rate = initialRate
+  rate_time_last_update = initialTime * 1000
+})()
+
 // 获取用户所选择货币与美元的汇率
 export async function getUserCurrencyRate(): Promise<any> {
   // 默认为USD
@@ -11,7 +21,10 @@ export async function getUserCurrencyRate(): Promise<any> {
   // 获取用户设置的货币符号方法
   const res = await getUserCurrencyCode()
   currencyCode = res
-  return await getBaseCurrencyPriceCache(currencyCode)
+  const data = await getBaseCurrencyPriceCache(currencyCode)
+  rate = data.rate
+  rate_time_last_update = data.time_last_update_unix * 1000
+  return data
 }
 
 // 获取汇率缓存，防止多次调用api导致封锁

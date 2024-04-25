@@ -23,7 +23,7 @@ a {
 }
 
 .q-tooltip--style {
-  font-size: 12px;
+  font-size: 12px !important; //默认的font-size 10px太小了，这里强制12px大一点
 }
 /* 修改element+组件样式 */
 .el-picker__popper {

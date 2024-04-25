@@ -202,8 +202,13 @@
                   </a>
                   <br />
                   <span>
-                    {{ "≈ $" + transaction.details.value }}
-                    <q-tooltip>
+                    ≈
+                    <CurrencyUSD :amount="transaction.details.value" />
+                    <q-tooltip
+                      anchor="top middle"
+                      self="bottom middle"
+                      :offset="[10, 10]"
+                    >
                       Market price by Binance
                       <br />
                       ${{ transaction.details.price }} / ICP
@@ -216,7 +221,9 @@
                       'text-red-5': transaction.details.profit < 0,
                     }"
                   >
-                    {{ " · $ " + transaction.details.profit + " profit" }}
+                    ·
+                    <CurrencyUSD :amount="transaction.details.profit" />
+                    profit
                   </b>
                 </div>
                 <div class="col">
@@ -410,7 +417,9 @@
                   type="number"
                   v-model.number="transaction.details.price"
                   :disable="!transaction.manual && isEdit"
-                />
+                >
+                  <template v-slot:prepend> $ </template>
+                </q-input>
               </q-card-section>
 
               <q-separator inset />
