@@ -215,9 +215,6 @@ onMounted(() => {
     userBaseCurrency.value = res
     currency.value = res
   })
-  console.log("1713916951000", moment.locale())
-  console.log("1713916951000", moment(1713916951000).format("LLL"))
-  console.log("1713916951000", moment().format("LLL"))
 })
 
 const getTaxProfit = async () => {
@@ -304,7 +301,7 @@ const exportToCSV = async () => {
       transaction.t_type,
       transaction.details.status,
       //Time format fixed to Switzerland
-      moment(transaction.timestamp).format("LLL"), // 25. April 2024 17:30
+      moment(transaction.timestamp).format("DD.MM.YYYY hh:mm:ss"),
       // new Date(Number(transaction.timestamp)).toLocaleString("fr-CH"),
       transaction.details?.from,
       transaction.details?.to,

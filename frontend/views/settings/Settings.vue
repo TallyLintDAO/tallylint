@@ -26,6 +26,7 @@
                         :rules="[
                           (val) => !!val || 'Please select base currency',
                         ]"
+                        hint="Now only have data on the latest currency exchange rates, there is a bias for historical transaction records"
                         @filter="filterCurrencies"
                       >
                         <template v-slot:no-option>
@@ -110,7 +111,6 @@
 </template>
 
 <script lang="ts" setup>
-import { getBaseCurrencyPriceCache } from "@/api/baseCurrencies"
 import baseCurrencies from "@/utils/currencies"
 import moment from "moment-timezone"
 import type { QForm } from "quasar"
@@ -122,7 +122,7 @@ const loading = ref(false)
 const currencies = ref(baseCurrencies)
 const currencyModel = ref()
 const timezoneList = ref(moment.tz.names())
-const timezone = ref()
+const timezone = ref(moment.tz.guess())
 const costMethod = ref("FIFO")
 const costMethodOption = ["FIFO", "LIFO", "HIFO"]
 
@@ -134,9 +134,6 @@ onMounted(() => {
   console.log(guess)
   console.log(timezoneList)
 })
-const getPrice = () => {
-  getBaseCurrencyPriceCache(currencyModel.value.code)
-}
 
 const onSubmit = async () => {
   loading.value = true
@@ -176,4 +173,3 @@ const filterTimezone = (val, update) => {
 .settings-container {
 }
 </style>
-@/utils/currencies
