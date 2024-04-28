@@ -126,14 +126,7 @@ const timezone = ref(moment.tz.guess())
 const costMethod = ref("FIFO")
 const costMethodOption = ["FIFO", "LIFO", "HIFO"]
 
-onMounted(() => {
-  // 获取时区列表
-  const guess = moment.tz.guess()
-  const timezoneList = moment.tz.names()
-
-  console.log(guess)
-  console.log(timezoneList)
-})
+onMounted(() => {})
 
 const onSubmit = async () => {
   loading.value = true

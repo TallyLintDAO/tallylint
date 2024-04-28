@@ -17,7 +17,7 @@
       v-model="leftDrawerOpen"
       side="left"
       show-if-above
-      :breakpoint="430"
+      :breakpoint="769"
     >
       <q-img
         class="absolute-top"

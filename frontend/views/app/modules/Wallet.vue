@@ -1,5 +1,6 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <div class="wallet-container">
+    <SupportedTokens />
     <q-table
       grid
       :loading="tableLoading"
@@ -23,13 +24,7 @@
           >
         </div>
         <q-space />
-        <q-input
-          borderless
-          dense
-          debounce="300"
-          v-model="filter"
-          placeholder="Search"
-        >
+        <q-input dense debounce="300" v-model="filter" placeholder="Search">
           <template v-slot:append>
             <q-icon name="search" />
           </template>
@@ -212,6 +207,7 @@ import {
   getUserWallet,
   syncWallet,
 } from "@/api/user"
+import SupportedTokens from "@/components/SupportedTokens.vue"
 import type { WalletInfo, syncWalletParam } from "@/types/user"
 import { isPrincipal, p2a } from "@/utils/common"
 import { distanceFromCurrentDate } from "@/utils/date"

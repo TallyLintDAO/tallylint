@@ -102,7 +102,10 @@
       </div>
       <div v-else>
         <q-list bordered separator>
-          <template v-for="(transactions, date) in paginatedGroups" :key="date">
+          <template
+            v-for="(transactions, date, index) in paginatedGroups"
+            :key="index"
+          >
             <q-item>
               <q-item-section>
                 <q-item-label class="text-h6" header>{{ date }}</q-item-label>
@@ -972,4 +975,3 @@ const deleteTransaction = (transactionId: bigint | number) => {
   }
 }
 </style>
-@/utils/SyncedTransactions

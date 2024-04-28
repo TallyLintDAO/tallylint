@@ -1,13 +1,13 @@
 <template>
   <span>
     {{ convertCurrency(amountConvert) }}
-    <q-tooltip>
+    <q-tooltip v-if="rate_time_last_update !== 0">
       ${{ props.amount }}
       <br />
       Currency exchange rate date:
       {{ showCustomTimezoneDate(rate_time_last_update) }}
       <br />
-      Currency rate from exchangerate-api.com
+      from exchangerate-api.com
     </q-tooltip>
   </span>
 </template>
