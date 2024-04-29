@@ -59,15 +59,21 @@ export interface NNSNeuron {
   stakedMaturity: number
 }
 
-export interface Token {
+export interface WalletToken {
   symbol: string
   balance: number
+}
+
+export interface Token {
+  symbol: string
+  name: string
+  ledgerCanisterId: string
 }
 
 export interface Wallet {
   address: string
   name: string
-  tokens: Token[]
+  tokens: WalletToken[]
 }
 
 export interface DailyBalance {

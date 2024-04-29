@@ -2,7 +2,7 @@ import type { SnsInfo } from "@/types/sns"
 import axios from "axios"
 
 const AGGREGATOR_PAGE_SIZE = 10
-const SNS_AGGREGATOR_CANISTER_URL =
+export const SNS_AGGREGATOR_CANISTER_URL =
   "https://3r4gx-wqaaa-aaaaq-aaaia-cai.icp0.io"
 const AGGREGATOR_CANISTER_VERSION = "v1"
 

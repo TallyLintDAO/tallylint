@@ -1,6 +1,23 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <div class="wallet-container">
-    <SupportedTokens />
+    <div class="row">
+      <div class="q-gutter-sm">
+        <q-btn color="primary" @click="openDialog('add')">Add Wallet</q-btn>
+        <q-btn
+          color="secondary"
+          @click="syncAllWallet()"
+          icon="cached"
+          :loading="syncLoading"
+          >Sync All Wallets</q-btn
+        >
+      </div>
+      <q-space />
+      <q-input dense debounce="300" v-model="filter" placeholder="Search">
+        <template v-slot:append>
+          <q-icon name="search" />
+        </template>
+      </q-input>
+    </div>
     <q-table
       grid
       :loading="tableLoading"
@@ -13,22 +30,7 @@
       row-key="address"
     >
       <template v-slot:top>
-        <div class="q-gutter-sm">
-          <q-btn color="primary" @click="openDialog('add')">Add Wallet</q-btn>
-          <q-btn
-            color="secondary"
-            @click="syncAllWallet()"
-            icon="cached"
-            :loading="syncLoading"
-            >Sync All Wallets</q-btn
-          >
-        </div>
-        <q-space />
-        <q-input dense debounce="300" v-model="filter" placeholder="Search">
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
+        <SupportedTokens />
       </template>
       <template v-slot:item="props">
         <div
