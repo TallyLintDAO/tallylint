@@ -140,6 +140,7 @@
 <script setup lang="ts">
 import { SNS_AGGREGATOR_CANISTER_URL, getAllSNSInfo } from "@/api/sns"
 import type { ICRC1Info } from "@/types/sns"
+import { showMessageError } from "@/utils/message"
 import { onMounted, ref } from "vue"
 
 const tokensDialogVisible = ref(false)
@@ -169,15 +170,21 @@ const getICRC1Info = () => {
 }
 
 const addSelectedToken = () => {
-  if (selectedToken.value) {
+  if (
+    selectedToken.value &&
+    !addedTokenList.value.includes(selectedToken.value)
+  ) {
     addedTokenList.value.push(selectedToken.value)
+    console.log("Token 已添加:", selectedToken.value)
+  } else {
+    showMessageError("The token to be added is empty or already exists")
   }
 }
 const jumpToWebsite = (url: string) => {
   window.open(url, "_blank")
 }
 const removeToken = (index) => {
-  addedTokenList.value.slice(index, 1)
+  addedTokenList.value.splice(index, 1)
 }
 </script>
 
