@@ -1,4 +1,5 @@
-import type { SnsInfo } from "@/types/sns"
+import type { ICRC1Info } from "@/types/sns"
+import { showMessageError } from "@/utils/message"
 import axios from "axios"
 
 const AGGREGATOR_PAGE_SIZE = 10
@@ -27,11 +28,11 @@ export const querySnsAggregator = async (page = 0) => {
   return data
 }
 
-export const getAllSNSInfo = async (): Promise<SnsInfo[]> => {
+export const getAllSNSInfo = async (): Promise<ICRC1Info[]> => {
   try {
     const data = await querySnsAggregator()
     console.log("getSNSInfo", data)
-    // lifecycle === 3 才是通过的SNS项目
+    // lifecycle === 3 才是通过的SNS项目，这里筛选通过的SNS项目，没有通过的全部抛弃
     const snses = data
       .filter(
         ({
@@ -48,6 +49,7 @@ export const getAllSNSInfo = async (): Promise<SnsInfo[]> => {
           meta,
         } = sns
         return {
+          //按自己的需求重新组装SNS的字段
           canisters: { governance, index, ledger, swap, root },
           name: icrc1_metadata.find(([key]) => key.endsWith(`:name`))[1].Text,
           symbol: icrc1_metadata.find(([key]) => key.endsWith(`:symbol`))[1]
@@ -58,9 +60,9 @@ export const getAllSNSInfo = async (): Promise<SnsInfo[]> => {
           meta,
         }
       })
-    console.log("filter sns", snses)
     return snses
   } catch (err) {
+    showMessageError("Failed to get SNS information.")
     throw new Error("Error querying Snses")
   }
 }

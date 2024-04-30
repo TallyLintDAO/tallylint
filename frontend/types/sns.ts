@@ -3,7 +3,7 @@ import type {
   TransactionF,
 } from ".dfx/ic/canisters/backend/backend.did"
 
-export interface SnsInfo {
+export interface ICRC1Info {
   canisters: {
     //Related canister id
     governance: string
