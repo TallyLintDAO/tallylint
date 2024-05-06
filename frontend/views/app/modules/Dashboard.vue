@@ -266,7 +266,7 @@ onMounted(async () => {
   //   const sns = snses.find((sns) => sns.symbol === "CHAT")
   //   if (sns) {
   //     // getICRC1Price(sns.canisters.ledger)
-  //     getAllTransactionsICRC1(
+  //     getTransactionsICRC1(
   //       {
   //         address:
   //           "bcc6t-arcy7-qgvxt-v3ubw-6xndu-ld6nf-vwetx-so4q3-pyjlv-3udyi-nae",

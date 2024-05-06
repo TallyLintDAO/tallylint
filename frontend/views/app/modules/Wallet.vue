@@ -10,7 +10,9 @@
           :loading="syncLoading"
           >Sync All Wallets</q-btn
         >
+        <SupportedTokens />
       </div>
+
       <q-space />
       <q-input dense debounce="300" v-model="filter" placeholder="Search">
         <template v-slot:append>
@@ -21,7 +23,6 @@
     <q-table
       grid
       :loading="tableLoading"
-      title="Wallets"
       :rows="rows"
       :columns="columns"
       selection="multiple"
@@ -29,9 +30,6 @@
       :filter="filter"
       row-key="address"
     >
-      <template v-slot:top>
-        <SupportedTokens />
-      </template>
       <template v-slot:item="props">
         <div
           class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"

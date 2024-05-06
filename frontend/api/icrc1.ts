@@ -11,13 +11,12 @@ import { IcrcAccount, IcrcIndexCanister } from "@dfinity/ledger-icrc"
 import type { TransactionWithId } from "@dfinity/ledger-icrc/dist/candid/icrc_index"
 import { Principal } from "@dfinity/principal"
 
-export const getAllTransactionsICRC1 = async (
+export const getTransactionsICRC1 = async (
   wallet: WalletTag,
   indexCanisterId: string,
   ledgerCanisterId: string,
   currency: Currency,
 ) => {
-  console.log("getAllTransactionsICRC1", indexCanisterId)
   const ai = await initAuth()
   if (ai.info) {
     const identity = ai.info.identity
@@ -39,7 +38,7 @@ export const getAllTransactionsICRC1 = async (
     })
 
     const transactionsInfo = ICRC1getTransactions.transactions
-    console.log("getAllTransactionsICRC1", transactionsInfo)
+    console.log("getTransactionsICRC1", transactionsInfo)
     return transactionsInfo.map(async (transaction) => {
       const res = await formatICRC1Transaction(
         wallet,
@@ -92,7 +91,7 @@ const formatICRC1Transaction = async (
 export const getICRC1Price = async (
   ledgerCanisterId: string,
 ): Promise<IRCR1Price[]> => {
-  //从记录罐子中获取存储罐子的id
+  //从icpswap记录罐子中获取存储罐子的id
   let recordStorageCanister = await ic("ggzvv-5qaaa-aaaag-qck7a-cai")
   let tokenStorage = await ic(
     await recordStorageCanister.tokenStorage(ledgerCanisterId),

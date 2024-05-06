@@ -1,4 +1,5 @@
 import type { ICRC1Info } from "@/types/sns"
+import { TTL, getCache } from "@/utils/cache"
 import { showMessageError } from "@/utils/message"
 import axios from "axios"
 
@@ -26,6 +27,15 @@ export const querySnsAggregator = async (page = 0) => {
     return [...data, ...nextPageData]
   }
   return data
+}
+
+export const getSNSInfoCache = async (): Promise<ICRC1Info[]> => {
+  return await getCache({
+    key: "SNS_LIST",
+    execute: () => getAllSNSInfo(),
+    ttl: TTL.minute30,
+    isLocal: false,
+  })
 }
 
 export const getAllSNSInfo = async (): Promise<ICRC1Info[]> => {

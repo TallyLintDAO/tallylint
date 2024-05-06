@@ -1,6 +1,5 @@
 <template>
   <div>
-    Support Tokens:
     <q-avatar
       color="grey-4 clickable"
       size="40px"
@@ -15,8 +14,22 @@
       size="40px"
       font-size="12px"
       @click="tokensDialogVisible = true"
+      v-for="(token, index) in addedTokenList.slice(
+        0,
+        Math.min(addedTokenList.length, 4),
+      )"
+      :key="index"
     >
-      +7
+      <img :src="SNS_AGGREGATOR_CANISTER_URL + token.meta.logo" />
+    </q-avatar>
+    <q-avatar
+      color="grey-4 clickable"
+      class="q-ml-xs"
+      size="40px"
+      font-size="16px"
+      @click="tokensDialogVisible = true"
+    >
+      +{{ addedTokenList.length > 4 ? addedTokenList.length - 4 : "" }}
     </q-avatar>
   </div>
   <q-dialog v-model="tokensDialogVisible">
@@ -138,15 +151,16 @@
 </template>
 
 <script setup lang="ts">
-import { SNS_AGGREGATOR_CANISTER_URL, getAllSNSInfo } from "@/api/sns"
+import { SNS_AGGREGATOR_CANISTER_URL, getSNSInfoCache } from "@/api/sns"
 import type { ICRC1Info } from "@/types/sns"
 import { showMessageError } from "@/utils/message"
+import { getTokenList, setTokenList } from "@/utils/storage"
 import { onMounted, ref } from "vue"
 
 const tokensDialogVisible = ref(false)
 const tokensLoading = ref(true)
 
-const tokens = ref<ICRC1Info[]>() //对应网络应该显示不同的币种们
+const tokens = ref<ICRC1Info[]>() //可选择的token列表，对应网络应该显示不同的币种们
 const selectedToken = ref<ICRC1Info>()
 const addedTokenList = ref<ICRC1Info[]>([])
 
@@ -155,13 +169,13 @@ const network = ref("ICRC-1")
 
 onMounted(() => {
   getICRC1Info()
+  init()
 })
 
 const getICRC1Info = () => {
   tokensLoading.value = true
-  getAllSNSInfo()
+  getSNSInfoCache()
     .then((snses) => {
-      console.log("snses", snses)
       tokens.value = snses
     })
     .finally(() => {
@@ -175,7 +189,7 @@ const addSelectedToken = () => {
     !addedTokenList.value.includes(selectedToken.value)
   ) {
     addedTokenList.value.push(selectedToken.value)
-    console.log("Token 已添加:", selectedToken.value)
+    setTokenList(addedTokenList.value)
   } else {
     showMessageError("The token to be added is empty or already exists")
   }
@@ -183,8 +197,16 @@ const addSelectedToken = () => {
 const jumpToWebsite = (url: string) => {
   window.open(url, "_blank")
 }
-const removeToken = (index) => {
+const removeToken = (index: number) => {
   addedTokenList.value.splice(index, 1)
+  setTokenList(addedTokenList.value)
+}
+
+const init = () => {
+  const tokenList = getTokenList()
+  if (tokenList !== null) {
+    addedTokenList.value = tokenList
+  }
 }
 </script>
 

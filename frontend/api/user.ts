@@ -191,6 +191,13 @@ export async function getUserNeuron(
   })
 }
 
+// 获取所有待同步的交易记录，包括ICRC1 Token的和ICP的交易记录。
+export async function fetchSyncTransactions(
+  Wallet: WalletTag,
+): Promise<ApiResult<boolean>> {
+  return getBackend().sync_transaction_record()
+}
+
 // 同步钱包交易记录到后端
 export async function syncWallet(
   walletTransactionHistoryArray: syncWalletParam[],
