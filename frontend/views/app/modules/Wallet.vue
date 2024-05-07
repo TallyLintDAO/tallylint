@@ -204,6 +204,7 @@ import {
   addUserWallet,
   deleteUserWallet,
   editUserWallet,
+  fetchAllSyncTransactions,
   getUserWallet,
   syncWallet,
 } from "@/api/user"
@@ -342,6 +343,12 @@ const getWallets = (isRefresh: boolean) => {
       console.log("getUserWallet", res)
       if (res.Ok) {
         rows.value = res.Ok
+        fetchAllSyncTransactions({
+          id: Number(rows.value[0].id),
+          address: rows.value[0].address,
+          name: rows.value[0].name,
+          from: rows.value[0].from,
+        })
         for (const row of rows.value) {
           try {
             getICPTransactions(

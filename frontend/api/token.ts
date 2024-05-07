@@ -65,7 +65,7 @@ export const getICPPriceHistory = async (): Promise<any> => {
     return priceData
   } catch (error) {
     showMessageError(
-      "Can not connect Binance api, please check if you have access to Binance",
+      "Can not connect Binance api, please check if you have access to Binance or try later",
     )
     console.error("Error fetching ICP price data:", error)
     throw error
@@ -85,13 +85,13 @@ export const getICPNowPrice = async (): Promise<number> => {
       return Number(response.data.price)
     } else {
       showMessageError(
-        "Can not connect Binance api, please check if you have access to Binance",
+        "Can not connect Binance api, please check if you have access to Binance or try later",
       )
       throw new Error("Failed to fetch ICP price data")
     }
   } catch (error) {
     showMessageError(
-      "Can not connect Binance api, please check if you have access to Binance",
+      "Can not connect Binance api, please check if you have access to Binance or try later",
     )
     console.error("Error fetching ICP price data:", error)
     throw error

@@ -41,7 +41,6 @@ export const getSNSInfoCache = async (): Promise<ICRC1Info[]> => {
 export const getAllSNSInfo = async (): Promise<ICRC1Info[]> => {
   try {
     const data = await querySnsAggregator()
-    console.log("getSNSInfo", data)
     // lifecycle === 3 才是通过的SNS项目，这里筛选通过的SNS项目，没有通过的全部抛弃
     const snses = data
       .filter(

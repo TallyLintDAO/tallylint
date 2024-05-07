@@ -7,6 +7,7 @@ import { currencyCalculate } from "@/utils/common"
 import ic from "@/utils/icblast"
 import { binarySearchClosestICRC1Price } from "@/utils/math"
 import { HttpAgent } from "@dfinity/agent"
+import { AccountIdentifier } from "@dfinity/ledger-icp"
 import { IcrcAccount, IcrcIndexCanister } from "@dfinity/ledger-icrc"
 import type { TransactionWithId } from "@dfinity/ledger-icrc/dist/candid/icrc_index"
 import { Principal } from "@dfinity/principal"
@@ -21,7 +22,8 @@ export const getTransactionsICRC1 = async (
   if (ai.info) {
     const identity = ai.info.identity
     const agent = new HttpAgent({ identity })
-    const address = Principal.fromText(wallet.address)
+    const address = Principal.fromText(wallet.address) //用户address为account id，需要转换为principal
+    const account = AccountIdentifier.fromHex(wallet.address)
     const canisterPrincipal = Principal.fromText(indexCanisterId)
 
     const { getTransactions: ICRC1_getTransactions } = IcrcIndexCanister.create(

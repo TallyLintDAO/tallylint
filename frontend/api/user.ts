@@ -1,4 +1,5 @@
-import type { SyncedTransaction } from "@/types/sns"
+import type { TransactionF } from ".dfx/ic/canisters/backend/backend.did"
+import type { Currency, SyncedTransaction } from "@/types/sns"
 import type { ApiResult, ApiUserInfo } from "@/types/types"
 import type {
   HistoryQueryParams,
@@ -11,7 +12,11 @@ import type {
 import { TTL, getCache } from "@/utils/cache"
 import { showMessageError } from "@/utils/message"
 import { getNNS } from "@/utils/nns"
+import { getTokenList } from "@/utils/storage"
 import { getBackend, getCurrentPrincipal } from "./canister_pool"
+import { getTransactionsICRC1 } from "./icrc1"
+import { getICPTransactions } from "./rosetta"
+import { Principal } from "@dfinity/principal"
 
 //TODO demo阶段用户字段修改频繁，暂时用短缓存时间。
 const userTTL = TTL.minute1 //用户自身信息缓存时长。
@@ -191,11 +196,30 @@ export async function getUserNeuron(
   })
 }
 
-// 获取所有待同步的交易记录，包括ICRC1 Token的和ICP的交易记录。
-export async function fetchSyncTransactions(
-  Wallet: WalletTag,
-): Promise<ApiResult<boolean>> {
-  return getBackend().sync_transaction_record()
+// 获取单个钱包的所有待同步的交易记录，包括ICRC1 Token的和ICP的交易记录。
+export async function fetchAllSyncTransactions(wallet: WalletTag) {
+  const tokenList = getTokenList()
+  let transactions: TransactionF[] = []
+  const res = await getICPTransactions(wallet, true)
+  transactions = res.transactions
+  console.log("tokenList", tokenList)
+  console.log("tokenList", Principal.fromHex(wallet.address))
+  if (tokenList) {
+    for (let index = 0; index < tokenList.length; index++) {
+      const token = tokenList[index]
+      const currency: Currency = {
+        decimals: token.decimals,
+        symbol: token.symbol,
+      }
+      const icrcRes = await getTransactionsICRC1(
+        wallet,
+        token.canisters.index,
+        token.canisters.ledger,
+        currency,
+      )
+      console.log("icrcRes", currency, icrcRes)
+    }
+  }
 }
 
 // 同步钱包交易记录到后端

@@ -8,6 +8,7 @@ export function currencyCalculate(amount: string, decimals: number): number {
 }
 
 //将principal id 转换为 account id
+// account id无法转换为principal id
 export function p2a(principal: string): string {
   const principalId = Principal.fromText(principal)
   const identity = AccountIdentifier.fromPrincipal({ principal: principalId })
