@@ -16,7 +16,6 @@ import { getTokenList } from "@/utils/storage"
 import { getBackend, getCurrentPrincipal } from "./canister_pool"
 import { getTransactionsICRC1 } from "./icrc1"
 import { getICPTransactions } from "./rosetta"
-import { Principal } from "@dfinity/principal"
 
 //TODO demo阶段用户字段修改频繁，暂时用短缓存时间。
 const userTTL = TTL.minute1 //用户自身信息缓存时长。
@@ -203,21 +202,21 @@ export async function fetchAllSyncTransactions(wallet: WalletTag) {
   const res = await getICPTransactions(wallet, true)
   transactions = res.transactions
   console.log("tokenList", tokenList)
-  console.log("tokenList", Principal.fromHex(wallet.address))
-  if (tokenList) {
+  console.log("wallet", wallet)
+  if (tokenList && wallet.principal) {
     for (let index = 0; index < tokenList.length; index++) {
       const token = tokenList[index]
       const currency: Currency = {
         decimals: token.decimals,
         symbol: token.symbol,
       }
-      const icrcRes = await getTransactionsICRC1(
+      const icrcArray = await getTransactionsICRC1(
         wallet,
         token.canisters.index,
         token.canisters.ledger,
         currency,
       )
-      console.log("icrcRes", currency, icrcRes)
+      console.log("icrcRes", currency, icrcArray)
     }
   }
 }

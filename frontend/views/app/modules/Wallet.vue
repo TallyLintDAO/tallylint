@@ -1,4 +1,11 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
+  <q-banner rounded class="text-white bg-orange-10">
+    In order to support IRCR1 tokens, TaxLint no longer supports wallet in the
+    form of Account ID, only Principal ID entered into wallet are supported now.
+    <br />
+    Wallet already entered are not affected, but wallet without Principal ID
+    cannot support IRCR1 tokens
+  </q-banner>
   <div class="wallet-container">
     <div class="row">
       <div class="q-gutter-sm">
@@ -137,23 +144,22 @@
               :disable="isEdit"
               v-model="address"
               label="Wallet Address *"
-              hint="Enter Principal ID or Account ID"
+              hint="Enter Principal ID"
               lazy-rules
               :rules="[
                 (val) =>
-                  (val &&
-                    val.length > 0 &&
-                    (val.length === 63 || val.length === 64)) ||
-                  'Please enter Principal ID or Account ID',
+                  (val && val.length > 0 && isPrincipal(val)) ||
+                  'Please enter Wallet Principal ID',
                 (val) =>
                   (val && !rows.some((item) => item.address === val)) ||
                   isEdit ||
-                  'Can not add this wallet, address duplicated',
+                  'Can not add this wallet, principal id duplicated',
               ]"
             />
             <q-input
               filled
               v-if="addressIsPrincipal"
+              disable
               label="Wallet Account ID"
               v-model="wallet.address"
             />
@@ -170,7 +176,7 @@
               hint="Identify your wallet quickly"
               lazy-rules
               :rules="[
-                (val) => (val && val.length > 0) || 'Please type something',
+                (val) => (val && val.length > 0) || 'Please type wallet name',
               ]"
             />
             <div class="q-gutter-sm justify-end flex">
@@ -206,7 +212,6 @@ import {
   editUserWallet,
   fetchAllSyncTransactions,
   getUserWallet,
-  syncWallet,
 } from "@/api/user"
 import SupportedTokens from "@/components/SupportedTokens.vue"
 import type { WalletInfo, syncWalletParam } from "@/types/user"
@@ -221,7 +226,7 @@ const columns = [
   {
     name: "id",
     required: true,
-    label: "Address", //用钱包id作为的超链接，label用address方便识别
+    label: "Account ID", //用钱包id作为的超链接，label用address方便识别
     field: "id",
   },
   { name: "from", label: "From", field: "from" },
@@ -279,11 +284,21 @@ onMounted(() => {
 })
 
 const syncAllWallet = async () => {
-  syncLoading.value = true
+  // syncLoading.value = true
   let syncTransactionArray: syncWalletParam[] = []
   // 创建一个 Promise 数组，用于存放每个 getICPTransactions() 的 Promise
+
+  rows.value.map(async (row, index) => {
+    fetchAllSyncTransactions({
+      id: Number(row.id),
+      address: row.address,
+      principal: row.principal_id[0],
+      name: row.name,
+      from: row.from,
+    })
+  })
+
   const promises = rows.value.map(async (row, index) => {
-    console.log("row", row)
     const res = await getICPTransactions(
       {
         id: Number(row.id),
@@ -303,20 +318,20 @@ const syncAllWallet = async () => {
     syncLoading.value = false
   })
   console.log("transactionInfo", syncTransactionArray)
-  syncWallet(syncTransactionArray)
-    .then((res) => {
-      console.log("syncAllWallet:", res)
-      if (res.Ok) {
-        getWallets(true)
-        showMessageSuccess("Synchronize all wallets successfully")
-      }
-    })
-    .catch((error) => {
-      console.error("syncAllWallet Error:", error)
-    })
-    .finally(() => {
-      syncLoading.value = false
-    })
+  // syncWallet(syncTransactionArray)
+  //   .then((res) => {
+  //     console.log("syncAllWallet:", res)
+  //     if (res.Ok) {
+  //       getWallets(true)
+  //       showMessageSuccess("Synchronize all wallets successfully")
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     console.error("syncAllWallet Error:", error)
+  //   })
+  //   .finally(() => {
+  //     syncLoading.value = false
+  //   })
 }
 
 // 识别用户输入的地址属于principal ID还是account ID
@@ -343,12 +358,6 @@ const getWallets = (isRefresh: boolean) => {
       console.log("getUserWallet", res)
       if (res.Ok) {
         rows.value = res.Ok
-        fetchAllSyncTransactions({
-          id: Number(rows.value[0].id),
-          address: rows.value[0].address,
-          name: rows.value[0].name,
-          from: rows.value[0].from,
-        })
         for (const row of rows.value) {
           try {
             getICPTransactions(

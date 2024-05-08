@@ -46,6 +46,7 @@ export interface syncWalletParam {
 export interface WalletTag {
   id: number
   address: string
+  principal?: string
   name: string
   from: string
   last_sync_time?: number

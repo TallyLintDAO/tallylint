@@ -1,13 +1,13 @@
+import type { Details } from ".dfx/ic/canisters/backend/backend.did"
 import { initAuth } from "@/api/auth"
 import { MILI_PER_SECOND } from "@/api/constants/ic"
-import type { Currency, IRCR1Price } from "@/types/sns"
+import type { Currency, IRCR1Price, InferredTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { TTL, getCache } from "@/utils/cache"
 import { currencyCalculate } from "@/utils/common"
 import ic from "@/utils/icblast"
 import { binarySearchClosestICRC1Price } from "@/utils/math"
 import { HttpAgent } from "@dfinity/agent"
-import { AccountIdentifier } from "@dfinity/ledger-icp"
 import { IcrcAccount, IcrcIndexCanister } from "@dfinity/ledger-icrc"
 import type { TransactionWithId } from "@dfinity/ledger-icrc/dist/candid/icrc_index"
 import { Principal } from "@dfinity/principal"
@@ -19,11 +19,10 @@ export const getTransactionsICRC1 = async (
   currency: Currency,
 ) => {
   const ai = await initAuth()
-  if (ai.info) {
+  if (ai.info && wallet.principal) {
     const identity = ai.info.identity
     const agent = new HttpAgent({ identity })
-    const address = Principal.fromText(wallet.address) //用户address为account id，需要转换为principal
-    const account = AccountIdentifier.fromHex(wallet.address)
+    const principal = Principal.fromText(wallet.principal) //用户address为account id，无法转换为principal。必须要输入principal id才行
     const canisterPrincipal = Principal.fromText(indexCanisterId)
 
     const { getTransactions: ICRC1_getTransactions } = IcrcIndexCanister.create(
@@ -34,23 +33,23 @@ export const getTransactionsICRC1 = async (
     )
     const ICRC1getTransactions = await ICRC1_getTransactions({
       account: {
-        owner: address,
+        owner: principal,
       } as IcrcAccount,
       max_results: BigInt(10000),
     })
 
     const transactionsInfo = ICRC1getTransactions.transactions
     console.log("getTransactionsICRC1", transactionsInfo)
-    return transactionsInfo.map(async (transaction) => {
-      const res = await formatICRC1Transaction(
-        wallet,
-        transaction,
-        currency,
-        ledgerCanisterId,
-      )
-      console.log("formation icrc1", res)
-      return res
-    })
+    return await Promise.all(
+      transactionsInfo.map((transaction) => {
+        return formatICRC1Transaction(
+          wallet,
+          transaction,
+          currency,
+          ledgerCanisterId,
+        )
+      }),
+    )
   }
 }
 
@@ -59,34 +58,36 @@ const formatICRC1Transaction = async (
   transactionWithId: TransactionWithId,
   currency: Currency,
   ledgerCanisterId: string,
-) => {
+): Promise<InferredTransaction> => {
   const { transaction, id } = transactionWithId
   const timestampNormal = Number(transaction.timestamp) / MILI_PER_SECOND //处理时间戳为正常格式
   let detail = transaction[transaction.kind][0]
-  detail.amount = currencyCalculate(detail.amount, currency.decimals)
-  detail.to = detail.to.owner.toString()
-  detail.price = await matchICRC1Price(timestampNormal, ledgerCanisterId) // 使用 await 获取价格
   delete detail.created_at_time
-
+  let details: Details = detail
+  details.amount = currencyCalculate(detail.amount, currency.decimals)
+  details.to = detail.to.owner.toString()
+  details.price = await matchICRC1Price(timestampNormal, ledgerCanisterId) // 使用 await 获取价格
+  details.currency = currency
+  details.ledgerCanisterId = ledgerCanisterId
   if (transaction.kind === "transfer") {
     // icrc1的代币中的fee必定为自身代币。
-    detail.fee = currencyCalculate(detail.fee[0], currency.decimals)
-    detail.from = detail.from.owner.toString()
+    details.fee = currencyCalculate(details.fee[0], currency.decimals)
+    details.from = detail.from.owner.toString()
   } else if (transaction.kind === "mint") {
     //mint没有fee，且没有from地址
-    detail.fee = 0
-    detail.from = "Minting Account"
-    detail.tag = "mint"
+    details.fee = 0
+    details.from = "Minting Account"
+    details.tag = "mint"
   } else {
     //TODO kind == burn || approve 这两种类型还没有写
   }
-  const t_type = detail.to === wallet.address ? "RECEIVE" : "SEND"
+  const t_type = details.to === wallet.principal ? "RECEIVE" : "SEND"
   return {
-    detail,
-    currency,
-    hash: Number(id),
+    wid: BigInt(wallet.id),
+    hash: id.toString(),
     timestamp: timestampNormal,
     t_type,
+    details,
   }
 }
 
@@ -108,7 +109,7 @@ export const getICRC1Price = async (
     0,
     1000,
   )
-  console.log("getICRC1Price", priceHistory)
+  // console.log("getICRC1Price", priceHistory)
   return priceHistory
 }
 
@@ -124,7 +125,7 @@ export const matchICRC1Price = async (
     key: "ICRC1_Price_History_" + ledgerCanisterId,
     execute: () => getICRC1Price(ledgerCanisterId),
     ttl: TTL.day1,
-    isLocal: true,
+    isLocal: false,
   })
   // 返回最接近时间戳对应的币价，如果没有找到则返回 undefined
   const price = binarySearchClosestICRC1Price(
