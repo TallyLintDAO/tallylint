@@ -49,21 +49,17 @@ export const getTransactionWalletName = (
   detail: Details,
   wallets: WalletTag[],
 ): string => {
-  let walletName = ""
-
-  if (type === "SEND") {
-    // 如果是发送交易，查找发送者地址对应的钱包名字
-    const wallet = wallets.find((wallet) => wallet.address === detail.from)
-    if (wallet) {
-      walletName = wallet.name
+  //根据type是send还是receive，来搜索这条交易记录对应的用户钱包地址
+  let walletAddress = type === "SEND" ? detail.from : detail.to
+  const foundWallet = wallets.find((wallet) => {
+    if (detail.currency.symbol === "ICP") {
+      //通过account id匹配
+      return wallet.address === walletAddress
+    } else {
+      //如果token不是ICP，则通过principal id匹配
+      return wallet.principal?.[0] === walletAddress
     }
-  } else if (type === "RECEIVE") {
-    // 如果是接收交易，查找接收者地址对应的钱包名字
-    const wallet = wallets.find((wallet) => wallet.address === detail.to)
-    if (wallet) {
-      walletName = wallet.name
-    }
-  }
+  })
 
-  return walletName
+  return foundWallet?.name || ""
 }

@@ -71,15 +71,19 @@ export async function getUserAllWallets(): Promise<WalletTag[]> {
 
     if (userWallets.Ok && neuronWallets.Ok) {
       const mapToWallet = (wallet: {
-        id: any
-        name: any
-        address: any
-        from: any
+        id: bigint
+        name: string
+        address: string
+        principal_id: string[]
+        from: string
+        last_sync_time: number
       }) => ({
-        id: wallet.id,
+        id: Number(wallet.id),
         name: wallet.name,
         address: wallet.address,
+        principal: wallet.principal_id,
         from: wallet.from,
+        last_sync_time: wallet.last_sync_time,
       })
 
       const userWalletList = userWallets.Ok.map(mapToWallet)
@@ -88,6 +92,7 @@ export async function getUserAllWallets(): Promise<WalletTag[]> {
         id: 0,
         name: "hotkey " + (index + 1),
         address: wallet.address,
+        principal: [],
         from: "hotkey",
       }))
 
@@ -107,15 +112,19 @@ export async function getUserWalletsTag(): Promise<WalletTag[]> {
     const userWallets = await getUserWallet(false)
     if (userWallets.Ok) {
       const mapToWallet = (wallet: {
-        id: any
-        name: any
-        address: any
-        from: any
+        id: bigint
+        name: string
+        address: string
+        principal_id: string[]
+        from: string
+        last_sync_time: number
       }) => ({
-        id: wallet.id,
+        id: Number(wallet.id),
         name: wallet.name,
         address: wallet.address,
+        principal: wallet.principal_id,
         from: wallet.from,
+        last_sync_time: wallet.last_sync_time,
       })
       const userWalletList = userWallets.Ok.map(mapToWallet)
 
@@ -196,7 +205,9 @@ export async function getUserNeuron(
 }
 
 // 获取单个钱包的所有待同步的交易记录，包括ICRC1 Token的和ICP的交易记录。
-export async function fetchAllSyncTransactions(wallet: WalletTag) {
+export async function fetchAllSyncTransactions(
+  wallet: WalletTag,
+): Promise<TransactionF[]> {
   const tokenList = getTokenList()
   let transactions: TransactionF[] = []
   const res = await getICPTransactions(wallet, true)
@@ -217,8 +228,11 @@ export async function fetchAllSyncTransactions(wallet: WalletTag) {
         currency,
       )
       console.log("icrcRes", currency, icrcArray)
+      // 合并数组
+      transactions = transactions.concat(icrcArray)
     }
   }
+  return transactions.sort((a, b) => a.timestamp - b.timestamp)
 }
 
 // 同步钱包交易记录到后端

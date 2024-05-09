@@ -251,7 +251,7 @@ const initialWalletHistory = {
 //根据交易历史，手动生成钱包历史
 export const getWalletHistory = async (accountAddress: string) => {
   const res = await getICPTransactions(
-    { id: 0, address: accountAddress, name: "", from: "" },
+    { id: 0, address: accountAddress, principal: [], name: "", from: "" },
     true,
   )
   // 倒序交易数组，以确保最早的交易在前面
@@ -302,6 +302,7 @@ export const getAllWalletDailyBalance = async (
       {
         id: Number(wallet.id),
         address: wallet.address,
+        principal: wallet.principal_id,
         name: wallet.name,
         from: wallet.from,
       },

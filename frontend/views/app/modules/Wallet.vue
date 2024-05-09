@@ -212,6 +212,7 @@ import {
   editUserWallet,
   fetchAllSyncTransactions,
   getUserWallet,
+  syncWallet,
 } from "@/api/user"
 import SupportedTokens from "@/components/SupportedTokens.vue"
 import type { WalletInfo, syncWalletParam } from "@/types/user"
@@ -284,33 +285,20 @@ onMounted(() => {
 })
 
 const syncAllWallet = async () => {
-  // syncLoading.value = true
+  syncLoading.value = true
   let syncTransactionArray: syncWalletParam[] = []
   // 创建一个 Promise 数组，用于存放每个 getICPTransactions() 的 Promise
-
-  rows.value.map(async (row, index) => {
-    fetchAllSyncTransactions({
+  const promises = rows.value.map(async (row, index) => {
+    const resArray = await fetchAllSyncTransactions({
       id: Number(row.id),
       address: row.address,
-      principal: row.principal_id[0],
+      principal: row.principal_id,
       name: row.name,
       from: row.from,
     })
-  })
-
-  const promises = rows.value.map(async (row, index) => {
-    const res = await getICPTransactions(
-      {
-        id: Number(row.id),
-        address: row.address,
-        name: row.name,
-        from: row.from,
-      },
-      true,
-    )
     //将钱包数据同步
-    console.log(`getICPTransactions ${index + 1}`, res)
-    syncTransactionArray.push({ walletId: row.id, history: res.transactions })
+    console.log(`getICPTransactions ${index + 1}`, resArray)
+    syncTransactionArray.push({ walletId: row.id, history: resArray })
   })
   // 使用 Promise.all() 等待所有的请求完成
   await Promise.all(promises).catch((error) => {
@@ -318,20 +306,20 @@ const syncAllWallet = async () => {
     syncLoading.value = false
   })
   console.log("transactionInfo", syncTransactionArray)
-  // syncWallet(syncTransactionArray)
-  //   .then((res) => {
-  //     console.log("syncAllWallet:", res)
-  //     if (res.Ok) {
-  //       getWallets(true)
-  //       showMessageSuccess("Synchronize all wallets successfully")
-  //     }
-  //   })
-  //   .catch((error) => {
-  //     console.error("syncAllWallet Error:", error)
-  //   })
-  //   .finally(() => {
-  //     syncLoading.value = false
-  //   })
+  syncWallet(syncTransactionArray)
+    .then((res) => {
+      console.log("syncAllWallet:", res)
+      if (res.Ok) {
+        getWallets(true)
+        showMessageSuccess("Synchronize all wallets successfully")
+      }
+    })
+    .catch((error) => {
+      console.error("syncAllWallet Error:", error)
+    })
+    .finally(() => {
+      syncLoading.value = false
+    })
 }
 
 // 识别用户输入的地址属于principal ID还是account ID
@@ -361,7 +349,13 @@ const getWallets = (isRefresh: boolean) => {
         for (const row of rows.value) {
           try {
             getICPTransactions(
-              { id: Number(row.id), address: row.address, name: "", from: "" },
+              {
+                id: Number(row.id),
+                address: row.address,
+                principal: row.principal_id,
+                name: "",
+                from: "",
+              },
               true,
             ).then((res) => {
               // 将查询得到的transactions绑定回原数组中的now_transactions，表明现在的交易数有多少

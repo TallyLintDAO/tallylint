@@ -757,12 +757,14 @@ const getWallets = async () => {
     id: bigint
     name: string
     address: string
+    principal_id: string[]
     from: string
     last_sync_time: number
   }) => ({
     id: Number(wallet.id),
     name: wallet.name,
     address: wallet.address,
+    principal: wallet.principal_id,
     from: wallet.from,
     last_sync_time: wallet.last_sync_time,
   })

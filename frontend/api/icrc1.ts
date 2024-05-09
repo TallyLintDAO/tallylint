@@ -12,17 +12,20 @@ import { IcrcAccount, IcrcIndexCanister } from "@dfinity/ledger-icrc"
 import type { TransactionWithId } from "@dfinity/ledger-icrc/dist/candid/icrc_index"
 import { Principal } from "@dfinity/principal"
 
+const radixNumber = 4 //保留4位小数
+
 export const getTransactionsICRC1 = async (
   wallet: WalletTag,
   indexCanisterId: string,
   ledgerCanisterId: string,
   currency: Currency,
-) => {
+): Promise<InferredTransaction[]> => {
   const ai = await initAuth()
+  let ICRCTransactions: InferredTransaction[] = []
   if (ai.info && wallet.principal) {
     const identity = ai.info.identity
     const agent = new HttpAgent({ identity })
-    const principal = Principal.fromText(wallet.principal) //用户address为account id，无法转换为principal。必须要输入principal id才行
+    const principal = Principal.fromText(wallet.principal[0]) //用户address为account id，无法转换为principal。必须要输入principal id才行
     const canisterPrincipal = Principal.fromText(indexCanisterId)
 
     const { getTransactions: ICRC1_getTransactions } = IcrcIndexCanister.create(
@@ -40,7 +43,7 @@ export const getTransactionsICRC1 = async (
 
     const transactionsInfo = ICRC1getTransactions.transactions
     console.log("getTransactionsICRC1", transactionsInfo)
-    return await Promise.all(
+    ICRCTransactions = await Promise.all(
       transactionsInfo.map((transaction) => {
         return formatICRC1Transaction(
           wallet,
@@ -51,6 +54,7 @@ export const getTransactionsICRC1 = async (
       }),
     )
   }
+  return ICRCTransactions
 }
 
 const formatICRC1Transaction = async (
@@ -67,8 +71,14 @@ const formatICRC1Transaction = async (
   details.amount = currencyCalculate(detail.amount, currency.decimals)
   details.to = detail.to.owner.toString()
   details.price = await matchICRC1Price(timestampNormal, ledgerCanisterId) // 使用 await 获取价格
+  details.cost = 0 // 置0，交给后端计算
+  details.profit = 0 // 置0，交给后端计算
+  details.value = parseFloat(
+    (details.amount * details.price).toFixed(radixNumber),
+  )
   details.currency = currency
   details.ledgerCanisterId = ledgerCanisterId
+  details.status = "COMPLETED"
   if (transaction.kind === "transfer") {
     // icrc1的代币中的fee必定为自身代币。
     details.fee = currencyCalculate(details.fee[0], currency.decimals)
@@ -77,17 +87,17 @@ const formatICRC1Transaction = async (
     //mint没有fee，且没有from地址
     details.fee = 0
     details.from = "Minting Account"
-    details.tag = "mint"
+    // details.tag = "mint"
   } else {
     //TODO kind == burn || approve 这两种类型还没有写
   }
-  const t_type = details.to === wallet.principal ? "RECEIVE" : "SEND"
+  const t_type = details.to === wallet.principal[0] ? "RECEIVE" : "SEND"
   return {
+    details,
     wid: BigInt(wallet.id),
+    t_type,
     hash: id.toString(),
     timestamp: timestampNormal,
-    t_type,
-    details,
   }
 }
 
