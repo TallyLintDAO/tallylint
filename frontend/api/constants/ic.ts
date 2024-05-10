@@ -7,5 +7,7 @@ export const NET_ID = {
 }
 export const ROSETTA_URL = "https://rosetta-api.internetcomputer.org"
 export const BINANACE_URL = "https://data-api.binance.vision"
+export const ROSETTA_WEBSITE = "Binance"
+export const ICRC_WEBSITE = "ICPSwap"
 
 export const MILI_PER_SECOND = 1000000

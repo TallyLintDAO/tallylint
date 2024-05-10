@@ -1,3 +1,4 @@
+import { LEDGER_CANISTER_ID } from "@/api/constants/ic"
 import type { ICRC1Info } from "@/types/sns"
 import type { UserInfo } from "@/types/user"
 
@@ -45,4 +46,35 @@ export const getTokenList = (): ICRC1Info[] | null => {
     console.error(`read user token list failed:`, e)
   }
   return null
+}
+//默认储存ICP作为数据
+const initICPTokenCache = () => {
+  const info = localStorage.getItem(`USER_TOKEN_LIST`)
+  if (null == info) return null
+
+  const tokens = JSON.parse(info) as ICRC1Info[]
+
+  const hasICP = tokens.some((token) => token.symbol === "ICP")
+  // 如果不存在，添加代币 ICP 到列表中
+  if (!hasICP) {
+    tokens.push({
+      canisters: {
+        ledger: LEDGER_CANISTER_ID,
+        governance: "",
+        index: "",
+        root: "",
+        swap: "",
+      },
+      symbol: "ICP",
+      name: "Internet Computer",
+      decimals: 8,
+      fee: 10000,
+      meta: {
+        description: "",
+        logo: "/frontend/assets/dfinity.svg",
+        name: "",
+        url: "",
+      },
+    })
+  }
 }

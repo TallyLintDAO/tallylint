@@ -44,6 +44,13 @@
             </template>
           </q-select>
           <q-select
+            multiple
+            use-chips
+            v-model="selectTokens"
+            :options="tokens"
+            label="Token"
+          />
+          <q-select
             use-chips
             multiple
             v-model="type"
@@ -148,19 +155,38 @@
                   {{ showCustomTimezoneTime(transaction.timestamp) }}
                 </div>
                 <div class="col">
-                  <div class="flex-y-center q-gutter-sm">
+                  <div class="flex-y-center">
                     <img
+                      v-if="
+                        snsInfo.find(
+                          (sns) =>
+                            sns.symbol === transaction.details.currency.symbol,
+                        )
+                      "
+                      class="head-icon"
+                      :src="
+                        snsInfo.find(
+                          (sns) =>
+                            sns.symbol === transaction.details.currency.symbol,
+                        )?.meta.logo
+                      "
+                      alt="Icon"
+                    />
+                    <img
+                      v-else
                       class="head-icon"
                       src="@/assets/dfinity.svg"
                       alt="NNS Icon"
                     />
-                    <span>{{
-                      getTransactionWalletName(
-                        transaction.t_type,
-                        transaction.details,
-                        wallets,
-                      )
-                    }}</span>
+                    <div class="q-ml-xs">
+                      {{
+                        getTransactionWalletName(
+                          transaction.t_type,
+                          transaction.details,
+                          wallets,
+                        )
+                      }}
+                    </div>
                   </div>
                   <span v-if="transaction.t_type === 'SEND'">-</span>
                   {{ transaction.details.currency.symbol }}
@@ -195,11 +221,12 @@
                     )
                   }}
                   <a
-                    :href="
-                      'https://dashboard.internetcomputer.org/transaction/' +
-                      transaction.hash
+                    @click="
+                      toTransactionDetail(
+                        transaction.details.currency.symbol,
+                        transaction.hash,
+                      )
                     "
-                    target="_blank"
                   >
                     <q-icon name="open_in_new" />
                   </a>
@@ -212,9 +239,15 @@
                       self="bottom middle"
                       :offset="[10, 10]"
                     >
-                      Market price by Binance
+                      Market price by
+                      {{
+                        transaction.details.currency.symbol === "ICP"
+                          ? ROSETTA_WEBSITE
+                          : ICRC_WEBSITE
+                      }}
                       <br />
-                      ${{ transaction.details.price }} / ICP
+                      ${{ transaction.details.price }} /
+                      {{ transaction.details.currency.symbol }}
                     </q-tooltip>
                   </span>
                   <b
@@ -389,6 +422,15 @@
                     <q-select
                       filled
                       map-options
+                      option-label="symbol"
+                      :option-value="
+                        (opt) => {
+                          return {
+                            decimals: opt.decimals,
+                            symbol: opt.symbol,
+                          }
+                        }
+                      "
                       v-model="transaction.details.currency"
                       :options="tokenList"
                       label="Token"
@@ -400,14 +442,15 @@
                           <q-item-section avatar>
                             <img
                               class="head-icon"
-                              :src="scope.opt.icon"
+                              :src="scope.opt.meta.logo"
                               alt="Icon"
                             />
                           </q-item-section>
                           <q-item-section>
-                            <q-item-label class="text-subtitle1">
-                              {{ scope.opt.label }}
-                            </q-item-label>
+                            <q-item-label>{{ scope.opt.symbol }}</q-item-label>
+                            <q-item-label caption>{{
+                              scope.opt.name
+                            }}</q-item-label>
                           </q-item-section>
                         </q-item>
                       </template>
@@ -466,13 +509,12 @@
                   v-model.trim="targetAddress"
                   :rules="[
                     (val) =>
-                      (val && val.length > 0) ||
-                      'Please enter the target address',
+                      (val && val.length > 0) || 'Please enter target address',
                     (val) =>
                       (val &&
                         val.length > 0 &&
                         (val.length === 63 || val.length === 64)) ||
-                      'Please enter Account ID Address',
+                      'Please enter Account ID or Principal ID',
                   ]"
                   :disable="!transaction.manual && isEdit"
                 />
@@ -534,6 +576,8 @@
 </template>
 
 <script lang="ts" setup>
+import { ICRC_WEBSITE, ROSETTA_WEBSITE } from "@/api/constants/ic"
+import { getSNSInfoCache } from "@/api/sns"
 import {
   addManualTransaction,
   deleteSyncedTransactions,
@@ -543,12 +587,13 @@ import {
   setTransactionTag,
 } from "@/api/user"
 import CurrencyUSD from "@/components/CurrencyUSD.vue"
-import type { SyncedTransaction } from "@/types/sns"
+import type { ICRC1Info, SyncedTransaction } from "@/types/sns"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
 import { showCustomTimezoneDate, showCustomTimezoneTime } from "@/utils/date"
 import { confirmDialog } from "@/utils/dialog"
 import { showMessageError, showMessageSuccess } from "@/utils/message"
+import { getTokenList } from "@/utils/storage"
 import {
   getAllSyncedTransactions,
   getTransactionWalletName,
@@ -558,7 +603,6 @@ import { computed, onMounted, ref, watch } from "vue"
 import { useRoute } from "vue-router"
 
 const route = useRoute()
-
 const wid = route.params.wid
 const transactionsList = ref<SyncedTransaction[]>([])
 const transaction = ref({
@@ -588,6 +632,8 @@ const transaction = ref({
   manual: false,
   principal_id: [],
 })
+const selectTokens = ref<ICRC1Info[]>([])
+const tokens = getTokenList() || []
 const type = ref<string[]>([])
 const typeOptions = ["SEND", "RECEIVE"]
 const tag = ref<string[]>([])
@@ -607,11 +653,9 @@ const tokenList = [
   {
     decimals: 8,
     symbol: "ICP",
-    label: "ICP",
-    icon: "/frontend/assets/dfinity.svg",
-    value: {
-      decimals: 8,
-      symbol: "ICP",
+    name: "Internet Computer",
+    meta: {
+      logo: "/frontend/assets/dfinity.svg",
     },
   },
 ]
@@ -621,6 +665,7 @@ const selectedWallet = ref<WalletTag[]>([]) //用户选择的钱包
 const wallets = ref<WalletTag[]>([])
 const transactionWallet = ref<WalletTag | null>(null) //编辑，增加dialog 中用户选择的钱包
 const targetAddress = ref() //编辑，增加dialog 中用户输入的目标地址
+const snsInfo = ref<ICRC1Info[]>([])
 
 const showLoading = ref(false)
 const loading = ref(false)
@@ -746,6 +791,10 @@ const init = () => {
       // 如果 wid 不存在，则默认使用canister查询IC数据库全部内容
       getSelectedWalletHistory(wallets.value)
     }
+  })
+  getSNSInfoCache().then((snses) => {
+    snsInfo.value = snses
+    tokenList.push(...snses)
   })
 }
 
@@ -956,6 +1005,30 @@ const deleteTransaction = (transactionId: bigint | number) => {
       })
     },
   })
+}
+const toTransactionDetail = (symbol: string, hash: string) => {
+  if (symbol === "ICP") {
+    window.open(
+      "https://dashboard.internetcomputer.org/transaction/" + hash,
+      "_blank",
+    )
+  } else {
+    const sns = snsInfo.value.find((sns) => sns.symbol === symbol)
+    if (sns) {
+      window.open(
+        `https://dashboard.internetcomputer.org/sns/${sns.canisters.root}/transaction/${hash}`,
+        "_blank",
+      )
+    } else {
+      showMessageError("failed get token Info, please try again later.")
+    }
+  }
+}
+
+const getUserTokenList = () => {
+  let tokens: ICRC1Info[] = []
+  tokens.push()
+  getTokenList()
 }
 </script>
 

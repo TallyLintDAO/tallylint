@@ -20,7 +20,7 @@
       )"
       :key="index"
     >
-      <img :src="SNS_AGGREGATOR_CANISTER_URL + token.meta.logo" />
+      <img :src="token.meta.logo" />
     </q-avatar>
     <q-avatar
       color="grey-4 clickable"
@@ -61,7 +61,7 @@
               <img
                 v-if="selectedToken"
                 class="selected-icon q-mr-xs"
-                :src="SNS_AGGREGATOR_CANISTER_URL + selectedToken.meta.logo"
+                :src="selectedToken.meta.logo"
                 alt="Icon"
               />
               {{ selectedToken?.symbol }}
@@ -71,7 +71,7 @@
                 <q-item-section avatar>
                   <img
                     class="head-icon"
-                    :src="SNS_AGGREGATOR_CANISTER_URL + scope.opt.meta.logo"
+                    :src="scope.opt.meta.logo"
                     alt="Icon"
                   />
                 </q-item-section>
@@ -123,7 +123,7 @@
                 class="clickable"
                 @click="jumpToWebsite(token.meta.url)"
               >
-                <img :src="SNS_AGGREGATOR_CANISTER_URL + token.meta.logo" />
+                <img :src="token.meta.logo" />
               </q-avatar>
             </q-item-section>
             <q-item-section>
@@ -188,6 +188,8 @@ const addSelectedToken = () => {
     selectedToken.value &&
     !addedTokenList.value.includes(selectedToken.value)
   ) {
+    selectedToken.value.meta.logo =
+      SNS_AGGREGATOR_CANISTER_URL + selectedToken.value.meta.logo
     addedTokenList.value.push(selectedToken.value)
     setTokenList(addedTokenList.value)
   } else {

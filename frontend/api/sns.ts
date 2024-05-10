@@ -33,8 +33,9 @@ export const getSNSInfoCache = async (): Promise<ICRC1Info[]> => {
   return await getCache({
     key: "SNS_LIST",
     execute: () => getAllSNSInfo(),
-    ttl: TTL.minute30,
-    isLocal: false,
+    ttl: TTL.day7,
+    isLocal: true,
+    update: true, //返回之前缓存的数据，并且异步加载新的数据
   })
 }
 
