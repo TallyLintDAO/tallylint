@@ -37,6 +37,7 @@ export const setTokenList = (tokens: ICRC1Info[]): void => {
 }
 
 export const getTokenList = (): ICRC1Info[] | null => {
+  initICPTokenCache()
   const info = localStorage.getItem(`USER_TOKEN_LIST`)
   if (null == info) return null
   try {
@@ -57,11 +58,11 @@ const initICPTokenCache = () => {
   const hasICP = tokens.some((token) => token.symbol === "ICP")
   // 如果不存在，添加代币 ICP 到列表中
   if (!hasICP) {
-    tokens.push({
+    tokens.unshift({
       canisters: {
-        ledger: LEDGER_CANISTER_ID,
         governance: "",
         index: "",
+        ledger: LEDGER_CANISTER_ID,
         root: "",
         swap: "",
       },
@@ -73,8 +74,9 @@ const initICPTokenCache = () => {
         description: "",
         logo: "/frontend/assets/dfinity.svg",
         name: "",
-        url: "",
+        url: "https://dashboard.internetcomputer.org/",
       },
     })
+    setTokenList(tokens)
   }
 }

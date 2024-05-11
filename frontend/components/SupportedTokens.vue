@@ -2,21 +2,13 @@
   <div>
     <q-avatar
       color="grey-4 clickable"
-      size="40px"
-      font-size="12px"
-      @click="tokensDialogVisible = true"
-    >
-      <img src="@/assets/dfinity.svg" />
-    </q-avatar>
-    <q-avatar
-      color="grey-4 clickable"
       class="q-ml-xs"
       size="40px"
       font-size="12px"
       @click="tokensDialogVisible = true"
       v-for="(token, index) in addedTokenList.slice(
         0,
-        Math.min(addedTokenList.length, 4),
+        Math.min(addedTokenList.length, 5),
       )"
       :key="index"
     >
@@ -29,7 +21,7 @@
       font-size="16px"
       @click="tokensDialogVisible = true"
     >
-      +{{ addedTokenList.length > 4 ? addedTokenList.length - 4 : "" }}
+      +{{ addedTokenList.length > 5 ? addedTokenList.length - 5 : "" }}
     </q-avatar>
   </div>
   <q-dialog v-model="tokensDialogVisible">
@@ -93,26 +85,6 @@
       </q-card-section>
       <q-card-section class="token-list">
         <q-list>
-          <q-item>
-            <!-- 单独整个ICP看起来好看点。实际上没有任何用 -->
-            <q-item-section avatar>
-              <q-avatar
-                color="grey-4"
-                size="40px"
-                font-size="12px"
-                class="clickable"
-                @click="
-                  jumpToWebsite('https://dashboard.internetcomputer.org/')
-                "
-              >
-                <img src="@/assets/dfinity.svg" />
-              </q-avatar>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Internet Computer</q-item-label>
-              <q-item-label caption>ICP</q-item-label>
-            </q-item-section>
-          </q-item>
           <q-item v-for="(token, index) in addedTokenList">
             <!-- 遍历已添加的token -->
             <q-item-section avatar>
@@ -133,6 +105,7 @@
             <q-item-section side>
               <q-btn
                 icon="delete_outline"
+                v-if="token.symbol !== 'ICP'"
                 flat
                 round
                 dense
@@ -151,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-import { SNS_AGGREGATOR_CANISTER_URL, getSNSInfoCache } from "@/api/sns"
+import { getSNSInfoCache } from "@/api/sns"
 import type { ICRC1Info } from "@/types/sns"
 import { showMessageError } from "@/utils/message"
 import { getTokenList, setTokenList } from "@/utils/storage"
@@ -188,8 +161,6 @@ const addSelectedToken = () => {
     selectedToken.value &&
     !addedTokenList.value.includes(selectedToken.value)
   ) {
-    selectedToken.value.meta.logo =
-      SNS_AGGREGATOR_CANISTER_URL + selectedToken.value.meta.logo
     addedTokenList.value.push(selectedToken.value)
     setTokenList(addedTokenList.value)
   } else {

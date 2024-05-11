@@ -48,8 +48,41 @@
             use-chips
             v-model="selectTokens"
             :options="tokens"
+            style="max-width: 205px"
             label="Token"
-          />
+          >
+            <template v-slot:selected-item="scope">
+              <q-chip
+                removable
+                @remove="scope.removeAtIndex(scope.index)"
+                :tabindex="scope.tabindex"
+                class="q-ma-none"
+              >
+                <img
+                  v-if="scope"
+                  class="selected-icon q-mr-xs"
+                  :src="scope.opt.meta.logo"
+                  alt="Icon"
+                />
+                {{ scope.opt.symbol }}
+              </q-chip>
+            </template>
+            <template v-slot:option="scope">
+              <q-item v-bind="scope.itemProps">
+                <q-item-section avatar>
+                  <img
+                    class="head-icon"
+                    :src="scope.opt.meta.logo"
+                    alt="Icon"
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ scope.opt.symbol }}</q-item-label>
+                  <q-item-label caption>{{ scope.opt.name }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </template></q-select
+          >
           <q-select
             use-chips
             multiple
@@ -120,7 +153,7 @@
             </q-item>
             <q-item
               v-for="transaction in transactions"
-              :key="transaction.hash"
+              :key="transaction.id"
               clickable
               style="padding: 20px"
             >
@@ -756,7 +789,12 @@ const paginatedGroups = computed(
           item.tag.some((tagItem) => tag.value.includes(tagItem))) &&
         //筛选manual
         (manual.value.length === 0 ||
-          (item.manual && manual.value.includes("Manual"))),
+          (item.manual && manual.value.includes("Manual"))) &&
+        // 筛选currency.symbol
+        (selectTokens.value.length === 0 ||
+          selectTokens.value.findIndex(
+            (token) => token.symbol === item.details.currency.symbol,
+          ) !== -1),
     )
     //在slice分页之前处理页码和数量
     maxPage.value = Math.ceil(paginatedData.length / pageSize.value)
@@ -767,7 +805,7 @@ const paginatedGroups = computed(
 )
 
 // 监听 date, type, tag 和 manual 变化，如果有任何一个发生变化，强制重新计算 paginatedGroups
-watch([date, type, tag, manual], () => {
+watch([selectTokens, date, type, tag, manual], () => {
   paginatedGroups.value // 触发 paginatedGroups 的重新计算
 })
 //监听排序，被选择的钱包数值变化，触发查询
@@ -1023,12 +1061,6 @@ const toTransactionDetail = (symbol: string, hash: string) => {
       showMessageError("failed get token Info, please try again later.")
     }
   }
-}
-
-const getUserTokenList = () => {
-  let tokens: ICRC1Info[] = []
-  tokens.push()
-  getTokenList()
 }
 </script>
 

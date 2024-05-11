@@ -67,7 +67,10 @@ export const getAllSNSInfo = async (): Promise<ICRC1Info[]> => {
           fee: icrc1_fee[0],
           decimals: icrc1_metadata.find(([key]) => key.endsWith(`:decimals`))[1]
             .Nat[0],
-          meta,
+          meta: {
+            ...meta,
+            logo: SNS_AGGREGATOR_CANISTER_URL + meta.logo, //直接将logo地址一步到位，免得后面还需要手动加URL
+          },
         }
       })
     return snses

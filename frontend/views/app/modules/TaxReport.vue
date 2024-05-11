@@ -111,17 +111,6 @@
               Free For Now
             </q-banner>
             <br />
-            <div class="q-mb-xs">
-              <span class="text-body1">Report Base Currency:</span>
-              <br />
-              <q-radio
-                v-model="currency"
-                :val="userBaseCurrency"
-                :label="userBaseCurrency"
-              />
-              <q-radio v-model="currency" val="USD" label="USD" />
-            </div>
-
             <q-btn
               color="primary"
               icon="file_download"
@@ -144,14 +133,14 @@
           <q-separator />
           <q-list separator>
             <q-item clickable v-ripple>
-              <q-item-section overline>Home Country</q-item-section>
+              <q-item-section overline>Timezone</q-item-section>
               <q-skeleton v-if="userConfigLoading" type="text" />
               <q-item-section v-else side>None</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section overline>Base Currency</q-item-section>
               <q-skeleton v-if="userConfigLoading" type="text" />
-              <q-item-section v-else side>USD</q-item-section>
+              <q-item-section v-else side>{{ currency }}</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section overline>Cost basis method</q-item-section>
@@ -197,8 +186,7 @@ const selectedYear = ref(dateOptions[0])
 const historyList = ref<SyncedTransaction[]>([])
 const transactionAmount = ref(0)
 const walletAmount = ref(0)
-const currency = ref() //用户选择税务报告所导出的单位为USD还是自选的货币
-const userBaseCurrency = ref("Selected Base Currency")
+const currency = ref("USD") //用户选择税务报告所导出的单位为USD还是自选的货币
 
 const taxReportData = ref<TaxReportData>({
   capital_gain_or_loss: 0,
@@ -212,7 +200,6 @@ onMounted(() => {
   getWalletHistory()
   getTaxProfit()
   getUserCurrencyCode().then((res) => {
-    userBaseCurrency.value = res
     currency.value = res
   })
 })
@@ -281,7 +268,8 @@ const exportToCSV = async () => {
     "To",
     "Amount",
     "Fee",
-    "Memo",
+    "Token",
+    "Currency",
     "Price",
     "Cost",
     "Income",
@@ -307,7 +295,8 @@ const exportToCSV = async () => {
       transaction.details?.to,
       transaction.details.amount,
       transaction.details.fee,
-      "",
+      transaction.details.currency.symbol,
+      currency.value,
       numberToFixed(transaction.details.price * exportRate, 2),
       numberToFixed(transaction.details.cost * exportRate, 2),
       numberToFixed(transaction.details.value * exportRate, 2),
