@@ -135,17 +135,23 @@
             <q-item clickable v-ripple>
               <q-item-section overline>Timezone</q-item-section>
               <q-skeleton v-if="userConfigLoading" type="text" />
-              <q-item-section v-else side>None</q-item-section>
+              <q-item-section v-else side>{{
+                userConfig.timezone
+              }}</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section overline>Base Currency</q-item-section>
               <q-skeleton v-if="userConfigLoading" type="text" />
-              <q-item-section v-else side>{{ currency }}</q-item-section>
+              <q-item-section v-else side>{{
+                userConfig.currency
+              }}</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section overline>Cost basis method</q-item-section>
               <q-skeleton v-if="userConfigLoading" type="text" />
-              <q-item-section v-else side>FIFO</q-item-section>
+              <q-item-section v-else side>{{
+                userConfig.costMethod
+              }}</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section overline>Cost tracking method</q-item-section>
@@ -163,7 +169,7 @@ import { rate } from "@/api/baseCurrencies"
 import { getUserConfig, getUserTaxProfit, getUserWalletsTag } from "@/api/user"
 import CurrencyUSD from "@/components/CurrencyUSD.vue"
 import type { SyncedTransaction } from "@/types/sns"
-import type { TaxReportData } from "@/types/user"
+import type { TaxReportData, UserConfig } from "@/types/user"
 import { YearTimestamp, getYearTimestamps } from "@/utils/date"
 import { numberToFixed } from "@/utils/math"
 import { getAllSyncedTransactions } from "@/utils/syncedTransactions"
@@ -182,7 +188,11 @@ const selectedYear = ref(dateOptions[0])
 const historyList = ref<SyncedTransaction[]>([])
 const transactionAmount = ref(0)
 const walletAmount = ref(0)
-const currency = ref("USD") //用户选择税务报告所导出的单位为USD还是自选的货币
+const userConfig = ref<UserConfig>({
+  currency: "USD",
+  timezone: moment.tz.guess(),
+  costMethod: "FIFO",
+}) //用户选择税务报告所导出的单位为USD还是自选的货币
 
 const taxReportData = ref<TaxReportData>({
   capital_gain_or_loss: 0,
@@ -196,9 +206,7 @@ onMounted(() => {
   getWalletHistory()
   getTaxProfit()
   getUserConfig().then((res) => {
-    if (res.currency) {
-      currency.value = res.currency
-    }
+    userConfig.value = res
   })
 })
 
@@ -274,7 +282,7 @@ const exportToCSV = async () => {
     "Profit",
   ]
   let exportRate = 1
-  if (currency.value !== "USD") {
+  if (userConfig.value.currency !== "USD") {
     //如果用户选择使用他自己选择的货币汇率，则对即将导出的报告金额使用转换
     exportRate = rate
   }
@@ -294,7 +302,7 @@ const exportToCSV = async () => {
       transaction.details.amount,
       transaction.details.fee,
       transaction.details.currency.symbol,
-      currency.value,
+      userConfig.value.currency,
       numberToFixed(transaction.details.price * exportRate, 2),
       numberToFixed(transaction.details.cost * exportRate, 2),
       numberToFixed(transaction.details.value * exportRate, 2),
