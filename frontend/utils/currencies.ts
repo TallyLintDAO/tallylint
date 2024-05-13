@@ -1,4 +1,4 @@
-import { getUserCurrencyCode } from "@/api/user"
+import { getUserConfig } from "@/api/user"
 import { numberToFixed } from "./math"
 
 export interface baseCurrency {
@@ -57,16 +57,22 @@ export const baseCurrencies: baseCurrency[] = [
   { code: "ZAR", name: "South African Rand" },
 ]
 
-// 用户所选择的货币符号代码
-let currencyCode = "USD"
 //获取用户设置的货币代码
-getUserCurrencyCode().then((code) => {
-  currencyCode = code
-})
+export const getCurrencyCode = () => {
+  getUserConfig().then((userConfig) => {
+    if (userConfig.currency) {
+      currencyCode = userConfig.currency
+    }
+  })
+}
 //手动设置货币代码
 export const setCurrencyCode = (code: string) => {
   currencyCode = code
 }
+
+// 用户所选择的货币符号代码
+let currencyCode = "USD"
+getCurrencyCode()
 
 //将数字转换为对应货币适合的格式，且添加对应的货币符号
 export const convertCurrency = (amount: number): string => {

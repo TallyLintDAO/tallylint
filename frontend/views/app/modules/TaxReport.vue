@@ -160,11 +160,7 @@
 </template>
 <script setup lang="ts">
 import { rate } from "@/api/baseCurrencies"
-import {
-  getUserCurrencyCode,
-  getUserTaxProfit,
-  getUserWalletsTag,
-} from "@/api/user"
+import { getUserConfig, getUserTaxProfit, getUserWalletsTag } from "@/api/user"
 import CurrencyUSD from "@/components/CurrencyUSD.vue"
 import type { SyncedTransaction } from "@/types/sns"
 import type { TaxReportData } from "@/types/user"
@@ -199,8 +195,10 @@ const taxReportData = ref<TaxReportData>({
 onMounted(() => {
   getWalletHistory()
   getTaxProfit()
-  getUserCurrencyCode().then((res) => {
-    currency.value = res
+  getUserConfig().then((res) => {
+    if (res.currency) {
+      currency.value = res.currency
+    }
   })
 })
 

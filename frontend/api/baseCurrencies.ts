@@ -2,7 +2,7 @@ import { TTL, clearCacheData, getCache } from "@/utils/cache"
 import { setCurrencyCode } from "@/utils/currencies"
 import { showMessageError } from "@/utils/message"
 import axios from "axios"
-import { getUserCurrencyCode } from "./user"
+import { getUserConfig } from "./user"
 
 //全局存储rate变量，方便调用
 export let rate: number
@@ -19,8 +19,10 @@ export async function getUserCurrencyRate(): Promise<any> {
   // 默认为USD
   let currencyCode = "USD"
   // 获取用户设置的货币符号方法
-  const res = await getUserCurrencyCode()
-  currencyCode = res
+  const res = await getUserConfig()
+  if (res.currency !== "") {
+    currencyCode = res.currency
+  }
   const data = await getBaseCurrencyPriceCache(currencyCode)
   rate = data.rate
   rate_time_last_update = data.time_last_update_unix * 1000

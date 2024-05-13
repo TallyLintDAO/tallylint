@@ -5,6 +5,7 @@ import type {
   HistoryQueryParams,
   SyncedHistory,
   TaxReportData,
+  UserConfig,
   WalletInfo,
   WalletTag,
   syncWalletParam,
@@ -12,10 +13,11 @@ import type {
 import { TTL, getCache } from "@/utils/cache"
 import { showMessageError } from "@/utils/message"
 import { getNNS } from "@/utils/nns"
-import { getTokenList } from "@/utils/storage"
+import { getStorage, getTokenList } from "@/utils/storage"
 import { getBackend, getCurrentPrincipal } from "./canister_pool"
 import { getTransactionsICRC1 } from "./icrc1"
 import { getICPTransactions } from "./rosetta"
+import moment from "moment"
 
 //TODO demo阶段用户字段修改频繁，暂时用短缓存时间。
 const userTTL = TTL.minute1 //用户自身信息缓存时长。
@@ -300,7 +302,9 @@ export async function getUserTaxProfit(
   return getBackend().my_summary(start, end)
 }
 
-// 获取用户所设置的货币代码
-export async function getUserCurrencyCode(): Promise<any> {
-  return "EUR"
+export async function getUserConfig(): Promise<UserConfig> {
+  const userConfig = getStorage("USER_CONFIG")
+  moment.tz.setDefault(userConfig.timezone)
+
+  return userConfig
 }

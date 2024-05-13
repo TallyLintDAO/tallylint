@@ -2,6 +2,24 @@ import { LEDGER_CANISTER_ID } from "@/api/constants/ic"
 import type { ICRC1Info } from "@/types/sns"
 import type { UserInfo } from "@/types/user"
 
+//通用存储方法
+export const setStorage = (cache: any, key: string) => {
+  if (cache !== "") {
+    localStorage.setItem(key, JSON.stringify(cache))
+  }
+}
+//通用读取存储方法
+export const getStorage = (key: string) => {
+  const info = localStorage.getItem(key)
+  if (null == info) return null
+  try {
+    return JSON.parse(info)
+  } catch (e) {
+    console.error(`read ${key} info failed:`, e)
+  }
+  return null
+}
+
 // 本地保存用户信息，没有网络访问时也可以显示
 export const setUserInfoStorage = (user: UserInfo): void => {
   if (user.owner !== "") {
@@ -25,7 +43,6 @@ export const getUserInfoStorage = (principal: string): UserInfo | null => {
 }
 
 export const deleteUserInfoStorage = (principal: string): void => {
-  console.log("deleteUser", principal)
   localStorage.removeItem(`USER_${principal.toUpperCase()}`)
 }
 
@@ -48,7 +65,8 @@ export const getTokenList = (): ICRC1Info[] | null => {
   }
   return null
 }
-//默认储存ICP作为数据
+
+//默认储存ICP作为tokenlist的第一位
 const initICPTokenCache = () => {
   const info = localStorage.getItem(`USER_TOKEN_LIST`)
   if (null == info) return null

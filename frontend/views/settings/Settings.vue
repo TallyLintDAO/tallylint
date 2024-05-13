@@ -15,10 +15,11 @@
                     <q-item-label> Base currency </q-item-label>
                     <q-item-label caption>
                       <q-select
-                        v-model="currencyModel"
+                        v-model="userConfig.currency"
                         filled
                         use-input
                         input-debounce="0"
+                        emit-value
                         option-label="code"
                         option-value="code"
                         :options="currencies"
@@ -55,7 +56,7 @@
                     <q-item-label> Timezone for reports </q-item-label>
                     <q-item-label caption>
                       <q-select
-                        v-model="timezone"
+                        v-model="userConfig.timezone"
                         filled
                         use-input
                         input-debounce="0"
@@ -80,7 +81,7 @@
                     <q-item-label> Cost basis method </q-item-label>
                     <q-item-label caption>
                       <q-select
-                        v-model="costMethod"
+                        v-model="userConfig.costMethod"
                         filled
                         :options="costMethodOption"
                         label="Select cost basis method *"
@@ -111,7 +112,9 @@
 </template>
 
 <script lang="ts" setup>
-import baseCurrencies from "@/utils/currencies"
+import type { UserConfig } from "@/types/user"
+import baseCurrencies, { setCurrencyCode } from "@/utils/currencies"
+import { getStorage, setStorage } from "@/utils/storage"
 import moment from "moment-timezone"
 import type { QForm } from "quasar"
 import { onMounted, ref } from "vue"
@@ -119,24 +122,27 @@ import { onMounted, ref } from "vue"
 const form = ref<QForm | null>(null)
 const loading = ref(false)
 
+const userConfig = ref<UserConfig>({
+  currency: "",
+  timezone: moment.tz.guess(),
+  costMethod: "FIFO",
+})
 const currencies = ref(baseCurrencies)
-const currencyModel = ref()
 const timezoneList = ref(moment.tz.names())
-const timezone = ref(moment.tz.guess())
-const costMethod = ref("FIFO")
-const costMethodOption = ["FIFO", "LIFO", "HIFO"]
+const costMethodOption = ["FIFO", "LIFO"]
 
-onMounted(() => {})
+onMounted(() => {
+  userConfig.value = getStorage("USER_CONFIG")
+})
 
 const onSubmit = async () => {
   loading.value = true
   const validationSuccess = await form.value?.validate()
-
+  console.log("userConfig", userConfig.value)
   try {
     if (validationSuccess) {
-    } else {
-      // 数据验证失败
-      // 用户至少输入了一个无效值
+      setStorage(userConfig.value, "USER_CONFIG")
+      setCurrencyCode(userConfig.value.currency)
     }
   } catch (error) {
   } finally {

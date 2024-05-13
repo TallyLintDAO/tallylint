@@ -90,6 +90,12 @@ export interface HistoryQueryParams {
 
 export type SyncedHistory = TransactionB[]
 
+export interface UserConfig {
+  currency: string
+  timezone: string
+  costMethod: string
+}
+
 export interface TaxReportData {
   capital_gain_or_loss: number
   costs_expenses: number

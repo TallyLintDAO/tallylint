@@ -21,7 +21,6 @@
             use-chips
             multiple
             option-label="name"
-            option-value="address"
             :options="wallets"
             label="All Wallets"
           >
@@ -153,7 +152,7 @@
             </q-item>
             <q-item
               v-for="transaction in transactions"
-              :key="transaction.id"
+              :key="Number(transaction.id)"
               clickable
               style="padding: 20px"
             >
