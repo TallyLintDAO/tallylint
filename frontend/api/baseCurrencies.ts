@@ -20,7 +20,7 @@ export async function getUserCurrencyRate(): Promise<any> {
   let currencyCode = "USD"
   // 获取用户设置的货币符号方法
   const res = await getUserConfig()
-  if (res.currency !== "") {
+  if (res && res.currency !== "") {
     currencyCode = res.currency
   }
   const data = await getBaseCurrencyPriceCache(currencyCode)

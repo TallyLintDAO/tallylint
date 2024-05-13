@@ -206,7 +206,9 @@ onMounted(() => {
   getWalletHistory()
   getTaxProfit()
   getUserConfig().then((res) => {
-    userConfig.value = res
+    if (res) {
+      userConfig.value = res
+    }
   })
 })
 

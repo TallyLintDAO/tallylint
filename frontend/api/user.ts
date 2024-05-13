@@ -14,10 +14,10 @@ import { TTL, getCache } from "@/utils/cache"
 import { showMessageError } from "@/utils/message"
 import { getNNS } from "@/utils/nns"
 import { getStorage, getTokenList } from "@/utils/storage"
+import moment from "moment"
 import { getBackend, getCurrentPrincipal } from "./canister_pool"
 import { getTransactionsICRC1 } from "./icrc1"
 import { getICPTransactions } from "./rosetta"
-import moment from "moment"
 
 //TODO demo阶段用户字段修改频繁，暂时用短缓存时间。
 const userTTL = TTL.minute1 //用户自身信息缓存时长。
@@ -302,9 +302,11 @@ export async function getUserTaxProfit(
   return getBackend().my_summary(start, end)
 }
 
-export async function getUserConfig(): Promise<UserConfig> {
+export async function getUserConfig(): Promise<UserConfig | null> {
   const userConfig = getStorage("USER_CONFIG")
-  moment.tz.setDefault(userConfig.timezone)
+  if (userConfig && userConfig.timezone !== "") {
+    moment.tz.setDefault(userConfig.timezone)
+  }
 
   return userConfig
 }

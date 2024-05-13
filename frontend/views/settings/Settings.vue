@@ -114,6 +114,7 @@
 <script lang="ts" setup>
 import type { UserConfig } from "@/types/user"
 import baseCurrencies, { setCurrencyCode } from "@/utils/currencies"
+import { showMessageSuccess } from "@/utils/message"
 import { getStorage, setStorage } from "@/utils/storage"
 import moment from "moment-timezone"
 import type { QForm } from "quasar"
@@ -123,7 +124,7 @@ const form = ref<QForm | null>(null)
 const loading = ref(false)
 
 const userConfig = ref<UserConfig>({
-  currency: "",
+  currency: "USD",
   timezone: moment.tz.guess(),
   costMethod: "FIFO",
 })
@@ -132,17 +133,20 @@ const timezoneList = ref(moment.tz.names())
 const costMethodOption = ["FIFO", "LIFO"]
 
 onMounted(() => {
-  userConfig.value = getStorage("USER_CONFIG")
+  const res = getStorage("USER_CONFIG")
+  if (res) {
+    userConfig.value = res
+  }
 })
 
 const onSubmit = async () => {
   loading.value = true
   const validationSuccess = await form.value?.validate()
-  console.log("userConfig", userConfig.value)
   try {
     if (validationSuccess) {
       setStorage(userConfig.value, "USER_CONFIG")
       setCurrencyCode(userConfig.value.currency)
+      showMessageSuccess("Save settings success")
     }
   } catch (error) {
   } finally {

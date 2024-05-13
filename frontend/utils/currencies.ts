@@ -60,7 +60,7 @@ export const baseCurrencies: baseCurrency[] = [
 //获取用户设置的货币代码
 export const getCurrencyCode = () => {
   getUserConfig().then((userConfig) => {
-    if (userConfig.currency) {
+    if (userConfig && userConfig.currency) {
       currencyCode = userConfig.currency
     }
   })

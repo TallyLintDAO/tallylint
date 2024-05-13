@@ -4,12 +4,12 @@ import type { UserInfo } from "@/types/user"
 
 //通用存储方法
 export const setStorage = (cache: any, key: string) => {
-  if (cache !== "") {
+  if (cache && cache !== "") {
     localStorage.setItem(key, JSON.stringify(cache))
   }
 }
 //通用读取存储方法
-export const getStorage = (key: string) => {
+export const getStorage = (key: string): any | null => {
   const info = localStorage.getItem(key)
   if (null == info) return null
   try {
