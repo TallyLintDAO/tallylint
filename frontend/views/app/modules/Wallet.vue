@@ -95,7 +95,11 @@
                   <q-item-section>
                     <q-item-label> Principal </q-item-label>
                     <q-item-label caption>
-                      {{ props.row.principal_id[0] }}
+                      <router-link
+                        :to="'/app/transactions/' + Number(props.row.id)"
+                      >
+                        {{ props.row.principal_id[0] }}
+                      </router-link>
                     </q-item-label>
                   </q-item-section>
                 </q-item>
@@ -107,17 +111,8 @@
                 >
                   <q-item-section>
                     <q-item-label>{{ col.label }}</q-item-label>
-                    <q-item-label v-if="col.name === 'id'" caption>
-                      <router-link
-                        :to="'/app/transactions/' + Number(col.value)"
-                      >
-                        {{ props.row.address }}
-                      </router-link>
-                    </q-item-label>
-                    <q-item-label
-                      v-else-if="col.name === 'lastTransaction'"
-                      caption
-                      >{{
+                    <q-item-label v-if="col.name === 'lastTransaction'" caption>
+                      {{
                         distanceFromCurrentDate(props.row.last_transaction_time)
                       }}
                     </q-item-label>
@@ -225,10 +220,10 @@ import { onMounted, ref, watch } from "vue"
 
 const columns = [
   {
-    name: "id",
+    name: "address",
     required: true,
-    label: "Account ID", //用钱包id作为的超链接，label用address方便识别
-    field: "id",
+    label: "Account ID",
+    field: "address",
   },
   { name: "from", label: "From", field: "from" },
   { name: "name", label: "Name", field: "name" },
@@ -297,7 +292,7 @@ const syncAllWallet = async () => {
       from: row.from,
     })
     //将钱包数据同步
-    console.log(`getICPTransactions ${index + 1}`, resArray)
+    console.log(`getWalletTransactions No.${index + 1}: `, resArray)
     syncTransactionArray.push({ walletId: row.id, history: resArray })
   })
   // 使用 Promise.all() 等待所有的请求完成
