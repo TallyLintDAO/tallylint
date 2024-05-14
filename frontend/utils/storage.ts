@@ -1,19 +1,21 @@
 import { LEDGER_CANISTER_ID } from "@/api/constants/ic"
+import { TOKENS } from "@/api/constants/tokens"
 import type { ICRC1Info } from "@/types/sns"
 import type { UserInfo } from "@/types/user"
 
 //通用存储方法
-export const setStorage = (cache: any, key: string) => {
-  if (cache && cache !== "") {
-    localStorage.setItem(key, JSON.stringify(cache))
+export const setStorage = (value: any, key: string) => {
+  if (value && Object.keys(value).length !== 0) {
+    //只有不为空或者不是空字符串时才会存入
+    localStorage.setItem(key, JSON.stringify(value))
   }
 }
 //通用读取存储方法
 export const getStorage = (key: string): any | null => {
-  const info = localStorage.getItem(key)
-  if (null == info) return null
+  const value = localStorage.getItem(key)
+  if (null == value) return null
   try {
-    return JSON.parse(info)
+    return JSON.parse(value)
   } catch (e) {
     console.error(`read ${key} info failed:`, e)
   }
@@ -69,32 +71,14 @@ export const getTokenList = (): ICRC1Info[] | null => {
 //默认储存ICP作为tokenlist的第一位
 const initICPTokenCache = () => {
   const info = localStorage.getItem(`USER_TOKEN_LIST`)
-  if (null == info) return null
 
-  const tokens = JSON.parse(info) as ICRC1Info[]
+  let tokens: ICRC1Info[] = []
+  if (null !== info) tokens = JSON.parse(info) as ICRC1Info[]
 
   const hasICP = tokens.some((token) => token.symbol === "ICP")
-  // 如果不存在，添加代币 ICP 到列表中
+  // 如果ICP不存在，添加代币 ICP 到列表中
   if (!hasICP) {
-    tokens.unshift({
-      canisters: {
-        governance: "",
-        index: "",
-        ledger: LEDGER_CANISTER_ID,
-        root: "",
-        swap: "",
-      },
-      symbol: "ICP",
-      name: "Internet Computer",
-      decimals: 8,
-      fee: 10000,
-      meta: {
-        description: "",
-        logo: "/frontend/assets/dfinity.svg",
-        name: "",
-        url: "https://dashboard.internetcomputer.org/",
-      },
-    })
+    tokens.unshift(TOKENS.ICP)
     setTokenList(tokens)
   }
 }

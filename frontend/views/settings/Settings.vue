@@ -130,7 +130,8 @@ const userConfig = ref<UserConfig>({
 })
 const currencies = ref(baseCurrencies)
 const timezoneList = ref(moment.tz.names())
-const costMethodOption = ["FIFO", "LIFO"]
+const costMethodOption = ["FIFO"]
+// const costMethodOption = ["FIFO", "LIFO"]
 
 onMounted(() => {
   const res = getStorage("USER_CONFIG")

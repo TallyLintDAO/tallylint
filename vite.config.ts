@@ -110,9 +110,13 @@ export default defineConfig(({ command, mode }) => {
     envDir: "env",
     clearScreen: false,
   }
-  console.log(
-    `process.env.NODE_ENV -> ${common.define["process.env.NODE_ENV"]}`,
-  )
+  if (common.define) {
+    console.log(
+      `process.env.NODE_ENV -> ${common.define["process.env.NODE_ENV"]}`,
+    )
+  } else {
+    console.log(`process.env.NODE_ENV -> no env node_env load`)
+  }
 
   if (!isBuild) {
     return {

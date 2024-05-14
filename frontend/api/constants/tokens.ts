@@ -1,11 +1,25 @@
+import icpLogo from "@/assets/dfinity.svg"
 import { LEDGER_CANISTER_ID } from "./ic"
 
 export const TOKENS = {
   ICP: {
+    canisters: {
+      governance: "",
+      index: "",
+      ledger: LEDGER_CANISTER_ID,
+      root: "",
+      swap: "",
+    },
     symbol: "ICP",
-    canisterId: LEDGER_CANISTER_ID,
-    name: "ICP",
+    name: "Internet Computer",
     decimals: 8,
+    fee: 10000,
+    meta: {
+      description: "",
+      logo: icpLogo,
+      name: "",
+      url: "https://dashboard.internetcomputer.org/",
+    },
   },
   XTC: {
     symbol: "XTC",
