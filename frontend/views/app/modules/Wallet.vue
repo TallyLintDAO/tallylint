@@ -10,14 +10,14 @@
     <div class="row">
       <div class="q-gutter-sm">
         <q-btn color="primary" @click="openDialog('add')">Add Wallet</q-btn>
-        <q-btn
-          color="secondary"
-          @click="syncAllWallet()"
-          icon="cached"
+        <q-btn color="secondary" @click="openChildDialog()" icon="cached">
+          Sync All Wallets
+        </q-btn>
+        <SupportedTokens
+          ref="supportedTokensRef"
+          :method="syncAllWallet"
           :loading="syncLoading"
-          >Sync All Wallets</q-btn
-        >
-        <SupportedTokens />
+        />
       </div>
 
       <q-space />
@@ -218,6 +218,7 @@ import { showMessageSuccess, showResultError } from "@/utils/message"
 import type { QForm } from "quasar"
 import { onMounted, ref, watch } from "vue"
 
+const supportedTokensRef = ref<InstanceType<typeof SupportedTokens>>()
 const columns = [
   {
     name: "address",
@@ -443,6 +444,12 @@ const deleteWallet = (walletId: bigint) => {
       })
     },
   })
+}
+const openChildDialog = () => {
+  //打开子组件弹窗
+  if (supportedTokensRef.value) {
+    supportedTokensRef.value.openDialog()
+  }
 }
 </script>
 

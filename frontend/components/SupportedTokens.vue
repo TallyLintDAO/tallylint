@@ -117,6 +117,13 @@
       </q-card-section>
 
       <q-card-actions align="right">
+        <q-btn
+          color="secondary"
+          @click="method()"
+          :loading="loading"
+          icon="cached"
+          >Sync All Wallets</q-btn
+        >
         <q-btn flat label="Close" color="primary" v-close-popup />
       </q-card-actions>
     </q-card>
@@ -130,6 +137,10 @@ import { showMessageError } from "@/utils/message"
 import { getTokenList, setTokenList } from "@/utils/storage"
 import { onMounted, ref } from "vue"
 
+const props = defineProps<{
+  method: () => void | Promise<void>
+  loading: boolean
+}>()
 const tokensDialogVisible = ref(false)
 const tokensLoading = ref(true)
 
@@ -144,6 +155,9 @@ onMounted(() => {
   getICRC1Info()
   init()
 })
+const openDialog = () => {
+  tokensDialogVisible.value = true
+}
 
 const getICRC1Info = () => {
   tokensLoading.value = true
@@ -181,6 +195,9 @@ const init = () => {
     addedTokenList.value = tokenList
   }
 }
+defineExpose({
+  openDialog,
+})
 </script>
 
 <style lang="scss" scoped>
