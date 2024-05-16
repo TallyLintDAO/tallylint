@@ -200,7 +200,6 @@
 
 <script lang="ts" setup>
 import { MILI_PER_SECOND } from "@/api/constants/ic"
-import { getICPTransactions } from "@/api/rosetta"
 import {
   addUserWallet,
   deleteUserWallet,
@@ -344,19 +343,17 @@ const getWallets = (isRefresh: boolean) => {
         rows.value = res.Ok
         for (const row of rows.value) {
           try {
-            getICPTransactions(
-              {
-                id: Number(row.id),
-                address: row.address,
-                principal: row.principal_id,
-                name: "",
-                from: "",
-              },
-              true,
-            ).then((res) => {
+            //TODO 感觉可以用缓存
+            fetchAllSyncTransactions({
+              id: Number(row.id),
+              address: row.address,
+              principal: row.principal_id,
+              name: "",
+              from: "",
+            }).then((res) => {
               // 将查询得到的transactions绑定回原数组中的now_transactions，表明现在的交易数有多少
-              row.now_transactions = res.total
-              row.last_transaction_time = res.transactions[0].timestamp
+              row.now_transactions = res.length
+              row.last_transaction_time = res[0].timestamp
               console.log("getUserWallet", res, row)
             })
           } catch (error) {
