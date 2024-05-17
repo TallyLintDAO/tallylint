@@ -2,7 +2,7 @@ use ic_cdk::caller;
 
 use crate::STATE;
 
-use super::constants::{GOVERNANCE_BTWL, GOVERNANCE_ZHOU};
+use super::constants::{GOVERNANCE_BTWL, GOVERNANCE_YINDR, GOVERNANCE_ZHOU};
 
 #[allow(dead_code)]
 pub fn has_user_guard() -> Result<(), String> {
@@ -36,7 +36,9 @@ pub fn user_owner_guard() -> Result<(), String> {
 
 pub fn admin_guard() -> Result<(), String> {
   let caller = caller().to_string();
-  if GOVERNANCE_BTWL == caller || GOVERNANCE_ZHOU == caller {
+  if GOVERNANCE_BTWL == caller
+    || GOVERNANCE_ZHOU == caller
+    || GOVERNANCE_YINDR == caller {
     Ok(())
   } else {
     Err("caller not admin ".to_string())
