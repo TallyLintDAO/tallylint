@@ -202,11 +202,13 @@ import {
 import { useUserStore } from "@/stores/user"
 import type { WalletInfo } from "@/types/user"
 import { confirmDialog } from "@/utils/dialog"
-import { showMessageSuccess, showResultError } from "@/utils/message"
+import {
+  showMessageError,
+  showMessageSuccess,
+  showResultError,
+} from "@/utils/message"
 import { getNNS } from "@/utils/nns"
-import { Principal } from "@dfinity/principal"
-import { SnsWrapper, initSnsWrapper } from "@dfinity/sns"
-import { QForm } from "quasar"
+import { QForm, copyToClipboard } from "quasar"
 import { onMounted, ref } from "vue"
 
 const userStore = useUserStore()
@@ -347,6 +349,16 @@ const getHotkeyWallet = async () => {
   tableLoading.value = true
   const res = await getNNS()
   nnsNeruons.value.push(...res)
+}
+
+const copyPid = () => {
+  copyToClipboard(principal.value)
+    .then(() => {
+      showMessageSuccess(`copy ${principal.value} success`)
+    })
+    .catch(() => {
+      showMessageError("copy failed")
+    })
 }
 </script>
 
