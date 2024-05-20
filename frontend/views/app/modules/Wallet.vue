@@ -13,6 +13,14 @@
         <q-btn color="secondary" @click="openChildDialog()" icon="cached">
           Sync All Wallets
         </q-btn>
+        <q-btn
+          flat
+          color="primary"
+          label="How to get principal id "
+          icon="lightbulb_outline"
+          :href="DOCS_URL + WALLET_HELP"
+          target="_blank"
+        />
         <SupportedTokens
           ref="supportedTokensRef"
           :method="syncAllWallet"
@@ -199,6 +207,7 @@
 </template>
 
 <script lang="ts" setup>
+import { DOCS_URL, WALLET_HELP } from "@/api/constants/docs"
 import { MILI_PER_SECOND } from "@/api/constants/ic"
 import {
   addUserWallet,
