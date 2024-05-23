@@ -139,6 +139,7 @@
 
 <script lang="ts" setup>
 import { getUserCurrencyRate } from "@/api/baseCurrencies"
+import { getICRC1Balance } from "@/api/icrc1"
 import {
   getAllWalletDailyBalance,
   getDailyBalanceValue,
@@ -262,17 +263,21 @@ onMounted(async () => {
   initECharts()
   getWallet()
   getICPPrice()
+  getICRC1()
 })
 
 const getBalance = async (address: string, walletName: string) => {
   //获取用户当前钱包资产
   const balance = await getICPBalance(address)
-  console.log(address + " balance: ", balance)
   wallets.value.push({
     address: address,
     name: walletName,
     tokens: [{ symbol: "ICP", balance: balance }],
   })
+}
+
+const getICRC1 = () => {
+  getICRC1Balance()
 }
 
 watch(

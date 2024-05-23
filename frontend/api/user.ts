@@ -214,11 +214,9 @@ export async function fetchAllSyncTransactions(
   let transactions: TransactionF[] = []
   const res = await getICPTransactions(wallet, true)
   transactions = res.transactions
-  console.log("tokenList", tokenList)
   console.log("wallet", wallet)
   if (tokenList && wallet.principal[0]) {
     const noICPTokenList = tokenList.filter((token) => token.symbol !== "ICP")
-    console.log("noICPTokenList", noICPTokenList)
     for (let index = 0; index < noICPTokenList.length; index++) {
       const token = noICPTokenList[index]
       const currency: Currency = {

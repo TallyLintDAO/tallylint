@@ -110,8 +110,6 @@ const computedBalancePercent = computed(() => {
     const percentage = calculatePercent(balance, props.totalBalance)
     return { name: wallet.name, balance, value, percentage }
   })
-  console.log("computedBalancePercent", res)
-  console.log("totalBalance", props.totalBalance)
   return res
 })
 </script>

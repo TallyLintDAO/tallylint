@@ -7,12 +7,33 @@ import { TTL, getCache } from "@/utils/cache"
 import { currencyCalculate } from "@/utils/common"
 import ic from "@/utils/icblast"
 import { binarySearchClosestICRC1Price } from "@/utils/math"
+import { getTokenListWithoutICP } from "@/utils/storage"
 import { HttpAgent } from "@dfinity/agent"
 import { IcrcAccount, IcrcIndexCanister } from "@dfinity/ledger-icrc"
 import type { TransactionWithId } from "@dfinity/ledger-icrc/dist/candid/icrc_index"
 import { Principal } from "@dfinity/principal"
 
 const radixNumber = 4 //保留4位小数
+
+export const getICRC1Balance = async () => {
+  const tokenList = getTokenListWithoutICP()
+  console.log("getICRC1Balance", tokenList)
+  if (tokenList) {
+    for (let index = 0; index < tokenList.length; index++) {
+      const token = tokenList[index]
+      console.log("toke", token)
+      ic(token.canisters.ledger)
+        .then((can) => {
+          console.log("balance", token, can)
+        })
+        .catch((e) => {
+          console.error("e", e)
+        })
+    }
+  }
+
+  // return currencyCalculate(value, currency.decimals)
+}
 
 export const getTransactionsICRC1 = async (
   wallet: WalletTag,
@@ -143,4 +164,22 @@ export const matchICRC1Price = async (
     Math.floor(targetTimestamp / 1000),
   ).open
   return Number(price.toFixed(2))
+}
+
+export const createIcrcIndexCanister = async (
+  indexCanisterId: string,
+): Promise<IcrcIndexCanister> => {
+  const ai = await initAuth()
+  if (ai.info) {
+    const identity = ai.info.identity
+
+    const icrcIndexCanister = IcrcIndexCanister.create({
+      agent: new HttpAgent({ identity }),
+      canisterId: Principal.fromText(indexCanisterId),
+    })
+
+    return icrcIndexCanister
+  } else {
+    throw new Error("Initialization failed: Missing identity or principal")
+  }
 }
