@@ -619,7 +619,7 @@ import {
   setTransactionTag,
 } from "@/api/user"
 import CurrencyUSD from "@/components/CurrencyUSD.vue"
-import type { ICRC1Info, SyncedTransaction } from "@/types/sns"
+import type { ICRC1Info, SyncedTransaction } from "@/types/tokens"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
 import { showCustomTimezoneDate, showCustomTimezoneTime } from "@/utils/date"
@@ -1081,3 +1081,4 @@ const toTransactionDetail = (symbol: string, hash: string) => {
   }
 }
 </style>
+@/types/token

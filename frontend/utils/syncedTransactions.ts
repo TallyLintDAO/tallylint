@@ -1,7 +1,7 @@
 import type { Details } from ".dfx/ic/canisters/backend/backend.did"
 import { getUserCurrencyRate } from "@/api/baseCurrencies"
 import { getSyncedTransactions } from "@/api/user"
-import type { SyncedTransaction } from "@/types/sns"
+import type { SyncedTransaction } from "@/types/tokens"
 import type { WalletTag } from "@/types/user"
 import { numberToFixed } from "./math"
 

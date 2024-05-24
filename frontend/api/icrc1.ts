@@ -1,12 +1,12 @@
 import type { Details } from ".dfx/ic/canisters/backend/backend.did"
 import { initAuth } from "@/api/auth"
 import { MILI_PER_SECOND } from "@/api/constants/ic"
-import type { Currency, IRCR1Price, InferredTransaction } from "@/types/sns"
+import type { Currency, IRCR1Price, InferredTransaction } from "@/types/tokens"
 import type { WalletTag } from "@/types/user"
 import { TTL, getCache } from "@/utils/cache"
 import { currencyCalculate } from "@/utils/common"
 import ic from "@/utils/icblast"
-import { binarySearchClosestICRC1Price } from "@/utils/math"
+import { binarySearchClosestICRC1Price, numberToFixed } from "@/utils/math"
 import { getTokenListWithoutICP } from "@/utils/storage"
 import { HttpAgent } from "@dfinity/agent"
 import { IcrcAccount, IcrcIndexCanister } from "@dfinity/ledger-icrc"
@@ -15,24 +15,46 @@ import { Principal } from "@dfinity/principal"
 
 const radixNumber = 4 //保留4位小数
 
-export const getICRC1Balance = async () => {
+export const getICRC1Balance = async (
+  principalId: string,
+): Promise<BalanceResult> => {
   const tokenList = getTokenListWithoutICP()
-  console.log("getICRC1Balance", tokenList)
-  if (tokenList) {
-    for (let index = 0; index < tokenList.length; index++) {
-      const token = tokenList[index]
-      console.log("toke", token)
-      ic(token.canisters.ledger)
-        .then((can) => {
-          console.log("balance", token, can)
-        })
-        .catch((e) => {
-          console.error("e", e)
-        })
-    }
+  if (!tokenList) {
+    return []
   }
+  const promises = tokenList.map(async (token): Promise<BalanceResult> => {
+    console.log("token", token)
+    try {
+      const can = await ic(token.canisters.ledger)
+      // icrc1_balance_of: (record {owner:principal; subaccount:opt vec nat8}) → (nat) query
+      const resBalance = await can.icrc1_balance_of({
+        owner: Principal.fromText(principalId),
+      })
+      const balance = currencyCalculate(resBalance, token.decimals)
+      console.log(`${token.symbol} balance:`, balance)
+      const price = await matchICRC1Price(Date.now(), token.canisters.ledger)
+      const value = numberToFixed(balance * price, 2)
+      return { token, balance, price, value }
+    } catch (e) {
+      console.error("e", e)
+      return { token, error: e } // Return error information along with the token
+    }
+  })
 
-  // return currencyCalculate(value, currency.decimals)
+  const results = await Promise.all(promises)
+  results.forEach((result) => {
+    if (result.error) {
+      console.error(`Error with token ${result.token.symbol}:`, result.error)
+    } else {
+      console.log(
+        `${result.token.symbol} balance:`,
+        result.balance,
+        `value:`,
+        result.value,
+      )
+    }
+  })
+  return results
 }
 
 export const getTransactionsICRC1 = async (
@@ -127,6 +149,8 @@ export const getICRC1Price = async (
 ): Promise<IRCR1Price[]> => {
   //从icpswap记录罐子中获取存储罐子的id
   let recordStorageCanister = await ic("ggzvv-5qaaa-aaaag-qck7a-cai")
+  // Chat ledger canister: 2ouva-viaaa-aaaaq-aaamq-cai
+  // recordStorageCanister.tokenStorage: return : moe7a-tiaaa-aaaag-qclfq-cai
   let tokenStorage = await ic(
     await recordStorageCanister.tokenStorage(ledgerCanisterId),
   )
@@ -164,22 +188,4 @@ export const matchICRC1Price = async (
     Math.floor(targetTimestamp / 1000),
   ).open
   return Number(price.toFixed(2))
-}
-
-export const createIcrcIndexCanister = async (
-  indexCanisterId: string,
-): Promise<IcrcIndexCanister> => {
-  const ai = await initAuth()
-  if (ai.info) {
-    const identity = ai.info.identity
-
-    const icrcIndexCanister = IcrcIndexCanister.create({
-      agent: new HttpAgent({ identity }),
-      canisterId: Principal.fromText(indexCanisterId),
-    })
-
-    return icrcIndexCanister
-  } else {
-    throw new Error("Initialization failed: Missing identity or principal")
-  }
 }

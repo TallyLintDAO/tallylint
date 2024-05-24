@@ -1,5 +1,5 @@
 import type { TransactionF } from ".dfx/ic/canisters/backend/backend.did"
-import type { Currency, SyncedTransaction } from "@/types/sns"
+import type { Currency, SyncedTransaction } from "@/types/tokens"
 import type { ApiResult, ApiUserInfo } from "@/types/types"
 import type {
   HistoryQueryParams,

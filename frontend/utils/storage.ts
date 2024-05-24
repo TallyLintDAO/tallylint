@@ -1,5 +1,5 @@
 import { TOKENS } from "@/api/constants/tokens"
-import type { ICRC1Info } from "@/types/sns"
+import type { ICRC1Info } from "@/types/tokens"
 import type { UserInfo } from "@/types/user"
 
 //通用存储方法

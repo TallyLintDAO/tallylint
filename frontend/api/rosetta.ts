@@ -5,7 +5,7 @@ import {
   ROSETTA_URL,
 } from "@/api/constants/ic"
 import { matchICPPrice } from "@/api/token"
-import type { InferredTransaction } from "@/types/sns"
+import type { InferredTransaction } from "@/types/tokens"
 import type {
   DailyBalance,
   WalletHistory,

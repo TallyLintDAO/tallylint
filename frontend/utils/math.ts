@@ -1,4 +1,4 @@
-import type { IRCR1Price } from "@/types/sns"
+import type { IRCR1Price } from "@/types/tokens"
 
 //指定目标数字保留几位小数
 export const numberToFixed = (

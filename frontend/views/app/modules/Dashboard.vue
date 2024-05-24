@@ -263,12 +263,17 @@ onMounted(async () => {
   initECharts()
   getWallet()
   getICPPrice()
-  getICRC1()
 })
 
-const getBalance = async (address: string, walletName: string) => {
+const getBalance = async (
+  address: string,
+  principal: string,
+  walletName: string,
+) => {
   //获取用户当前钱包资产
   const balance = await getICPBalance(address)
+  const icrc1 = await getICRC1Balance(principal)
+  console.log("icrc1", icrc1)
   wallets.value.push({
     address: address,
     name: walletName,
@@ -276,8 +281,8 @@ const getBalance = async (address: string, walletName: string) => {
   })
 }
 
-const getICRC1 = () => {
-  getICRC1Balance()
+const getICRC1 = (principal: string) => {
+  getICRC1Balance(principal)
 }
 
 watch(
@@ -310,7 +315,12 @@ const getWallet = async () => {
       //TODO 这里作为BREAKDOWN的数值，有bug，多个钱包的资产总值没有计算，而下面的echarts图表没有bug，已经计算了。
       //将用户的每个钱包地址下的交易记录查出来，并总和到一起
       const walletHistory = await getWalletHistory(walletInfo.address)
-      getBalance(walletInfo.address, walletInfo.name)
+      getBalance(
+        walletInfo.address,
+        walletInfo.principal_id[0],
+        walletInfo.name,
+      )
+
       totalHistory.value = totalHistory.value.concat(walletHistory.history)
       //IC一次性查询不能超过一千条
       isTransactionTooMany.value = walletInfo.transactions >= 1000
