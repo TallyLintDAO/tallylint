@@ -62,7 +62,10 @@ export interface NNSNeuron {
 
 export interface WalletToken {
   symbol: string
+  logo: string
   balance: number
+  price: number
+  value: number
 }
 
 export interface Token {

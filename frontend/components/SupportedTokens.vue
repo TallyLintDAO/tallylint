@@ -132,7 +132,7 @@
 
 <script setup lang="ts">
 import { getSNSInfoCache } from "@/api/sns"
-import type { ICRC1Info } from "@/types/sns"
+import type { ICRC1Info } from "@/types/tokens"
 import { showMessageError } from "@/utils/message"
 import { getTokenList, setTokenList } from "@/utils/storage"
 import { onMounted, ref } from "vue"

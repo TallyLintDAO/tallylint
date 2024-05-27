@@ -34,27 +34,33 @@ export const getICRC1Balance = async (
       console.log(`${token.symbol} balance:`, balance)
       const price = await matchICRC1Price(Date.now(), token.canisters.ledger)
       const value = numberToFixed(balance * price, 2)
-      return { token, balance, price, value }
+      return {
+        symbol: token.symbol,
+        logo: token.meta.logo,
+        balance,
+        price,
+        value,
+      }
     } catch (e) {
       console.error("e", e)
-      return { token, error: e } // Return error information along with the token
+      return { symbol: token.symbol, error: e } // Return error information along with the token
     }
   })
 
-  const results = await Promise.all(promises)
-  results.forEach((result) => {
-    if (result.error) {
-      console.error(`Error with token ${result.token.symbol}:`, result.error)
+  const tokens = await Promise.all(promises)
+  tokens.forEach((token) => {
+    if (token.error) {
+      console.error(`Error with token ${token.symbol}:`, token.error)
     } else {
       console.log(
-        `${result.token.symbol} balance:`,
-        result.balance,
+        `${token.symbol} balance:`,
+        token.balance,
         `value:`,
-        result.value,
+        token.value,
       )
     }
   })
-  return results
+  return tokens
 }
 
 export const getTransactionsICRC1 = async (

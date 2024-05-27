@@ -79,7 +79,7 @@ export const getICPNowPrice = async (): Promise<number> => {
     const params = { symbol: "ICPUSDT" }
 
     const response = await axios.get(url, { params })
-    console.log("getICPNowPrice", response)
+
     if (response.status === 200) {
       //直接返回价格
       return Number(response.data.price)

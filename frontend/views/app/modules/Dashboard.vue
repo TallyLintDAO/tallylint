@@ -122,7 +122,7 @@
                           :wallets="wallets"
                           :symbol="props.row.token"
                           :price="props.row.price"
-                          :totalBalance="icpBalance"
+                          :totalBalance="props.row.balance"
                         />
                       </div>
                     </q-td>
@@ -152,10 +152,11 @@ import Progress from "@/components/Progress.vue"
 import type { TableColumn } from "@/types/model"
 import type { Wallet, WalletHistory } from "@/types/user"
 import { convertCurrency } from "@/utils/currencies"
+import { numberToFixed } from "@/utils/math"
 import { showMessageError } from "@/utils/message"
 import type { EChartsType } from "echarts"
 import * as echarts from "echarts"
-import { onMounted, ref, watch } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 
 const echartsContainer = ref<null>(null)
 let chart = <EChartsType>{} // 如果使用ref会导致无法显示tooltip，例如数据不会显示。
@@ -245,7 +246,6 @@ const columns: TableColumn[] = [
 ]
 
 const wallets = ref<Wallet[]>([])
-const icpBalance = ref(0)
 const rate = ref(1)
 const rows = ref<any[]>([
   {
@@ -272,28 +272,80 @@ const getBalance = async (
 ) => {
   //获取用户当前钱包资产
   const balance = await getICPBalance(address)
-  const icrc1 = await getICRC1Balance(principal)
-  console.log("icrc1", icrc1)
+  const res = await getICPNowPrice()
+  //需要用到price作为计算，这里还没法将它直接转换为字符串的货币符号
+  const ICPPrice = numberToFixed(res * rate.value, 2)
+  const tokens = [
+    {
+      symbol: "ICP",
+      logo: "",
+      balance: balance,
+      price: ICPPrice,
+      value: numberToFixed(balance * ICPPrice, 2),
+    },
+  ]
+  if (principal) {
+    const icrc1 = await getICRC1Balance(principal)
+    console.log("icrc1", icrc1)
+    icrc1.map((token) => {
+      tokens.push(token)
+    })
+  }
   wallets.value.push({
     address: address,
     name: walletName,
-    tokens: [{ symbol: "ICP", balance: balance }],
+    tokens: tokens,
   })
+  console.log("wallets", wallets.value)
+  console.log("tokenSummary", tokenSummary.value)
 }
 
 const getICRC1 = (principal: string) => {
   getICRC1Balance(principal)
 }
+const tokenSummary = computed(() => {
+  const summary: Record<
+    string,
+    { logo: string; price: number; totalBalance: number; totalValue: number }
+  > = {}
 
+  wallets.value.forEach((wallet) => {
+    wallet.tokens.forEach((token) => {
+      if (!summary[token.symbol]) {
+        summary[token.symbol] = {
+          price: 0,
+          logo: "",
+          totalBalance: 0,
+          totalValue: 0,
+        }
+      }
+      summary[token.symbol].price = token.price
+      summary[token.symbol].logo = token.logo
+      summary[token.symbol].totalBalance = numberToFixed(
+        summary[token.symbol].totalBalance + token.balance,
+        8,
+      )
+      summary[token.symbol].totalValue = numberToFixed(
+        summary[token.symbol].totalValue + token.value,
+        2,
+      )
+    })
+  })
+
+  return summary
+})
 watch(
   () => wallets.value.length,
   () => {
-    icpBalance.value = wallets.value.reduce(
-      // token[0] 目前暂为ICP
-      (total, wallet) => total + wallet.tokens[0].balance,
-      0,
+    rows.value[0].balance = Number(
+      wallets.value
+        .reduce(
+          // token[0] 目前暂为ICP
+          (total, wallet) => total + wallet.tokens[0].balance,
+          0,
+        )
+        .toFixed(8),
     )
-    rows.value[0].balance = icpBalance.value.toFixed(8)
     rows.value[0].value = convertCurrency(
       Number((rows.value[0].balance * rows.value[0].price).toFixed(2)),
     )
@@ -302,7 +354,7 @@ watch(
 
 const getICPPrice = async () => {
   const res = await getICPNowPrice()
-  //需要用到price作为计算，没法将它直接转换为货币符号
+  //需要用到price作为计算，这里还没法将它直接转换为字符串的货币符号
   rows.value[0].price = Number((res * rate.value).toFixed(2))
 }
 
