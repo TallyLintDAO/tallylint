@@ -109,8 +109,20 @@
                       :key="col.name"
                       :props="props"
                     >
-                      <template v-if="col.name === 'price'">
+                      <template
+                        v-if="col.name === 'price' || col.name === 'value'"
+                      >
                         {{ convertCurrency(col.value) }}
+                      </template>
+                      <template v-else-if="col.name === 'symbol'">
+                        <div class="flex-y-center token-symbol">
+                          <img
+                            class="selected-icon q-mr-xs"
+                            :src="props.row.logo"
+                            alt="Icon"
+                          />
+                          {{ col.value }}
+                        </div>
                       </template>
                       <template v-else> {{ col.value }}</template>
                     </q-td>
@@ -120,7 +132,7 @@
                       <div class="text-left">
                         <Progress
                           :wallets="wallets"
-                          :symbol="props.row.token"
+                          :symbol="props.row.symbol"
                           :price="props.row.price"
                           :totalBalance="props.row.balance"
                         />
@@ -156,7 +168,7 @@ import { numberToFixed } from "@/utils/math"
 import { showMessageError } from "@/utils/message"
 import type { EChartsType } from "echarts"
 import * as echarts from "echarts"
-import { computed, onMounted, ref, watch } from "vue"
+import { computed, onMounted, ref } from "vue"
 
 const echartsContainer = ref<null>(null)
 let chart = <EChartsType>{} // 如果使用ref会导致无法显示tooltip，例如数据不会显示。
@@ -205,10 +217,10 @@ const shortcuts = [
 
 const columns: TableColumn[] = [
   {
-    name: "token",
+    name: "symbol",
     required: true,
-    label: "Tokens",
-    field: "token",
+    label: "Assets",
+    field: "symbol",
     align: "left",
   },
   {
@@ -247,68 +259,21 @@ const columns: TableColumn[] = [
 
 const wallets = ref<Wallet[]>([])
 const rate = ref(1)
-const rows = ref<any[]>([
-  {
-    token: "ICP",
-    balance: 0,
-    cost: 0,
-    price: 0,
-    value: "0",
-  },
-])
-
-onMounted(async () => {
-  //如果获取汇率的过程中发生了错误或者返回的结果中没有汇率，则使用原值
-  rate.value = (await getUserCurrencyRate()).rate || rate.value
-  initECharts()
-  getWallet()
-  getICPPrice()
+//将 tokenSummary 转换为适合 q-table 的行数据格式
+const rows = computed(() => {
+  return Object.keys(tokenSummary.value).map((symbol) => ({
+    symbol: symbol,
+    price: tokenSummary.value[symbol].price,
+    logo: tokenSummary.value[symbol].logo,
+    balance: tokenSummary.value[symbol].totalBalance,
+    value: tokenSummary.value[symbol].totalValue,
+  }))
 })
-
-const getBalance = async (
-  address: string,
-  principal: string,
-  walletName: string,
-) => {
-  //获取用户当前钱包资产
-  const balance = await getICPBalance(address)
-  const res = await getICPNowPrice()
-  //需要用到price作为计算，这里还没法将它直接转换为字符串的货币符号
-  const ICPPrice = numberToFixed(res * rate.value, 2)
-  const tokens = [
-    {
-      symbol: "ICP",
-      logo: "",
-      balance: balance,
-      price: ICPPrice,
-      value: numberToFixed(balance * ICPPrice, 2),
-    },
-  ]
-  if (principal) {
-    const icrc1 = await getICRC1Balance(principal)
-    console.log("icrc1", icrc1)
-    icrc1.map((token) => {
-      tokens.push(token)
-    })
-  }
-  wallets.value.push({
-    address: address,
-    name: walletName,
-    tokens: tokens,
-  })
-  console.log("wallets", wallets.value)
-  console.log("tokenSummary", tokenSummary.value)
-}
-
-const getICRC1 = (principal: string) => {
-  getICRC1Balance(principal)
-}
 const tokenSummary = computed(() => {
   const summary: Record<
     string,
     { logo: string; price: number; totalBalance: number; totalValue: number }
   > = {}
-
   wallets.value.forEach((wallet) => {
     wallet.tokens.forEach((token) => {
       if (!summary[token.symbol]) {
@@ -331,31 +296,48 @@ const tokenSummary = computed(() => {
       )
     })
   })
-
   return summary
 })
-watch(
-  () => wallets.value.length,
-  () => {
-    rows.value[0].balance = Number(
-      wallets.value
-        .reduce(
-          // token[0] 目前暂为ICP
-          (total, wallet) => total + wallet.tokens[0].balance,
-          0,
-        )
-        .toFixed(8),
-    )
-    rows.value[0].value = convertCurrency(
-      Number((rows.value[0].balance * rows.value[0].price).toFixed(2)),
-    )
-  },
-)
+onMounted(async () => {
+  //如果获取汇率的过程中发生了错误或者返回的结果中没有汇率，则使用原值
+  rate.value = (await getUserCurrencyRate()).rate || rate.value
+  initECharts()
+  getWallet()
+})
 
-const getICPPrice = async () => {
+const getBalance = async (
+  address: string,
+  principal: string,
+  walletName: string,
+) => {
+  //获取用户当前钱包资产
+  const balance = await getICPBalance(address)
   const res = await getICPNowPrice()
   //需要用到price作为计算，这里还没法将它直接转换为字符串的货币符号
-  rows.value[0].price = Number((res * rate.value).toFixed(2))
+  const ICPPrice = numberToFixed(res * rate.value, 2)
+  const tokens = [
+    {
+      symbol: "ICP",
+      logo: "/frontend/assets/dfinity.svg",
+      balance: balance,
+      price: ICPPrice,
+      value: numberToFixed(balance * ICPPrice, 2),
+    },
+  ]
+  if (principal) {
+    const icrc1 = await getICRC1Balance(principal)
+    console.log("icrc1", icrc1)
+    icrc1.map((token) => {
+      tokens.push(token)
+    })
+  }
+  wallets.value.push({
+    address: address,
+    name: walletName,
+    tokens: tokens,
+  })
+  console.log("wallets", wallets.value)
+  console.log("tokenSummary", tokenSummary.value)
 }
 
 const getWallet = async () => {
@@ -512,4 +494,8 @@ const changeDate = () => {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.token-symbol {
+  font-size: 16px;
+}
+</style>

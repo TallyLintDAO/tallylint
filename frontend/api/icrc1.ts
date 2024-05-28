@@ -1,7 +1,12 @@
 import type { Details } from ".dfx/ic/canisters/backend/backend.did"
 import { initAuth } from "@/api/auth"
 import { MILI_PER_SECOND } from "@/api/constants/ic"
-import type { Currency, IRCR1Price, InferredTransaction } from "@/types/tokens"
+import type {
+  Currency,
+  ICRC1BalanceResult,
+  IRCR1Price,
+  InferredTransaction,
+} from "@/types/tokens"
 import type { WalletTag } from "@/types/user"
 import { TTL, getCache } from "@/utils/cache"
 import { currencyCalculate } from "@/utils/common"
@@ -17,21 +22,20 @@ const radixNumber = 4 //保留4位小数
 
 export const getICRC1Balance = async (
   principalId: string,
-): Promise<BalanceResult> => {
+): Promise<ICRC1BalanceResult[]> => {
   const tokenList = getTokenListWithoutICP()
   if (!tokenList) {
     return []
   }
-  const promises = tokenList.map(async (token): Promise<BalanceResult> => {
-    console.log("token", token)
+  const promises = tokenList.map(async (token): Promise<ICRC1BalanceResult> => {
     try {
       const can = await ic(token.canisters.ledger)
-      // icrc1_balance_of: (record {owner:principal; subaccount:opt vec nat8}) → (nat) query
+      // Ledger Canister Method,
+      // *icrc1_balance_of: (record { owner: principal; subaccount:opt vec nat8 }) → (nat) query
       const resBalance = await can.icrc1_balance_of({
         owner: Principal.fromText(principalId),
       })
       const balance = currencyCalculate(resBalance, token.decimals)
-      console.log(`${token.symbol} balance:`, balance)
       const price = await matchICRC1Price(Date.now(), token.canisters.ledger)
       const value = numberToFixed(balance * price, 2)
       return {
@@ -42,24 +46,20 @@ export const getICRC1Balance = async (
         value,
       }
     } catch (e) {
-      console.error("e", e)
-      return { symbol: token.symbol, error: e } // Return error information along with the token
+      const error = e instanceof Error ? e : new Error(String(e))
+      console.error(`Error with token ${token.symbol}:`, error)
+      return {
+        symbol: token.symbol,
+        logo: token.meta.logo,
+        balance: 0,
+        price: 0,
+        value: 0,
+        error,
+      }
     }
   })
 
   const tokens = await Promise.all(promises)
-  tokens.forEach((token) => {
-    if (token.error) {
-      console.error(`Error with token ${token.symbol}:`, token.error)
-    } else {
-      console.log(
-        `${token.symbol} balance:`,
-        token.balance,
-        `value:`,
-        token.value,
-      )
-    }
-  })
   return tokens
 }
 

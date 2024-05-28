@@ -53,8 +53,9 @@ export type SyncedTransaction = {
   manual: boolean
 }
 
-interface BalanceResult {
-  token: ICRC1Info
+export type ICRC1BalanceResult = {
+  symbol: string
+  logo: string
   balance: number
   price: number
   value: number
