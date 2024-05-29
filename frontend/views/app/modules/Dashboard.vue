@@ -74,7 +74,7 @@
               <q-table
                 :rows="rows"
                 :columns="columns"
-                row-key="name"
+                row-key="symbol"
                 :rowsPerPageOptions="[0]"
                 hide-pagination
                 flat
@@ -269,6 +269,7 @@ const rows = computed(() => {
     value: tokenSummary.value[symbol].totalValue,
   }))
 })
+
 const tokenSummary = computed(() => {
   const summary: Record<
     string,
