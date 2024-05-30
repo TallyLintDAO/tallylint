@@ -13,10 +13,10 @@ export function calculatePercent(
   currentValue: number | bigint,
   totalValue: number | bigint,
 ): number {
-  currentValue = Number(currentValue)
-  totalValue = Number(totalValue)
-  const percent = (currentValue / totalValue) * 100
-  return Number((percent >= 100 ? 100 : percent).toFixed(2))
+  const percent = (Number(currentValue) / Number(totalValue)) * 100
+  //使用 Number.isFinite 来处理分母为零的情况
+  //当 totalValue 为 0 时，percent 将会是 Infinity 或 NaN，Number.isFinite 会返回 false。
+  return Number.isFinite(percent) ? Math.min(100, +percent.toFixed(2)) : 0
 }
 //二分法匹配ICP交易价格
 export function binarySearchClosestICPPrice(

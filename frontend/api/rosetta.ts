@@ -14,6 +14,9 @@ import type {
 } from "@/types/user"
 import { currencyCalculate } from "@/utils/common"
 import { showMessageError } from "@/utils/message"
+import { getTokenListWithoutICP } from "@/utils/storage"
+import { matchICRC1Price } from "./icrc1"
+import { fetchAllSyncTransactions } from "./user"
 
 const radixNumber = 4 //保留4位小数
 
@@ -298,22 +301,20 @@ export const getAllWalletDailyBalance = async (
 ): Promise<DailyBalance> => {
   //先获取所有历史记录，再统计钱包余额
   const walletPromises = wallets.map(async (wallet) => {
-    const res = await getICPTransactions(
-      {
-        id: Number(wallet.id),
-        address: wallet.address,
-        principal: wallet.principal_id,
-        name: wallet.name,
-        from: wallet.from,
-      },
-      true,
-    )
-    return res.transactions
+    const res = await fetchAllSyncTransactions({
+      id: Number(wallet.id),
+      address: wallet.address,
+      principal: wallet.principal_id,
+      name: wallet.name,
+      from: wallet.from,
+    })
+    return res
   })
   // allWalletHistories 包含了所有钱包的历史记录数组
   const allWalletHistories: InferredTransaction[] = (
     await Promise.all(walletPromises)
   ).flat()
+  console.log("allWalletHistories", allWalletHistories)
   let dailyBalance: DailyBalance = {}
   // 对所有历史记录按时间戳进行排序
   allWalletHistories.sort((a, b) => a.timestamp - b.timestamp)
@@ -380,6 +381,7 @@ export const getAllWalletDailyBalance = async (
 export const getDailyBalanceValue = async (
   dailyBalance: DailyBalance,
 ): Promise<number[]> => {
+  const tokenList = getTokenListWithoutICP()
   const dates = Object.keys(dailyBalance)
   let balances: number[] = []
   for (const day of dates) {
@@ -397,9 +399,19 @@ export const getDailyBalanceValue = async (
         tokenPrice = await matchICPPrice(date.getTime())
       } else {
         //ICRC1 token
+        const ledgerId = tokenList.find((item) => item.symbol === token)
+          ?.canisters.ledger
+        if (ledgerId) {
+          tokenPrice = await matchICRC1Price(date.getTime(), ledgerId)
+        } else {
+          showMessageError(
+            `Can't find ${token} ledger canister id, maybe something is going wrong`,
+          )
+        }
       }
       //计算价值
       value += balanceInfo[token].amount * tokenPrice
+      console.log("tokenPrice", value, token, tokenPrice)
     }
     balances.push(Number(value.toFixed(2)))
   }

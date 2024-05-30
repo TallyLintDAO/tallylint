@@ -327,7 +327,6 @@ const getBalance = async (
   ]
   if (principal) {
     const icrc1 = await getICRC1Balance(principal)
-    console.log("icrc1", icrc1)
     icrc1.map((token) => {
       tokens.push(token)
     })
@@ -337,8 +336,6 @@ const getBalance = async (
     name: walletName,
     tokens: tokens,
   })
-  console.log("wallets", wallets.value)
-  console.log("tokenSummary", tokenSummary.value)
 }
 
 const getWallet = async () => {

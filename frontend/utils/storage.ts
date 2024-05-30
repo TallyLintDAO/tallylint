@@ -69,17 +69,17 @@ export const getTokenList = (): ICRC1Info[] | null => {
 }
 
 //去除ICP的token list。
-export const getTokenListWithoutICP = (): ICRC1Info[] | null => {
+export const getTokenListWithoutICP = (): ICRC1Info[] => {
   initICPTokenCache()
   const info = localStorage.getItem(`USER_TOKEN_LIST`)
-  if (null == info) return null
+  if (null == info) return []
   try {
     const data = JSON.parse(info) as ICRC1Info[]
     return data.filter((token) => token.symbol !== "ICP")
   } catch (e) {
     console.error(`read user token list failed:`, e)
   }
-  return null
+  return []
 }
 
 //默认储存ICP作为tokenlist的第一位
