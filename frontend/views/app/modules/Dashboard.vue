@@ -72,9 +72,11 @@
                 Holdings
               </q-item-label>
               <q-table
+                ref="holdings"
                 :rows="rows"
                 :columns="columns"
                 row-key="symbol"
+                column-sort-order="da"
                 :rowsPerPageOptions="[0]"
                 hide-pagination
                 flat
@@ -168,6 +170,7 @@ import { numberToFixed } from "@/utils/math"
 import { showMessageError } from "@/utils/message"
 import type { EChartsType } from "echarts"
 import * as echarts from "echarts"
+import type { QTable } from "quasar"
 import { computed, onMounted, ref } from "vue"
 
 const echartsContainer = ref<null>(null)
@@ -259,6 +262,7 @@ const columns: TableColumn[] = [
 
 const wallets = ref<Wallet[]>([])
 const rate = ref(1)
+const holdings = ref<QTable>()
 //将 tokenSummary 转换为适合 q-table 的行数据格式
 const rows = computed(() => {
   return Object.keys(tokenSummary.value).map((symbol) => ({
@@ -302,6 +306,8 @@ const tokenSummary = computed(() => {
 onMounted(async () => {
   //如果获取汇率的过程中发生了错误或者返回的结果中没有汇率，则使用原值
   rate.value = (await getUserCurrencyRate()).rate || rate.value
+  //默认以value列作为排序，最高的value排最上面
+  holdings.value?.sort("value")
   initECharts()
   getWallet()
 })
@@ -387,7 +393,7 @@ const getWallet = async () => {
       },
       series: [
         {
-          name: "Value",
+          name: "Value ($)",
           type: "line",
           symbol: "none",
           smooth: true,

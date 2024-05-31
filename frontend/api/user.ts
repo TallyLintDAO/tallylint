@@ -214,7 +214,7 @@ export async function fetchAllSyncTransactions(
   let transactions: TransactionF[] = []
   const res = await getICPTransactions(wallet, true)
   transactions = res.transactions
-  console.log("wallet", wallet)
+  // console.log("wallet", wallet)
   if (tokenList && wallet.principal[0]) {
     const noICPTokenList = tokenList.filter((token) => token.symbol !== "ICP")
     for (let index = 0; index < noICPTokenList.length; index++) {
@@ -229,7 +229,7 @@ export async function fetchAllSyncTransactions(
         token.canisters.ledger,
         currency,
       )
-      console.log("icrcRes", currency, icrcArray)
+      // console.log("icrcRes", currency, icrcArray)
       // 合并数组
       transactions = transactions.concat(icrcArray)
     }

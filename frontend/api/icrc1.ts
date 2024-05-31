@@ -92,7 +92,6 @@ export const getTransactionsICRC1 = async (
     })
 
     const transactionsInfo = ICRC1getTransactions.transactions
-    console.log("getTransactionsICRC1", transactionsInfo)
     ICRCTransactions = await Promise.all(
       transactionsInfo.map((transaction) => {
         return formatICRC1Transaction(

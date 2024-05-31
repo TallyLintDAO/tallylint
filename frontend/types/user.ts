@@ -81,7 +81,13 @@ export interface Wallet {
 }
 
 export interface DailyBalance {
-  [date: string]: { [symbol: string]: { amount: number; value: number } }
+  [date: string]: {
+    [symbol: string]: {
+      amount: number
+      value: number
+      ledgerCanisterId: string
+    }
+  }
 }
 
 export interface HistoryQueryParams {
