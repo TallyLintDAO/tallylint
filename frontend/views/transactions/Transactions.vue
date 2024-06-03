@@ -609,6 +609,7 @@
 
 <script lang="ts" setup>
 import { ICRC_WEBSITE, ROSETTA_WEBSITE } from "@/api/constants/ic"
+import { ICP_LOGO } from "@/api/constants/tokens"
 import { getSNSInfoCache } from "@/api/sns"
 import {
   addManualTransaction,
@@ -687,7 +688,7 @@ const tokenList = [
     symbol: "ICP",
     name: "Internet Computer",
     meta: {
-      logo: "/frontend/assets/dfinity.svg",
+      logo: ICP_LOGO,
     },
   },
 ]
