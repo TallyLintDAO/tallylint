@@ -11,7 +11,7 @@ import type { WalletTag } from "@/types/user"
 import { TTL, getCache } from "@/utils/cache"
 import { currencyCalculate } from "@/utils/common"
 import ic from "@/utils/icblast"
-import { binarySearchClosestICRC1Price, numberToFixed } from "@/utils/math"
+import { binarySearchClosestICRC1Price, processNumber } from "@/utils/math"
 import { showMessageError } from "@/utils/message"
 import { getTokenListWithoutICP } from "@/utils/storage"
 import { HttpAgent } from "@dfinity/agent"
@@ -38,7 +38,7 @@ export const getICRC1Balance = async (
       })
       const balance = currencyCalculate(resBalance, token.decimals)
       const price = await matchICRC1Price(Date.now(), token.canisters.ledger)
-      const value = numberToFixed(balance * price, 2)
+      const value = processNumber(balance * price)
       return {
         symbol: token.symbol,
         logo: token.meta.logo,
@@ -194,7 +194,7 @@ export const matchICRC1Price = async (
       priceHistory,
       Math.floor(targetTimestamp / 1000),
     ).open
-    return Number(price.toFixed(2))
+    return processNumber(price)
   } catch (error) {
     showMessageError(
       `Failed to get price history for ledgerCanisterId ${ledgerCanisterId}`,

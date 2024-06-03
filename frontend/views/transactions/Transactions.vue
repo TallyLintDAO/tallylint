@@ -35,9 +35,9 @@
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>{{ scope.opt.name }}</q-item-label>
-                  <q-item-label caption v-if="scope.opt.last_sync_time !== 0"
-                    >Synced</q-item-label
-                  >
+                  <q-item-label caption v-if="scope.opt.last_sync_time !== 0">
+                    Synced
+                  </q-item-label>
                 </q-item-section>
               </q-item>
             </template>

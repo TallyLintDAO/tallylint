@@ -16,7 +16,7 @@
 import { rate, rate_time_last_update } from "@/api/baseCurrencies"
 import { convertCurrency } from "@/utils/currencies"
 import { showCustomTimezoneDate } from "@/utils/date"
-import { numberToFixed } from "@/utils/math"
+import { processNumber } from "@/utils/math"
 import { onMounted, ref } from "vue"
 const props = defineProps({
   amount: {
@@ -26,7 +26,7 @@ const props = defineProps({
 })
 const amountConvert = ref(0)
 onMounted(async () => {
-  amountConvert.value = numberToFixed(props.amount * rate, 2)
+  amountConvert.value = processNumber(props.amount * rate)
 })
 // watch好像不需要，初始化的时候赋值已经足够
 // watch(

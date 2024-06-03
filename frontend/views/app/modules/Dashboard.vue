@@ -72,6 +72,7 @@
                 Holdings
               </q-item-label>
               <q-table
+                class="holdings"
                 ref="holdings"
                 :rows="rows"
                 :columns="columns"
@@ -166,7 +167,7 @@ import Progress from "@/components/Progress.vue"
 import type { TableColumn } from "@/types/model"
 import type { Wallet, WalletHistory } from "@/types/user"
 import { convertCurrency } from "@/utils/currencies"
-import { numberToFixed } from "@/utils/math"
+import { numberToFixed, processNumber } from "@/utils/math"
 import { showMessageError } from "@/utils/message"
 import type { EChartsType } from "echarts"
 import * as echarts from "echarts"
@@ -295,9 +296,8 @@ const tokenSummary = computed(() => {
         summary[token.symbol].totalBalance + token.balance,
         8,
       )
-      summary[token.symbol].totalValue = numberToFixed(
+      summary[token.symbol].totalValue = processNumber(
         summary[token.symbol].totalValue + token.value,
-        2,
       )
     })
   })
@@ -321,14 +321,14 @@ const getBalance = async (
   const balance = await getICPBalance(address)
   const res = await getICPNowPrice()
   //需要用到price作为计算，这里还没法将它直接转换为字符串的货币符号
-  const ICPPrice = numberToFixed(res * rate.value, 2)
+  const ICPPrice = processNumber(res * rate.value)
   const tokens = [
     {
       symbol: "ICP",
       logo: "/frontend/assets/dfinity.svg",
       balance: balance,
       price: ICPPrice,
-      value: numberToFixed(balance * ICPPrice, 2),
+      value: processNumber(balance * ICPPrice),
     },
   ]
   if (principal) {
@@ -501,5 +501,9 @@ const changeDate = () => {
 <style lang="scss" scoped>
 .token-symbol {
   font-size: 16px;
+}
+//启用展开行之后会导致qtable的行之间有隐藏的展开行，导致单纯的奇偶数无法选择正确的行，只能进行奇数行之间的隔行变色
+.holdings tbody tr:nth-of-type(4n-1) {
+  background: rgba(0, 0, 0, 0.02);
 }
 </style>

@@ -8,6 +8,19 @@ export const numberToFixed = (
   return Number(amount.toFixed(toFixedNumber))
 }
 
+//小于0.001则保留三位有效数字，大于则保留三位小数
+export const processNumber = (num: number): number => {
+  if (isNaN(num)) {
+    return NaN
+  }
+
+  if (num < 0.001) {
+    return Number(num.toPrecision(3))
+  } else {
+    return Number(num.toFixed(3))
+  }
+}
+
 // 将目标数值和现有数值转化为百分比（保留2位小数），满100%则计算为100%
 export function calculatePercent(
   currentValue: number | bigint,
