@@ -154,6 +154,7 @@
 
 <script lang="ts" setup>
 import { getUserCurrencyRate } from "@/api/baseCurrencies"
+import { ICP_LOGO } from "@/api/constants/tokens"
 import { getICRC1Balance } from "@/api/icrc1"
 import {
   getAllWalletDailyBalance,
@@ -325,7 +326,7 @@ const getBalance = async (
   const tokens = [
     {
       symbol: "ICP",
-      logo: "/frontend/assets/dfinity.svg",
+      logo: ICP_LOGO,
       balance: balance,
       price: ICPPrice,
       value: processNumber(balance * ICPPrice),
