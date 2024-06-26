@@ -170,6 +170,7 @@ import type { Wallet, WalletHistory } from "@/types/user"
 import { convertCurrency } from "@/utils/currencies"
 import { numberToFixed, processNumber } from "@/utils/math"
 import { showMessageError } from "@/utils/message"
+import { getNFTCollections } from "@/utils/nft"
 import type { EChartsType } from "echarts"
 import * as echarts from "echarts"
 import type { QTable } from "quasar"
@@ -311,6 +312,9 @@ onMounted(async () => {
   holdings.value?.sort("value")
   initECharts()
   getWallet()
+  getNFTCollections(
+    "34a6b-pl5tx-mpxgn-bnucu-tiwis-qxbqu-pilo5-lmnt7-fa7yk-ng22p-yae",
+  )
 })
 
 const getBalance = async (
