@@ -18,9 +18,16 @@
       <div class="footer-bottom-left col-auto">
         <p>© TaxLint 2023-2024. All Rights Reserved.</p>
       </div>
-      <div class="footer-bottom-right col-auto row items-center">
-        <a href="https://discord.gg/2q72rBYB5C" target="_Blank">
-          <q-icon class="cursor-pointer" size="md" name="discord" />
+      <div class="footer-bottom-right col-auto row items-center q-gutter-md">
+        <q-chip icon="bookmark">give us more suggestions!</q-chip>
+        <a :href="DISCORD_URL" target="_Blank">
+          <q-icon class="cursor-pointer" size="sm" name="discord" />
+        </a>
+        <a :href="X_URL" target="_Blank">
+          <q-icon class="cursor-pointer" size="sm" name="bi-twitter-x" />
+        </a>
+        <a :href="GITHUB_URL" target="_Blank">
+          <q-icon class="cursor-pointer" size="sm" name="bi-github" />
         </a>
       </div>
     </div>
@@ -28,7 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-import { DOCS_URL } from "@/api/constants/docs"
+import { DISCORD_URL, DOCS_URL, GITHUB_URL, X_URL } from "@/api/constants/docs"
 </script>
 
 <style lang="scss" scoped>
@@ -39,6 +46,9 @@ import { DOCS_URL } from "@/api/constants/docs"
 .footer-link {
   color: rgb(107 114 128);
   text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .footer-bottom {
@@ -47,14 +57,11 @@ import { DOCS_URL } from "@/api/constants/docs"
   padding-top: 1rem;
   font-size: 0.875rem;
   color: #666;
-}
-
-.footer-bottom-right .footer-link {
-  color: #666;
-  text-decoration: none;
-}
-
-.footer-link:hover {
-  text-decoration: underline;
+  a {
+    color: rgba(0, 0, 0, 0.6);
+    &:hover {
+      color: rgba(0, 0, 0, 0.8);
+    }
+  }
 }
 </style>

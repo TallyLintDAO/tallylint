@@ -65,7 +65,7 @@
           </q-item>
         </q-list>
         <div class="bottom-icon q-pa-md">
-          <a href="https://discord.gg/2q72rBYB5C" target="_Blank">
+          <a :href="DISCORD_URL" target="_Blank">
             <q-icon class="cursor-pointer" size="md" name="discord" />
           </a>
         </div>
@@ -83,6 +83,7 @@
 <script lang="ts" setup>
 import { initAuth, signOut } from "@/api/auth"
 import { clearCurrentIdentity, setCurrentIdentity } from "@/api/canister_pool"
+import { DISCORD_URL } from "@/api/constants/docs"
 import { getUserAutoRegister } from "@/api/user"
 import { goHome } from "@/router/routers"
 import { useUserStore } from "@/stores/user"

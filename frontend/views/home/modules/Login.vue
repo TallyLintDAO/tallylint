@@ -14,32 +14,23 @@
           >In TaxLint, which is 100% on-chain, users get a decentralised,
           private and secure tax experience.</span
         >
+        <div class="button-container">
+          <q-btn
+            color="primary"
+            class="login-button"
+            @click="onLogin()"
+            :loading="loading"
+            no-caps
+          >
+            Launch app
+          </q-btn>
+        </div>
       </div>
       <div class="col">
         <q-img src="@/assets/images/profit.png"></q-img>
       </div>
     </div>
-    <h5 style="margin: 0">Login to access our app</h5>
-    <div class="q-gutter-sm row items-center">
-      <q-btn
-        color="primary"
-        class="login-button"
-        @click="onLogin()"
-        :loading="loading"
-        no-caps
-      >
-        Launch app
-      </q-btn>
-    </div>
-    <div class="q-mt-sm">
-      <a href="https://discord.gg/2q72rBYB5C" target="_Blank">
-        <q-icon class="cursor-pointer" size="md" name="discord" />
-      </a>
-      <q-chip icon="bookmark">give us more suggestions!</q-chip>
-    </div>
-    <!--<q-banner inline-actions class="text-white bg-red q-mt-md">-->
-    <!--Alpha Warning: there may be issues.-->
-    <!--</q-banner>-->
+    <div class="q-gutter-sm row items-center"></div>
   </div>
 </template>
 
