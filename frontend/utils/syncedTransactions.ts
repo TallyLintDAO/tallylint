@@ -1,9 +1,9 @@
 import type { Details } from ".dfx/ic/canisters/backend/backend.did"
 import { getUserCurrencyRate } from "@/api/baseCurrencies"
 import { getSyncedTransactions } from "@/api/user"
-import type { SyncedTransaction } from "@/types/sns"
+import type { SyncedTransaction } from "@/types/tokens"
 import type { WalletTag } from "@/types/user"
-import { numberToFixed } from "./math"
+import { processNumber } from "./math"
 
 //批量获取多个地址的交易记录
 export const getAllSyncedTransactions = async (
@@ -30,10 +30,10 @@ export const getAllSyncedTransactions = async (
       timestamp: Number(transaction.timestamp),
       details: {
         ...transaction.details,
-        price: numberToFixed(transaction.details.price * rate, 2),
-        cost: numberToFixed(transaction.details.cost * rate, 2),
-        profit: numberToFixed(transaction.details.profit * rate, 2),
-        value: numberToFixed(transaction.details.value * rate, 2),
+        price: processNumber(transaction.details.price * rate),
+        cost: processNumber(transaction.details.cost * rate),
+        profit: processNumber(transaction.details.profit * rate),
+        value: processNumber(transaction.details.value * rate),
       },
     }))
     return { total: transactions.length, transactions: transactions }

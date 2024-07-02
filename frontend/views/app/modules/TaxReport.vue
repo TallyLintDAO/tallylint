@@ -168,7 +168,7 @@
 import { rate } from "@/api/baseCurrencies"
 import { getUserConfig, getUserTaxProfit, getUserWalletsTag } from "@/api/user"
 import CurrencyUSD from "@/components/CurrencyUSD.vue"
-import type { SyncedTransaction } from "@/types/sns"
+import type { SyncedTransaction } from "@/types/tokens"
 import type { TaxReportData, UserConfig } from "@/types/user"
 import { YearTimestamp, getYearTimestamps } from "@/utils/date"
 import { numberToFixed } from "@/utils/math"
@@ -334,3 +334,4 @@ const exportToCSV = async () => {
   }
 }
 </style>
+@/types/token

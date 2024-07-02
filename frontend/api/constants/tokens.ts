@@ -1,6 +1,7 @@
 import icpLogo from "@/assets/dfinity.svg"
 import { LEDGER_CANISTER_ID } from "./ic"
 
+export const ICP_LOGO = icpLogo
 export const TOKENS = {
   ICP: {
     canisters: {

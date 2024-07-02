@@ -1,4 +1,4 @@
-import type { ICRC1Info } from "@/types/sns"
+import type { ICRC1Info } from "@/types/tokens"
 import { TTL, getCache } from "@/utils/cache"
 import { showMessageError } from "@/utils/message"
 import axios from "axios"

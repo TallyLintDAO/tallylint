@@ -72,9 +72,12 @@
                 Holdings
               </q-item-label>
               <q-table
+                class="holdings"
+                ref="holdings"
                 :rows="rows"
                 :columns="columns"
-                row-key="name"
+                row-key="symbol"
+                column-sort-order="da"
                 :rowsPerPageOptions="[0]"
                 hide-pagination
                 flat
@@ -109,8 +112,20 @@
                       :key="col.name"
                       :props="props"
                     >
-                      <template v-if="col.name === 'price'">
+                      <template
+                        v-if="col.name === 'price' || col.name === 'value'"
+                      >
                         {{ convertCurrency(col.value) }}
+                      </template>
+                      <template v-else-if="col.name === 'symbol'">
+                        <div class="flex-y-center token-symbol">
+                          <img
+                            class="selected-icon q-mr-xs"
+                            :src="props.row.logo"
+                            alt="Icon"
+                          />
+                          {{ col.value }}
+                        </div>
                       </template>
                       <template v-else> {{ col.value }}</template>
                     </q-td>
@@ -120,9 +135,9 @@
                       <div class="text-left">
                         <Progress
                           :wallets="wallets"
-                          :symbol="props.row.token"
+                          :symbol="props.row.symbol"
                           :price="props.row.price"
-                          :totalBalance="icpBalance"
+                          :totalBalance="props.row.balance"
                         />
                       </div>
                     </q-td>
@@ -139,6 +154,8 @@
 
 <script lang="ts" setup>
 import { getUserCurrencyRate } from "@/api/baseCurrencies"
+import { ICP_LOGO } from "@/api/constants/tokens"
+import { getICRC1Balance } from "@/api/icrc1"
 import {
   getAllWalletDailyBalance,
   getDailyBalanceValue,
@@ -151,10 +168,13 @@ import Progress from "@/components/Progress.vue"
 import type { TableColumn } from "@/types/model"
 import type { Wallet, WalletHistory } from "@/types/user"
 import { convertCurrency } from "@/utils/currencies"
+import { numberToFixed, processNumber } from "@/utils/math"
 import { showMessageError } from "@/utils/message"
+import { getNFTCollections } from "@/utils/nft"
 import type { EChartsType } from "echarts"
 import * as echarts from "echarts"
-import { onMounted, ref, watch } from "vue"
+import type { QTable } from "quasar"
+import { computed, onMounted, ref } from "vue"
 
 const echartsContainer = ref<null>(null)
 let chart = <EChartsType>{} // 如果使用ref会导致无法显示tooltip，例如数据不会显示。
@@ -203,10 +223,10 @@ const shortcuts = [
 
 const columns: TableColumn[] = [
   {
-    name: "token",
+    name: "symbol",
     required: true,
-    label: "Tokens",
-    field: "token",
+    label: "Assets",
+    field: "symbol",
     align: "left",
   },
   {
@@ -244,56 +264,89 @@ const columns: TableColumn[] = [
 ]
 
 const wallets = ref<Wallet[]>([])
-const icpBalance = ref(0)
 const rate = ref(1)
-const rows = ref<any[]>([
-  {
-    token: "ICP",
-    balance: 0,
-    cost: 0,
-    price: 0,
-    value: "0",
-  },
-])
+const holdings = ref<QTable>()
+//将 tokenSummary 转换为适合 q-table 的行数据格式
+const rows = computed(() => {
+  return Object.keys(tokenSummary.value).map((symbol) => ({
+    symbol: symbol,
+    price: tokenSummary.value[symbol].price,
+    logo: tokenSummary.value[symbol].logo,
+    balance: tokenSummary.value[symbol].totalBalance,
+    value: tokenSummary.value[symbol].totalValue,
+  }))
+})
 
+const tokenSummary = computed(() => {
+  const summary: Record<
+    string,
+    { logo: string; price: number; totalBalance: number; totalValue: number }
+  > = {}
+  wallets.value.forEach((wallet) => {
+    wallet.tokens.forEach((token) => {
+      if (!summary[token.symbol]) {
+        summary[token.symbol] = {
+          price: 0,
+          logo: "",
+          totalBalance: 0,
+          totalValue: 0,
+        }
+      }
+      summary[token.symbol].price = token.price
+      summary[token.symbol].logo = token.logo
+      summary[token.symbol].totalBalance = numberToFixed(
+        summary[token.symbol].totalBalance + token.balance,
+        8,
+      )
+      summary[token.symbol].totalValue = processNumber(
+        summary[token.symbol].totalValue + token.value,
+      )
+    })
+  })
+  return summary
+})
 onMounted(async () => {
   //如果获取汇率的过程中发生了错误或者返回的结果中没有汇率，则使用原值
   rate.value = (await getUserCurrencyRate()).rate || rate.value
+  //默认以value列作为排序，最高的value排最上面
+  holdings.value?.sort("value")
   initECharts()
   getWallet()
-  getICPPrice()
+  getNFTCollections(
+    "34a6b-pl5tx-mpxgn-bnucu-tiwis-qxbqu-pilo5-lmnt7-fa7yk-ng22p-yae",
+  )
 })
 
-const getBalance = async (address: string, walletName: string) => {
+const getBalance = async (
+  address: string,
+  principal: string,
+  walletName: string,
+) => {
   //获取用户当前钱包资产
   const balance = await getICPBalance(address)
-  console.log(address + " balance: ", balance)
+  const res = await getICPNowPrice()
+  //需要用到price作为计算，这里还没法将它直接转换为字符串的货币符号
+  const ICPPrice = processNumber(res * rate.value)
+  const tokens = [
+    {
+      symbol: "ICP",
+      logo: ICP_LOGO,
+      balance: balance,
+      price: ICPPrice,
+      value: processNumber(balance * ICPPrice),
+    },
+  ]
+  if (principal) {
+    const icrc1 = await getICRC1Balance(principal)
+    icrc1.map((token) => {
+      tokens.push(token)
+    })
+  }
   wallets.value.push({
     address: address,
     name: walletName,
-    tokens: [{ symbol: "ICP", balance: balance }],
+    tokens: tokens,
   })
-}
-
-watch(
-  () => wallets.value.length,
-  () => {
-    icpBalance.value = wallets.value.reduce(
-      // token[0] 目前暂为ICP
-      (total, wallet) => total + wallet.tokens[0].balance,
-      0,
-    )
-    rows.value[0].balance = icpBalance.value.toFixed(8)
-    rows.value[0].value = convertCurrency(
-      Number((rows.value[0].balance * rows.value[0].price).toFixed(2)),
-    )
-  },
-)
-
-const getICPPrice = async () => {
-  const res = await getICPNowPrice()
-  //需要用到price作为计算，没法将它直接转换为货币符号
-  rows.value[0].price = Number((res * rate.value).toFixed(2))
 }
 
 const getWallet = async () => {
@@ -305,7 +358,12 @@ const getWallet = async () => {
       //TODO 这里作为BREAKDOWN的数值，有bug，多个钱包的资产总值没有计算，而下面的echarts图表没有bug，已经计算了。
       //将用户的每个钱包地址下的交易记录查出来，并总和到一起
       const walletHistory = await getWalletHistory(walletInfo.address)
-      getBalance(walletInfo.address, walletInfo.name)
+      getBalance(
+        walletInfo.address,
+        walletInfo.principal_id[0],
+        walletInfo.name,
+      )
+
       totalHistory.value = totalHistory.value.concat(walletHistory.history)
       //IC一次性查询不能超过一千条
       isTransactionTooMany.value = walletInfo.transactions >= 1000
@@ -340,7 +398,7 @@ const getWallet = async () => {
       },
       series: [
         {
-          name: "Value",
+          name: "Value ($)",
           type: "line",
           symbol: "none",
           smooth: true,
@@ -445,4 +503,12 @@ const changeDate = () => {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.token-symbol {
+  font-size: 16px;
+}
+//启用展开行之后会导致qtable的行之间有隐藏的展开行，导致单纯的奇偶数无法选择正确的行，只能进行奇数行之间的隔行变色
+.holdings tbody tr:nth-of-type(4n-1) {
+  background: rgba(0, 0, 0, 0.02);
+}
+</style>

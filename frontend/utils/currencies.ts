@@ -1,5 +1,5 @@
 import { getUserConfig } from "@/api/user"
-import { numberToFixed } from "./math"
+import { processNumber } from "./math"
 
 export interface baseCurrency {
   code: string
@@ -77,11 +77,12 @@ getCurrencyCode()
 //将数字转换为对应货币适合的格式，且添加对应的货币符号
 export const convertCurrency = (amount: number): string => {
   // 此方法应用于展示金额时更改样式和增加货币代码， rate应在展示之前，刚获取数据时进行修改，而不是在这里。
-  const amountConverted = numberToFixed(amount, 2)
+  const amountConverted = processNumber(amount)
   //设置为undefined，不对地区做限制
   const formattedAmount = new Intl.NumberFormat(undefined, {
     style: "currency",
     currency: currencyCode,
+    maximumFractionDigits: 4, //最大保留4位小数
   }).format(amountConverted)
   // 如果货币代码为 USD，则去除 "US" 字样，只保留美元符号
   if (currencyCode === "USD") {

@@ -35,9 +35,9 @@
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>{{ scope.opt.name }}</q-item-label>
-                  <q-item-label caption v-if="scope.opt.last_sync_time !== 0"
-                    >Synced</q-item-label
-                  >
+                  <q-item-label caption v-if="scope.opt.last_sync_time !== 0">
+                    Synced
+                  </q-item-label>
                 </q-item-section>
               </q-item>
             </template>
@@ -609,6 +609,7 @@
 
 <script lang="ts" setup>
 import { ICRC_WEBSITE, ROSETTA_WEBSITE } from "@/api/constants/ic"
+import { ICP_LOGO } from "@/api/constants/tokens"
 import { getSNSInfoCache } from "@/api/sns"
 import {
   addManualTransaction,
@@ -619,7 +620,7 @@ import {
   setTransactionTag,
 } from "@/api/user"
 import CurrencyUSD from "@/components/CurrencyUSD.vue"
-import type { ICRC1Info, SyncedTransaction } from "@/types/sns"
+import type { ICRC1Info, SyncedTransaction } from "@/types/tokens"
 import type { WalletTag } from "@/types/user"
 import { showUsername } from "@/utils/avatars"
 import { showCustomTimezoneDate, showCustomTimezoneTime } from "@/utils/date"
@@ -687,7 +688,7 @@ const tokenList = [
     symbol: "ICP",
     name: "Internet Computer",
     meta: {
-      logo: "/frontend/assets/dfinity.svg",
+      logo: ICP_LOGO,
     },
   },
 ]
@@ -1081,3 +1082,4 @@ const toTransactionDetail = (symbol: string, hash: string) => {
   }
 }
 </style>
+@/types/token

@@ -1,5 +1,5 @@
 import type { TransactionF } from ".dfx/ic/canisters/backend/backend.did"
-import type { Currency, SyncedTransaction } from "@/types/sns"
+import type { Currency, SyncedTransaction } from "@/types/tokens"
 import type { ApiResult, ApiUserInfo } from "@/types/types"
 import type {
   HistoryQueryParams,
@@ -214,11 +214,9 @@ export async function fetchAllSyncTransactions(
   let transactions: TransactionF[] = []
   const res = await getICPTransactions(wallet, true)
   transactions = res.transactions
-  console.log("tokenList", tokenList)
-  console.log("wallet", wallet)
+  // console.log("wallet", wallet)
   if (tokenList && wallet.principal[0]) {
     const noICPTokenList = tokenList.filter((token) => token.symbol !== "ICP")
-    console.log("noICPTokenList", noICPTokenList)
     for (let index = 0; index < noICPTokenList.length; index++) {
       const token = noICPTokenList[index]
       const currency: Currency = {
@@ -231,7 +229,7 @@ export async function fetchAllSyncTransactions(
         token.canisters.ledger,
         currency,
       )
-      console.log("icrcRes", currency, icrcArray)
+      // console.log("icrcRes", currency, icrcArray)
       // 合并数组
       transactions = transactions.concat(icrcArray)
     }

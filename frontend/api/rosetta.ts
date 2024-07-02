@@ -5,7 +5,7 @@ import {
   ROSETTA_URL,
 } from "@/api/constants/ic"
 import { matchICPPrice } from "@/api/token"
-import type { InferredTransaction } from "@/types/sns"
+import type { InferredTransaction } from "@/types/tokens"
 import type {
   DailyBalance,
   WalletHistory,
@@ -14,6 +14,8 @@ import type {
 } from "@/types/user"
 import { currencyCalculate } from "@/utils/common"
 import { showMessageError } from "@/utils/message"
+import { matchICRC1Price } from "./icrc1"
+import { fetchAllSyncTransactions } from "./user"
 
 const radixNumber = 4 //保留4位小数
 
@@ -298,17 +300,14 @@ export const getAllWalletDailyBalance = async (
 ): Promise<DailyBalance> => {
   //先获取所有历史记录，再统计钱包余额
   const walletPromises = wallets.map(async (wallet) => {
-    const res = await getICPTransactions(
-      {
-        id: Number(wallet.id),
-        address: wallet.address,
-        principal: wallet.principal_id,
-        name: wallet.name,
-        from: wallet.from,
-      },
-      true,
-    )
-    return res.transactions
+    const res = await fetchAllSyncTransactions({
+      id: Number(wallet.id),
+      address: wallet.address,
+      principal: wallet.principal_id,
+      name: wallet.name,
+      from: wallet.from,
+    })
+    return res
   })
   // allWalletHistories 包含了所有钱包的历史记录数组
   const allWalletHistories: InferredTransaction[] = (
@@ -323,6 +322,7 @@ export const getAllWalletDailyBalance = async (
       details: {
         amount,
         currency: { symbol },
+        ledgerCanisterId,
       },
       t_type,
     } = transaction
@@ -336,7 +336,11 @@ export const getAllWalletDailyBalance = async (
 
     // 初始化代币余额
     if (!dailyBalance[currentDateStr][symbol]) {
-      dailyBalance[currentDateStr][symbol] = { amount: 0, value: 0 }
+      dailyBalance[currentDateStr][symbol] = {
+        amount: 0,
+        value: 0,
+        ledgerCanisterId,
+      }
     }
     // 根据交易类型更新代币余额
     if (t_type === "RECEIVE") {
@@ -370,9 +374,27 @@ export const getAllWalletDailyBalance = async (
           )
         }
       }
+    } else {
+      // 进入else说明这里是用户的最后一笔交易。
+      // 处理最后一笔交易到今天之间的余额
+      const today = new Date()
+      const daysDifference =
+        (today.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
+
+      if (daysDifference > 0) {
+        for (let i = 1; i <= daysDifference; i++) {
+          const missingTimestamp =
+            currentDate.getTime() + i * 24 * 60 * 60 * 1000
+          const missingDate = new Date(missingTimestamp)
+          const missingDateString = missingDate.toISOString().split("T")[0]
+          // 复制最后一个交易日的代币余额，注意使用深拷贝
+          dailyBalance[missingDateString] = JSON.parse(
+            JSON.stringify(dailyBalance[currentDateStr]),
+          )
+        }
+      }
     }
   })
-
   return dailyBalance
 }
 
@@ -397,6 +419,10 @@ export const getDailyBalanceValue = async (
         tokenPrice = await matchICPPrice(date.getTime())
       } else {
         //ICRC1 token
+        tokenPrice = await matchICRC1Price(
+          date.getTime(),
+          balanceInfo[token].ledgerCanisterId,
+        )
       }
       //计算价值
       value += balanceInfo[token].amount * tokenPrice
@@ -406,6 +432,7 @@ export const getDailyBalanceValue = async (
   return balances
 }
 
+//获得当前account id所持有的icp balance
 export const getICPBalance = async (accountId: string): Promise<number> => {
   const response = await fetch(`${ROSETTA_URL}/account/balance`, {
     method: "POST",

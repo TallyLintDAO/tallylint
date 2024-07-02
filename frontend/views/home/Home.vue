@@ -2,10 +2,12 @@
   <div class="home-container">
     <Navigator />
     <Login />
+    <Footer />
   </div>
 </template>
 
 <script lang="ts" setup>
+import Footer from "@/components/home/Footer.vue"
 import Navigator from "@/components/navigator/Navigator.vue"
 import Login from "./modules/Login.vue"
 </script>

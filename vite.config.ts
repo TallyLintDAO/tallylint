@@ -9,8 +9,8 @@ import { createVitePlugins } from "./frontend/build/vite/plugins"
 import type { ViteEnv } from "./frontend/types/model"
 
 enum ConfigMode {
-  development = 1, // 防止 0 情况 if 出错
-  dev_frontend,
+  development = 1, // 防止 0 情况 if 出错 启用本地后端，只能通过匿名用户进入，并且需要对应local文件夹里的canister_id.json文件
+  dev_frontend, //本地前端，线上后端
   production,
 }
 

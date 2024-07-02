@@ -1,6 +1,5 @@
-import { LEDGER_CANISTER_ID } from "@/api/constants/ic"
 import { TOKENS } from "@/api/constants/tokens"
-import type { ICRC1Info } from "@/types/sns"
+import type { ICRC1Info } from "@/types/tokens"
 import type { UserInfo } from "@/types/user"
 
 //通用存储方法
@@ -60,12 +59,27 @@ export const getTokenList = (): ICRC1Info[] | null => {
   const info = localStorage.getItem(`USER_TOKEN_LIST`)
   if (null == info) return null
   try {
-    const read = JSON.parse(info) as ICRC1Info[]
-    return read
+    const data = JSON.parse(info) as ICRC1Info[]
+
+    return data
   } catch (e) {
     console.error(`read user token list failed:`, e)
   }
   return null
+}
+
+//去除ICP的token list。
+export const getTokenListWithoutICP = (): ICRC1Info[] => {
+  initICPTokenCache()
+  const info = localStorage.getItem(`USER_TOKEN_LIST`)
+  if (null == info) return []
+  try {
+    const data = JSON.parse(info) as ICRC1Info[]
+    return data.filter((token) => token.symbol !== "ICP")
+  } catch (e) {
+    console.error(`read user token list failed:`, e)
+  }
+  return []
 }
 
 //默认储存ICP作为tokenlist的第一位

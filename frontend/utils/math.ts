@@ -1,4 +1,4 @@
-import type { IRCR1Price } from "@/types/sns"
+import type { IRCR1Price } from "@/types/tokens"
 
 //指定目标数字保留几位小数
 export const numberToFixed = (
@@ -8,15 +8,28 @@ export const numberToFixed = (
   return Number(amount.toFixed(toFixedNumber))
 }
 
+//小于0.001则保留三位有效数字，大于则保留三位小数
+export const processNumber = (num: number): number => {
+  if (isNaN(num)) {
+    return NaN
+  }
+
+  if (num < 0.001) {
+    return Number(num.toPrecision(3))
+  } else {
+    return Number(num.toFixed(3))
+  }
+}
+
 // 将目标数值和现有数值转化为百分比（保留2位小数），满100%则计算为100%
 export function calculatePercent(
   currentValue: number | bigint,
   totalValue: number | bigint,
 ): number {
-  currentValue = Number(currentValue)
-  totalValue = Number(totalValue)
-  const percent = (currentValue / totalValue) * 100
-  return Number((percent >= 100 ? 100 : percent).toFixed(2))
+  const percent = (Number(currentValue) / Number(totalValue)) * 100
+  //使用 Number.isFinite 来处理分母为零的情况
+  //当 totalValue 为 0 时，percent 将会是 Infinity 或 NaN，Number.isFinite 会返回 false。
+  return Number.isFinite(percent) ? Math.min(100, +percent.toFixed(2)) : 0
 }
 //二分法匹配ICP交易价格
 export function binarySearchClosestICPPrice(

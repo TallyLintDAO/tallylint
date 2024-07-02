@@ -29,7 +29,8 @@
               color="primary"
               label="How to import neuron"
               icon="lightbulb_outline"
-              @click="goHelp()"
+              :href="DOCS_URL + NNS_HELP"
+              target="_blank"
             />
           </el-tooltip>
         </div>
@@ -207,8 +208,6 @@ import {
   showResultError,
 } from "@/utils/message"
 import { getNNS } from "@/utils/nns"
-import { Principal } from "@dfinity/principal"
-import { SnsWrapper, initSnsWrapper } from "@dfinity/sns"
 import { QForm, copyToClipboard } from "quasar"
 import { onMounted, ref } from "vue"
 
@@ -351,23 +350,7 @@ const getHotkeyWallet = async () => {
   const res = await getNNS()
   nnsNeruons.value.push(...res)
 }
-const getSNS = async () => {
-  const snsWrapper: SnsWrapper = await initSnsWrapper({
-    rootOptions: {
-      //根容器id在dashboard 这里获取的是openchat的
-      canisterId: Principal.fromText("3e3x2-xyaaa-aaaaq-aaalq-cai"),
-    },
-  })
 
-  const { metadata: meta, swapState } = snsWrapper
-  const [metadata, token] = await meta({})
-
-  console.log("Summary data:", metadata, token)
-}
-const goHelp = () => {
-  // To DOCS: NNS Help
-  window.open(DOCS_URL + NNS_HELP)
-}
 const copyPid = () => {
   copyToClipboard(principal.value)
     .then(() => {
