@@ -8,7 +8,8 @@ import pexpect
 
 
 #### preparations
-passwd = os.getenv("DFXPASS_BTWLZ")  # data from /etc/enviroment
+# passwd = os.getenv("DFXPASS_BTWLZ")  # data from /etc/enviroment
+passwd = os.getenv("DFXPASS_YDR")  # data from /etc/enviroment
 #!WARN: default using -y tag. may empty local db and api
 deploy_local = f"dfx deploy backend -y "
 deploy_ic = f"dfx deploy backend --network ic -y"

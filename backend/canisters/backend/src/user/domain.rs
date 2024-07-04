@@ -11,7 +11,8 @@ pub struct UserProfile {
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct UserConfig {
   pub tax_method: String,
-  pub exclude_tags: Vec<String>,
+  pub base_currency: String,
+  pub time_zone: String,
 }
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct UserInfo {
@@ -32,10 +33,11 @@ impl UserProfile {
 }
 
 impl UserConfig {
-  pub fn new(tax_method: String, exclude_tags: Vec<String>) -> UserConfig {
-    UserConfig {
-      tax_method,
-      exclude_tags,
+  pub fn new(tax_method: String,base_currency:String,time_zone:String) -> UserConfig {
+    UserConfig{
+        tax_method,
+        base_currency,
+        time_zone,
     }
   }
 }

@@ -8,7 +8,7 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.backends import default_backend
 from ic.candid import encode, decode, Types
 
-with open("/home/btwl/secret/btwlz.pem", "rb") as file:
+with open("/home/ydr/secret/yindr.pem", "rb") as file:
     pem_string = file.read()
 
 url_local = "https://127.0.0.1:40010"
@@ -22,7 +22,7 @@ agent = Agent(iden, client)
 canister_id_local = "be2us-64aaa-aaaaa-qaabq-cai"
 canister_id_ic = "v7g7o-oiaaa-aaaag-qcj3q-cai"
 
-file_path = "/home/btwl/code/ic/tax_lint/backend/i_test/new_ctx_struct_all_ic_data.json"
+file_path = "/home/ydr/code/ic/tax_lint/backend/i_test/new_ctx_struct_all_ic_data.json"
 if os.path.exists(file_path):
     with open(file_path, "r") as file:
         payload_json_string = file.read()

@@ -54,8 +54,22 @@ fn set_user_config(cfg: UserConfig) -> UserConfig {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     ctx.user_service.add_config(&caller(), cfg);
-    let data = ctx.user_service.get_config(&caller());
+    let data = ctx.user_service.get_config(&caller()).unwrap();
     return data;
+  })
+}
+
+// test method to add a UserConfig data
+#[update(guard="user_owner_guard")]
+fn add_user_config()->bool{
+  STATE.with(|c| {
+    let mut ctx = c.borrow_mut();
+    ctx.user_service.add_config(&caller(), UserConfig{
+      tax_method:"lifo".to_string(),
+      base_currency:"CNY".to_string(),
+      time_zone:"UTC+8".to_string(),
+    });
+    return true;
   })
 }
 
@@ -63,7 +77,7 @@ fn set_user_config(cfg: UserConfig) -> UserConfig {
 fn get_user_config() -> UserConfig {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
-    let data = ctx.user_service.get_config(&caller());
+    let data = ctx.user_service.get_config(&caller()).unwrap();
     return data;
   })
 }

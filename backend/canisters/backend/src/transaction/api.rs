@@ -122,7 +122,10 @@ fn query_wallets_synced_transactions(
       for window in simple_trans.windows(2) {
         let a = &window[0];
         let b = &window[1];
-        assert!(a.timestamp <= b.timestamp, "Transactions are not sorted in ascending order by timestamp");
+        assert!(
+          a.timestamp <= b.timestamp,
+          "Transactions are not sorted in ascending order by timestamp"
+        );
       }
     }
     if method == String::from("date-desc") {
@@ -227,8 +230,13 @@ fn sync_transaction_record(
     for one_wallet in data {
       // FIXME
       let w_addr = ctx.wallet_service.get_addr_by_id(one_wallet.walletId);
-      ctx.trans_f_srv.delete_all_by_addr(w_addr.clone());
+      let wallet_principal = ctx.wallet_service.get_principal_by_id(one_wallet.walletId);
+
+      ctx.trans_f_srv.delete_all_by_addr(w_addr.clone(), wallet_principal.clone());
       ctx.wallet_transc_srv.delete_transaction_by_addr(&w_addr);
+      if let Some(wallet_principal) = wallet_principal {
+        ctx.wallet_transc_srv.delete_transaction_by_principal(&wallet_principal);
+      }
 
       // ! append records
       for one_rec in one_wallet.history.clone() {
@@ -269,7 +277,8 @@ fn calculate_tax() -> String {
   STATE.with(|ctx| {
     let mut ctx = ctx.borrow_mut();
     let wallets = ctx.wallet_service.get_all_addr_by_user(caller());
-    let exclued_tags = ctx.user_service.get_config(&caller()).exclude_tags;
+    //TODO 如果有panic的情况该如何处理
+    // let exclude_tags = ctx.user_service.get_config(&caller()).unwrap().exclude_tags;
 
     for one_wallet in wallets {
       let tans_map = ctx.wallet_transc_srv.query_one_wallet_trans(one_wallet);
@@ -283,22 +292,23 @@ fn calculate_tax() -> String {
       }
 
       // ! filter if got flag. air drop ...
-      let filtered_vec_data: Vec<TransactionB>;
-      if !exclued_tags.is_empty() {
-        filtered_vec_data = vec_data
-          .into_iter()
-          .filter(|one| !one.tag.iter().any(|tag| exclued_tags.contains(tag)))
-          .collect();
-        if filtered_vec_data.is_empty() {
-          return "ERROR :NO filtered TRANSACTIONS ! ".to_string();
-        }
-      } else {
-        filtered_vec_data = vec_data;
-      }
+      // let filtered_vec_data: Vec<TransactionB>;
+      // if !exclude_tags.is_empty() {
+      //   filtered_vec_data = vec_data
+      //     .into_iter()
+      //     .filter(|one| !one.tag.iter().any(|tag| exclude_tags.contains(tag)))
+      //     .collect();
+      //   if filtered_vec_data.is_empty() {
+      //     return "ERROR :NO filtered TRANSACTIONS ! ".to_string();
+      //   }
+      // } else {
+      //   filtered_vec_data = vec_data;
+      // }
 
       // ! calculate base on method: fifo lifo.
       // get tax_transac for calculation
-      let tax_transac: Vec<TransactionForTax> = filtered_vec_data
+      //replace filtered_vec_datato vec_data
+      let tax_transac: Vec<TransactionForTax> = vec_data
         .clone()
         .into_iter()
         .map(TransactionForTax::from)
@@ -306,14 +316,16 @@ fn calculate_tax() -> String {
       if tax_transac.is_empty() {
         return "ERROR :NO tax TRANSACTIONS ! ".to_string();
       }
-      let method = ctx.user_service.get_config(&caller()).tax_method;
+      //TODO 如果有panic的情况该如何处理
+      let method = ctx.user_service.get_config(&caller()).unwrap().tax_method;
       let taxed_vec_trans = calculate_gain_or_loss(tax_transac, method.clone());
       if taxed_vec_trans.is_empty() {
         return "ERROR tax calculation abort! no such calculate method ! "
           .to_string();
       }
       // map tax into transb_db
-      let trans_b = map_taxTrans_to_transB(taxed_vec_trans, filtered_vec_data);
+      //replace filtered_vec_datato vec_data
+      let trans_b = map_taxTrans_to_transB(taxed_vec_trans, vec_data);
       if trans_b.is_empty() {
         return "ERROR :NO tax-calculated trans_b TRANSACTIONS ! ".to_string();
       }

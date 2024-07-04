@@ -1,3 +1,4 @@
+use candid::error;
 #[allow(unused_imports)]
 use candid::{CandidType, Principal};
 
@@ -55,17 +56,19 @@ impl UserService {
     return "add ok".to_string();
   }
 
-  pub fn get_config(&mut self, owner: &Principal) -> UserConfig {
+  
+  pub fn get_config(&mut self, owner: &Principal) -> Result<UserConfig,String> {
     // Try to get the config
     match self.configs.get(&owner.to_string()) {
       // If the config exists, return it
-      Some(config) => config.clone(),
+      Some(config) => Ok(config.clone()),
       // If the config does not exist, set a default config and return it
-      None => {
-        let default_config = UserConfig::new("fifo".to_string(), Vec::new());
-        self.update_config(&owner, default_config.clone());
-        default_config
-      }
+      // None => {
+      //   let default_config = UserConfig::new("fifo".to_string(), );
+      //   self.update_config(&owner, default_config.clone());
+      //   default_config
+      // }
+      None => Err("Configuration not found".to_string()),
     }
   }
 

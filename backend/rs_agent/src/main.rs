@@ -61,7 +61,7 @@ async fn regular_update_canister_with_db() {
 
 fn save_payload_to_local(payload: String, time_tag: String, mode: String) {
   let filename = format!(
-    "/home/btwl/code/ic/tax_lint/db/{}/payload_{}.json",
+    "/home/ydr/code/ic/tax_lint/db/{}/payload_{}.json",
     mode, time_tag
   );
   println!("saving: {}", filename);
@@ -71,7 +71,8 @@ fn save_payload_to_local(payload: String, time_tag: String, mode: String) {
 }
 
 async fn init_agent() -> (Principal, Agent, String) {
-  let controller = String::from("btwlz");
+  //TODO get controller from env
+  let controller = String::from("yindr");
   let args: Vec<String> = env::args().collect();
   let online_mode = &args[1];
 
@@ -172,7 +173,7 @@ pub async fn build_ic_agent(url: String, identity: Box<dyn Identity>) -> Agent {
     .expect("Failed to build IC agent");
 
   if !mainnet {
-    let rk_path = "/home/btwl/code/canister_upgrader_independent2/btwlz_pk.pem";
+    let rk_path = "/home/ydr/code/canister_upgrader_independent2/yindr_pk.pem";
     let rk = read(rk_path).expect("file not exsit");
     agent.set_root_key(rk);
   }
@@ -194,7 +195,7 @@ pub fn get_dfx_identity(name: &str) -> Box<dyn Identity> {
 
 fn read_db_from_local(time_tag: String, mode: String) -> String {
   let file_name = format!(
-    "/home/btwl/code/ic/tax_lint/db/{}/payload_{}.json",
+    "/home/ydr/code/ic/tax_lint/db/{}/payload_{}.json",
     mode, time_tag
   );
   println!("reading: {}", file_name);
@@ -215,14 +216,14 @@ use std::process::{Command, Stdio};
 
 async fn exec_deploy(ic_or_local: String, time_tag: String) {
   let dst = format!(
-    "/home/btwl/code/ic/tax_lint/db/deploy_cmd/output_{}.ans",
+    "/home/ydr/code/ic/tax_lint/db/deploy_cmd/output_{}.ans",
     time_tag
   );
   let output_file = File::create(dst).expect("Could not create file");
   let mut writer = BufWriter::new(output_file);
 
   let mut child =
-    Command::new("/home/btwl/code/ic/tax_lint/backend/scripts/deploy_backend")
+    Command::new("/home/ydr/code/ic/tax_lint/backend/scripts/deploy_backend")
       .arg(ic_or_local)
       .stdout(Stdio::piped())
       .spawn()

@@ -40,7 +40,7 @@ async fn main() {
     panic!("args input err!!");
   }
 
-  let controller = String::from("btwlz");
+  let controller = String::from("yindr");
 
   let mode;
   if install_mode == "1" {
@@ -60,7 +60,7 @@ async fn main() {
   let identity = get_dfx_identity(&controller);
   let agent = build_ic_agent(url, identity).await;
   let management_canister = ManagementCanister::create(&agent);
-  let wasm_file_path = "/home/btwl/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm";
+  let wasm_file_path = "/home/ydr/code/ic/tax_lint/target/wasm32-unknown-unknown/release/backend.wasm";
   let wasm_bytes = read(wasm_file_path).expect("wasm file not exsit");
 
   // let args="0";
@@ -93,7 +93,7 @@ pub async fn build_ic_agent(url: String, identity: Box<dyn Identity>) -> Agent {
     .expect("Failed to build IC agent");
 
   if !mainnet {
-    let rk_path = "/home/btwl/code/canister_upgrader_independent2/btwlz_pk.pem";
+    let rk_path = "/home/ydr/code/canister_upgrader_independent2/yindr_pk.pem";
     let rk = read(rk_path).expect("file not exsit");
     agent.set_root_key(rk);
   }

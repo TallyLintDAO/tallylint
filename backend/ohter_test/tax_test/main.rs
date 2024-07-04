@@ -66,6 +66,32 @@ impl Product {
     gain_or_loss
   }
 }
+fn sell_hifo(&mut self, quantity: f64, price: f64) -> f64 {
+  let mut remaining = quantity;
+  let mut gain_or_loss = 0.0;
+
+  while remaining > 0.0 && !self.transactions.is_empty() {
+      // Find the transaction with the highest price
+      let max_price_index = self.transactions.iter().enumerate()
+          .max_by(|(_, a), (_, b)| a.price.partial_cmp(&b.price).unwrap())
+          .map(|(index, _)| index)
+          .unwrap();
+
+      let transaction = &mut self.transactions[max_price_index];
+      if transaction.quantity <= remaining {
+          gain_or_loss += (price - transaction.price) * transaction.quantity;
+          remaining -= transaction.quantity;
+          self.transactions.remove(max_price_index);
+      } else {
+          gain_or_loss += (price - transaction.price) * remaining;
+          transaction.quantity -= remaining;
+          remaining = 0.0;
+      }
+  }
+
+  gain_or_loss
+}
+
 
 fn calculate_gain_or_loss(
   transactions: Vec<Transaction>,
@@ -90,7 +116,12 @@ fn calculate_gain_or_loss(
             Some(product.sell_lifo(transaction.quantity, transaction.price));
           processed_transactions.push(transaction);
         }
-        _ => panic!("Invalid method! Use either \"fifo\" or \"lifo\"."),
+        "hifo" => {
+          transaction.profit =
+            Some(product.hifo(transaction.quantity, transaction.price));
+          processed_transactions.push(transaction);
+        }
+        _ => panic!("Invalid method! Please use \"fifo\" \"lifo\" or \"hifo\"."),
       }
     }
   }
@@ -195,4 +226,5 @@ fn main() {
       println!("lifo Gain or loss for this sell transaction: {}", profit);
     }
   }
+  //TODO maybe here need to write about hifo
 }

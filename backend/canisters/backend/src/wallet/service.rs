@@ -64,6 +64,11 @@ impl WalletService {
   pub fn get_addr_by_id(&mut self, id: WalletId) -> WalletAddress {
     self.wallets.get(&id).unwrap().address.clone()
   }
+  //get id from wallet
+  pub fn get_principal_by_id(&mut self, id: WalletId) -> Option<String> {
+    self.wallets.get(&id).and_then(|wallet| wallet.principal_id.clone())
+  }
+
   pub fn get_id_by_addr(&mut self, id: WalletAddress) -> WalletId {
     todo!()
   }

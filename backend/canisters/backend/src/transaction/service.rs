@@ -80,19 +80,21 @@ impl TransactionService {
     &mut self,
     id: u64,
     profile: TransactionF,
-  ) -> Result<bool, String> {
-    // if self.transactions.contains_key(&id) {
-    //   return Err("transaction record already exsit".to_string());
-    // }
+) -> Result<bool, String> {
+    if self.transactions.contains_key(&id) {
+        return Err("Transaction record already exists".to_string());
+    }
 
     self.transactions.insert(id, profile);
 
+    // 检查插入是否成功
     if self.transactions.contains_key(&id) {
-      return Ok(true);
+        return Ok(true);
     } else {
-      return Err("Insert fail. may heap overflow".to_string());
+        return Err("Insert failed. Possible heap overflow".to_string());
     }
-  }
+}
+
   pub fn new() -> Self {
     TransactionService {
       transactions: BTreeMap::new(),
@@ -106,14 +108,25 @@ impl TransactionService {
     return false;
   }
 
-  pub fn delete_all_by_addr(&mut self, addr: String) -> bool {
+  pub fn delete_all_by_addr(&mut self, addr: String, principal_id: Option<String>) -> bool {
     let keys_to_remove: Vec<u64> = self
       .transactions
       .iter()
       .filter(|(_, trans_f)| {
-        (trans_f.t_type == "SEND".to_string() && trans_f.details.from == addr)
-          || trans_f.details.to == addr
-      })
+        // 检查交易是否匹配 addr
+        let addr_match = (trans_f.t_type == "SEND" && trans_f.details.from == addr)
+            || trans_f.details.to == addr;
+
+        // 检查交易是否匹配 principal_id
+        let principal_match = if let Some(ref pid) = principal_id {
+            (trans_f.t_type == "SEND" && trans_f.details.from == *pid)
+                || trans_f.details.to == *pid
+        } else {
+            false
+        };
+
+        addr_match || principal_match
+    })
       .map(|(key, _)| *key)
       .collect();
 
@@ -123,6 +136,7 @@ impl TransactionService {
 
     true
   }
+
   pub fn delete_all_by_wid(&mut self, id: WalletId) -> bool {
     let keys_to_remove: Vec<u64> = self
       .transactions
@@ -182,6 +196,11 @@ impl WalletRecordService {
     self
       .records
       .retain(|_index, transaction| transaction.address != *addr);
+  }
+  pub fn delete_transaction_by_principal(&mut self, principal_id: &String) {
+    self
+      .records
+      .retain(|_index, transaction| transaction.address != *principal_id);
   }
 
   pub fn delete_transaction_by_id_impl(
