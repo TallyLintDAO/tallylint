@@ -2,6 +2,7 @@
   <div class="home-container">
     <Navigator />
     <Login />
+    <Feature />
     <Footer />
   </div>
 </template>
@@ -9,6 +10,7 @@
 <script lang="ts" setup>
 import Footer from "@/components/home/Footer.vue"
 import Navigator from "@/components/navigator/Navigator.vue"
+import Feature from "./modules/Feature.vue"
 import Login from "./modules/Login.vue"
 </script>
 

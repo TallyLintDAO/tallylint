@@ -109,5 +109,13 @@ const getUserInfoFromServices = () => {
 
 <style lang="scss" scoped>
 .login-container {
+  .description {
+    position: relative;
+  }
+  .button-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
 }
 </style>

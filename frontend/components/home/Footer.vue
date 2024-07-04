@@ -7,7 +7,6 @@
       <div class="footer-left col-auto">
         <nav class="footer-nav row items-center q-gutter-md">
           <router-link to="/" class="footer-link">Home</router-link>
-          <router-link to="/values" class="footer-link">Values</router-link>
         </nav>
       </div>
       <div class="footer-right col-auto">
