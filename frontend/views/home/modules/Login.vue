@@ -1,7 +1,7 @@
 <template>
-  <div class="container login-container q-mt-lg">
+  <div class="container login-container q-my-lg">
     <div class="description row">
-      <div class="col">
+      <div class="col-6 col-xs-12">
         <h4 style="margin-bottom: 0">Welcome to TaxLint🧾</h4>
         <span class="text-body1"
           >TaxLint is designed to help users of ICPs to count and manage their
@@ -26,11 +26,10 @@
           </q-btn>
         </div>
       </div>
-      <div class="col">
+      <div class="col-6 col-xs-12 order-xs-first">
         <q-img src="@/assets/images/profit.png"></q-img>
       </div>
     </div>
-    <div class="q-gutter-sm row items-center"></div>
   </div>
 </template>
 
