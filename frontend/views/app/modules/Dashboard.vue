@@ -312,9 +312,9 @@ onMounted(async () => {
   holdings.value?.sort("value")
   initECharts()
   getWallet()
-  getNFTCollections(
-    "34a6b-pl5tx-mpxgn-bnucu-tiwis-qxbqu-pilo5-lmnt7-fa7yk-ng22p-yae",
-  )
+  // getNFTCollections(
+  //   "34a6b-pl5tx-mpxgn-bnucu-tiwis-qxbqu-pilo5-lmnt7-fa7yk-ng22p-yae",
+  // )
 })
 
 const getBalance = async (
