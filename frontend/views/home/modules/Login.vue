@@ -1,19 +1,21 @@
 <template>
   <div class="container login-container q-my-lg">
     <div class="description row">
-      <div class="col-6 col-xs-12">
+      <div class="col-12 col-md-6">
         <h4 style="margin-bottom: 0">Welcome to TaxLint🧾</h4>
-        <span class="text-body1"
-          >TaxLint is designed to help users of ICPs to count and manage their
-          tax information more easily.With TaxLint, users will be able to
-          record, track and calculate tax information related to their
-          transactions and assets in the IC ecosystem.</span
-        >
-        <br />
-        <span class="text-body1"
-          >In TaxLint, which is 100% on-chain, users get a decentralised,
-          private and secure tax experience.</span
-        >
+        <div class="q-mb-xl">
+          <span class="text-body1">
+            TaxLint is designed to help users of ICPs to count and manage their
+            tax information more easily.With TaxLint, users will be able to
+            record, track and calculate tax information related to their
+            transactions and assets in the IC ecosystem.
+          </span>
+          <br />
+          <span class="text-body1">
+            In TaxLint, which is 100% on-chain, users get a decentralised,
+            private and secure tax experience.
+          </span>
+        </div>
         <div class="button-container">
           <q-btn
             color="primary"
@@ -26,7 +28,7 @@
           </q-btn>
         </div>
       </div>
-      <div class="col-6 col-xs-12 order-xs-first">
+      <div class="col-12 col-md-6">
         <q-img src="@/assets/images/profit.png"></q-img>
       </div>
     </div>
@@ -108,7 +110,7 @@ const getUserInfoFromServices = () => {
 
 <style lang="scss" scoped>
 .login-container {
-  .description {
+  .description > div {
     position: relative;
   }
   .button-container {

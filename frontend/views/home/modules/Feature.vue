@@ -5,7 +5,7 @@
         What does <span class="text-blue-10">Taxlint</span> offer?
       </div>
       <div class="featrue-card row justify-around q-col-gutter-md q-mb-lg">
-        <div class="col-3" v-for="(card, index) in cards" :key="index">
+        <div class="col-6 col-md-3" v-for="(card, index) in cards" :key="index">
           <q-card>
             <q-card-section>
               <q-btn
