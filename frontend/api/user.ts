@@ -16,6 +16,7 @@ import { getNNS } from "@/utils/nns"
 import { getStorage, getTokenList } from "@/utils/storage"
 import moment from "moment"
 import { getBackend, getCurrentPrincipal } from "./canister_pool"
+import { getTransactionsCK } from "./ck/cketh"
 import { getTransactionsICRC1 } from "./icrc1"
 import { getICPTransactions } from "./rosetta"
 

@@ -76,7 +76,7 @@
           </q-select>
         </div>
         <span class="text-caption" style="color: rgba(0, 0, 0, 0.54)">
-          Need to click 'Sync All Wallets' again after adding new token
+          Need to click 'Sync All Transactions' again after adding new token
         </span>
         <div class="row q-mt-sm">
           <q-space />
@@ -122,7 +122,7 @@
           @click="method()"
           :loading="loading"
           icon="cached"
-          >Sync All Wallets</q-btn
+          >Sync All Transactions</q-btn
         >
         <q-btn flat label="Close" color="primary" v-close-popup />
       </q-card-actions>

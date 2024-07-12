@@ -19,6 +19,8 @@ import { IcrcAccount, IcrcIndexCanister } from "@dfinity/ledger-icrc"
 import type { TransactionWithId } from "@dfinity/ledger-icrc/dist/candid/icrc_index"
 import { Principal } from "@dfinity/principal"
 
+// Docs: https://github.com/dfinity/ic-js/tree/main/packages/ledger-icrc
+
 const radixNumber = 4 //保留4位小数
 
 export const getICRC1Balance = async (
@@ -106,7 +108,7 @@ export const getTransactionsICRC1 = async (
   return ICRCTransactions
 }
 
-const formatICRC1Transaction = async (
+export const formatICRC1Transaction = async (
   wallet: WalletTag,
   transactionWithId: TransactionWithId,
   currency: Currency,
