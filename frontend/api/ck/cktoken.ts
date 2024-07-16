@@ -3,9 +3,20 @@ import type { WalletTag } from "@/types/user"
 import ic from "@/utils/icblast"
 import { formatICRC1Transaction } from "../icrc1"
 
-export const CKETH_LEDGER_CANISTER_ID = "ss2fx-dyaaa-aaaar-qacoq-cai"
-export const CKETH_INDEX_CANISTER_ID = "s3zol-vqaaa-aaaar-qacpa-cai"
-
+export const CKTOKENS = {
+  BTC: {
+    canisters: {
+      index: "n5wcd-faaaa-aaaar-qaaea-cai",
+      ledger: "mxzaz-hqaaa-aaaar-qaada-cai",
+    },
+  },
+  ETH: {
+    canisters: {
+      index: "s3zol-vqaaa-aaaar-qacpa-cai",
+      ledger: "ss2fx-dyaaa-aaaar-qacoq-cai",
+    },
+  },
+}
 export const getTransactionsCK = async (
   wallet: WalletTag,
   indexCanisterId: string,
@@ -16,7 +27,7 @@ export const getTransactionsCK = async (
   const principalId = wallet.principal[0]
   let ICRCTransactions: InferredTransaction[] = []
 
-  const can = await ic(CKETH_INDEX_CANISTER_ID)
+  const can = await ic(CKTOKENS.ETH.canisters.index)
 
   const transactions = await can.get_account_transactions({
     account: {
@@ -32,7 +43,7 @@ export const getTransactionsCK = async (
         wallet,
         transaction,
         currency,
-        CKETH_LEDGER_CANISTER_ID,
+        CKTOKENS.ETH.canisters.ledger,
       )
     }),
   )
