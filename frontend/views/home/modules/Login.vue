@@ -36,16 +36,19 @@
 </template>
 
 <script lang="ts" setup>
+import { getOKInfo } from "@/api/CEX"
 import { IdentityInfo, initAuth, signIn } from "@/api/auth"
 import { setCurrentIdentity } from "@/api/canister_pool"
 import { getUserAutoRegister } from "@/api/user"
 import { useUserStore } from "@/stores/user"
-import { ref } from "vue"
+import { onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
 const router = useRouter()
 const userStore = useUserStore()
-
+onMounted(() => {
+  getOKInfo()
+})
 // 与 II 认证相关的信息
 const signedIn = ref(false) // 是否登录
 
