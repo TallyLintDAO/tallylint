@@ -1,13 +1,15 @@
-## Tax Lint : Your personal cryptocurrency tax helper
+## Tally Lint : Your IC coin tracker
 
 Try it here: 🧭
 https://vresg-vyaaa-aaaag-qcj2q-cai.icp0.io/
 
 ## Key Features⚓
 
-### Manage Tax Info 📜
+### Manage Asset Info 📜
 
-TaxLint is designed to help users who use ICP more easily count and manage their tax information. With taxlint, users will be able to record, track and calculate tax information related to their transactions and assets in the IC ecosystem.
+Are you troubled by how to check your assets? Still worried about how to track your profits?
+
+TallyLint counts the profits of transaction for you.
 
 ### Auto Calculate Tax Result🛩️
 
@@ -17,7 +19,7 @@ Our main goal is to provide users in the IC ecosystem with a convenient tax mana
 
 We value and encourage collaboration, so whether you're a developer, designer, or simply someone interested in improving our software, your participation is greatly appreciated!  
 So everyone is free to request for new feature, report a bug, submit a pull request and give feedback ,etc.  
-Together, let's make TaxLint even more easy to use, efficient, and powerful for everyone. Join us on this exciting journey of open-source development~
+Together, let's make tallylint even more easy to use, efficient, and powerful for everyone. Join us on this exciting journey of open-source development~
 
 ## Code transparency on mainnet :💎 We seriously respect that (Thanks to consensus protocol)
 
@@ -49,7 +51,7 @@ backend hash:
 
 ## Developer
 
-backend: by running the script to download taxlint source code and prepare backend development enviroment and for you.
+backend: by running the script to download tallylint source code and prepare backend development enviroment and for you.
 
 ```bash
 wget  https://github.com/TaxLintDAO/taxlint/raw/master/reproducible/prep_backend_dev_env.sh

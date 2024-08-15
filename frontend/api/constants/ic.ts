@@ -6,7 +6,7 @@ export const NET_ID = {
   network: "00000000000000020101",
 }
 export const ROSETTA_URL = "https://rosetta-api.internetcomputer.org"
-export const BINANACE_URL = "https://data-api.binance.vision"
+export const BINANCE_URL = "https://data-api.binance.vision"
 export const ROSETTA_WEBSITE = "Binance"
 export const ICRC_WEBSITE = "ICPSwap"
 

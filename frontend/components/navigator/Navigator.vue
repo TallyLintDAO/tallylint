@@ -3,11 +3,10 @@
     <q-toolbar class="navbar">
       <img
         alt="logo"
-        src="@/assets/taxlint.png"
+        src="@/assets/tallylint.png"
         class="cursor-pointer"
         @click="onHome"
       />
-      <!-- <q-toolbar-title> TaxLint </q-toolbar-title> -->
     </q-toolbar>
   </div>
 </template>

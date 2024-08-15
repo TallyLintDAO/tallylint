@@ -1,7 +1,7 @@
 <template>
   <div class="container footer-container q-mt-xl">
     <div class="header">
-      <div class="text-h4">TaxLint</div>
+      <div class="text-h4">TallyLint</div>
     </div>
     <div class="row justify-between items-center q-mt-sm">
       <div class="footer-left col-auto">
@@ -15,7 +15,7 @@
     </div>
     <div class="footer-bottom row justify-between items-center q-mt-md">
       <div class="footer-bottom-left col-auto">
-        <p>© TaxLint 2023-2024. All Rights Reserved.</p>
+        <p>© TallyLint 2023-2024. All Rights Reserved.</p>
       </div>
       <div class="footer-bottom-right col-auto row items-center q-gutter-md">
         <q-chip icon="bookmark">give us more suggestions!</q-chip>

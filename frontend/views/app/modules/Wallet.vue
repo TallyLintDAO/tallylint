@@ -1,6 +1,6 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <q-banner rounded class="text-white bg-orange-10">
-    In order to support IRCR1 tokens, TaxLint no longer supports wallet in the
+    In order to support IRCR1 tokens, TallyLint no longer supports wallet in the
     form of Account ID, only Principal ID entered into wallet are supported now.
     <br />
     Wallet already entered are not affected, but wallet without Principal ID
@@ -347,7 +347,7 @@ const getWallets = (isRefresh: boolean) => {
   //执行add，delete操作后刷新缓存，其他查询操作则不需要刷新缓存。
   getUserWallet(isRefresh)
     .then((res) => {
-      console.log("getUserWallet", res)
+      // console.log("getUserWallet", res)
       if (res.Ok) {
         rows.value = res.Ok
         for (const row of rows.value) {
@@ -363,7 +363,6 @@ const getWallets = (isRefresh: boolean) => {
               // 将查询得到的transactions绑定回原数组中的now_transactions，表明现在的交易数有多少
               row.now_transactions = res.length
               row.last_transaction_time = res[0].timestamp
-              console.log("getUserWallet", res, row)
             })
           } catch (error) {
             // 处理错误情况

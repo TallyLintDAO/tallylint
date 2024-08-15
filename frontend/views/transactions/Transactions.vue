@@ -814,7 +814,6 @@ watch([sort, selectedWallet], () => {
 })
 
 onMounted(() => {
-  console.log("route", wid)
   init()
 })
 

@@ -2,7 +2,7 @@
   <div class="feature-container bg-grey-2">
     <div class="container q-py-md">
       <div class="text-h4 text-weight-medium q-my-lg">
-        What does <span class="text-blue-10">Taxlint</span> offer?
+        What does <span class="text-blue-10">TallyLint</span> offer?
       </div>
       <div class="featrue-card row justify-around q-col-gutter-md q-mb-lg">
         <div class="col-6 col-md-3" v-for="(card, index) in cards" :key="index">

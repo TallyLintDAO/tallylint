@@ -30,7 +30,7 @@
           </q-card-section>
           <q-card-section>
             <div>
-              TaxLint needs your full transaction history (fiat → crypto →
+              TallyLint needs your full transaction history (fiat → crypto →
               crypto → fiat) in order to calculate your tax reports correctly.
               The transactions used in this report are summarized below.
               <br />

@@ -7,7 +7,7 @@
           <q-avatar>
             <img src="@/assets/dfinity.svg" />
           </q-avatar>
-          IC TaxLint
+          IC TallyLint
         </q-toolbar-title>
         <q-btn color="primary" label="Logout" @click="onLogOut()" />
       </q-toolbar>

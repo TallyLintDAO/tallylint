@@ -1,4 +1,4 @@
-import { BINANACE_URL } from "@/api/constants/ic"
+import { BINANCE_URL } from "@/api/constants/ic"
 import { TTL, getCache } from "@/utils/cache"
 import { getYearTimestamps } from "@/utils/date"
 import { binarySearchClosestICPPrice } from "@/utils/math"
@@ -22,7 +22,7 @@ export const matchICPPrice = async (timestamp: number): Promise<number> => {
 export const getICPPriceHistory = async (): Promise<any> => {
   try {
     //获取binance的所有ICP价格历史数据，目前coingecko只允许调用一年以内的数据，无法使用。
-    const url = `${BINANACE_URL}/api/v3/klines`
+    const url = `${BINANCE_URL}/api/v3/klines`
     let priceData = []
     //由于币安一次只能请求500条数据，所以这里就分别请求每年的ICP价格历史再组装。
     for (const {
@@ -75,7 +75,7 @@ export const getICPPriceHistory = async (): Promise<any> => {
 export const getICPNowPrice = async (): Promise<number> => {
   try {
     //获取Binance的当前ICP历史数据。
-    const url = `${BINANACE_URL}/api/v3/ticker/price`
+    const url = `${BINANCE_URL}/api/v3/ticker/price`
     const params = { symbol: "ICPUSDT" }
 
     const response = await axios.get(url, { params })

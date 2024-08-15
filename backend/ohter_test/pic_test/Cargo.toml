@@ -11,7 +11,7 @@ pocket-ic = "2.0.1"
 chrono = "0.4.31"
 
 
-#### to keep it out of the taxlint workspace ####
+#### to keep it out of the tallylint workspace ####
 # make the target folder just under here . handy to find binary exec and run it .
 [workspace]
 

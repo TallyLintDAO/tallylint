@@ -83,7 +83,7 @@ export async function getOKInfo() {
     })
 }
 export async function getAllSymbols() {
-  // const url = `${BINANACE_URL}/api/v3/exchangeInfo`
+  // const url = `${BINANCE_URL}/api/v3/exchangeInfo`
   // const response = await axios.get(url)
   // console.log("getAllSymbols", response)
   // const endpoint = "/sapi/v1/asset/assetDividend"

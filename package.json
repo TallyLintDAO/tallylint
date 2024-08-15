@@ -1,5 +1,5 @@
 {
-  "name": "taxlint",
+  "name": "tallylint",
   "version": "1.0.0",
   "scripts": {
     "dev": "vite --mode=development",
