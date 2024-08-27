@@ -32,7 +32,39 @@
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
 
-      <q-card-section class="q-pt-none">
+      <q-card-section class="token-list">
+        <q-list>
+          <q-item v-for="(token, index) in addedTokenList">
+            <!-- 遍历已添加的token -->
+            <q-item-section avatar>
+              <q-avatar
+                color="grey-4"
+                size="40px"
+                font-size="12px"
+                class="clickable"
+                @click="jumpToWebsite(token.meta.url)"
+              >
+                <img :src="token.meta.logo" />
+              </q-avatar>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ token.name }}</q-item-label>
+              <q-item-label caption>{{ token.symbol }}</q-item-label>
+            </q-item-section>
+            <q-item-section side>
+              <q-btn
+                icon="delete_outline"
+                v-if="token.symbol !== 'ICP'"
+                flat
+                round
+                dense
+                @click="removeToken(index)"
+              />
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card-section>
+      <q-card-section class="">
         <div class="row q-gutter-xs">
           <q-select
             filled
@@ -83,39 +115,6 @@
           <q-btn @click="addSelectedToken()">Add</q-btn>
         </div>
       </q-card-section>
-      <q-card-section class="token-list">
-        <q-list>
-          <q-item v-for="(token, index) in addedTokenList">
-            <!-- 遍历已添加的token -->
-            <q-item-section avatar>
-              <q-avatar
-                color="grey-4"
-                size="40px"
-                font-size="12px"
-                class="clickable"
-                @click="jumpToWebsite(token.meta.url)"
-              >
-                <img :src="token.meta.logo" />
-              </q-avatar>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{ token.name }}</q-item-label>
-              <q-item-label caption>{{ token.symbol }}</q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <q-btn
-                icon="delete_outline"
-                v-if="token.symbol !== 'ICP'"
-                flat
-                round
-                dense
-                @click="removeToken(index)"
-              />
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-card-section>
-
       <q-card-actions align="right">
         <q-btn
           color="secondary"

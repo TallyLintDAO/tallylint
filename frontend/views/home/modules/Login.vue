@@ -47,7 +47,7 @@ import { useRouter } from "vue-router"
 const router = useRouter()
 const userStore = useUserStore()
 onMounted(() => {
-  getOKInfo()
+  // getOKInfo()
 })
 // 与 II 认证相关的信息
 const signedIn = ref(false) // 是否登录

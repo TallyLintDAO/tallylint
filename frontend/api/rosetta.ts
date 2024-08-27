@@ -156,8 +156,17 @@ export const formatIcpTransaccion = async (
       return
     }
 
-    if (value >= 0) transaction.details.to = operation.account.address
-    if (value <= 0) transaction.details.from = operation.account.address
+    if (value > 0) transaction.details.to = operation.account.address
+    if (value < 0) transaction.details.from = operation.account.address
+    //异常状况下，会有value为0的可能性
+    if (Number(value) == 0) {
+      // 处理 value 为 0 的情况
+      if (!transaction.details.from) {
+        transaction.details.from = operation.account.address
+      } else {
+        transaction.details.to = operation.account.address
+      }
+    }
 
     if (
       transaction.details.status === "COMPLETED" &&

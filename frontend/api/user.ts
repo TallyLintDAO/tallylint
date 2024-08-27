@@ -16,7 +16,6 @@ import { getNNS } from "@/utils/nns"
 import { getStorage, getTokenList } from "@/utils/storage"
 import moment from "moment"
 import { getBackend, getCurrentPrincipal } from "./canister_pool"
-import { getTransactionsCK } from "./ck/cktoken"
 import { getTransactionsICRC1 } from "./icrc1"
 import { getICPTransactions } from "./rosetta"
 
@@ -215,7 +214,7 @@ export async function fetchAllSyncTransactions(
   let transactions: TransactionF[] = []
   const res = await getICPTransactions(wallet, true)
   transactions = res.transactions
-  // console.log("wallet", wallet)
+  // console.log("getICPTransactions", res)
   if (tokenList && wallet.principal[0]) {
     const noICPTokenList = tokenList.filter((token) => token.symbol !== "ICP")
     for (let index = 0; index < noICPTokenList.length; index++) {
