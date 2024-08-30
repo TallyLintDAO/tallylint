@@ -1,14 +1,18 @@
 import axios from "axios"
 import * as CryptoJS from "crypto-js"
-import { API_KEY } from "./constants/api_key"
+// import { API_KEY } from "./constants/api_key"
 
 // const API_KEY =""
-const SECRET_KEY = API_KEY.Binance.secret_key
+// const SECRET_KEY = API_KEY.Binance.secret_key
+const SECRET_KEY = ""
 const BASE_URL = "https://api.binance.com"
 
-const OK_PASSPHRASE = API_KEY.OK.passphrase
-const OK_API_KEY = API_KEY.OK.api_key
-const OK_SECRET_KEY = API_KEY.OK.secret_key
+// const OK_PASSPHRASE = API_KEY.OK.passphrase
+// const OK_API_KEY = API_KEY.OK.api_key
+// const OK_SECRET_KEY = API_KEY.OK.secret_key
+const OK_PASSPHRASE = ""
+const OK_API_KEY = ""
+const OK_SECRET_KEY = ""
 const baseUrl = "https://www.okx.com"
 
 //OK服务器时间
