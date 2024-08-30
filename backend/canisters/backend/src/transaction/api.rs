@@ -221,7 +221,6 @@ fn remove_transaction_tag(id: u64) -> Result<bool, String> {
 }
 
 #[update(guard = "user_owner_guard")]
-// #[update]
 fn sync_transaction_record(
   data: Vec<SyncTransactionCommand>,
 ) -> Result<bool, String> {

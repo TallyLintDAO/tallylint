@@ -45,48 +45,6 @@ export const idlFactory = ({ IDL }) => {
     'create_time' : IDL.Nat64,
   });
   const Result_2 = IDL.Variant({ 'Ok' : UserProfile, 'Err' : IDL.Text });
-  const NeuronId = IDL.Record({ 'id' : IDL.Vec(IDL.Nat8) });
-  const BallotInfo = IDL.Record({
-    'vote' : IDL.Int32,
-    'proposal_id' : IDL.Opt(NeuronId),
-  });
-  const KnownNeuronData = IDL.Record({
-    'name' : IDL.Text,
-    'description' : IDL.Opt(IDL.Text),
-  });
-  const NeuronInfo = IDL.Record({
-    'dissolve_delay_seconds' : IDL.Nat64,
-    'recent_ballots' : IDL.Vec(BallotInfo),
-    'created_timestamp_seconds' : IDL.Nat64,
-    'state' : IDL.Int32,
-    'stake_e8s' : IDL.Nat64,
-    'joined_community_fund_timestamp_seconds' : IDL.Opt(IDL.Nat64),
-    'retrieved_at_timestamp_seconds' : IDL.Nat64,
-    'known_neuron_data' : IDL.Opt(KnownNeuronData),
-    'voting_power' : IDL.Nat64,
-    'age_seconds' : IDL.Nat64,
-  });
-  const GovernanceError = IDL.Record({
-    'error_message' : IDL.Text,
-    'error_type' : IDL.Int32,
-  });
-  const CustomResult1 = IDL.Variant({
-    'Ok' : NeuronInfo,
-    'Err' : GovernanceError,
-  });
-  const RejectionCode = IDL.Variant({
-    'NoError' : IDL.Null,
-    'CanisterError' : IDL.Null,
-    'SysTransient' : IDL.Null,
-    'DestinationInvalid' : IDL.Null,
-    'Unknown' : IDL.Null,
-    'SysFatal' : IDL.Null,
-    'CanisterReject' : IDL.Null,
-  });
-  const Result_3 = IDL.Variant({
-    'Ok' : IDL.Tuple(CustomResult1),
-    'Err' : IDL.Tuple(RejectionCode, IDL.Text),
-  });
   const TransactionF = IDL.Record({
     'wid' : IDL.Nat64,
     'hash' : IDL.Text,
@@ -135,8 +93,9 @@ export const idlFactory = ({ IDL }) => {
     'neurons' : IDL.Vec(IDL.Tuple(IDL.Text, NeuronProfile)),
   });
   const UserConfig = IDL.Record({
+    'time_zone' : IDL.Text,
+    'base_currency' : IDL.Text,
     'tax_method' : IDL.Text,
-    'exclude_tags' : IDL.Vec(IDL.Text),
   });
   const UserService = IDL.Record({
     'configs' : IDL.Vec(IDL.Tuple(IDL.Text, UserConfig)),
@@ -149,6 +108,48 @@ export const idlFactory = ({ IDL }) => {
     'wallet_service' : WalletService,
     'neuron_service' : NeuronService,
     'user_service' : UserService,
+  });
+  const NeuronId = IDL.Record({ 'id' : IDL.Vec(IDL.Nat8) });
+  const BallotInfo = IDL.Record({
+    'vote' : IDL.Int32,
+    'proposal_id' : IDL.Opt(NeuronId),
+  });
+  const KnownNeuronData = IDL.Record({
+    'name' : IDL.Text,
+    'description' : IDL.Opt(IDL.Text),
+  });
+  const NeuronInfo = IDL.Record({
+    'dissolve_delay_seconds' : IDL.Nat64,
+    'recent_ballots' : IDL.Vec(BallotInfo),
+    'created_timestamp_seconds' : IDL.Nat64,
+    'state' : IDL.Int32,
+    'stake_e8s' : IDL.Nat64,
+    'joined_community_fund_timestamp_seconds' : IDL.Opt(IDL.Nat64),
+    'retrieved_at_timestamp_seconds' : IDL.Nat64,
+    'known_neuron_data' : IDL.Opt(KnownNeuronData),
+    'voting_power' : IDL.Nat64,
+    'age_seconds' : IDL.Nat64,
+  });
+  const GovernanceError = IDL.Record({
+    'error_message' : IDL.Text,
+    'error_type' : IDL.Int32,
+  });
+  const CustomResult1 = IDL.Variant({
+    'Ok' : NeuronInfo,
+    'Err' : GovernanceError,
+  });
+  const RejectionCode = IDL.Variant({
+    'NoError' : IDL.Null,
+    'CanisterError' : IDL.Null,
+    'SysTransient' : IDL.Null,
+    'DestinationInvalid' : IDL.Null,
+    'Unknown' : IDL.Null,
+    'SysFatal' : IDL.Null,
+    'CanisterReject' : IDL.Null,
+  });
+  const Result_3 = IDL.Variant({
+    'Ok' : IDL.Tuple(CustomResult1),
+    'Err' : IDL.Tuple(RejectionCode, IDL.Text),
   });
   const Result_4 = IDL.Variant({ 'Ok' : MySummary, 'Err' : IDL.Text });
   const Result_5 = IDL.Variant({ 'Ok' : NeuronProfile, 'Err' : IDL.Text });
@@ -200,21 +201,17 @@ export const idlFactory = ({ IDL }) => {
     'add_transaction' : IDL.Func([TransactionB], [Result_1], []),
     'add_wallet' : IDL.Func([WalletAddCommand], [Result], []),
     'auto_register_user' : IDL.Func([], [Result_2], []),
+    'backup' : IDL.Func(
+        [IDL.Nat32, IDL.Nat32],
+        [IDL.Vec(IDL.Tuple(IDL.Text, CanisterContext))],
+        [],
+      ),
     'calculate_tax' : IDL.Func([], [IDL.Text], []),
-    'clean_db' : IDL.Func([], [IDL.Bool], []),
-    'collect_running_payload_simple' : IDL.Func([], [IDL.Text], ['query']),
-    'collect_running_payload_simple_raw' : IDL.Func([], [IDL.Text], ['query']),
     'delete_neuron_wallet' : IDL.Func([IDL.Nat64], [Result], []),
     'delete_transaction' : IDL.Func([IDL.Nat64], [Result_1], []),
     'delete_wallet' : IDL.Func([IDL.Nat64], [Result], []),
     'get_balance' : IDL.Func([], [IDL.Nat64], []),
     'get_neuron_info' : IDL.Func([IDL.Nat64], [Result_3], []),
-    'get_payload_from_stable_mem_simple' : IDL.Func([], [IDL.Text], ['query']),
-    'get_payload_from_stable_mem_simple_raw' : IDL.Func(
-        [],
-        [CanisterContext],
-        ['query'],
-      ),
     'get_user_config' : IDL.Func([], [UserConfig], ['query']),
     'greet_test_agent' : IDL.Func([], [IDL.Text], ['query']),
     'list_all_user' : IDL.Func([], [IDL.Vec(UserProfile)], []),
@@ -231,12 +228,12 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'remove_transaction_tag' : IDL.Func([IDL.Nat64], [Result], []),
-    'set_payload_using_dev_machine_file' : IDL.Func([IDL.Text], [IDL.Text], []),
-    'set_payload_using_stable_mem_simple' : IDL.Func([], [IDL.Text], []),
-    'set_payload_using_stable_mem_simple_raw' : IDL.Func([], [], []),
-    'set_stable_mem_using_payload_simple' : IDL.Func([], [], []),
-    'set_stable_mem_using_payload_simple_raw' : IDL.Func([], [], []),
-    'set_user_config' : IDL.Func([UserConfig], [UserConfig], []),
+    'restore' : IDL.Func(
+        [IDL.Vec(IDL.Tuple(IDL.Text, CanisterContext))],
+        [],
+        [],
+      ),
+    'set_user_config' : IDL.Func([UserConfig], [Result], []),
     'sync_transaction_record' : IDL.Func(
         [IDL.Vec(SyncTransactionCommand)],
         [Result],

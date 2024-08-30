@@ -190,7 +190,7 @@ service : {
   set_payload_using_stable_mem_simple_raw : () -> ();
   set_stable_mem_using_payload_simple : () -> ();
   set_stable_mem_using_payload_simple_raw : () -> ();
-  set_user_config : (UserConfig) -> (UserConfig);
+  set_user_config : (UserConfig) -> (Result);
   sync_transaction_record : (vec SyncTransactionCommand) -> (Result);
   update_neuron_wallet : (NeuronUpdateCommand) -> (Result);
   update_transaction : (TransactionB) -> (Result);

@@ -51,10 +51,26 @@ impl UserService {
     return self.users.len().try_into().unwrap_or_default();
   }
 
-  pub fn add_config(&mut self, owner: &Principal, data: UserConfig) -> String {
+
+
+/**
+ * add or update user config
+ */
+  pub fn add_config(&mut self, owner: &Principal, data: UserConfig) -> Result<bool, String> {
+    let operation = if self.configs.contains_key(&owner.to_string()) {
+        "update"
+    } else {
+        "add"
+    };
+
     self.configs.insert(owner.to_string(), data);
-    return "add ok".to_string();
-  }
+
+    // check the operation is successful
+    match self.get_config(owner) {
+        Ok(_) => Ok(true),
+        Err(_) => Err(format!("{} failed", operation)),
+    }
+}
 
   
   pub fn get_config(&mut self, owner: &Principal) -> Result<UserConfig,String> {

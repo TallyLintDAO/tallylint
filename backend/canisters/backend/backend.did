@@ -1,4 +1,12 @@
 type BallotInfo = record { vote : int32; proposal_id : opt NeuronId };
+type CanisterContext = record {
+  id : nat64;
+  trans_f_srv : TransactionService;
+  wallet_transc_srv : WalletRecordService;
+  wallet_service : WalletService;
+  neuron_service : NeuronService;
+  user_service : UserService;
+};
 type Currency = record { decimals : nat8; symbol : text };
 type CustomResult1 = variant { Ok : NeuronInfo; Err : GovernanceError };
 type Details = record {
@@ -51,6 +59,7 @@ type NeuronProfile = record {
   create_time : nat64;
   address : text;
 };
+type NeuronService = record { neurons : vec record { text; NeuronProfile } };
 type NeuronUpdateCommand = record { id : nat64; name : text };
 type RejectionCode = variant {
   NoError;
@@ -109,6 +118,9 @@ type TransactionF = record {
   timestamp : float64;
   details : Details;
 };
+type TransactionService = record {
+  transactions : vec record { nat64; TransactionF };
+};
 type UserConfig = record {
   time_zone : text;
   base_currency : text;
@@ -118,6 +130,10 @@ type UserProfile = record {
   owner : principal;
   name : text;
   create_time : nat64;
+};
+type UserService = record {
+  configs : vec record { text; UserConfig };
+  users : vec record { principal; UserProfile };
 };
 type WalletAddCommand = record {
   from : text;
@@ -137,14 +153,18 @@ type WalletProfile = record {
   holder : principal;
   transactions : nat64;
 };
+type WalletRecordService = record {
+  records : vec record { nat64; TransactionB };
+  my_summary : vec record { nat64; MySummary };
+};
+type WalletService = record { wallets : vec record { nat64; WalletProfile } };
 type WalletUpdateCommand = record { id : nat64; from : text; name : text };
 service : {
   add_neuron_wallet : (NeuronAddCommand) -> (Result);
   add_transaction : (TransactionB) -> (Result_1);
-  add_user_config : () -> (bool);
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_2);
-  backup : (nat32, nat32) -> (text);
+  backup : (nat32, nat32) -> (vec record { text; CanisterContext });
   calculate_tax : () -> (text);
   delete_neuron_wallet : (nat64) -> (Result);
   delete_transaction : (nat64) -> (Result_1);
@@ -165,8 +185,8 @@ service : {
       vec SimpleTransaction,
     ) query;
   remove_transaction_tag : (nat64) -> (Result);
-  restore : (nat32, nat32) -> (text);
-  set_user_config : (UserConfig) -> (UserConfig);
+  restore : (vec record { text; CanisterContext }) -> ();
+  set_user_config : (UserConfig) -> (Result);
   sync_transaction_record : (vec SyncTransactionCommand) -> (Result);
   update_neuron_wallet : (NeuronUpdateCommand) -> (Result);
   update_transaction : (TransactionB) -> (Result);

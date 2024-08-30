@@ -38,7 +38,7 @@ type MySummary = record {
   capital_gain_or_loss : float64;
 };
 type NeuronAddCommand = record { from : text; name : text; address : text };
-type NeuronId = record { id : vec nat8 };
+type NeuronId = record { id : blob };
 type NeuronInfo = record {
   dissolve_delay_seconds : nat64;
   recent_ballots : vec BallotInfo;
@@ -121,7 +121,11 @@ type TransactionF = record {
 type TransactionService = record {
   transactions : vec record { nat64; TransactionF };
 };
-type UserConfig = record { tax_method : text; exclude_tags : vec text };
+type UserConfig = record {
+  time_zone : text;
+  base_currency : text;
+  tax_method : text;
+};
 type UserProfile = record {
   owner : principal;
   name : text;
@@ -160,17 +164,13 @@ service : {
   add_transaction : (TransactionB) -> (Result_1);
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_2);
+  backup : (nat32, nat32) -> (vec record { text; CanisterContext });
   calculate_tax : () -> (text);
-  clean_db : () -> (bool);
-  collect_running_payload_simple : () -> (text) query;
-  collect_running_payload_simple_raw : () -> (text) query;
   delete_neuron_wallet : (nat64) -> (Result);
   delete_transaction : (nat64) -> (Result_1);
   delete_wallet : (nat64) -> (Result);
   get_balance : () -> (nat64);
   get_neuron_info : (nat64) -> (Result_3);
-  get_payload_from_stable_mem_simple : () -> (text) query;
-  get_payload_from_stable_mem_simple_raw : () -> (CanisterContext) query;
   get_user_config : () -> (UserConfig) query;
   greet_test_agent : () -> (text) query;
   list_all_user : () -> (vec UserProfile);
@@ -185,12 +185,8 @@ service : {
       vec SimpleTransaction,
     ) query;
   remove_transaction_tag : (nat64) -> (Result);
-  set_payload_using_dev_machine_file : (text) -> (text);
-  set_payload_using_stable_mem_simple : () -> (text);
-  set_payload_using_stable_mem_simple_raw : () -> ();
-  set_stable_mem_using_payload_simple : () -> ();
-  set_stable_mem_using_payload_simple_raw : () -> ();
-  set_user_config : (UserConfig) -> (UserConfig);
+  restore : (vec record { text; CanisterContext }) -> ();
+  set_user_config : (UserConfig) -> (Result);
   sync_transaction_record : (vec SyncTransactionCommand) -> (Result);
   update_neuron_wallet : (NeuronUpdateCommand) -> (Result);
   update_transaction : (TransactionB) -> (Result);
