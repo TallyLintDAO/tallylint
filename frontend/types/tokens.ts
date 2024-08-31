@@ -38,6 +38,25 @@ export interface IRCR1Price {
   timestamp: number
 }
 
+export interface LedgerICPTransaction {
+  allowance: null
+  amount: string
+  block_hash: string
+  block_height: string
+  created_at: number
+  expected_allowance: null
+  expires_at: null
+  fee: string
+  from_account_identifier: string
+  icrc1_memo: string
+  memo: string
+  parent_hash: string
+  spender_account_identifier: null
+  to_account_identifier: string
+  transaction_hash: string
+  transfer_type: string
+}
+
 export type InferredTransaction = TransactionF
 
 export type SyncedTransaction = {
