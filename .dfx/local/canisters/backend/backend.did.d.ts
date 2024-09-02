@@ -187,6 +187,7 @@ export interface WalletUpdateCommand {
 export interface _SERVICE {
   'add_neuron_wallet' : ActorMethod<[NeuronAddCommand], Result>,
   'add_transaction' : ActorMethod<[TransactionB], Result_1>,
+  'add_user_config' : ActorMethod<[], boolean>,
   'add_wallet' : ActorMethod<[WalletAddCommand], Result>,
   'auto_register_user' : ActorMethod<[], Result_2>,
   'backup' : ActorMethod<[number, number], Array<[string, CanisterContext]>>,

@@ -143,8 +143,9 @@ export interface TransactionService {
   'transactions' : Array<[bigint, TransactionF]>,
 }
 export interface UserConfig {
+  'time_zone' : string,
+  'base_currency' : string,
   'tax_method' : string,
-  'exclude_tags' : Array<string>,
 }
 export interface UserProfile {
   'owner' : Principal,
@@ -186,19 +187,16 @@ export interface WalletUpdateCommand {
 export interface _SERVICE {
   'add_neuron_wallet' : ActorMethod<[NeuronAddCommand], Result>,
   'add_transaction' : ActorMethod<[TransactionB], Result_1>,
+  'add_user_config' : ActorMethod<[], boolean>,
   'add_wallet' : ActorMethod<[WalletAddCommand], Result>,
   'auto_register_user' : ActorMethod<[], Result_2>,
+  'backup' : ActorMethod<[number, number], Array<[string, CanisterContext]>>,
   'calculate_tax' : ActorMethod<[], string>,
-  'clean_db' : ActorMethod<[], boolean>,
-  'collect_running_payload_simple' : ActorMethod<[], string>,
-  'collect_running_payload_simple_raw' : ActorMethod<[], string>,
   'delete_neuron_wallet' : ActorMethod<[bigint], Result>,
   'delete_transaction' : ActorMethod<[bigint], Result_1>,
   'delete_wallet' : ActorMethod<[bigint], Result>,
   'get_balance' : ActorMethod<[], bigint>,
   'get_neuron_info' : ActorMethod<[bigint], Result_3>,
-  'get_payload_from_stable_mem_simple' : ActorMethod<[], string>,
-  'get_payload_from_stable_mem_simple_raw' : ActorMethod<[], CanisterContext>,
   'get_user_config' : ActorMethod<[], UserConfig>,
   'greet_test_agent' : ActorMethod<[], string>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
@@ -214,12 +212,8 @@ export interface _SERVICE {
     Array<SimpleTransaction>
   >,
   'remove_transaction_tag' : ActorMethod<[bigint], Result>,
-  'set_payload_using_dev_machine_file' : ActorMethod<[string], string>,
-  'set_payload_using_stable_mem_simple' : ActorMethod<[], string>,
-  'set_payload_using_stable_mem_simple_raw' : ActorMethod<[], undefined>,
-  'set_stable_mem_using_payload_simple' : ActorMethod<[], undefined>,
-  'set_stable_mem_using_payload_simple_raw' : ActorMethod<[], undefined>,
-  'set_user_config' : ActorMethod<[UserConfig], UserConfig>,
+  'restore' : ActorMethod<[Array<[string, CanisterContext]>], undefined>,
+  'set_user_config' : ActorMethod<[UserConfig], Result>,
   'sync_transaction_record' : ActorMethod<
     [Array<SyncTransactionCommand>],
     Result

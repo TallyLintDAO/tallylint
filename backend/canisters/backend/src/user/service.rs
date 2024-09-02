@@ -52,7 +52,6 @@ impl UserService {
   }
 
 
-
 /**
  * add or update user config
  */

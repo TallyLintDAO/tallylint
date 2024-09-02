@@ -199,6 +199,7 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     'add_neuron_wallet' : IDL.Func([NeuronAddCommand], [Result], []),
     'add_transaction' : IDL.Func([TransactionB], [Result_1], []),
+    'add_user_config' : IDL.Func([], [IDL.Bool], []),
     'add_wallet' : IDL.Func([WalletAddCommand], [Result], []),
     'auto_register_user' : IDL.Func([], [Result_2], []),
     'backup' : IDL.Func(

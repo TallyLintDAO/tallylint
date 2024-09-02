@@ -162,6 +162,7 @@ type WalletUpdateCommand = record { id : nat64; from : text; name : text };
 service : {
   add_neuron_wallet : (NeuronAddCommand) -> (Result);
   add_transaction : (TransactionB) -> (Result_1);
+  add_user_config : () -> (bool);
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_2);
   backup : (nat32, nat32) -> (vec record { text; CanisterContext });

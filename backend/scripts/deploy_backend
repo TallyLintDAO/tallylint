@@ -8,7 +8,6 @@ import pexpect
 
 
 #### preparations
-# passwd = os.getenv("DFXPASS_BTWLZ")  # data from /etc/enviroment
 passwd = os.getenv("DFXPASS_YDR")  # data from /etc/enviroment
 #!WARN: default using -y tag. may empty local db and api
 deploy_local = f"dfx deploy backend -y "
@@ -34,7 +33,10 @@ def get_git_root_dir():
     except subprocess.CalledProcessError:
         print("This directory is not part of a git repository.")
         return None
-
+#if passwd is None, show the message and exit the program
+if passwd is None:
+    print("Error: Environment variable DFXPASS_YDR is not set.")
+    sys.exit(1)
 
 def deploy_backend(deploy_cmd):
     child = pexpect.spawn(deploy_cmd)
