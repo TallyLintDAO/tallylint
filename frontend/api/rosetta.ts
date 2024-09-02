@@ -1,11 +1,12 @@
 import {
+  IC_LEDGER_URL,
   LEDGER_CANISTER_ID,
   MILI_PER_SECOND,
   NET_ID,
   ROSETTA_URL,
 } from "@/api/constants/ic"
 import { matchICPPrice } from "@/api/token"
-import type { InferredTransaction } from "@/types/tokens"
+import type { InferredTransaction, LedgerICPTransaction } from "@/types/tokens"
 import type {
   DailyBalance,
   WalletHistory,
@@ -14,6 +15,7 @@ import type {
 } from "@/types/user"
 import { currencyCalculate } from "@/utils/common"
 import { showMessageError } from "@/utils/message"
+import axios from "axios"
 import { matchICRC1Price } from "./icrc1"
 import { fetchAllSyncTransactions } from "./user"
 
@@ -22,6 +24,68 @@ const radixNumber = 4 //保留4位小数
 export interface GetTransactionsResponse {
   total: number
   transactions: InferredTransaction[]
+}
+
+// https://ledger-api.internetcomputer.org/swagger-ui/#/Accounts/get_account_transactions
+// 使用新的api节点请求，因为rosetta节点已经被废弃
+export const getICPTransactions1 =
+  async (): Promise<GetTransactionsResponse> => {
+    const wallet = {
+      address:
+        "0d21ad80532098e7ee1f47c5a3cc3e11ab69aa4b637516b56bccbad1a8d7ee27",
+    }
+    const url = `${IC_LEDGER_URL}/accounts/${wallet.address}/transactions`
+    let offset = 0
+    const limit = 100
+    let total = 0
+    let allTransactions: any[] = []
+
+    do {
+      const params = {
+        limit,
+        offset,
+      }
+
+      try {
+        const response = await axios.get(url, { params })
+        const data = response.data
+        total = data.total
+        allTransactions = allTransactions.concat(data.blocks)
+        offset += limit
+      } catch (error) {
+        console.error("Error fetching transactions:", error)
+        break
+      }
+    } while (offset < total)
+
+    console.log("ledger get: ", allTransactions)
+  }
+
+export const convertToTransactionF = async (
+  wallet: WalletTag,
+  input: LedgerICPTransaction[],
+): Promise<InferredTransaction[]> => {
+  const timestampNormal = 10 / MILI_PER_SECOND //处理时间戳为正常格式
+  const price = await matchICPPrice(timestampNormal) // 使用 await 获取价格
+  return input.map((item) => ({
+    wid: wallet.id,
+    hash: item.transaction_hash,
+    t_type: item.transfer_type,
+    timestamp: item.created_at,
+    details: {
+      to: item.to_account_identifier,
+      fee: parseInt(item.fee, 10),
+      status: "COMPLETE",
+      ledgerCanisterId: item.block_hash,
+      value: parseInt(item.amount, 10),
+      cost: 0, // cost由后端计算
+      from: item.from_account_identifier,
+      currency: { decimals: 10, symbol: "ICP" },
+      profit: 0, // profit由后端计算
+      price: price, // 你需要根据实际情况设置价格
+      amount: parseInt(item.amount, 10),
+    },
+  }))
 }
 
 export const getICPTransactions = async (

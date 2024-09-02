@@ -310,3 +310,7 @@ export async function getUserConfig(): Promise<UserConfig | null> {
 
   return userConfig
 }
+
+export async function setUserConfig(userConfig: UserConfig): Promise<any> {
+  return getBackend().set_user_config(userConfig)
+}
