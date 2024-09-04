@@ -27,117 +27,102 @@ export interface GetTransactionsResponse {
 }
 
 // https://ledger-api.internetcomputer.org/swagger-ui/#/Accounts/get_account_transactions
-// 使用新的api节点请求，因为rosetta节点已经被废弃
-export const getICPTransactions1 =
-  async (): Promise<GetTransactionsResponse> => {
-    const wallet = {
-      address:
-        "0d21ad80532098e7ee1f47c5a3cc3e11ab69aa4b637516b56bccbad1a8d7ee27",
+// 使用新版本的api节点请求，原先的rosetta节点已经被废弃
+export const getICPTransactions = async (
+  wallet: WalletTag,
+): Promise<GetTransactionsResponse> => {
+  const url = `${IC_LEDGER_URL}/accounts/${wallet.address}/transactions`
+  let offset = 0
+  const limit = 100
+  let total = 0
+  let allTransactions: any[] = []
+  //因为一次只能请求100个记录，所以分页请求所有记录。
+  do {
+    const params = {
+      limit,
+      offset,
     }
-    const url = `${IC_LEDGER_URL}/accounts/${wallet.address}/transactions`
-    let offset = 0
-    const limit = 100
-    let total = 0
-    let allTransactions: any[] = []
+    try {
+      const response = await axios.get(url, { params })
+      const data = response.data
+      total = data.total
+      allTransactions = allTransactions.concat(data.blocks)
+      offset += limit
+    } catch (error) {
+      console.error("Error fetching transactions:", error)
+      break
+    }
+  } while (offset < total)
 
-    do {
-      const params = {
-        limit,
-        offset,
-      }
-
-      try {
-        const response = await axios.get(url, { params })
-        const data = response.data
-        total = data.total
-        allTransactions = allTransactions.concat(data.blocks)
-        offset += limit
-      } catch (error) {
-        console.error("Error fetching transactions:", error)
-        break
-      }
-    } while (offset < total)
-
-    console.log("ledger get: ", allTransactions)
+  // console.log("ledger get: ", allTransactions)
+  const transactionsInfo = await convertToTransactionF(wallet, allTransactions)
+  return {
+    total: transactionsInfo.length,
+    transactions: transactionsInfo,
   }
+}
 
 export const convertToTransactionF = async (
   wallet: WalletTag,
-  input: LedgerICPTransaction[],
+  transactions: LedgerICPTransaction[],
 ): Promise<InferredTransaction[]> => {
-  const timestampNormal = 10 / MILI_PER_SECOND //处理时间戳为正常格式
-  const price = await matchICPPrice(timestampNormal) // 使用 await 获取价格
-  return input.map((item) => ({
-    wid: wallet.id,
-    hash: item.transaction_hash,
-    t_type: item.transfer_type,
-    timestamp: item.created_at,
-    details: {
-      to: item.to_account_identifier,
-      fee: parseInt(item.fee, 10),
-      status: "COMPLETE",
-      ledgerCanisterId: item.block_hash,
-      value: parseInt(item.amount, 10),
-      cost: 0, // cost由后端计算
-      from: item.from_account_identifier,
-      currency: { decimals: 10, symbol: "ICP" },
-      profit: 0, // profit由后端计算
-      price: price, // 你需要根据实际情况设置价格
-      amount: parseInt(item.amount, 10),
-    },
-  }))
-}
-
-export const getICPTransactions = async (
-  wallet: WalletTag,
-  requireFormat: boolean,
-): Promise<GetTransactionsResponse> => {
-  //... 需要添加一个同地址缓存方法，以免调用过于频繁
-  const response = await fetch(`${ROSETTA_URL}/search/transactions`, {
-    method: "POST",
-    body: JSON.stringify({
-      network_identifier: NET_ID,
-      account_identifier: {
-        address: wallet.address,
-      },
-    }),
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "*/*",
-    },
-  })
-  if (!response.ok) {
-    showMessageError(
-      "Address: " +
-        wallet.address +
-        " unable to get information from ICP Rosetta Api, " +
-        "please check that the wallet address and network are correct.",
-    )
-    throw Error("error for rosetta api" + response.statusText)
-  }
-
-  const { transactions, total_count } = await response.json()
-  // console.log("rosetta api:", transactions)
-  purchaseQueue.length = 0 //计算前先重置购买队列数组，防止出现问题。
-  const transactionsInfo: InferredTransaction[] = []
-  //是否需要处理，不需要则不处理
-  if (requireFormat) {
-    //由于是时间最新的排前，所以要倒序数组，以实现先入先出的税务计算方式
-    transactions.reverse()
-    for (const { transaction } of transactions) {
-      const formattedTransaction = await formatIcpTransaccion(
-        wallet,
-        transaction,
-      )
-      transactionsInfo.push(formattedTransaction)
+  const currency = { decimals: 8, symbol: "ICP" }
+  const result: InferredTransaction[] = [] // 用于存储处理后的交易
+  for (const item of transactions) {
+    // 排除 transfer_type 不为send 的数据，说明可能是approve，目前不需要统计和存储这种数据
+    if (item.transfer_type !== "send") {
+      continue
     }
-    //将数组恢复正常。
-    transactionsInfo.reverse()
+    // api接口给的时间戳是10位，精确到秒，原先的是13位，精确到毫秒，所以这里加3位。
+    const timestampNormal = item.created_at * 1000 //处理时间戳为正常格式
+    const price = await matchICPPrice(timestampNormal) // 使用 await 获取价格
+    const transaction = {
+      wid: BigInt(wallet.id),
+      hash: item.transaction_hash,
+      t_type:
+        item.to_account_identifier === wallet.address ? "RECEIVE" : "SEND",
+      timestamp: timestampNormal,
+      details: {
+        to: item.to_account_identifier,
+        status: "COMPLETED",
+        ledgerCanisterId: LEDGER_CANISTER_ID,
+        from: item.from_account_identifier,
+        currency: currency,
+        fee: Math.abs(currencyCalculate(item.fee, currency.decimals)),
+        amount: currencyCalculate(item.amount, currency.decimals),
+        cost: 0, // cost由后端计算
+        profit: 0, // profit由后端计算
+        price: price,
+        value: 0, // value由前端，马上在下面代码中计算
+      },
+    }
+    //计算价值
+    transaction.details.value = parseFloat(
+      (transaction.details.amount * transaction.details.price).toFixed(
+        radixNumber,
+      ),
+    )
+    //先入先出的成本计算法，以IC的精度，建议保留4位小数
+    const cost = calculateCost(transaction)
+    transaction.details.cost = parseFloat(cost.toFixed(radixNumber))
+    if (transaction.t_type === "RECEIVE") {
+      transaction.details.profit = 0
+    } else if (transaction.t_type === "SEND") {
+      // const factor = 10 ** radixNumber; //进位10的n次方，扩大倍数将其变成整数，再在计算完成后除以倍数换回小数点
+      //TODO 本意是计算精度更准确，但有点bug，先注释了，用简单粗暴的
+      // transaction.details.profit =
+      //     (transaction.details.value * factor
+      //         - transaction.details.cost * factor) / factor;
+      transaction.details.profit = Number(
+        (transaction.details.value - transaction.details.cost).toFixed(
+          radixNumber,
+        ),
+      )
+    }
+    result.push(transaction) // 将处理后的交易添加到结果数组中
   }
-  return {
-    total: total_count,
-    transactions: transactionsInfo,
-  }
+  console.log("result", result)
+  return result // 返回结果数组
 }
 
 //批量获取多个地址的交易记录
@@ -147,7 +132,7 @@ export const getAllTransactions = async (
   try {
     // 使用 Promise.all 并行地获取多个钱包的交易记录
     const transactionsPromises = wallets.map((wallet) =>
-      getICPTransactions(wallet, true),
+      getICPTransactions(wallet),
     )
     const transactionsResults = await Promise.all(transactionsPromises)
     console.log("transactionsResults", transactionsResults)
@@ -168,116 +153,6 @@ export const getAllTransactions = async (
     console.error("Error fetching transactions:", error)
     throw error
   }
-}
-
-interface Operation {
-  account: {
-    address: string
-  }
-  amount: {
-    value: string
-    currency: {
-      symbol: string
-      decimals: number
-    }
-  }
-  status: "COMPLETED" | "REVERTED" | "PENDING"
-  type: "TRANSACTION" | "FEE"
-}
-
-interface RosettaTransaction {
-  metadata: {
-    block_height: number
-    memo: number
-    timestamp: number
-    lockTime: number
-  }
-  operations: Operation[]
-  transaction_identifier: { hash: string }
-}
-
-export const formatIcpTransaccion = async (
-  wallet: WalletTag,
-  rosettaTransaction: RosettaTransaction,
-): Promise<InferredTransaction> => {
-  const {
-    operations,
-    metadata: { timestamp },
-    transaction_identifier: { hash },
-  } = rosettaTransaction
-  const transaction: any = { details: { status: "COMPLETED", fee: {} } }
-  const timestampNormal = timestamp / MILI_PER_SECOND //处理时间戳为正常格式
-  const price = await matchICPPrice(timestampNormal) // 使用 await 获取价格
-  operations.forEach((operation) => {
-    const value = BigInt(operation.amount.value)
-    const amount = value.toString()
-    if (operation.type === "FEE") {
-      //直接输出具体多少个代币，并且不用负数
-      transaction.details.fee = Math.abs(
-        currencyCalculate(amount, operation.amount.currency.decimals),
-      )
-      // transaction.details.fee.currency = operation.amount.currency
-      return
-    }
-
-    if (value > 0) transaction.details.to = operation.account.address
-    if (value < 0) transaction.details.from = operation.account.address
-    //异常状况下，会有value为0的可能性
-    if (Number(value) == 0) {
-      // 处理 value 为 0 的情况
-      if (!transaction.details.from) {
-        transaction.details.from = operation.account.address
-      } else {
-        transaction.details.to = operation.account.address
-      }
-    }
-
-    if (
-      transaction.details.status === "COMPLETED" &&
-      operation.status !== "COMPLETED"
-    )
-      transaction.details.status = operation.status
-
-    transaction.wid = wallet.id
-    transaction.t_type =
-      transaction.details.to === wallet.address ? "RECEIVE" : "SEND"
-    //直接输出真实的数量，不再使用浮点数
-    transaction.details.amount = currencyCalculate(
-      amount,
-      operation.amount.currency.decimals,
-    )
-    transaction.details.price = price // 设置价格为获取的价格
-    transaction.details.value = parseFloat(
-      (transaction.details.amount * transaction.details.price).toFixed(
-        radixNumber,
-      ),
-    ) //计算总价值
-    transaction.details.currency = operation.amount.currency
-    transaction.details.ledgerCanisterId = LEDGER_CANISTER_ID
-
-    //先入先出的成本计算法，以IC的精度，建议保留4位小数
-    const cost = calculateCost(transaction)
-    transaction.details.cost = parseFloat(cost.toFixed(radixNumber))
-    if (transaction.t_type === "RECEIVE") {
-      transaction.details.profit = 0
-    } else if (transaction.t_type === "SEND") {
-      // const factor = 10 ** radixNumber; //进位10的n次方，扩大倍数将其变成整数，再在计算完成后除以倍数换回小数点
-      //TODO 本意是计算精度更准确，但有点bug，先注释了，用简单粗暴的
-      // transaction.details.profit =
-      //     (transaction.details.value * factor
-      //         - transaction.details.cost * factor) / factor;
-      transaction.details.profit = Number(
-        (transaction.details.value - transaction.details.cost).toFixed(
-          radixNumber,
-        ),
-      )
-    }
-  })
-  return {
-    ...transaction,
-    hash,
-    timestamp: timestampNormal,
-  } as InferredTransaction
 }
 
 const purchaseQueue: any[] = []
@@ -325,10 +200,13 @@ const initialWalletHistory = {
 
 //根据交易历史，手动生成钱包历史
 export const getWalletHistory = async (accountAddress: string) => {
-  const res = await getICPTransactions(
-    { id: 0, address: accountAddress, principal: [], name: "", from: "" },
-    true,
-  )
+  const res = await getICPTransactions({
+    id: 0,
+    address: accountAddress,
+    principal: [],
+    name: "",
+    from: "",
+  })
   // 倒序交易数组，以确保最早的交易在前面
   const transactions = res.transactions.reverse()
   // 初始化钱包历史
@@ -507,6 +385,7 @@ export const getDailyBalanceValue = async (
 
 //获得当前account id所持有的icp balance
 export const getICPBalance = async (accountId: string): Promise<number> => {
+  //TODO rosetta已经被废弃，此接口可能出问题
   const response = await fetch(`${ROSETTA_URL}/account/balance`, {
     method: "POST",
     body: JSON.stringify({

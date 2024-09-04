@@ -161,7 +161,7 @@ import {
   getDailyBalanceValue,
   getICPBalance,
   getWalletHistory,
-} from "@/api/rosetta"
+} from "@/api/icp"
 import { getICPNowPrice } from "@/api/token"
 import { getUserWallet } from "@/api/user"
 import Progress from "@/components/Progress.vue"
@@ -170,7 +170,6 @@ import type { Wallet, WalletHistory } from "@/types/user"
 import { convertCurrency } from "@/utils/currencies"
 import { numberToFixed, processNumber } from "@/utils/math"
 import { showMessageError } from "@/utils/message"
-import { getNFTCollections } from "@/utils/nft"
 import type { EChartsType } from "echarts"
 import * as echarts from "echarts"
 import type { QTable } from "quasar"
@@ -512,3 +511,4 @@ const changeDate = () => {
   background: rgba(0, 0, 0, 0.02);
 }
 </style>
+@/api/icp @/api/icp

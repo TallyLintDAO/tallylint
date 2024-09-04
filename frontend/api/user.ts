@@ -16,8 +16,8 @@ import { getNNS } from "@/utils/nns"
 import { getStorage, getTokenList } from "@/utils/storage"
 import moment from "moment"
 import { getBackend, getCurrentPrincipal } from "./canister_pool"
+import { getICPTransactions } from "./icp"
 import { getTransactionsICRC1 } from "./icrc1"
-import { getICPTransactions } from "./rosetta"
 
 //TODO demo阶段用户字段修改频繁，暂时用短缓存时间。
 const userTTL = TTL.minute1 //用户自身信息缓存时长。
@@ -212,7 +212,7 @@ export async function fetchAllSyncTransactions(
 ): Promise<TransactionF[]> {
   const tokenList = getTokenList()
   let transactions: TransactionF[] = []
-  const res = await getICPTransactions(wallet, true)
+  const res = await getICPTransactions(wallet)
   transactions = res.transactions
   // console.log("getICPTransactions", res)
   if (tokenList && wallet.principal[0]) {
