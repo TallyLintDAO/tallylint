@@ -1,10 +1,4 @@
-import {
-  IC_LEDGER_URL,
-  LEDGER_CANISTER_ID,
-  MILI_PER_SECOND,
-  NET_ID,
-  ROSETTA_URL,
-} from "@/api/constants/ic"
+import { IC_LEDGER_URL, LEDGER_CANISTER_ID } from "@/api/constants/ic"
 import { matchICPPrice } from "@/api/token"
 import type { InferredTransaction, LedgerICPTransaction } from "@/types/tokens"
 import type {
@@ -20,6 +14,7 @@ import { matchICRC1Price } from "./icrc1"
 import { fetchAllSyncTransactions } from "./user"
 
 const radixNumber = 4 //保留4位小数
+const currency = { decimals: 8, symbol: "ICP" }
 
 export interface GetTransactionsResponse {
   total: number
@@ -66,7 +61,6 @@ export const convertToTransactionF = async (
   wallet: WalletTag,
   transactions: LedgerICPTransaction[],
 ): Promise<InferredTransaction[]> => {
-  const currency = { decimals: 8, symbol: "ICP" }
   const result: InferredTransaction[] = [] // 用于存储处理后的交易
   for (const item of transactions) {
     // 排除 transfer_type 不为send 的数据，说明可能是approve，目前不需要统计和存储这种数据
@@ -121,7 +115,7 @@ export const convertToTransactionF = async (
     }
     result.push(transaction) // 将处理后的交易添加到结果数组中
   }
-  console.log("result", result)
+  // console.log("result", result)
   return result // 返回结果数组
 }
 
@@ -385,26 +379,19 @@ export const getDailyBalanceValue = async (
 
 //获得当前account id所持有的icp balance
 export const getICPBalance = async (accountId: string): Promise<number> => {
-  //TODO rosetta已经被废弃，此接口可能出问题
-  const response = await fetch(`${ROSETTA_URL}/account/balance`, {
-    method: "POST",
-    body: JSON.stringify({
-      network_identifier: NET_ID,
-      account_identifier: {
-        address: accountId,
-      },
-    }),
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "*/*",
-    },
-  })
-  if (!response.ok) {
-    console.error("getICPBalance Error: " + response.statusText)
-    showMessageError("getICPBalance Error: " + response.statusText)
+  try {
+    const url = `${IC_LEDGER_URL}/accounts/${accountId}`
+    const res = await axios.get(url)
+    console.log("res", res)
+    return currencyCalculate(res.data.balance, currency.decimals)
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("getICPBalance Error:", error)
+      showMessageError("getICPBalance Error: " + error.message)
+    } else {
+      console.error("getICPBalance Error:", error)
+      showMessageError("getICPBalance Error: An unknown error occurred")
+    }
     return 0
   }
-  const { balances } = await response.json()
-  const [{ value, currency }] = balances
-  return currencyCalculate(value, currency.decimals)
 }
