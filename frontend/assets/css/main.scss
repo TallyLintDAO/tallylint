@@ -13,6 +13,13 @@ a {
   display: flex;
   align-items: center;
 }
+/* 无阴影，圆角更圆润的扁平化q-card*/
+.flat-card {
+  .q-card {
+    box-shadow: none;
+    border-radius: 0.75em;
+  }
+}
 
 /* 修改quasar组件样式 */
 .q-table__grid-item-value {

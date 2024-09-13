@@ -382,7 +382,7 @@ export const getICPBalance = async (accountId: string): Promise<number> => {
   try {
     const url = `${IC_LEDGER_URL}/accounts/${accountId}`
     const res = await axios.get(url)
-    console.log("res", res)
+    console.log("getICPBalance", res.data)
     return currencyCalculate(res.data.balance, currency.decimals)
   } catch (error) {
     if (error instanceof Error) {
