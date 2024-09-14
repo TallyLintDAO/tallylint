@@ -15,9 +15,15 @@ a {
 }
 /* 无阴影，圆角更圆润的扁平化q-card*/
 .flat-card {
-  .q-card {
-    box-shadow: none;
-    border-radius: 0.75em;
+  box-shadow: none !important;
+  border-radius: 0.75em !important;
+}
+// 为qcard扁平化的同时添加适度阴影
+.flat-qcard-shadow {
+  box-shadow: none !important;
+  border-radius: 0.75em !important;
+  .q-card__section {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   }
 }
 
