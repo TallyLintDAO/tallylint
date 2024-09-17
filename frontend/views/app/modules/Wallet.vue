@@ -209,7 +209,6 @@
 <script lang="ts" setup>
 import { DOCS_URL, WALLET_HELP } from "@/api/constants/docs"
 import { MILI_PER_SECOND } from "@/api/constants/ic"
-import { getICPTransactions1 } from "@/api/rosetta"
 import {
   addUserWallet,
   deleteUserWallet,
@@ -287,7 +286,6 @@ const walletForm = ref<QForm | null>(null)
 const rows = ref<WalletInfo[]>([])
 onMounted(() => {
   getWallets(false)
-  getICPTransactions1()
 })
 
 const syncAllWallet = async () => {

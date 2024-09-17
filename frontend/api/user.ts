@@ -16,12 +16,11 @@ import { getNNS } from "@/utils/nns"
 import { getStorage, getTokenList } from "@/utils/storage"
 import moment from "moment"
 import { getBackend, getCurrentPrincipal } from "./canister_pool"
+import { getICPTransactions } from "./icp"
 import { getTransactionsICRC1 } from "./icrc1"
-import { getICPTransactions } from "./rosetta"
 
-//TODO demo阶段用户字段修改频繁，暂时用短缓存时间。
-const userTTL = TTL.minute1 //用户自身信息缓存时长。
-const walletTTL = TTL.day1 //用户自身信息缓存时长。
+const userTTL = TTL.hour12 //用户自身信息缓存时长。
+const walletTTL = TTL.day1 //用户钱包信息缓存时长。
 
 // （后端自动注册）并登录，如果有注册，就获取当前登录用户信息，如果没注册，就注册完了再获取信息
 export async function getUserAutoRegister(): Promise<ApiResult<ApiUserInfo>> {
@@ -212,7 +211,7 @@ export async function fetchAllSyncTransactions(
 ): Promise<TransactionF[]> {
   const tokenList = getTokenList()
   let transactions: TransactionF[] = []
-  const res = await getICPTransactions(wallet, true)
+  const res = await getICPTransactions(wallet)
   transactions = res.transactions
   // console.log("getICPTransactions", res)
   if (tokenList && wallet.principal[0]) {

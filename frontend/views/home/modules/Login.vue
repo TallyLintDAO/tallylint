@@ -1,5 +1,5 @@
 <template>
-  <div class="container login-container q-my-lg">
+  <div class="container login-container">
     <div class="description row">
       <div class="col-12 col-md-6">
         <h4 style="margin-bottom: 0">Welcome to TallyLint🧾</h4>
@@ -36,7 +36,6 @@
 </template>
 
 <script lang="ts" setup>
-import { getOKInfo } from "@/api/CEX"
 import { IdentityInfo, initAuth, signIn } from "@/api/auth"
 import { setCurrentIdentity } from "@/api/canister_pool"
 import { getUserAutoRegister } from "@/api/user"
@@ -113,6 +112,8 @@ const getUserInfoFromServices = () => {
 
 <style lang="scss" scoped>
 .login-container {
+  margin-top: 50px;
+  margin-bottom: 450px;
   .description > div {
     position: relative;
   }

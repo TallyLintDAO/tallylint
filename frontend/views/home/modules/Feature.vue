@@ -6,7 +6,7 @@
       </div>
       <div class="featrue-card row justify-around q-col-gutter-md q-mb-lg">
         <div class="col-6 col-md-3" v-for="(card, index) in cards" :key="index">
-          <q-card>
+          <q-card class="flat-card">
             <q-card-section>
               <q-btn
                 fab
@@ -61,8 +61,6 @@ const cards = ref([
       .q-card {
         // width: 230px;
         min-height: 180px;
-        box-shadow: none;
-        border-radius: 0.75em;
       }
     }
   }
