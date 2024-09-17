@@ -896,6 +896,46 @@ mod tests {
       Err(_) => eprintln!("err"),
     }
   }
+  #[test]
+    fn test_timestamp_ms_float_to_ns() {
+        // 测试 1 秒的毫秒数是否正确转换为纳秒
+        assert_eq!(timestamp_ms_float_to_ns(1000.0), 1_000_000_000);
+    }
+
+    #[test]
+    fn test_convert_trans_f_to_trans_b() {
+        // 创建一个示例的 TransactionF
+        let trans_f = TransactionF {
+            hash: "123".to_string(),
+            timestamp: 10.0,
+            t_type: "SEND".to_string(),
+            details: Details {
+                amount: 123.8,
+                cost: 1.0,
+                currency: Currency {
+                    decimals: 2,
+                    symbol: "ICP".to_string(),
+                },
+                fee: 123.8,
+                from: "some_address".to_string(),
+                to: "another_address".to_string(),
+                price: 1.0,
+                value: 1.0,
+                status: "SUCCESS".to_string(),
+                ledgerCanisterId: "asd".to_string(),
+                profit: 0.0,
+            },
+        };
+
+        // 转换为 TransactionB
+        let trans_b = convert_trans_f_to_trans_b(trans_f.clone(), 110050);
+
+        // 检查字段是否正确传递
+        assert_eq!(trans_b.hash, trans_f.hash);
+        assert_eq!(trans_b.t_type, trans_f.t_type);
+        assert_eq!(trans_b.timestamp, timestamp_ms_float_to_ns(trans_f.timestamp));
+        assert_eq!(trans_b.details.amount, trans_f.details.amount);
+    }
 }
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct UserProfile {

@@ -109,12 +109,12 @@ impl WalletService {
       return None;
     }
   }
-
-  pub fn delete_wallet(&mut self, id: u64) -> Option<bool> {
+//delete the wallet and its transactions
+  pub fn delete_wallet(&mut self, id: u64) -> bool {
     match self.wallets.remove(&id) {
-      Some(_) => Some(true), /* Wallet found and removed */
+      Some(_) => true, /* Wallet found and removed */
       // successfully
-      None => Some(false), // Wallet not found
+      None => false, // Wallet not found
     }
   }
 

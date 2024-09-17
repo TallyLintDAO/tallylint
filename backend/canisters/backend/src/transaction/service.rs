@@ -9,8 +9,9 @@ use super::domain::*;
 use crate::{
   common::context::TimeStamp, wallet::service::WalletId, TransactionB,
 };
-
+//FIXME 垃圾，数据恢复后将其删除
 pub type WalletAddress = String;
+//FIXME 该数据结构需要删除
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct AddRecordCommand {
   pub coin_type: String,
@@ -36,7 +37,7 @@ pub struct AddRecordCommand {
   pub manual: bool,
   pub comment: String,
 }
-
+//FIXME 该数据结构需要删除
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct EditHistoryCommand {
   pub coin_type: String,
@@ -64,18 +65,16 @@ pub struct EditHistoryCommand {
   pub comment: String,
 }
 
-#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
-pub struct WalletRecordService {
-  pub records: BTreeMap<TransactionId, TransactionB>,
-  #[serde(default = "BTreeMap::new")]
-  pub my_summary: BTreeMap<u64, MySummary>,
-}
+//该交易记录用于接收前端的数据并进行临时的存储和删除
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct TransactionService {
   pub transactions: BTreeMap<WalletId, TransactionF>,
 }
 impl TransactionService {
   // TODO
+  /**
+   * 插入交易记录
+   */
   pub fn add_transaction_record(
     &mut self,
     id: u64,
@@ -107,7 +106,9 @@ impl TransactionService {
     }
     return false;
   }
-
+/**
+ * 根据钱包地址进行删除
+ */
   pub fn delete_all_by_addr(&mut self, addr: String, principal_id: Option<String>) -> bool {
     let keys_to_remove: Vec<u64> = self
       .transactions
@@ -136,7 +137,9 @@ impl TransactionService {
 
     true
   }
-
+/**
+ * 根据walletId进行删除
+ */
   pub fn delete_all_by_wid(&mut self, id: WalletId) -> bool {
     let keys_to_remove: Vec<u64> = self
       .transactions
@@ -144,6 +147,11 @@ impl TransactionService {
       .filter(|(_, trans_f)| trans_f.wid == id)
       .map(|(key, _)| *key)
       .collect();
+
+    //if didn't find out keys to remove, return error
+    if keys_to_remove.is_empty() {
+      return false;
+  }
 
     for key in keys_to_remove {
       self.transactions.remove(&key);
@@ -153,7 +161,16 @@ impl TransactionService {
   }
 }
 
+//这个service主要是用于处理同步过后的交易记录
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct WalletRecordService {
+  pub records: BTreeMap<TransactionId, TransactionB>,
+  #[serde(default = "BTreeMap::new")]
+  pub my_summary: BTreeMap<u64, MySummary>,
+}
+
 impl WalletRecordService {
+  //插入交易记录实现类
   pub fn add_transaction_impl(
     &mut self,
     profile: TransactionB,
@@ -172,6 +189,7 @@ impl WalletRecordService {
       my_summary: BTreeMap::new(),
     }
   }
+  //修改交易记录
   pub fn update_transaction_impl(
     &mut self,
     profile: TransactionB,
@@ -184,41 +202,74 @@ impl WalletRecordService {
       return Err("Update fail. may heap overflow".to_string());
     }
   }
-
+  //单个查询交易记录
   pub fn query_one(&mut self, id: WalletId) -> Result<TransactionB, String> {
     match self.records.get(&id) {
       Some(transaction) => Ok(transaction.clone()),
       None => Err(format!("No transaction found with id: {}", id)),
     }
   }
-
+  //根据钱包地址进行交易记录的删除
   pub fn delete_transaction_by_addr(&mut self, addr: &WalletAddress) {
     self
       .records
       .retain(|_index, transaction| transaction.address != *addr);
   }
+  //根据用户principal进行删除
   pub fn delete_transaction_by_principal(&mut self, principal_id: &String) {
     self
       .records
       .retain(|_index, transaction| transaction.address != *principal_id);
   }
+  //根据钱包id进行交易记录的删除
+  // pub fn delete_transaction_by_id_impl(
+  //   &mut self,
+  //   wid: WalletId,
+  // ) -> Result<bool, String> {
+  //   if !self.records.contains_key(&wid) {
+  //     return Err("transaction record not exsit".to_string());
+  //   }
 
-  pub fn delete_transaction_by_id_impl(
+  //   self.records.remove(&wid);
+
+  //   if !self.records.contains_key(&wid) {
+  //     return Ok(true);
+  //   } else {
+  //     return Err("remove fail. still exsit".to_string());
+  //   }
+  // }
+  pub fn delete_transactions_by_wid(
     &mut self,
-    id: WalletId,
-  ) -> Result<bool, String> {
-    if !self.records.contains_key(&id) {
-      return Err("transaction record not exsit".to_string());
-    }
+    wid: WalletId,
+) -> Result<bool, String> {
+    // Debug log for tracking
+    println!("Deleting transaction for wid: {:?}", wid);
 
-    self.records.remove(&id);
+    // Find the TransactionId that corresponds to the given WalletId
+    let transaction_id = self.records.iter()
+        .find_map(|(id, transaction)| {
+            if transaction.wid == wid {
+                Some(*id)
+            } else {
+                None
+            }
+        });
 
-    if !self.records.contains_key(&id) {
-      return Ok(true);
-    } else {
-      return Err("remove fail. still exsit".to_string());
+    match transaction_id {
+        Some(id) => {
+            self.records.remove(&id);
+            // Verify if removal was successful
+            if self.records.contains_key(&id) {
+                Err("Remove failed. Record still exists.".to_string())
+            } else {
+                Ok(true)
+            }
+        }
+        None => Err(format!("Transaction record for wid {:?} does not exist", wid)),
     }
-  }
+}
+
+
   // pub fn get_addr_from_id(&self, id: TransactionId) -> WalletAddress {
   //   self.records.get(&id).unwrap().address.clone()
   // }
@@ -235,7 +286,7 @@ impl WalletRecordService {
   //   // }
   //   return Err("nothing".to_string());
   // }
-
+  //通过钱包地址查询单个钱包的交易记录
   pub fn query_one_wallet_trans(
     &self,
     addr: WalletAddress,
@@ -253,7 +304,7 @@ impl WalletRecordService {
     one_wallet.insert(addr.clone(), records);
     return one_wallet;
   }
-
+  //通过wid查询单个钱包交易记录
   pub fn query_one_wallet_trans_by_wallet_id(
     &self,
     wid: WalletId,
@@ -271,7 +322,7 @@ impl WalletRecordService {
     one_wallet.insert(wid.clone(), records);
     return one_wallet;
   }
-
+  //查询所有钱包的交易记录
   pub fn query_all_transactions(&self) -> HashMap<WalletId, TransactionB> {
     let mut all_trans = HashMap::new();
     for (id, records) in &self.records {

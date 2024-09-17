@@ -39,25 +39,21 @@ fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
     }
   })
 }
-
+//根据wid删除对应的交易记录
 #[update(guard = "user_owner_guard")]
-fn delete_transaction(id: WalletId) -> Result<WalletId, String> {
+fn delete_transaction(wid: WalletId) -> Result<WalletId, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
-    let ret = ctx.wallet_transc_srv.delete_transaction_by_id_impl(id);
+    let ret = ctx.wallet_transc_srv.delete_transactions_by_wid(wid);
     match ret {
       Ok(_) => {
-        // let w_addr = ctx.wallet_service.get_addr_by_id(id);
-        // let mut cur_wallet = ctx.wallet_service.get_by_addr(w_addr);
-        // cur_wallet.transactions = cur_wallet.transactions - 1;
-        // ctx.wallet_service.update_wallet(cur_wallet, caller());
-        Ok(id)
+        Ok(wid)
       }
       Err(msg) => Err(msg),
     }
   })
 }
-
+//根据交易记录id查询交易记录
 #[query(guard = "user_owner_guard")]
 fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
   STATE.with(|c| {
@@ -69,7 +65,7 @@ fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
     }
   })
 }
-
+//查看已经被同步的交易记录
 #[query(guard = "user_owner_guard")]
 fn query_wallets_synced_transactions(
   cmd: HistoryQueryCommand,
@@ -79,6 +75,7 @@ fn query_wallets_synced_transactions(
     let mut all_transactions = Vec::new();
 
     // !get all rec
+    //通过wid获取到对应钱包的交易记录
     for wid in cmd.wids {
       let rec = ctx
         .wallet_transc_srv
@@ -91,7 +88,8 @@ fn query_wallets_synced_transactions(
     if all_transactions.is_empty() {
       panic!("err! no wallets transacitons");
     }
-
+    //把all_transaction里的每个记录转换为simpleTra
+    //TODO 后续考虑SimpleT是否有必要，如抛弃simpleT，则删除这一步
     // !delete unwant field
     let mut simple_trans: Vec<SimpleTransaction> = all_transactions
       .into_iter()
@@ -100,7 +98,7 @@ fn query_wallets_synced_transactions(
     if simple_trans.is_empty() {
       panic!("err! no simple transacitons");
     }
-
+    //若请求中有时间限制，则进行过滤
     // !filter if time range
     if cmd.from_time != 0 && cmd.to_time != 0 {
       simple_trans.retain(|transaction| {
@@ -111,7 +109,7 @@ fn query_wallets_synced_transactions(
     if simple_trans.is_empty() {
       panic!("err! no time range transacitons");
     }
-
+    //若请求里需要进行排序，则排序
     // ! sort if need
     if cmd.sort_method.is_none() {
       simple_trans.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
@@ -151,7 +149,7 @@ fn query_wallets_synced_transactions(
     return simple_trans;
   })
 }
-
+//查询所有钱包的交易记录
 #[query(guard = "admin_guard")]
 fn query_all_transactions() -> Result<HashMap<WalletId, TransactionB>, String> {
   STATE.with(|c| {
@@ -160,7 +158,7 @@ fn query_all_transactions() -> Result<HashMap<WalletId, TransactionB>, String> {
     return Ok(rec);
   })
 }
-
+//修改某个交易记录
 #[update(guard = "user_owner_guard")]
 fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
   STATE.with(|c| {
@@ -181,7 +179,7 @@ fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
     }
   })
 }
-
+//
 #[update(guard = "user_owner_guard")]
 fn update_transaction_tag(id: u64, tag: String) -> Result<bool, String> {
   STATE.with(|c| {

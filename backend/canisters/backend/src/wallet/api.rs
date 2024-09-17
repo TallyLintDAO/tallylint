@@ -122,10 +122,17 @@ fn query_all_wallets() -> Result<Vec<WalletProfile>, Vec<WalletProfile>> {
 fn delete_wallet(id: u64) -> Result<bool, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
-    ctx
+    let result1=ctx
       .wallet_service
-      .delete_wallet(id)
-      .ok_or(String::from("Wallet Not Found"))
+      .delete_wallet(id);
+    if(result1==false){
+      return Err("Failed to delete wallet.".to_string());
+    }
+    let result2=ctx.wallet_transc_srv.delete_transactions_by_wid(id).unwrap();
+    if(result2==false){
+      return Err("Failed to delete transactions.".to_string());
+    }
+    Ok(true)
   })
 }
 

@@ -94,6 +94,7 @@ pub struct HistoryQueryCommand {
                                     * or profit-asc
                                     * profit-desc */
 }
+//FIXME 该数据结构未在业务中被使用，数据备份恢复后删除
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct EditHistoryCommand {
   pub id: RecordId, //delete id here . dont need.
@@ -119,6 +120,7 @@ pub struct EditHistoryCommand {
   pub manual: bool,
   pub comment: String,
 }
+//FIXME 该数据结构未在业务中被使用，数据备份恢复后删除
 #[derive(Debug, Clone, CandidType, Deserialize)]
 pub struct AddRecordCommand {
   pub coin_type: String,

@@ -251,19 +251,28 @@ impl WalletForTax {
 }
 
 }
-
+/**
+ * 方法逻辑：将传入的trans进行区分，如果是buy的话存入wft和已处理trans队列,profit为None，如果是sell的话根据传入method进行计税
+ */
 pub fn calculate_gain_or_loss(
   transactions: Vec<TransactionForTax>,
   method: String,
 ) -> Vec<TransactionForTax> {
+  //新建Wallet和TransactionForTax的空队列
   let mut wft = WalletForTax::new();
   let mut processed_transactions = Vec::new();
-
+  //遍历输入transactions
   for mut transaction in transactions {
+    //区分交易记录中交易的类型，是buy还是sell
+    //如果是buy的话
     if transaction.action == "buy" {
+      //执行wft的buy函数，将这个交易记录的数量和价格存入自己的transactionForTax中
       wft.buy(transaction.quantity, transaction.price);
+      //已处理trans队列存入该交易记录
       processed_transactions.push(transaction);
+      //如果是sell的话
     } else if transaction.action == "sell" {
+      //将传入的method进行匹配，用不同的计税方法进行计税
       match method.as_str() {
         "fifo" => {
           transaction.profit =
@@ -287,10 +296,12 @@ pub fn calculate_gain_or_loss(
       }
     }
   }
-
+  //返回已处理trans队列
   processed_transactions
 }
-
+/**
+ * 将transTax转换为transB
+ */
 #[allow(non_snake_case)]
 pub fn map_taxTrans_to_transB(
   trans_tax: Vec<TransactionForTax>,

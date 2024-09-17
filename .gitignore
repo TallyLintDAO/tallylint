@@ -67,3 +67,5 @@ db/
 
 # ignore private api key
 frontend/api/constants/api_key.ts
+continue_prep_env.sh
+prep_backend_dev_env.sh
