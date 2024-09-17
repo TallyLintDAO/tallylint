@@ -173,16 +173,6 @@ export const idlFactory = ({ IDL }) => {
     'wids' : IDL.Vec(IDL.Nat64),
     'sort_method' : IDL.Opt(IDL.Text),
   });
-  const SimpleTransaction = IDL.Record({
-    'id' : IDL.Nat64,
-    'tag' : IDL.Opt(IDL.Text),
-    'hash' : IDL.Text,
-    't_type' : IDL.Text,
-    'comment' : IDL.Text,
-    'timestamp' : IDL.Nat64,
-    'details' : Details,
-    'manual' : IDL.Bool,
-  });
   const SyncTransactionCommand = IDL.Record({
     'history' : IDL.Vec(TransactionF),
     'walletId' : IDL.Nat64,
@@ -225,7 +215,7 @@ export const idlFactory = ({ IDL }) => {
     'query_one_transaction' : IDL.Func([IDL.Nat64], [Result_10], ['query']),
     'query_wallets_synced_transactions' : IDL.Func(
         [HistoryQueryCommand],
-        [IDL.Vec(SimpleTransaction)],
+        [IDL.Vec(TransactionB)],
         ['query'],
       ),
     'remove_transaction_tag' : IDL.Func([IDL.Nat64], [Result], []),

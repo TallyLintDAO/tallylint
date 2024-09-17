@@ -79,20 +79,20 @@ impl TransactionService {
     &mut self,
     id: u64,
     profile: TransactionF,
-) -> Result<bool, String> {
+  ) -> Result<bool, String> {
     if self.transactions.contains_key(&id) {
-        return Err("Transaction record already exists".to_string());
+      return Err("Transaction record already exists".to_string());
     }
 
     self.transactions.insert(id, profile);
 
     // 检查插入是否成功
     if self.transactions.contains_key(&id) {
-        return Ok(true);
+      return Ok(true);
     } else {
-        return Err("Insert failed. Possible heap overflow".to_string());
+      return Err("Insert failed. Possible heap overflow".to_string());
     }
-}
+  }
 
   pub fn new() -> Self {
     TransactionService {
@@ -106,28 +106,33 @@ impl TransactionService {
     }
     return false;
   }
-/**
- * 根据钱包地址进行删除
- */
-  pub fn delete_all_by_addr(&mut self, addr: String, principal_id: Option<String>) -> bool {
+  /**
+   * 根据钱包地址进行删除
+   */
+  pub fn delete_all_by_addr(
+    &mut self,
+    addr: String,
+    principal_id: Option<String>,
+  ) -> bool {
     let keys_to_remove: Vec<u64> = self
       .transactions
       .iter()
       .filter(|(_, trans_f)| {
         // 检查交易是否匹配 addr
-        let addr_match = (trans_f.t_type == "SEND" && trans_f.details.from == addr)
-            || trans_f.details.to == addr;
+        let addr_match = (trans_f.t_type == "SEND"
+          && trans_f.details.from == addr)
+          || trans_f.details.to == addr;
 
         // 检查交易是否匹配 principal_id
         let principal_match = if let Some(ref pid) = principal_id {
-            (trans_f.t_type == "SEND" && trans_f.details.from == *pid)
-                || trans_f.details.to == *pid
+          (trans_f.t_type == "SEND" && trans_f.details.from == *pid)
+            || trans_f.details.to == *pid
         } else {
-            false
+          false
         };
 
         addr_match || principal_match
-    })
+      })
       .map(|(key, _)| *key)
       .collect();
 
@@ -137,9 +142,9 @@ impl TransactionService {
 
     true
   }
-/**
- * 根据walletId进行删除
- */
+  /**
+   * 根据walletId进行删除
+   */
   pub fn delete_all_by_wid(&mut self, id: WalletId) -> bool {
     let keys_to_remove: Vec<u64> = self
       .transactions
@@ -151,7 +156,7 @@ impl TransactionService {
     //if didn't find out keys to remove, return error
     if keys_to_remove.is_empty() {
       return false;
-  }
+    }
 
     for key in keys_to_remove {
       self.transactions.remove(&key);
@@ -175,7 +180,7 @@ impl WalletRecordService {
     &mut self,
     profile: TransactionB,
   ) -> Result<bool, String> {
-    let id =profile.id;
+    let id = profile.id;
     self.records.insert(id, profile);
     if self.records.contains_key(&id) {
       return Ok(true);
@@ -222,53 +227,38 @@ impl WalletRecordService {
       .retain(|_index, transaction| transaction.address != *principal_id);
   }
   //根据钱包id进行交易记录的删除
-  // pub fn delete_transaction_by_id_impl(
-  //   &mut self,
-  //   wid: WalletId,
-  // ) -> Result<bool, String> {
-  //   if !self.records.contains_key(&wid) {
-  //     return Err("transaction record not exsit".to_string());
-  //   }
-
-  //   self.records.remove(&wid);
-
-  //   if !self.records.contains_key(&wid) {
-  //     return Ok(true);
-  //   } else {
-  //     return Err("remove fail. still exsit".to_string());
-  //   }
-  // }
   pub fn delete_transactions_by_wid(
     &mut self,
     wid: WalletId,
-) -> Result<bool, String> {
+  ) -> Result<bool, String> {
     // Debug log for tracking
     println!("Deleting transaction for wid: {:?}", wid);
 
     // Find the TransactionId that corresponds to the given WalletId
-    let transaction_id = self.records.iter()
-        .find_map(|(id, transaction)| {
-            if transaction.wid == wid {
-                Some(*id)
-            } else {
-                None
-            }
-        });
+    let transaction_id = self.records.iter().find_map(|(id, transaction)| {
+      if transaction.wid == wid {
+        Some(*id)
+      } else {
+        None
+      }
+    });
 
     match transaction_id {
-        Some(id) => {
-            self.records.remove(&id);
-            // Verify if removal was successful
-            if self.records.contains_key(&id) {
-                Err("Remove failed. Record still exists.".to_string())
-            } else {
-                Ok(true)
-            }
+      Some(id) => {
+        self.records.remove(&id);
+        // Verify if removal was successful
+        if self.records.contains_key(&id) {
+          Err("Remove failed. Record still exists.".to_string())
+        } else {
+          Ok(true)
         }
-        None => Err(format!("Transaction record for wid {:?} does not exist", wid)),
+      }
+      None => Err(format!(
+        "Transaction record for wid {:?} does not exist",
+        wid
+      )),
     }
-}
-
+  }
 
   // pub fn get_addr_from_id(&self, id: TransactionId) -> WalletAddress {
   //   self.records.get(&id).unwrap().address.clone()

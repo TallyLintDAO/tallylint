@@ -46,9 +46,7 @@ fn delete_transaction(wid: WalletId) -> Result<WalletId, String> {
     let mut ctx = c.borrow_mut();
     let ret = ctx.wallet_transc_srv.delete_transactions_by_wid(wid);
     match ret {
-      Ok(_) => {
-        Ok(wid)
-      }
+      Ok(_) => Ok(wid),
       Err(msg) => Err(msg),
     }
   })
@@ -69,10 +67,10 @@ fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
 #[query(guard = "user_owner_guard")]
 fn query_wallets_synced_transactions(
   cmd: HistoryQueryCommand,
-) -> Vec<SimpleTransaction> {
+) -> Vec<TransactionB> {
   STATE.with(|c| {
     let ctx = c.borrow();
-    let mut all_transactions = Vec::new();
+    let mut sync_transactions = Vec::new();
 
     // !get all rec
     //通过wid获取到对应钱包的交易记录
@@ -83,41 +81,29 @@ fn query_wallets_synced_transactions(
         .get(&wid)
         .cloned()
         .unwrap_or(Vec::new());
-      all_transactions.extend(rec);
+      sync_transactions.extend(rec);
     }
-    if all_transactions.is_empty() {
+    if sync_transactions.is_empty() {
       panic!("err! no wallets transacitons");
     }
-    //把all_transaction里的每个记录转换为simpleTra
-    //TODO 后续考虑SimpleT是否有必要，如抛弃simpleT，则删除这一步
-    // !delete unwant field
-    let mut simple_trans: Vec<SimpleTransaction> = all_transactions
-      .into_iter()
-      .map(TransactionB::trim)
-      .collect();
-    if simple_trans.is_empty() {
-      panic!("err! no simple transacitons");
-    }
-    //若请求中有时间限制，则进行过滤
     // !filter if time range
     if cmd.from_time != 0 && cmd.to_time != 0 {
-      simple_trans.retain(|transaction| {
+      sync_transactions.retain(|transaction| {
         transaction.timestamp >= cmd.from_time
           && transaction.timestamp <= cmd.to_time
       });
     }
-    if simple_trans.is_empty() {
+    if sync_transactions.is_empty() {
       panic!("err! no time range transacitons");
     }
-    //若请求里需要进行排序，则排序
     // ! sort if need
     if cmd.sort_method.is_none() {
-      simple_trans.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
+      sync_transactions.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
     };
     let method = cmd.sort_method.unwrap();
     if method == String::from("date-asc") {
-      simple_trans.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
-      for window in simple_trans.windows(2) {
+      sync_transactions.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
+      for window in sync_transactions.windows(2) {
         let a = &window[0];
         let b = &window[1];
         assert!(
@@ -127,10 +113,10 @@ fn query_wallets_synced_transactions(
       }
     }
     if method == String::from("date-desc") {
-      simple_trans.sort_by(|a, b| b.timestamp.cmp(&a.timestamp));
+      sync_transactions.sort_by(|a, b| b.timestamp.cmp(&a.timestamp));
     }
     if method == String::from("profit-asc") {
-      simple_trans.sort_by(|a, b| {
+      sync_transactions.sort_by(|a, b| {
         a.details
           .profit
           .partial_cmp(&b.details.profit)
@@ -138,7 +124,7 @@ fn query_wallets_synced_transactions(
       });
     }
     if method == String::from("profit-desc") {
-      simple_trans.sort_by(|a, b| {
+      sync_transactions.sort_by(|a, b| {
         b.details
           .profit
           .partial_cmp(&a.details.profit)
@@ -146,7 +132,7 @@ fn query_wallets_synced_transactions(
       });
     }
 
-    return simple_trans;
+    return sync_transactions;
   })
 }
 //查询所有钱包的交易记录
@@ -227,12 +213,17 @@ fn sync_transaction_record(
     for one_wallet in data {
       // FIXME
       let w_addr = ctx.wallet_service.get_addr_by_id(one_wallet.walletId);
-      let wallet_principal = ctx.wallet_service.get_principal_by_id(one_wallet.walletId);
+      let wallet_principal =
+        ctx.wallet_service.get_principal_by_id(one_wallet.walletId);
 
-      ctx.trans_f_srv.delete_all_by_addr(w_addr.clone(), wallet_principal.clone());
+      ctx
+        .trans_f_srv
+        .delete_all_by_addr(w_addr.clone(), wallet_principal.clone());
       ctx.wallet_transc_srv.delete_transaction_by_addr(&w_addr);
       if let Some(wallet_principal) = wallet_principal {
-        ctx.wallet_transc_srv.delete_transaction_by_principal(&wallet_principal);
+        ctx
+          .wallet_transc_srv
+          .delete_transaction_by_principal(&wallet_principal);
       }
 
       // ! append records
