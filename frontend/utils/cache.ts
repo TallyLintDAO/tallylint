@@ -64,7 +64,7 @@ export async function getCache(info: {
       let flag = false
       const timeoutCallback = () => {
         // ...error message
-        reject("timeout")
+        reject("getCache timeout: " + key)
       }
       setTimeout(() => !flag && timeoutCallback(), timeout)
       info
