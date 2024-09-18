@@ -9,6 +9,7 @@ use super::domain::*;
 use crate::{
   common::context::TimeStamp, wallet::service::WalletId, TransactionB,
 };
+use crate::wallet::domain::HistoryQueryCommand;
 //FIXME 垃圾，数据恢复后将其删除
 pub type WalletAddress = String;
 //FIXME 该数据结构需要删除
@@ -276,6 +277,45 @@ impl WalletRecordService {
   //   // }
   //   return Err("nothing".to_string());
   // }
+  pub fn query_synced_transactions(&self, cmd: HistoryQueryCommand) -> Vec<TransactionB> {
+    let mut sync_transactions: Vec<TransactionB> = cmd.wids.iter()
+        .flat_map(|wid| self.query_one_wallet_trans_by_wallet_id(wid.clone())
+            .get(wid)
+            .cloned()
+            .unwrap_or_default())
+        .collect();
+
+    // Filter transactions by time range if specified
+    if cmd.from_time != 0 && cmd.to_time != 0 {
+        sync_transactions.retain(|transaction| {
+            transaction.timestamp >= cmd.from_time && transaction.timestamp <= cmd.to_time
+        });
+    }
+
+    if sync_transactions.is_empty() {
+        return sync_transactions;
+    }
+
+    // Sort transactions based on the provided sort method
+    if let Some(method) = cmd.sort_method {
+        match method.as_str() {
+            "date-asc" => sync_transactions.sort_by_key(|t| t.timestamp),
+            "date-desc" => sync_transactions.sort_by_key(|t| std::cmp::Reverse(t.timestamp)),
+            "profit-asc" => sync_transactions.sort_by(|a, b| {
+                a.details.profit.partial_cmp(&b.details.profit).unwrap_or(std::cmp::Ordering::Equal)
+            }),
+            "profit-desc" => sync_transactions.sort_by(|a, b| {
+                b.details.profit.partial_cmp(&a.details.profit).unwrap_or(std::cmp::Ordering::Equal)
+            }),
+            _ => sync_transactions.sort_by_key(|t| t.timestamp), // Default sort by date-asc
+        }
+    } else {
+        sync_transactions.sort_by_key(|t| t.timestamp); // Default sort if no method is provided
+    }
+
+    sync_transactions
+}
+
   //通过钱包地址查询单个钱包的交易记录
   pub fn query_one_wallet_trans(
     &self,

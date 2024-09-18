@@ -63,76 +63,15 @@ fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
     }
   })
 }
-//查看已经被同步的交易记录
+//query transactions that have been syncronised
 #[query(guard = "user_owner_guard")]
-fn query_wallets_synced_transactions(
+fn query_synced_transactions(
   cmd: HistoryQueryCommand,
-) -> Vec<TransactionB> {
+) -> Result<Vec<TransactionB>,String> {
   STATE.with(|c| {
     let ctx = c.borrow();
-    let mut sync_transactions = Vec::new();
-
-    // !get all rec
-    //通过wid获取到对应钱包的交易记录
-    for wid in cmd.wids {
-      let rec = ctx
-        .wallet_transc_srv
-        .query_one_wallet_trans_by_wallet_id(wid.clone())
-        .get(&wid)
-        .cloned()
-        .unwrap_or(Vec::new());
-      sync_transactions.extend(rec);
-    }
-    if sync_transactions.is_empty() {
-      panic!("err! no wallets transacitons");
-    }
-    // !filter if time range
-    if cmd.from_time != 0 && cmd.to_time != 0 {
-      sync_transactions.retain(|transaction| {
-        transaction.timestamp >= cmd.from_time
-          && transaction.timestamp <= cmd.to_time
-      });
-    }
-    if sync_transactions.is_empty() {
-      panic!("err! no time range transacitons");
-    }
-    // ! sort if need
-    if cmd.sort_method.is_none() {
-      sync_transactions.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
-    };
-    let method = cmd.sort_method.unwrap();
-    if method == String::from("date-asc") {
-      sync_transactions.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
-      for window in sync_transactions.windows(2) {
-        let a = &window[0];
-        let b = &window[1];
-        assert!(
-          a.timestamp <= b.timestamp,
-          "Transactions are not sorted in ascending order by timestamp"
-        );
-      }
-    }
-    if method == String::from("date-desc") {
-      sync_transactions.sort_by(|a, b| b.timestamp.cmp(&a.timestamp));
-    }
-    if method == String::from("profit-asc") {
-      sync_transactions.sort_by(|a, b| {
-        a.details
-          .profit
-          .partial_cmp(&b.details.profit)
-          .unwrap_or(std::cmp::Ordering::Equal)
-      });
-    }
-    if method == String::from("profit-desc") {
-      sync_transactions.sort_by(|a, b| {
-        b.details
-          .profit
-          .partial_cmp(&a.details.profit)
-          .unwrap_or(std::cmp::Ordering::Equal)
-      });
-    }
-
-    return sync_transactions;
+    let synced_transactions = ctx.wallet_transc_srv.query_synced_transactions(cmd.clone());
+    Ok(synced_transactions)
   })
 }
 //查询所有钱包的交易记录
