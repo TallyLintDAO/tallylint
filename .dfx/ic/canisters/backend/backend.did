@@ -84,16 +84,6 @@ type Result_6 = variant { Ok : WalletProfile; Err : text };
 type Result_7 = variant { Ok : vec NeuronProfile; Err : vec NeuronProfile };
 type Result_8 = variant { Ok : vec record { nat64; TransactionB }; Err : text };
 type Result_9 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
-type SimpleTransaction = record {
-  id : nat64;
-  tag : opt text;
-  hash : text;
-  t_type : text;
-  comment : text;
-  timestamp : nat64;
-  details : Details;
-  manual : bool;
-};
 type SyncTransactionCommand = record {
   history : vec TransactionF;
   walletId : nat64;
@@ -183,7 +173,7 @@ service : {
   query_all_wallets : () -> (Result_9) query;
   query_one_transaction : (nat64) -> (Result_10) query;
   query_wallets_synced_transactions : (HistoryQueryCommand) -> (
-      vec SimpleTransaction,
+      vec TransactionB,
     ) query;
   remove_transaction_tag : (nat64) -> (Result);
   restore : (vec record { text; CanisterContext }) -> ();

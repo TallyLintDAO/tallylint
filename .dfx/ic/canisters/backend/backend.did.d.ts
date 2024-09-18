@@ -105,16 +105,6 @@ export type Result_8 = { 'Ok' : Array<[bigint, TransactionB]> } |
   { 'Err' : string };
 export type Result_9 = { 'Ok' : Array<WalletProfile> } |
   { 'Err' : Array<WalletProfile> };
-export interface SimpleTransaction {
-  'id' : bigint,
-  'tag' : [] | [string],
-  'hash' : string,
-  't_type' : string,
-  'comment' : string,
-  'timestamp' : bigint,
-  'details' : Details,
-  'manual' : boolean,
-}
 export interface SyncTransactionCommand {
   'history' : Array<TransactionF>,
   'walletId' : bigint,
@@ -209,7 +199,7 @@ export interface _SERVICE {
   'query_one_transaction' : ActorMethod<[bigint], Result_10>,
   'query_wallets_synced_transactions' : ActorMethod<
     [HistoryQueryCommand],
-    Array<SimpleTransaction>
+    Array<TransactionB>
   >,
   'remove_transaction_tag' : ActorMethod<[bigint], Result>,
   'restore' : ActorMethod<[Array<[string, CanisterContext]>], undefined>,
