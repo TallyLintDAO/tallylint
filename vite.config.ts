@@ -52,7 +52,7 @@ export default defineConfig(({ command, mode }) => {
   const common: UserConfig = {
     mode, // 运行模式
     define: {
-      // 'process.env.NODE_ENV': getNodeEnv(configMode), //接口文件里面需要用来判断 process.env.NODE_ENV值为production的时候会导致热更新失效
+      // "process.env.NODE_ENV": JSON.stringify(getNodeEnv(configMode)), //接口文件里面需要用来判断 process.env.NODE_ENV值为production的时候会导致热更新失效
       "process.env": process.env, // 环境变量
     },
     plugins: [
@@ -172,7 +172,8 @@ function getLocation(viteEnv: ViteEnv): string {
     const dfxJson = require(position)
     return "http://" + dfxJson.networks.local.bind
   }
-  return "https://mainnet.dfinity.network"
+  //本地开发端口转发的目标网址，注意400 bad request/ unknow_domain 可能是这出了问题。
+  return "https://icp-api.io"
 }
 
 // 根据环境参数加载 canister 名称 和 id 之间的关系，主要关联需要用到的 canister_ids.json 文件 可以多个
@@ -249,7 +250,7 @@ function initAlias(canisterIds: {}, network: string, apiPositions: {}) {
   const canistersAlias = {}
   for (const canister in canisterIds) {
     // 这里将 id 设置到 process.env 对象里面，标准接口文件中有用到
-    const key = canister.toUpperCase() + "_CANISTER_ID"
+    const key = "CANISTER_ID_" + canister.toUpperCase()
     process.env[key] = canisterIds[canister][network]
     console.log(key, canisterIds[canister][network])
 
@@ -260,7 +261,7 @@ function initAlias(canisterIds: {}, network: string, apiPositions: {}) {
         apiPositions[canister] + "/index.js",
       )
       console.log(
-        "canisters/" + canister,
+        "initAlias: canisters/" + canister,
         path.join(__dirname, apiPositions[canister] + "/index.js"),
       )
     } else {
