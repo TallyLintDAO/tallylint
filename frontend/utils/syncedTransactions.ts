@@ -25,18 +25,22 @@ export const getAllSyncedTransactions = async (
     )
     //如果获取汇率的过程中发生了错误或者返回的结果中没有汇率，则使用原值
     const rate = (await getUserCurrencyRate()).rate || 1
-    const transactions = res.map((transaction) => ({
-      ...transaction,
-      timestamp: Number(transaction.timestamp),
-      details: {
-        ...transaction.details,
-        price: processNumber(transaction.details.price * rate),
-        cost: processNumber(transaction.details.cost * rate),
-        profit: processNumber(transaction.details.profit * rate),
-        value: processNumber(transaction.details.value * rate),
-      },
-    }))
-    return { total: transactions.length, transactions: transactions }
+    if (res.Ok) {
+      const transactions = res.Ok.map((transaction) => ({
+        ...transaction,
+        timestamp: Number(transaction.timestamp),
+        details: {
+          ...transaction.details,
+          price: processNumber(transaction.details.price * rate),
+          cost: processNumber(transaction.details.cost * rate),
+          profit: processNumber(transaction.details.profit * rate),
+          value: processNumber(transaction.details.value * rate),
+        },
+      }))
+      return { total: transactions.length, transactions: transactions }
+    } else {
+      return { total: 0, transactions: [] }
+    }
   } catch (error) {
     console.error("Error fetching transactions:", error)
     throw error

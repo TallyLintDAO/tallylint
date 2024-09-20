@@ -276,11 +276,11 @@ export async function removeTransactionTag(
 export async function getSyncedTransactions(
   params: HistoryQueryParams,
   refresh: boolean,
-): Promise<SyncedHistory> {
-  return getBackend().query_wallets_synced_transactions(params)
+): Promise<ApiResult<SyncedHistory>> {
+  return getBackend().query_synced_transactions(params)
   // return await getCache({
   //   key: "USER_SyncedTransactions",
-  //   execute: () => getBackend().query_wallets_synced_transactions(params),
+  //   execute: () => getBackend().query_synced_transactions(params),
   //   ttl: walletTTL,
   //   refresh: refresh, //是否刷新缓存，用于执行增删改操作后的刷新。
   // })
