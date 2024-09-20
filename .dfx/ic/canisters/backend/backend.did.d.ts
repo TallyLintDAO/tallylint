@@ -89,6 +89,8 @@ export type Result_1 = { 'Ok' : bigint } |
   { 'Err' : string };
 export type Result_10 = { 'Ok' : TransactionB } |
   { 'Err' : string };
+export type Result_11 = { 'Ok' : Array<TransactionB> } |
+  { 'Err' : string };
 export type Result_2 = { 'Ok' : UserProfile } |
   { 'Err' : string };
 export type Result_3 = { 'Ok' : [CustomResult1] } |
@@ -197,10 +199,7 @@ export interface _SERVICE {
   'query_all_transactions' : ActorMethod<[], Result_8>,
   'query_all_wallets' : ActorMethod<[], Result_9>,
   'query_one_transaction' : ActorMethod<[bigint], Result_10>,
-  'query_wallets_synced_transactions' : ActorMethod<
-    [HistoryQueryCommand],
-    Array<TransactionB>
-  >,
+  'query_synced_transactions' : ActorMethod<[HistoryQueryCommand], Result_11>,
   'remove_transaction_tag' : ActorMethod<[bigint], Result>,
   'restore' : ActorMethod<[Array<[string, CanisterContext]>], undefined>,
   'set_user_config' : ActorMethod<[UserConfig], Result>,
@@ -215,4 +214,4 @@ export interface _SERVICE {
   'user_quantity' : ActorMethod<[], number>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
-export declare const init: ({ IDL }: { IDL: IDL }) => IDL.Type[];
+export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];
