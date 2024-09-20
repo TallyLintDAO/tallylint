@@ -2,21 +2,21 @@
   <div class="container login-container">
     <div class="description row">
       <div class="col-12 col-md-6">
-        <h4 style="margin-bottom: 0">Welcome to TallyLint🧾</h4>
+        <h4 style="margin: 0">Welcome to TallyLint🧾</h4>
         <div class="q-mb-xl">
-          <span class="text-body1">
-            TallyLint is designed to help users of ICPs to count and manage
-            their tax information more easily. With TallyLint, users will be
-            able to record, track and calculate tax information related to their
-            transactions and assets in the IC ecosystem.
-          </span>
-          <br />
-          <span class="text-body1">
-            In TallyLint, which is 100% on-chain, users get a decentralised,
-            private and secure tax experience.
-          </span>
-        </div>
-        <div class="button-container">
+          <div>
+            <span class="text-body1">
+              TallyLint is designed to help users of ICPs to count and manage
+              their tax information more easily. With TallyLint, users will be
+              able to record, track and calculate tax information related to
+              their transactions and assets in the IC ecosystem.
+            </span>
+            <br />
+            <span class="text-body1">
+              In TallyLint, which is 100% on-chain, users get a decentralised,
+              private and secure tax experience.
+            </span>
+          </div>
           <q-btn
             color="primary"
             class="login-button"
@@ -27,9 +27,12 @@
             Launch app
           </q-btn>
         </div>
+        <div class="logo">
+          <img alt="logo" src="@/assets/on-chain.svg" />
+        </div>
       </div>
       <div class="col-12 col-md-6">
-        <q-img src="@/assets/images/profit.png"></q-img>
+        <q-img src="@/assets/images/intro.png"></q-img>
       </div>
     </div>
   </div>
@@ -38,7 +41,6 @@
 <script lang="ts" setup>
 import { IdentityInfo, initAuth, signIn } from "@/api/auth"
 import { setCurrentIdentity } from "@/api/canister_pool"
-import { getUserAutoRegister } from "@/api/user"
 import { useUserStore } from "@/stores/user"
 import { onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
@@ -88,39 +90,36 @@ const loginSuccess = (ii: IdentityInfo) => {
     })
   })
 }
-
-//从后台获取用户信息，并且设置
-const getUserInfoFromServices = () => {
-  getUserAutoRegister()
-    .then((info) => {
-      console.log("get user info", info)
-      if (info.Ok) {
-        router.push({
-          path: "/app",
-        })
-      } else if (info.Err) {
-        console.error("no information for unregister user: ", info)
-      } else {
-        throw new Error("info not ok & info not err")
-      }
-    })
-    .catch((e) => {
-      console.error("mounted get user info failed: ", e)
-    })
-}
 </script>
 
 <style lang="scss" scoped>
 .login-container {
-  margin-top: 50px;
-  margin-bottom: 450px;
+  margin-top: 100px;
+  margin-bottom: 250px;
+  overflow: hidden;
   .description > div {
     position: relative;
   }
-  .button-container {
+  .login-button {
+    margin-top: 50px;
+  }
+  .logo {
     position: absolute;
     bottom: 0;
     left: 0;
   }
+  // &::before {
+  //   overflow: hidden;
+  //   content: "";
+  //   position: absolute;
+  //   bottom: 0;
+  //   left: 50%;
+  //   transform: translateX(-50%);
+  //   width: 50%; // 你可以根据需要调整大小
+  //   height: 200px; // 半圆的高度是圆的半径
+  //   background: radial-gradient(circle, #c0d9ff, #f0b9e5);
+  //   border-radius: 100px 100px 0 0; // 创建半圆
+  //   filter: blur(300px); // 模糊效果
+  // }
 }
 </style>

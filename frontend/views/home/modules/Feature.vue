@@ -56,6 +56,7 @@ const cards = ref([
 
 <style lang="scss" scoped>
 .feature-container {
+  padding-bottom: 150px;
   .container {
     .featrue-card {
       .q-card {
