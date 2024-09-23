@@ -1,38 +1,40 @@
 <template>
-  <div class="container login-container">
-    <div class="description row">
-      <div class="col-12 col-md-6">
-        <h4 style="margin: 0">Welcome to TallyLint🧾</h4>
-        <div class="q-mb-xl">
-          <div>
-            <span class="text-body1">
-              TallyLint is designed to help users of ICPs to count and manage
-              their tax information more easily. With TallyLint, users will be
-              able to record, track and calculate tax information related to
-              their transactions and assets in the IC ecosystem.
-            </span>
-            <br />
-            <span class="text-body1">
-              In TallyLint, which is 100% on-chain, users get a decentralised,
-              private and secure tax experience.
-            </span>
+  <div class="color-mask">
+    <div class="container login-container">
+      <div class="description row">
+        <div class="col-12 col-md-6">
+          <h4 style="margin-top: 0; margin-bottom: 10px">
+            Welcome to TallyLint🧾
+          </h4>
+          <div class="q-mb-xl">
+            <div>
+              <span class="text-body1">
+                TallyLint is a 100% decentralized on-chain app that enables ICP
+                users to track the value of every transaction with precision.
+              </span>
+              <br />
+              <span class="text-body1">
+                Offering private and secure services through smart contracts,
+                TallyLint makes asset management effortless and efficient.
+              </span>
+            </div>
+            <q-btn
+              color="primary"
+              class="login-button"
+              @click="onLogin()"
+              :loading="loading"
+              no-caps
+            >
+              Launch app
+            </q-btn>
           </div>
-          <q-btn
-            color="primary"
-            class="login-button"
-            @click="onLogin()"
-            :loading="loading"
-            no-caps
-          >
-            Launch app
-          </q-btn>
+          <div class="logo">
+            <img alt="logo" src="@/assets/on-chain.svg" />
+          </div>
         </div>
-        <div class="logo">
-          <img alt="logo" src="@/assets/on-chain.svg" />
+        <div class="col-12 col-md-6">
+          <q-img src="@/assets/images/intro.png"></q-img>
         </div>
-      </div>
-      <div class="col-12 col-md-6">
-        <q-img src="@/assets/images/intro.png"></q-img>
       </div>
     </div>
   </div>
@@ -93,10 +95,30 @@ const loginSuccess = (ii: IdentityInfo) => {
 </script>
 
 <style lang="scss" scoped>
-.login-container {
-  margin-top: 100px;
-  margin-bottom: 250px;
+.color-mask {
   overflow: hidden;
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%; // 你可以根据需要调整大小
+    height: 200px; // 半圆的高度是圆的半径
+    background: radial-gradient(
+      circle,
+      rgba(192, 217, 255, 0.5),
+      rgba(240, 185, 229, 0.5)
+    );
+    border-radius: 100px;
+    filter: blur(300px); // 模糊效果
+  }
+}
+.login-container {
+  padding-top: 100px;
+  padding-bottom: 250px;
+
   .description > div {
     position: relative;
   }
@@ -108,18 +130,5 @@ const loginSuccess = (ii: IdentityInfo) => {
     bottom: 0;
     left: 0;
   }
-  // &::before {
-  //   overflow: hidden;
-  //   content: "";
-  //   position: absolute;
-  //   bottom: 0;
-  //   left: 50%;
-  //   transform: translateX(-50%);
-  //   width: 50%; // 你可以根据需要调整大小
-  //   height: 200px; // 半圆的高度是圆的半径
-  //   background: radial-gradient(circle, #c0d9ff, #f0b9e5);
-  //   border-radius: 100px 100px 0 0; // 创建半圆
-  //   filter: blur(300px); // 模糊效果
-  // }
 }
 </style>

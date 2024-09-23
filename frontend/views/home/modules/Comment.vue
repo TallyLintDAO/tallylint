@@ -1,8 +1,11 @@
 <template>
   <div class="comment-container bg-grey-2 q-py-xl">
     <div class="container">
+      <div class="text-h4 text-weight-medium q-my-lg">
+        <span class="text-blue-10">Users</span> have said
+      </div>
       <div class="row items-start q-col-gutter-md">
-        <div class="col-4" v-for="comment in comments">
+        <div class="col-12 col-md-4" v-for="comment in comments">
           <q-card class="comment-card flat-card">
             <q-card-section>
               <div class="row items-center from">
@@ -51,7 +54,7 @@ const comments = ref([
 
 <style lang="scss" scoped>
 .comment-container {
-  padding: 150px 0px;
+  padding: 100px 0px;
   .comment-card {
     .q-card__section {
       padding: 25px 40px;
