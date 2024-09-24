@@ -70,7 +70,7 @@ fn update_wallet(cmd: WalletUpdateCommand) -> Result<bool, String> {
     let caller = caller();
     // let now = time();
     let id: u64 = cmd.id;
-    let ret = ctx.wallet_service.query_a_wallet_by_id(id);
+    let ret = ctx.wallet_service.query_wallet_by_id(id);
     if ret.is_none() {
       return Err("wallet not exist".to_string());
     }
@@ -98,7 +98,7 @@ fn update_wallet(cmd: WalletUpdateCommand) -> Result<bool, String> {
 fn query_a_wallet(id: u64) -> Result<WalletProfile, String> {
   STATE.with(|c| {
     let ctx = c.borrow_mut();
-    let wallet = match ctx.wallet_service.query_a_wallet_by_id(id) {
+    let wallet = match ctx.wallet_service.query_wallet_by_id(id) {
       Some(wallet) => wallet.clone(),
       None => {
         return Err("wallet not exsit".to_string());

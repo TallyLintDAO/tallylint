@@ -21,17 +21,15 @@ use crate::{MySummary, TransactionB};
 fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
-    ctx.id = ctx.id + 1;
-    let id = ctx.id;
-    data.id = id;
-    let ret = ctx.wallet_transc_srv.add_transaction_impl(data.clone());
-    match ret {
+    let id = ctx.id.clone();
+    let result = ctx.wallet_transc_srv.add_transaction_impl(data.clone(), id);
+    match result {
       Ok(_) => {
         // update wallet info
         // let mut cur_wallet = ctx.wallet_service.get_by_addr(data.address);
         // cur_wallet.transactions = cur_wallet.transactions + 1;
         // ctx.wallet_service.update_wallet(cur_wallet, caller());
-        return Ok(id);
+        return Ok(result.unwrap());
       }
       Err(msg) => {
         return Err(msg);
@@ -39,7 +37,7 @@ fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
     }
   })
 }
-//根据wid删除对应的交易记录
+//delete transaction by wallet id
 #[update(guard = "user_owner_guard")]
 fn delete_transaction(wid: WalletId) -> Result<WalletId, String> {
   STATE.with(|c| {
@@ -51,7 +49,7 @@ fn delete_transaction(wid: WalletId) -> Result<WalletId, String> {
     }
   })
 }
-//根据交易记录id查询交易记录
+//根query transaction by id
 #[query(guard = "user_owner_guard")]
 fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
   STATE.with(|c| {
@@ -67,14 +65,15 @@ fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
 #[query(guard = "user_owner_guard")]
 fn query_synced_transactions(
   cmd: HistoryQueryCommand,
-) -> Result<Vec<TransactionB>,String> {
+) -> Result<Vec<TransactionB>, String> {
   STATE.with(|c| {
     let ctx = c.borrow();
-    let synced_transactions = ctx.wallet_transc_srv.query_synced_transactions(cmd.clone());
+    let synced_transactions =
+      ctx.wallet_transc_srv.query_synced_transactions(cmd.clone());
     Ok(synced_transactions)
   })
 }
-//查询所有钱包的交易记录
+//query all transactions
 #[query(guard = "admin_guard")]
 fn query_all_transactions() -> Result<HashMap<WalletId, TransactionB>, String> {
   STATE.with(|c| {
@@ -83,7 +82,7 @@ fn query_all_transactions() -> Result<HashMap<WalletId, TransactionB>, String> {
     return Ok(rec);
   })
 }
-//修改某个交易记录
+//update a transaction
 #[update(guard = "user_owner_guard")]
 fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
   STATE.with(|c| {
@@ -149,45 +148,33 @@ fn sync_transaction_record(
 ) -> Result<bool, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
-    for one_wallet in data {
-      // FIXME
-      let w_addr = ctx.wallet_service.get_addr_by_id(one_wallet.walletId);
-      let wallet_principal =
-        ctx.wallet_service.get_principal_by_id(one_wallet.walletId);
-
-      ctx
-        .trans_f_srv
-        .delete_all_by_addr(w_addr.clone(), wallet_principal.clone());
-      ctx.wallet_transc_srv.delete_transaction_by_addr(&w_addr);
-      if let Some(wallet_principal) = wallet_principal {
-        ctx
-          .wallet_transc_srv
-          .delete_transaction_by_principal(&wallet_principal);
-      }
-
-      // ! append records
-      for one_rec in one_wallet.history.clone() {
-        ctx.id = ctx.id + 1;
+    for each_wallet in data {
+      // ! append records and check if there is any duplicate
+      for one_rec in each_wallet.history.clone() {
+        // copy transF to transB
         let id = ctx.id;
-        let _ret = ctx.trans_f_srv.add_transaction_record(id, one_rec.clone());
-
-        // ! copy transF to transB
-        ctx.id = ctx.id + 1;
-        let id2 = ctx.id;
-        let trans_b = convert_trans_f_to_trans_b(one_rec, id2);
-        let _ = ctx.wallet_transc_srv.add_transaction_impl(trans_b);
+        let trans_b = convert_trans_f_to_trans_b(one_rec, id);
+        //save to wallet_transc_srv
+        let result = ctx.wallet_transc_srv.add_transaction_impl(trans_b, id);
+        match result {
+          Ok(_) => {
+            return Ok(true);
+          }
+          Err(msg) => {
+            return Err(msg);
+          }
+        }
       }
-
       // ! update wallet info
       let mut wallet_profile = ctx
         .wallet_service
-        .query_a_wallet_by_id(one_wallet.walletId)
+        .query_wallet_by_id(each_wallet.walletId)
         .expect("no such wallet");
       // FIXME use ms u64 .
       wallet_profile.last_sync_time = now();
-      wallet_profile.transactions = one_wallet.history.len() as u64;
+      wallet_profile.transactions = each_wallet.history.len() as u64;
       wallet_profile.last_transaction_time = timestamp_ms_float_to_ns(
-        one_wallet.history.get(0).unwrap().clone().timestamp,
+        each_wallet.history.get(0).unwrap().clone().timestamp,
       );
       ctx
         .wallet_service

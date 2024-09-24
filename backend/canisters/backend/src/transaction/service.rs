@@ -6,10 +6,14 @@ use std::collections::{BTreeMap, HashMap};
 
 use super::domain::*;
 
+use crate::common::times::{
+  timestamp_ms_float_to_ms_u64, timestamp_ms_float_to_ns,
+};
+use crate::transaction::domain::SyncTransactionCommand;
+use crate::wallet::domain::HistoryQueryCommand;
 use crate::{
   common::context::TimeStamp, wallet::service::WalletId, TransactionB,
 };
-use crate::wallet::domain::HistoryQueryCommand;
 //FIXME 垃圾，数据恢复后将其删除
 pub type WalletAddress = String;
 //FIXME 该数据结构需要删除
@@ -67,6 +71,7 @@ pub struct EditHistoryCommand {
 }
 
 //该交易记录用于接收前端的数据并进行临时的存储和删除
+//FIXME 整个TransactionService都是垃圾，全部删除
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct TransactionService {
   pub transactions: BTreeMap<WalletId, TransactionF>,
@@ -74,20 +79,28 @@ pub struct TransactionService {
 impl TransactionService {
   // TODO
   /**
-   * 插入交易记录
+   * insert the transaction record
    */
   pub fn add_transaction_record(
     &mut self,
     id: u64,
-    profile: TransactionF,
+    record: TransactionF,
   ) -> Result<bool, String> {
-    if self.transactions.contains_key(&id) {
-      return Err("Transaction record already exists".to_string());
+    // check if there is a transaction with the same wid and hash
+    for (_, existing_record) in &self.transactions {
+      if existing_record.wid == record.wid
+        && existing_record.hash == record.hash
+      {
+        return Err(
+          "Transaction with the same wid and hash already exists".to_string(),
+        );
+      }
     }
 
-    self.transactions.insert(id, profile);
+    // add the record
+    self.transactions.insert(id, record);
 
-    // 检查插入是否成功
+    // check if it is added successfully
     if self.transactions.contains_key(&id) {
       return Ok(true);
     } else {
@@ -176,17 +189,32 @@ pub struct WalletRecordService {
 }
 
 impl WalletRecordService {
-  //插入交易记录实现类
+  //insert transaction
   pub fn add_transaction_impl(
     &mut self,
-    profile: TransactionB,
-  ) -> Result<bool, String> {
-    let id = profile.id;
-    self.records.insert(id, profile);
+    record: TransactionB,
+    ctx_id: u64,
+  ) -> Result<u64, String> {
+    let id = ctx_id + 1;
+    // check if there is a transaction with the same wid and hash
+    for (_, existing_record) in &self.records {
+      if existing_record.wid == record.wid
+        && existing_record.hash == record.hash
+      {
+        return Err(
+          "Transaction with the same wid and hash already exists".to_string(),
+        );
+      }
+    }
+
+    // add the record
+    self.records.insert(id, record);
+
+    // check if it is added successfully
     if self.records.contains_key(&id) {
-      return Ok(true);
+      return Ok(id);
     } else {
-      return Err("Insert fail. may heap overflow".to_string());
+      return Err("Insert failed. Possible heap overflow".to_string());
     }
   }
   pub fn new() -> Self {
@@ -277,45 +305,61 @@ impl WalletRecordService {
   //   // }
   //   return Err("nothing".to_string());
   // }
-  pub fn query_synced_transactions(&self, cmd: HistoryQueryCommand) -> Vec<TransactionB> {
-    let mut sync_transactions: Vec<TransactionB> = cmd.wids.iter()
-        .flat_map(|wid| self.query_one_wallet_trans_by_wallet_id(wid.clone())
-            .get(wid)
-            .cloned()
-            .unwrap_or_default())
-        .collect();
+  pub fn query_synced_transactions(
+    &self,
+    cmd: HistoryQueryCommand,
+  ) -> Vec<TransactionB> {
+    let mut sync_transactions: Vec<TransactionB> = cmd
+      .wids
+      .iter()
+      .flat_map(|wid| {
+        self
+          .query_one_wallet_trans_by_wallet_id(wid.clone())
+          .get(wid)
+          .cloned()
+          .unwrap_or_default()
+      })
+      .collect();
 
     // Filter transactions by time range if specified
     if cmd.from_time != 0 && cmd.to_time != 0 {
-        sync_transactions.retain(|transaction| {
-            transaction.timestamp >= cmd.from_time && transaction.timestamp <= cmd.to_time
-        });
+      sync_transactions.retain(|transaction| {
+        transaction.timestamp >= cmd.from_time
+          && transaction.timestamp <= cmd.to_time
+      });
     }
 
     if sync_transactions.is_empty() {
-        return sync_transactions;
+      return sync_transactions;
     }
 
     // Sort transactions based on the provided sort method
     if let Some(method) = cmd.sort_method {
-        match method.as_str() {
-            "date-asc" => sync_transactions.sort_by_key(|t| t.timestamp),
-            "date-desc" => sync_transactions.sort_by_key(|t| std::cmp::Reverse(t.timestamp)),
-            "profit-asc" => sync_transactions.sort_by(|a, b| {
-                a.details.profit.partial_cmp(&b.details.profit).unwrap_or(std::cmp::Ordering::Equal)
-            }),
-            "profit-desc" => sync_transactions.sort_by(|a, b| {
-                b.details.profit.partial_cmp(&a.details.profit).unwrap_or(std::cmp::Ordering::Equal)
-            }),
-            _ => sync_transactions.sort_by_key(|t| t.timestamp), // Default sort by date-asc
+      match method.as_str() {
+        "date-asc" => sync_transactions.sort_by_key(|t| t.timestamp),
+        "date-desc" => {
+          sync_transactions.sort_by_key(|t| std::cmp::Reverse(t.timestamp))
         }
+        "profit-asc" => sync_transactions.sort_by(|a, b| {
+          a.details
+            .profit
+            .partial_cmp(&b.details.profit)
+            .unwrap_or(std::cmp::Ordering::Equal)
+        }),
+        "profit-desc" => sync_transactions.sort_by(|a, b| {
+          b.details
+            .profit
+            .partial_cmp(&a.details.profit)
+            .unwrap_or(std::cmp::Ordering::Equal)
+        }),
+        _ => sync_transactions.sort_by_key(|t| t.timestamp), // Default sort by date-asc
+      }
     } else {
-        sync_transactions.sort_by_key(|t| t.timestamp); // Default sort if no method is provided
+      sync_transactions.sort_by_key(|t| t.timestamp); // Default sort if no method is provided
     }
 
     sync_transactions
-}
-
+  }
   //通过钱包地址查询单个钱包的交易记录
   pub fn query_one_wallet_trans(
     &self,
