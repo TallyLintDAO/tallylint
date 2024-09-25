@@ -21,8 +21,10 @@ use crate::{MySummary, TransactionB};
 fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
-    let id = ctx.id.clone();
-    let result = ctx.wallet_transc_srv.add_transaction_impl(data.clone(), id);
+    ctx.id = ctx.id + 1;
+        let id = ctx.id;
+        data.id = id;
+    let result = ctx.wallet_transc_srv.add_transaction_impl(data.clone());
     match result {
       Ok(_) => {
         // update wallet info
@@ -49,7 +51,7 @@ fn delete_transaction(wid: WalletId) -> Result<WalletId, String> {
     }
   })
 }
-//根query transaction by id
+//gen query transaction by id
 #[query(guard = "user_owner_guard")]
 fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
   STATE.with(|c| {
@@ -152,10 +154,11 @@ fn sync_transaction_record(
       // ! append records and check if there is any duplicate
       for one_rec in each_wallet.history.clone() {
         // copy transF to transB
+        ctx.id = ctx.id + 1;
         let id = ctx.id;
         let trans_b = convert_trans_f_to_trans_b(one_rec, id);
         //save to wallet_transc_srv
-        let result = ctx.wallet_transc_srv.add_transaction_impl(trans_b, id);
+        let result = ctx.wallet_transc_srv.add_transaction_impl(trans_b);
         match result {
           Ok(_) => {
             return Ok(true);

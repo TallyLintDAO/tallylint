@@ -193,30 +193,25 @@ impl WalletRecordService {
   pub fn add_transaction_impl(
     &mut self,
     record: TransactionB,
-    ctx_id: u64,
-  ) -> Result<u64, String> {
-    let id = ctx_id + 1;
-    // check if there is a transaction with the same wid and hash
+) -> Result<u64, String> {
+    // check if transaction with the same wid and hash already exists
     for (_, existing_record) in &self.records {
-      if existing_record.wid == record.wid
-        && existing_record.hash == record.hash
-      {
-        return Err(
-          "Transaction with the same wid and hash already exists".to_string(),
-        );
-      }
+        if existing_record.wid == record.wid && existing_record.hash == record.hash {
+            return Err("Transaction with the same wid and hash already exists".to_string());
+        }
     }
 
-    // add the record
-    self.records.insert(id, record);
+    // insert the new transaction
+    self.records.insert(record.id, record.clone()); // 使用 clone()
 
-    // check if it is added successfully
-    if self.records.contains_key(&id) {
-      return Ok(id);
+    // examine if the transaction is added successfully
+    if self.records.contains_key(&record.id) {
+        return Ok(record.id);
     } else {
-      return Err("Insert failed. Possible heap overflow".to_string());
+        return Err("Insert failed. Possible heap overflow".to_string());
     }
-  }
+}
+
   pub fn new() -> Self {
     WalletRecordService {
       records: BTreeMap::new(),
