@@ -161,7 +161,7 @@ fn sync_transaction_record(
             return Ok(true);
           }
           Err(msg) => {
-            return Err(msg);
+            return Ok(false);
           }
         }
       }
