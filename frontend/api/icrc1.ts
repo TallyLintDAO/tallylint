@@ -51,6 +51,7 @@ export const getICRC1Balance = async (
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e))
       console.error(`Error with token ${token.symbol}:`, error)
+      showMessageError(`Error with token ${token.symbol}:` + error)
       return {
         symbol: token.symbol,
         logo: token.meta.logo,
@@ -183,7 +184,6 @@ export const matchICRC1Price = async (
   //将小数点的时间戳转为整数时间戳
   const targetTimestamp = Math.floor(timestamp)
   //获取ICP的所有价格历史数据，并通过getCache保存到本地缓存中，ttl为1天，方便调用。
-  //TODO 调用不同的token可能会出现问题，需要验证
   try {
     const priceHistory = await getCache({
       key: "ICRC1_Price_History_" + ledgerCanisterId,

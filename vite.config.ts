@@ -104,7 +104,13 @@ export default defineConfig(({ command, mode }) => {
     },
     css: {
       preprocessorOptions: {
-        scss: {},
+        // 使用现代编译器，好处包括更快的编译速度和更好的错误处理能力
+        scss: {
+          api: "modern-compiler", // or 'modern'
+        },
+        sass: {
+          api: "modern-compiler", // or 'modern'
+        },
       },
     },
     envDir: "env",

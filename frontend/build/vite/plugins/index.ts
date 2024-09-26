@@ -1,11 +1,10 @@
-import type { Plugin } from "vite"
-
+import type { PluginOption } from "vite"
 import type { ViteEnv } from "../../../types/model"
 
 import { quasar, transformAssetUrls } from "@quasar/vite-plugin"
 import vue from "@vitejs/plugin-vue"
+import { createHtmlPlugin } from "vite-plugin-html"
 import { viteCompressionPlugin } from "./compression"
-import { viteHtmlPlugins } from "./html"
 
 export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean) {
   const {
@@ -13,19 +12,26 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean) {
     VITE_BUILD_COMPRESS_DELETE_ORIGIN_FILE: shouldBuildCompressDeleteFile,
   } = viteEnv
 
-  const vitePlugins: (Plugin | Plugin[])[] = []
-
-  vitePlugins.push(
+  const vitePlugins: (PluginOption | PluginOption[])[] = [
     vue({
       template: { transformAssetUrls },
     }),
-  )
-  vitePlugins.push(
     quasar({
-      sassVariables: "frontend/assets/css/quasar-variables.sass",
+      sassVariables: "@/assets/css/quasar-variables.sass",
     }),
-  )
-  vitePlugins.push(...viteHtmlPlugins(viteEnv, isBuild)) // 注入配置字符串
+    createHtmlPlugin({
+      minify: true,
+      inject: {
+        data: {
+          keywords: viteEnv.VITE_KEYWORDS,
+          author: viteEnv.VITE_AUTHOR,
+          description: viteEnv.VITE_DESCRIPTION,
+          noScriptTitle: viteEnv.VITE_TITLE,
+          title: viteEnv.VITE_TITLE,
+        },
+      },
+    }),
+  ]
 
   if (isBuild) {
     // 生成模式执行
