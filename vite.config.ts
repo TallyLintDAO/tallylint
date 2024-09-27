@@ -271,7 +271,10 @@ function initAlias(canisterIds: {}, network: string, apiPositions: {}) {
         path.join(__dirname, apiPositions[canister] + "/index.js"),
       )
     } else {
-      console.error(`canister ${canister} api position is missing.`)
+      //前端容器没有api 自然不需要报警
+      if (canister !== "assets") {
+        console.error(`canister ${canister} api position is missing.`)
+      }
     }
   }
   return canistersAlias

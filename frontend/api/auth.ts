@@ -114,6 +114,8 @@ export async function signOut(client: AuthClient): Promise<void> {
       // 如果已经登录，则同时移除登录缓存
       const principal = client.getIdentity().getPrincipal().toString()
       deleteUserInfoStorage(principal)
+      localStorage.clear()
+      sessionStorage.clear()
     }
     await client.logout()
   }

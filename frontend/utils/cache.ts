@@ -19,16 +19,12 @@ export class TTL {
 }
 
 // 直接获取本地储存的带过期时间的数据进行验证，如果没有才发出网络请求
-// key: 设置storage里的key，注意：key 里面应当包含执行方法的参数信息，不同的参数不能共用一个 key
-// execute: 传入执行方法
-// ttl: Time To Live 过期时长，秒为单位，比如xx秒以后过期
-// isLocal: true为LocalStorage，false为非LocalStorage
 // 方法返回值必须是res.Ok才会激活本地缓存
 export async function getCache(info: {
-  key: string
-  execute: () => Promise<any>
-  ttl?: number
-  isLocal?: boolean
+  key: string // key: 设置storage里的key，注意：key 里面应当包含执行方法的参数信息，不同的参数不能共用一个 key
+  execute: () => Promise<any> // execute: 传入执行方法
+  ttl?: number // ttl: Time To Live 过期时长，秒为单位，比如xx秒以后过期
+  isLocal?: boolean //是否存在LocalStorage中，如果否，则存在内存中。
   timeout?: number // 超时限制，如果网络请求时间实在太长，就提示错误
   refresh?: boolean // 是否刷新旧缓存，如果 refresh 是 true，那么表明不使用缓存而是加载新的数据，再将新的数据缓存
   notice?: (_fromCaching: boolean) => void // 万一上级需要判断是否从缓存中读取，因此需要额外通知数据

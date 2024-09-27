@@ -116,6 +116,7 @@
         </div>
       </q-card-section>
       <q-card-actions align="right">
+        <q-btn flat label="Close" color="primary" v-close-popup />
         <q-btn
           color="secondary"
           @click="method()"
@@ -123,7 +124,6 @@
           icon="cached"
           >Sync All Transactions</q-btn
         >
-        <q-btn flat label="Close" color="primary" v-close-popup />
       </q-card-actions>
     </q-card>
   </q-dialog>
