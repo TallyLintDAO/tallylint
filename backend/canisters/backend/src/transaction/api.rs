@@ -22,16 +22,16 @@ fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     ctx.id = ctx.id + 1;
-        let id = ctx.id;
-        data.id = id;
-    let result = ctx.wallet_transc_srv.add_transaction_impl(data.clone());
+    let id = ctx.id;
+    data.id = id;
+    let result = ctx.wallet_transc_srv.add_transaction(data.clone());
     match result {
       Ok(_) => {
         // update wallet info
         // let mut cur_wallet = ctx.wallet_service.get_by_addr(data.address);
         // cur_wallet.transactions = cur_wallet.transactions + 1;
         // ctx.wallet_service.update_wallet(cur_wallet, caller());
-        return Ok(result.unwrap());
+        return Ok(id);
       }
       Err(msg) => {
         return Err(msg);
@@ -39,7 +39,7 @@ fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
     }
   })
 }
-//delete transaction by wallet id
+//根据wid删除对应的交易记录
 #[update(guard = "user_owner_guard")]
 fn delete_transaction(wid: WalletId) -> Result<WalletId, String> {
   STATE.with(|c| {
@@ -51,7 +51,7 @@ fn delete_transaction(wid: WalletId) -> Result<WalletId, String> {
     }
   })
 }
-//gen query transaction by id
+//根据交易记录id查询交易记录
 #[query(guard = "user_owner_guard")]
 fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
   STATE.with(|c| {
@@ -67,15 +67,14 @@ fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
 #[query(guard = "user_owner_guard")]
 fn query_synced_transactions(
   cmd: HistoryQueryCommand,
-) -> Result<Vec<TransactionB>, String> {
+) -> Result<Vec<TransactionB>,String> {
   STATE.with(|c| {
     let ctx = c.borrow();
-    let synced_transactions =
-      ctx.wallet_transc_srv.query_synced_transactions(cmd.clone());
+    let synced_transactions = ctx.wallet_transc_srv.query_synced_transactions(cmd.clone());
     Ok(synced_transactions)
   })
 }
-//query all transactions
+//查询所有钱包的交易记录
 #[query(guard = "admin_guard")]
 fn query_all_transactions() -> Result<HashMap<WalletId, TransactionB>, String> {
   STATE.with(|c| {
@@ -84,7 +83,7 @@ fn query_all_transactions() -> Result<HashMap<WalletId, TransactionB>, String> {
     return Ok(rec);
   })
 }
-//update a transaction
+//修改某个交易记录
 #[update(guard = "user_owner_guard")]
 fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
   STATE.with(|c| {
@@ -151,23 +150,14 @@ fn sync_transaction_record(
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
     for each_wallet in data {
-      // ! append records and check if there is any duplicate
-      for one_rec in each_wallet.history.clone() {
-        // copy transF to transB
-        ctx.id = ctx.id + 1;
+      // ! append records
+      let trans_b_vec: Vec<TransactionB> = each_wallet.history.iter().map(|record| {
+        ctx.id += 1; // 更新 ctx.id
         let id = ctx.id;
-        let trans_b = convert_trans_f_to_trans_b(one_rec, id);
-        //save to wallet_transc_srv
-        let result = ctx.wallet_transc_srv.add_transaction_impl(trans_b);
-        match result {
-          Ok(_) => {
-            return Ok(true);
-          }
-          Err(msg) => {
-            return Ok(false);
-          }
-        }
-      }
+        convert_trans_f_to_trans_b(record.clone(), id) // 处理并返回转换后的记录
+    }).collect();
+      let result = ctx.wallet_transc_srv.add_transaction_batch(trans_b_vec);
+
       // ! update wallet info
       let mut wallet_profile = ctx
         .wallet_service

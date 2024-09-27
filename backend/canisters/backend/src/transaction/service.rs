@@ -2,14 +2,10 @@
 use candid::{CandidType, Principal};
 use serde::{Deserialize, Serialize};
 
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 use super::domain::*;
 
-use crate::common::times::{
-  timestamp_ms_float_to_ms_u64, timestamp_ms_float_to_ns,
-};
-use crate::transaction::domain::SyncTransactionCommand;
 use crate::wallet::domain::HistoryQueryCommand;
 use crate::{
   common::context::TimeStamp, wallet::service::WalletId, TransactionB,
@@ -70,8 +66,7 @@ pub struct EditHistoryCommand {
   pub comment: String,
 }
 
-//该交易记录用于接收前端的数据并进行临时的存储和删除
-//FIXME 整个TransactionService都是垃圾，全部删除
+//FIXME 整个TransactionService都是无用的，数据备份恢复后删除
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct TransactionService {
   pub transactions: BTreeMap<WalletId, TransactionF>,
@@ -79,28 +74,20 @@ pub struct TransactionService {
 impl TransactionService {
   // TODO
   /**
-   * insert the transaction record
+   * 插入交易记录
    */
   pub fn add_transaction_record(
     &mut self,
     id: u64,
-    record: TransactionF,
+    profile: TransactionF,
   ) -> Result<bool, String> {
-    // check if there is a transaction with the same wid and hash
-    for (_, existing_record) in &self.transactions {
-      if existing_record.wid == record.wid
-        && existing_record.hash == record.hash
-      {
-        return Err(
-          "Transaction with the same wid and hash already exists".to_string(),
-        );
-      }
+    if self.transactions.contains_key(&id) {
+      return Err("Transaction record already exists".to_string());
     }
 
-    // add the record
-    self.transactions.insert(id, record);
+    self.transactions.insert(id, profile);
 
-    // check if it is added successfully
+    // 检查插入是否成功
     if self.transactions.contains_key(&id) {
       return Ok(true);
     } else {
@@ -189,35 +176,65 @@ pub struct WalletRecordService {
 }
 
 impl WalletRecordService {
-  //insert transaction
-  pub fn add_transaction_impl(
-    &mut self,
-    record: TransactionB,
-) -> Result<u64, String> {
-    // check if transaction with the same wid and hash already exists
-    for (_, existing_record) in &self.records {
-        if existing_record.wid == record.wid && existing_record.hash == record.hash {
-            return Err("Transaction with the same wid and hash already exists".to_string());
-        }
-    }
-
-    // insert the new transaction
-    self.records.insert(record.id, record.clone()); // 使用 clone()
-
-    // examine if the transaction is added successfully
-    if self.records.contains_key(&record.id) {
-        return Ok(record.id);
-    } else {
-        return Err("Insert failed. Possible heap overflow".to_string());
-    }
-}
-
   pub fn new() -> Self {
     WalletRecordService {
       records: BTreeMap::new(),
       my_summary: BTreeMap::new(),
     }
   }
+  //插入交易记录实现类
+  pub fn add_transaction(
+    &mut self,
+    record: TransactionB,
+  ) -> Result<bool, String> {
+    let id = record.id;
+    // 检查是否已经存在相同的 wid 和 hash
+    for (_, existing_record) in &self.records {
+      if existing_record.wid == record.wid
+        && existing_record.hash == record.hash
+      {
+        return Err(
+          "Transaction with the same wid and hash already exists".to_string(),
+        );
+      }
+    }
+
+    // 添加交易记录
+    self.records.insert(id, record);
+
+    // 检查插入是否成功
+    if self.records.contains_key(&id) {
+      return Ok(true);
+    } else {
+      return Err("Insert failed. Possible heap overflow".to_string());
+    }
+  }
+  //批量插入交易记录
+  pub fn add_transaction_batch(
+    &mut self,
+    record_vec: Vec<TransactionB>,
+  ) -> Result<(), String> {
+    let existing_keys: HashSet<(u64, String)> = self
+      .records
+      .values()
+      .map(|record| (record.wid, record.hash.clone())) // 假设 TransactionB 有 wid 和 hash 字段
+      .collect();
+
+    let unique_records: BTreeMap<TransactionId, TransactionB> = record_vec
+      .into_iter()
+      .filter(|record| {
+        //不保存amount=0的记录
+        record.details.amount != 0.0
+        //校验wid和hash值
+          && !existing_keys.contains(&(record.wid, record.hash.clone()))
+      }) // 移除已存在的记录
+      .map(|record| (record.id, record))
+      .collect();
+
+    self.records.extend(unique_records); // 单次批量插入
+    Ok(())
+  }
+
   //修改交易记录
   pub fn update_transaction_impl(
     &mut self,
@@ -355,6 +372,7 @@ impl WalletRecordService {
 
     sync_transactions
   }
+
   //通过钱包地址查询单个钱包的交易记录
   pub fn query_one_wallet_trans(
     &self,
