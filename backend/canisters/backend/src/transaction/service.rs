@@ -273,32 +273,31 @@ impl WalletRecordService {
     wid: WalletId,
   ) -> Result<bool, String> {
     // Debug log for tracking
-    println!("Deleting transaction for wid: {:?}", wid);
+    println!("Deleting transactions for wid: {:?}", wid);
 
-    // Find the TransactionId that corresponds to the given WalletId
-    let transaction_id = self.records.iter().find_map(|(id, transaction)| {
-      if transaction.wid == wid {
-        Some(*id)
-      } else {
-        None
-      }
-    });
-
-    match transaction_id {
-      Some(id) => {
-        self.records.remove(&id);
-        // Verify if removal was successful
-        if self.records.contains_key(&id) {
-          Err("Remove failed. Record still exists.".to_string())
+    // 收集所有与给定 WalletId 相关的 TransactionId
+    let ids_to_remove: Vec<TransactionId> = self
+      .records
+      .iter()
+      .filter_map(|(id, transaction)| {
+        if transaction.wid == wid {
+          Some(*id)
         } else {
-          Ok(true)
+          None
         }
-      }
-      None => Err(format!(
-        "Transaction record for wid {:?} does not exist",
-        wid
-      )),
+      })
+      .collect();
+
+    if ids_to_remove.is_empty() {
+      return Err(format!("No transaction records for wid {:?} exist", wid));
     }
+
+    // 删除找到的所有记录
+    for id in ids_to_remove {
+      self.records.remove(&id);
+    }
+
+    Ok(true) // 返回成功标志
   }
 
   // pub fn get_addr_from_id(&self, id: TransactionId) -> WalletAddress {
