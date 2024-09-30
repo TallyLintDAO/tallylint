@@ -50,8 +50,8 @@ export const getICRC1Balance = async (
       }
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e))
-      console.error(`Error with token ${token.symbol}:`, error)
-      showMessageError(`Error with token ${token.symbol}:` + error)
+      console.error(`${token.symbol} Error with Token Request:`, error)
+      showMessageError(`${token.symbol} Error with Token Request:` + error)
       return {
         symbol: token.symbol,
         logo: token.meta.logo,

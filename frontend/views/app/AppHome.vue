@@ -94,7 +94,7 @@ import {
 } from "@/utils/avatars"
 import { showMessageError, showMessageSuccess } from "@/utils/message"
 import { copyToClipboard } from "quasar"
-import { computed, onMounted, ref } from "vue"
+import { computed, onMounted, provide, ref } from "vue"
 import { useRouter } from "vue-router"
 
 const userStore = useUserStore()
@@ -113,9 +113,11 @@ const leftDrawerOpen = ref(false)
 // 与 II 认证相关的信息
 const clientReady = ref(false)
 const signedIn = ref(false) // 是否登录
+const isInitDone = ref(false) // 是否登录
 
 const principal = computed(() => userStore.principal)
 const username = ref()
+provide("isInitDone", isInitDone)
 
 onMounted(() => {
   doInitAuth()
@@ -140,6 +142,7 @@ const getUserInfoFromServices = () => {
   getUserAutoRegister()
     .then((info) => {
       if (info.Ok) {
+        isInitDone.value = true //通知子组件
         username.value = info.Ok.name
       } else if (info.Err) {
         console.error("no information for unregister user: ", info)

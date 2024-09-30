@@ -114,8 +114,9 @@ export async function signOut(client: AuthClient): Promise<void> {
       // 如果已经登录，则同时移除登录缓存
       const principal = client.getIdentity().getPrincipal().toString()
       deleteUserInfoStorage(principal)
-      localStorage.clear()
-      sessionStorage.clear()
+      //TODO  登出时刷新页面应该就足够了，消除所有存储感觉不太合理
+      // localStorage.clear()
+      // sessionStorage.clear()
     }
     await client.logout()
   }

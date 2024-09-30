@@ -347,7 +347,7 @@ const getWallets = (isRefresh: boolean) => {
   //执行add，delete操作后刷新缓存，其他查询操作则不需要刷新缓存。
   getUserWallet(isRefresh)
     .then((res) => {
-      // console.log("getUserWallet", res)
+      console.log("getUserWallet", res)
       if (res.Ok) {
         rows.value = res.Ok
         for (const row of rows.value) {
