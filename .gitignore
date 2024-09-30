@@ -10,7 +10,8 @@
 node_modules/
 # compiled frontend for distribution , such as .vue->.js .scss->.css
 dist/
-# package-lock.json
+# front-end dependency analysis files
+dependency-analysis.html
 
 ##backend codes------------------------------
 # binary file , debug file 

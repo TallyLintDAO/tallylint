@@ -97,7 +97,21 @@ export default defineConfig(({ command, mode }) => {
           manualChunks: {
             // 每个 '键' 都表示一个分包块，'值' 包含列出的模块及其所有依赖项
             vue: ["vue", "vue-router", "pinia"],
-            quasar: ["quasar"],
+            framework: ["quasar", "element-plus"],
+            echarts: ["echarts"],
+            dfinity: [
+              "@dfinity/agent",
+              "@dfinity/auth-client",
+              "@dfinity/candid",
+              "@dfinity/identity",
+              "@dfinity/ledger-icp",
+              "@dfinity/ledger-icrc",
+              "@dfinity/nns",
+              "@dfinity/nns-proto",
+              "@dfinity/principal",
+              "@dfinity/sns",
+              "@dfinity/utils",
+            ],
           },
         },
       },
