@@ -167,7 +167,9 @@ impl TransactionService {
   }
 }
 
-//这个service主要是用于处理同步过后的交易记录
+/**
+ * 这个service主要是用于处理同步过后的交易记录
+ */
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct WalletRecordService {
   pub records: BTreeMap<TransactionId, TransactionB>,
@@ -213,7 +215,7 @@ impl WalletRecordService {
   pub fn add_transaction_batch(
     &mut self,
     record_vec: Vec<TransactionB>,
-  ) -> Result<(), String> {
+  ) -> () {
     let existing_keys: HashSet<(u64, String)> = self
       .records
       .values()
@@ -232,10 +234,11 @@ impl WalletRecordService {
       .collect();
 
     self.records.extend(unique_records); // 单次批量插入
-    Ok(())
   }
 
-  //修改交易记录
+/**
+ * 修改交易记录
+ */
   pub fn update_transaction_impl(
     &mut self,
     profile: TransactionB,
@@ -316,6 +319,10 @@ impl WalletRecordService {
   //   // }
   //   return Err("nothing".to_string());
   // }
+
+/**
+ * 查找已同步的交易记录
+ */
   pub fn query_synced_transactions(
     &self,
     cmd: HistoryQueryCommand,

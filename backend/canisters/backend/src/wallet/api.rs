@@ -12,8 +12,7 @@ const MAX_WALLET_NAME_LENGTH: usize = 64;
 const ACCOUNT_ID_LENGTH: usize = 64;
 const PRINCIPAL_ID_LENGTH: usize = 63;
 use ic_cdk::api::time;
-#[update]
-// #[update(guard = "user_owner_guard")]
+#[update(guard = "user_owner_guard")]
 fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
   STATE.with(|c| {
     if cmd.name.len() > MAX_WALLET_NAME_LENGTH {
@@ -107,13 +106,15 @@ fn query_a_wallet(id: u64) -> Result<WalletProfile, String> {
     return Ok(wallet.clone());
   })
 }
-
+/**
+ * 用户查找添加的所有钱包
+ */
 #[query(guard = "user_owner_guard")]
 fn query_all_wallets() -> Result<Vec<WalletProfile>, Vec<WalletProfile>> {
   STATE.with(|c| {
     let ctx = c.borrow_mut();
     let user = caller();
-    let wallets = ctx.wallet_service.query_wallet_array(user);
+    let wallets = ctx.wallet_service.query_wallet_vec(user);
     return Ok(wallets);
   })
 }

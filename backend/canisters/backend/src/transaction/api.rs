@@ -39,7 +39,9 @@ fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
     }
   })
 }
-//根据wid删除对应的交易记录
+/**
+ * 根据钱包id删除对应的
+ */
 #[update(guard = "user_owner_guard")]
 fn delete_transaction(wid: WalletId) -> Result<WalletId, String> {
   STATE.with(|c| {
@@ -51,7 +53,9 @@ fn delete_transaction(wid: WalletId) -> Result<WalletId, String> {
     }
   })
 }
-//根据交易记录id查询交易记录
+/**
+ * 根据交易记录id查询交易记录
+ */
 #[query(guard = "user_owner_guard")]
 fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
   STATE.with(|c| {
@@ -67,14 +71,17 @@ fn query_one_transaction(id: TransactionId) -> Result<TransactionB, String> {
 #[query(guard = "user_owner_guard")]
 fn query_synced_transactions(
   cmd: HistoryQueryCommand,
-) -> Result<Vec<TransactionB>,String> {
+) -> Result<Vec<TransactionB>, String> {
   STATE.with(|c| {
     let ctx = c.borrow();
-    let synced_transactions = ctx.wallet_transc_srv.query_synced_transactions(cmd.clone());
+    let synced_transactions =
+      ctx.wallet_transc_srv.query_synced_transactions(cmd.clone());
     Ok(synced_transactions)
   })
 }
-//查询所有钱包的交易记录
+/**
+ * 查找所有交易记录
+ */
 #[query(guard = "admin_guard")]
 fn query_all_transactions() -> Result<HashMap<WalletId, TransactionB>, String> {
   STATE.with(|c| {
@@ -83,7 +90,9 @@ fn query_all_transactions() -> Result<HashMap<WalletId, TransactionB>, String> {
     return Ok(rec);
   })
 }
-//修改某个交易记录
+/**
+ * 修改单个交易记录
+ */
 #[update(guard = "user_owner_guard")]
 fn update_transaction(mut data: TransactionB) -> Result<bool, String> {
   STATE.with(|c| {
@@ -142,7 +151,9 @@ fn remove_transaction_tag(id: u64) -> Result<bool, String> {
     }
   })
 }
-
+/**
+ * 同步交易记录，在同步时就计算交易的profit
+ */
 #[update(guard = "user_owner_guard")]
 fn sync_transaction_record(
   data: Vec<SyncTransactionCommand>,
@@ -151,12 +162,16 @@ fn sync_transaction_record(
     let mut ctx = c.borrow_mut();
     for each_wallet in data {
       // ! append records
-      let trans_b_vec: Vec<TransactionB> = each_wallet.history.iter().map(|record| {
-        ctx.id += 1; // 更新 ctx.id
-        let id = ctx.id;
-        convert_trans_f_to_trans_b(record.clone(), id) // 处理并返回转换后的记录
-    }).collect();
-      let result = ctx.wallet_transc_srv.add_transaction_batch(trans_b_vec);
+      let trans_b_vec: Vec<TransactionB> = each_wallet
+        .history
+        .iter()
+        .map(|record| {
+          ctx.id += 1; // 更新 ctx.id
+          let id = ctx.id;
+          convert_trans_f_to_trans_b(record.clone(), id) // 处理并返回转换后的记录
+        })
+        .collect();
+      ctx.wallet_transc_srv.add_transaction_batch(trans_b_vec);
 
       // ! update wallet info
       let mut wallet_profile = ctx

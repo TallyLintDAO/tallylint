@@ -45,7 +45,7 @@ impl WalletService {
     profile: WalletProfile,
     user: Principal,
   ) -> Option<String> {
-    let user_wallets = self.query_wallet_array(user);
+    let user_wallets = self.query_wallet_vec(user);
     if user_wallets
       .iter()
       .any(|wallet| wallet.address == profile.address)
@@ -95,7 +95,7 @@ impl WalletService {
     profile: WalletProfile,
     user: Principal,
   ) -> Option<String> {
-    let user_wallets = self.query_wallet_array(user);
+    let user_wallets = self.query_wallet_vec(user);
 
     if let Some(wallet) = user_wallets
       .iter()
@@ -123,7 +123,7 @@ impl WalletService {
     return wallet.cloned();
   }
 
-  pub fn query_wallet_array(&self, user: Principal) -> Vec<WalletProfile> {
+  pub fn query_wallet_vec(&self, user: Principal) -> Vec<WalletProfile> {
     let profiles: Vec<&WalletProfile> = self
       .wallets
       .values()

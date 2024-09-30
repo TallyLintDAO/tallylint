@@ -40,6 +40,7 @@ pub struct TransactionF {
 pub type TransactionId = u64;
 
 // TODO multi profit type
+//FIXME无用结构体，需要删除
 #[allow(non_snake_case)]
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct DetailsB {
@@ -103,7 +104,7 @@ pub struct Currency {
   pub decimals: u8,   //代币精度,多少个0
   pub symbol: String, //代币符号，例如'ICP'，'CHAT'
 }
-
+//FIXME 该数据结构完全无用，需要删除
 #[allow(non_snake_case)]
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct SimpleTransaction {
@@ -128,7 +129,7 @@ pub struct SimpleTransaction {
   // 例如某个NFT的交易价格查不到，
   // 就会被自动标记为missing rates
 }
-
+//FIXME 该数据结构完全无用，需要删除
 impl TransactionB {
   pub fn trim(self) -> SimpleTransaction {
     SimpleTransaction {
@@ -258,7 +259,7 @@ pub fn calculate_gain_or_loss(
   transactions: Vec<TransactionForTax>,
   method: String,
 ) -> Vec<TransactionForTax> {
-  //新建Wallet和TransactionForTax的空队列
+  //新建Wallet和TransactionB的空队列
   let mut wft = WalletForTax::new();
   let mut processed_transactions = Vec::new();
   //遍历输入transactions
