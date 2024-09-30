@@ -43,7 +43,6 @@
 <script lang="ts" setup>
 import { IdentityInfo, initAuth, signIn } from "@/api/auth"
 import { setCurrentIdentity } from "@/api/canister_pool"
-import { getUserAutoRegister } from "@/api/user"
 import { useUserStore } from "@/stores/user"
 import { onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
