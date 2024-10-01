@@ -1,4 +1,4 @@
-import { IC_LEDGER_URL, LEDGER_CANISTER_ID } from "@/api/constants/ic"
+import { IC_LEDGER_URL, LEDGER_CANISTER_ID, S_TO_MS } from "@/api/constants/ic"
 import { matchICPPrice } from "@/api/token"
 import type { InferredTransaction, LedgerICPTransaction } from "@/types/tokens"
 import type {
@@ -49,8 +49,9 @@ export const getICPTransactions = async (
     }
   } while (offset < total)
 
-  // console.log("ledger get: ", allTransactions)
+  console.log("ledger get: ", allTransactions)
   const transactionsInfo = await convertToTransactionF(wallet, allTransactions)
+  console.log("ledger convert: ", transactionsInfo)
   return {
     total: transactionsInfo.length,
     transactions: transactionsInfo,
@@ -67,8 +68,8 @@ export const convertToTransactionF = async (
     if (item.transfer_type !== "send") {
       continue
     }
-    // api接口给的时间戳是10位，精确到秒，原先的是13位，精确到毫秒，所以这里加3位。
-    const timestampNormal = item.created_at * 1000 //处理时间戳为正常格式
+    // api接口给的时间戳是10位，精确到秒，后端系统需要的是13位，精确到毫秒，所以这里加3位。
+    const timestampNormal = item.created_at * S_TO_MS //处理时间戳为正常格式
     const price = await matchICPPrice(timestampNormal) // 使用 await 获取价格
     const transaction = {
       wid: BigInt(wallet.id),
@@ -84,8 +85,8 @@ export const convertToTransactionF = async (
         currency: currency,
         fee: Math.abs(currencyCalculate(item.fee, currency.decimals)),
         amount: currencyCalculate(item.amount, currency.decimals),
-        cost: 0, // cost由后端计算
-        profit: 0, // profit由后端计算
+        cost: 0, // 成本，cost由后端计算
+        profit: 0, // 利润，profit由后端计算
         price: price,
         value: 0, // value由前端，马上在下面代码中计算
       },

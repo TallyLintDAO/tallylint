@@ -233,7 +233,7 @@ export async function fetchAllSyncTransactions(
       transactions = transactions.concat(icrcArray)
     }
   }
-  return transactions.sort((a, b) => a.timestamp - b.timestamp)
+  return transactions.sort((a, b) => b.timestamp - a.timestamp)
 }
 
 // 同步钱包交易记录到后端

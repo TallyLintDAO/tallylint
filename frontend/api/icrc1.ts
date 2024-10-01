@@ -116,7 +116,7 @@ export const formatICRC1Transaction = async (
   ledgerCanisterId: string,
 ): Promise<InferredTransaction> => {
   const { transaction, id } = transactionWithId
-  const timestampNormal = Number(transaction.timestamp) / MILI_PER_SECOND //处理时间戳为正常格式
+  const timestampNormal = Number(transaction.timestamp) / MILI_PER_SECOND // 处理时间戳从19位ns改为常用的13位ms，直接除会有一些小数点。
   let detail = transaction[transaction.kind][0]
   delete detail.created_at_time
   let details: Details = detail
