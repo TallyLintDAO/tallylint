@@ -10,9 +10,5 @@
       "Content-Type": "application/json"
     },
     "ignore": false
-  },
-  {
-    "match": "**/*",
-    "security_policy": "standard"
   }
 ]
