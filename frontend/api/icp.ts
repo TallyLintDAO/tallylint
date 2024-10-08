@@ -49,9 +49,8 @@ export const getICPTransactions = async (
     }
   } while (offset < total)
 
-  console.log("ledger get: ", allTransactions)
   const transactionsInfo = await convertToTransactionF(wallet, allTransactions)
-  console.log("ledger convert: ", transactionsInfo)
+  // console.log("ledger convert: ", transactionsInfo)
   return {
     total: transactionsInfo.length,
     transactions: transactionsInfo,
