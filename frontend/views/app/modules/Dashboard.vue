@@ -173,7 +173,7 @@ import { showMessageError } from "@/utils/message"
 import type { EChartsType } from "echarts"
 import * as echarts from "echarts"
 import type { QTable } from "quasar"
-import { computed, inject, onMounted, ref, watch } from "vue"
+import { computed, onMounted, ref } from "vue"
 
 const echartsContainer = ref<null>(null)
 let chart = <EChartsType>{} // 如果使用ref会导致无法显示tooltip，例如数据不会显示。
@@ -305,18 +305,13 @@ const tokenSummary = computed(() => {
   return summary
 })
 
-const isInitDone = ref(inject("isInitDone"))
-//当用户注册完成，获得登录信息后再调用此方法，免得出现用户还未注册完成就调用获得钱包方法，导致未注册用户调用方法报错error的问题。
-watch(isInitDone, (newVal) => {
-  if (newVal) {
-    getWallet() // 在初始化完成后调用
-  }
-})
 onMounted(async () => {
   //如果获取汇率的过程中发生了错误或者返回的结果中没有汇率，则使用原值
   rate.value = (await getUserCurrencyRate()).rate || rate.value
   //默认以value列作为排序，最高的value排最上面
   holdings.value?.sort("value")
+  //TODO 当用户第一次登录调用此方法会报错，这个问题暂时没有影响，可以先不管，速度优先。
+  getWallet() // 在初始化完成后调用
   initECharts()
   // getNFTCollections(
   //   "34a6b-pl5tx-mpxgn-bnucu-tiwis-qxbqu-pilo5-lmnt7-fa7yk-ng22p-yae",
