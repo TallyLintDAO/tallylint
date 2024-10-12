@@ -1,7 +1,9 @@
-use crate::STATE;
+use std::borrow::Borrow;
+
 use crate::{common::guard::admin_guard, UserConfig};
+use crate::{HistoryQueryCommand, STATE};
 use candid::Principal;
-use ic_cdk::api::time;
+use ic_cdk::api::{call, time};
 use ic_cdk::query;
 use ic_cdk_macros::update;
 /**
@@ -16,8 +18,8 @@ fn auto_register_user() -> Result<UserProfile, String> {
     if caller == Principal::anonymous() {
       return Err(String::from("AnonymousNotAllowRegistering"));
     }
-    // init a defautl config for user if config not exsit
-    ctx.user_service.get_config(&caller);
+    // 用户注册登录后自动添加一个默认的用户配置
+    ctx.user_service.add_default_config(&caller);
     match ctx.user_service.get_user(&caller) {
       Some(profile) => Ok(profile),
       None => {
@@ -53,26 +55,39 @@ fn list_all_user() -> Vec<UserProfile> {
  * update userconfig
  */
 #[update(guard = "user_owner_guard")]
-fn set_user_config(cfg: UserConfig) -> Result<bool, String> {
+fn set_user_config(config: UserConfig) -> Result<bool, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
-    ctx.user_service.add_config(&caller(), cfg)
+    let method = config.clone().tax_method;
+    ctx.user_service.add_config(&caller(), config);
+    //step1:先查找到用户钱包对应的交易记录
+    let user = caller();
+    let wallet_vec = ctx.wallet_service.query_wallet_vec_by_uid(user);
+    let query_command = HistoryQueryCommand::new(
+      Some(wallet_vec.iter().map(|wallet| wallet.id).collect()),
+      None,
+    );
+    let sync_transactions = ctx
+      .wallet_transc_srv
+      .query_synced_transactions(query_command);
+    //step2:根据用户的method_type更新交易记录
+    let calculated_transactions = ctx
+      .wallet_transc_srv
+      .calculate_profit(sync_transactions, &method);
+    //step3:批量更新交易记录
+    ctx
+      .wallet_transc_srv
+      .update_transations_batch(calculated_transactions.unwrap());
+    return Ok(true);
   })
 }
 
-// test method to add a UserConfig data
-#[update(guard = "user_owner_guard")]
+// add a default config while user register
+#[update(guard = "admin_guard")]
 fn add_user_config() -> bool {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
-    ctx.user_service.add_config(
-      &caller(),
-      UserConfig {
-        tax_method: "lifo".to_string(),
-        base_currency: "CNY".to_string(),
-        time_zone: "UTC+8".to_string(),
-      },
-    );
+    ctx.user_service.add_default_config(&caller());
     return true;
   })
 }

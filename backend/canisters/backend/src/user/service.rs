@@ -26,7 +26,7 @@ impl UserService {
   ) -> Result<UserProfile, String> {
     let owner = user.owner;
     match self.users.get(&owner) {
-      Some(_) => Err(String::from(" UserAlreadyExists")),
+      Some(_) => Err(String::from("UserAlreadyExists")),
       None => {
         self.users.insert(owner, user.clone());
         Ok(user)
@@ -51,28 +51,42 @@ impl UserService {
     return self.users.len().try_into().unwrap_or_default();
   }
 
-
-/**
- * add or update user config
- */
-  pub fn add_config(&mut self, owner: &Principal, data: UserConfig) -> Result<bool, String> {
+  pub fn add_default_config(&mut self, owner: &Principal) -> () {
+    let config = UserConfig::new(
+      //默认值为fifo
+      "fifo".to_string(),
+      "USD".to_string(),
+      "UTC-5".to_string(),
+    );
+    self.configs.insert(owner.to_string(), config);
+  }
+  /**
+   * add or update user config
+   */
+  pub fn add_config(
+    &mut self,
+    owner: &Principal,
+    data: UserConfig,
+  ) -> Result<bool, String> {
     let operation = if self.configs.contains_key(&owner.to_string()) {
-        "update"
+      "update"
     } else {
-        "add"
+      "add"
     };
 
     self.configs.insert(owner.to_string(), data);
 
     // check the operation is successful
     match self.get_config(owner) {
-        Ok(_) => Ok(true),
-        Err(_) => Err(format!("{} failed", operation)),
+      Ok(_) => Ok(true),
+      Err(_) => Err(format!("{} failed", operation)),
     }
-}
+  }
 
-  
-  pub fn get_config(&mut self, owner: &Principal) -> Result<UserConfig,String> {
+  pub fn get_config(
+    &mut self,
+    owner: &Principal,
+  ) -> Result<UserConfig, String> {
     // Try to get the config
     match self.configs.get(&owner.to_string()) {
       // If the config exists, return it

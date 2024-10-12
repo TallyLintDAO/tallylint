@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use ic_cdk::caller;
+use ic_cdk::{caller, println};
 use ic_cdk_macros::{query, update};
 
 use super::domain::*;
@@ -160,8 +160,9 @@ fn sync_transaction_record(
 ) -> Result<bool, String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
+    let method = ctx.user_service.get_config(&caller()).unwrap().tax_method;
     for each_wallet in data {
-      // ! append records
+      // 对前端传来的交易记录对象进行处理
       let trans_b_vec: Vec<TransactionB> = each_wallet
         .history
         .iter()
@@ -171,7 +172,14 @@ fn sync_transaction_record(
           convert_trans_f_to_trans_b(record.clone(), id) // 处理并返回转换后的记录
         })
         .collect();
-      ctx.wallet_transc_srv.add_transaction_batch(trans_b_vec);
+      //对交易记录的profit进行计算
+      let calculated_transactions = ctx
+        .wallet_transc_srv
+        .calculate_profit(trans_b_vec.clone(), &method);
+      println!("calculated_transactions: {:?}", &calculated_transactions);
+      ctx
+        .wallet_transc_srv
+        .add_transaction_batch(calculated_transactions.unwrap());
 
       // ! update wallet info
       let mut wallet_profile = ctx
@@ -193,71 +201,7 @@ fn sync_transaction_record(
   })
 }
 
-// Nedd set para in user config . cal_method and exclude_tags
-#[update(guard = "user_owner_guard")]
-fn calculate_tax() -> String {
-  STATE.with(|ctx| {
-    let mut ctx = ctx.borrow_mut();
-    let wallets = ctx.wallet_service.get_all_addr_by_user(caller());
-    //TODO 如果有panic的情况该如何处理
-    // let exclude_tags = ctx.user_service.get_config(&caller()).unwrap().exclude_tags;
 
-    for one_wallet in wallets {
-      let tans_map = ctx.wallet_transc_srv.query_one_wallet_trans(one_wallet);
-      let vec_data = tans_map
-        .values()
-        .next()
-        .expect("wallet transaction empty")
-        .clone();
-      if vec_data.is_empty() {
-        return "ERROR :NO TRANSACTIONS ! ".to_string();
-      }
-
-      // ! filter if got flag. air drop ...
-      // let filtered_vec_data: Vec<TransactionB>;
-      // if !exclude_tags.is_empty() {
-      //   filtered_vec_data = vec_data
-      //     .into_iter()
-      //     .filter(|one| !one.tag.iter().any(|tag| exclude_tags.contains(tag)))
-      //     .collect();
-      //   if filtered_vec_data.is_empty() {
-      //     return "ERROR :NO filtered TRANSACTIONS ! ".to_string();
-      //   }
-      // } else {
-      //   filtered_vec_data = vec_data;
-      // }
-
-      // ! calculate base on method: fifo lifo.
-      // get tax_transac for calculation
-      //replace filtered_vec_datato vec_data
-      let tax_transac: Vec<TransactionForTax> = vec_data
-        .clone()
-        .into_iter()
-        .map(TransactionForTax::from)
-        .collect();
-      if tax_transac.is_empty() {
-        return "ERROR :NO tax TRANSACTIONS ! ".to_string();
-      }
-      //TODO 如果有panic的情况该如何处理
-      let method = ctx.user_service.get_config(&caller()).unwrap().tax_method;
-      let taxed_vec_trans = calculate_gain_or_loss(tax_transac, method.clone());
-      if taxed_vec_trans.is_empty() {
-        return "ERROR tax calculation abort! no such calculate method ! "
-          .to_string();
-      }
-      // map tax into transb_db
-      //replace filtered_vec_datato vec_data
-      let trans_b = map_taxTrans_to_transB(taxed_vec_trans, vec_data);
-      if trans_b.is_empty() {
-        return "ERROR :NO tax-calculated trans_b TRANSACTIONS ! ".to_string();
-      }
-      for one in trans_b {
-        let _ = ctx.wallet_transc_srv.update_transaction_impl(one);
-      }
-    }
-    return "calculate success!".to_string();
-  })
-}
 
 // if start or end is 0. calculate all trans.
 #[update(guard = "user_owner_guard")]

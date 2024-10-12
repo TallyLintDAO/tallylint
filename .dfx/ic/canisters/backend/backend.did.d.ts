@@ -183,7 +183,6 @@ export interface _SERVICE {
   'add_wallet' : ActorMethod<[WalletAddCommand], Result>,
   'auto_register_user' : ActorMethod<[], Result_2>,
   'backup' : ActorMethod<[number, number], Array<[string, CanisterContext]>>,
-  'calculate_tax' : ActorMethod<[], string>,
   'delete_neuron_wallet' : ActorMethod<[bigint], Result>,
   'delete_transaction' : ActorMethod<[bigint], Result_1>,
   'delete_wallet' : ActorMethod<[bigint], Result>,

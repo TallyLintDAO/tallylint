@@ -45,7 +45,7 @@ impl WalletService {
     profile: WalletProfile,
     user: Principal,
   ) -> Option<String> {
-    let user_wallets = self.query_wallet_vec(user);
+    let user_wallets = self.query_wallet_vec_by_uid(user);
     if user_wallets
       .iter()
       .any(|wallet| wallet.address == profile.address)
@@ -95,7 +95,7 @@ impl WalletService {
     profile: WalletProfile,
     user: Principal,
   ) -> Option<String> {
-    let user_wallets = self.query_wallet_vec(user);
+    let user_wallets = self.query_wallet_vec_by_uid(user);
 
     if let Some(wallet) = user_wallets
       .iter()
@@ -122,8 +122,8 @@ impl WalletService {
     let wallet = self.wallets.get(&id);
     return wallet.cloned();
   }
-
-  pub fn query_wallet_vec(&self, user: Principal) -> Vec<WalletProfile> {
+  //查询用户自己添加的钱包
+  pub fn query_wallet_vec_by_uid(&self, user: Principal) -> Vec<WalletProfile> {
     let profiles: Vec<&WalletProfile> = self
       .wallets
       .values()

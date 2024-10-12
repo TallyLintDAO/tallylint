@@ -94,6 +94,17 @@ pub struct HistoryQueryCommand {
                                     * or profit-asc
                                     * profit-desc */
 }
+impl HistoryQueryCommand {
+  pub fn new(wids: Option<Vec<WalletId>>, sort_method: Option<String>) -> Self {
+    HistoryQueryCommand {
+      wids: wids.unwrap_or_default(),
+      //默认没有时间限制
+      from_time: 0,
+      to_time: 0,
+      sort_method: sort_method,
+    }
+  }
+}
 //FIXME 该数据结构未在业务中被使用，数据备份恢复后删除
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct EditHistoryCommand {

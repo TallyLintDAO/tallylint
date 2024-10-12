@@ -114,7 +114,7 @@ fn query_all_wallets() -> Result<Vec<WalletProfile>, Vec<WalletProfile>> {
   STATE.with(|c| {
     let ctx = c.borrow_mut();
     let user = caller();
-    let wallets = ctx.wallet_service.query_wallet_vec(user);
+    let wallets = ctx.wallet_service.query_wallet_vec_by_uid(user);
     return Ok(wallets);
   })
 }

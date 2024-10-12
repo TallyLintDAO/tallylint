@@ -14,6 +14,15 @@ pub struct UserConfig {
   pub base_currency: String,
   pub time_zone: String,
 }
+impl UserConfig {
+  pub fn new(tax_method: String,base_currency:String,time_zone:String) -> UserConfig {
+    UserConfig{
+        tax_method,
+        base_currency,
+        time_zone,
+    }
+  }
+}
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct UserInfo {
   pub owner: Principal, // 用户 Principal
@@ -32,12 +41,4 @@ impl UserProfile {
   }
 }
 
-impl UserConfig {
-  pub fn new(tax_method: String,base_currency:String,time_zone:String) -> UserConfig {
-    UserConfig{
-        tax_method,
-        base_currency,
-        time_zone,
-    }
-  }
-}
+

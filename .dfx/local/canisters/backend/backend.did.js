@@ -201,7 +201,6 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Tuple(IDL.Text, CanisterContext))],
         [],
       ),
-    'calculate_tax' : IDL.Func([], [IDL.Text], []),
     'delete_neuron_wallet' : IDL.Func([IDL.Nat64], [Result], []),
     'delete_transaction' : IDL.Func([IDL.Nat64], [Result_1], []),
     'delete_wallet' : IDL.Func([IDL.Nat64], [Result], []),
