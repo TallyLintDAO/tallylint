@@ -28,6 +28,14 @@ export interface WalletInfo {
   last_transaction_time: number
   last_sync_time: number
 }
+export interface syncedWalletCache {
+  principal_id: string[] //opt
+  tokens: [
+    {
+      symbol: string
+    },
+  ]
+}
 
 export interface WalletHistory {
   price: number

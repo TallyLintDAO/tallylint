@@ -150,10 +150,10 @@
               hint="Enter Principal ID"
               lazy-rules
               :rules="[
-                (val) =>
+                (val: string) =>
                   (val && val.length > 0 && isPrincipal(val)) ||
                   'Please enter Wallet Principal ID',
-                (val) =>
+                (val: string) =>
                   (val && !rows.some((item) => item.address === val)) ||
                   isEdit ||
                   'Can not add this wallet, principal id duplicated',
@@ -179,7 +179,7 @@
               hint="Identify your wallet quickly"
               lazy-rules
               :rules="[
-                (val) => (val && val.length > 0) || 'Please type wallet name',
+                (val: string) => (val && val.length > 0) || 'Please type wallet name',
               ]"
             />
             <div class="q-gutter-sm justify-end flex">
@@ -209,6 +209,7 @@
 <script lang="ts" setup>
 import { DOCS_URL, WALLET_HELP } from "@/api/constants/docs"
 import { MILI_PER_SECOND } from "@/api/constants/ic"
+import { getICRC1Balance } from "@/api/icrc1"
 import {
   addUserWallet,
   deleteUserWallet,
@@ -223,6 +224,7 @@ import { isPrincipal, p2a } from "@/utils/common"
 import { distanceFromCurrentDate } from "@/utils/date"
 import { confirmDialog } from "@/utils/dialog"
 import { showMessageSuccess, showResultError } from "@/utils/message"
+import { getStorage, getTokenList } from "@/utils/storage"
 import type { QForm } from "quasar"
 import { onMounted, ref, watch } from "vue"
 
@@ -240,7 +242,7 @@ const columns = [
   {
     name: "syncedTransactions",
     label: "Synced Transactions",
-    field: (row) => row.transactions,
+    field: (row: { transactions: any }) => row.transactions,
   },
   {
     name: "lastTransaction",
@@ -258,6 +260,7 @@ const selected = ref([]) // 当前选中的对象们
 const address = ref("") // 当前用户输入的地址，可能是principal ID，也可能是account ID
 const addressIsPrincipal = ref(false) // 是否是principal，关系到某些字段的显示
 const isEdit = ref(false) // dialog是否是edit功能，否就是add功能
+const isSyncNewToken = ref(false) // 是否同步了新代币，如果是则检查新钱包里包含的代币并导入
 
 const wallet = ref({
   id: 0n,
@@ -287,6 +290,51 @@ const rows = ref<WalletInfo[]>([])
 onMounted(() => {
   getWallets(false)
 })
+
+//检查是否导入新钱包，如果是导入了新的钱包，则获取新钱包持有的代币种类。
+const AutoImportToken = async (wallets: WalletInfo[]) => {
+  const syncedWallet = getStorage("syncedWallet") || []
+  //检查是否有新导入的钱包
+  const newPrincipals = wallets.filter((wallet) => {
+    const walletPrincipal = wallet.principal_id[0]
+    // 如果 syncedWallet 为空，直接认定所有钱包为新钱包
+    if (syncedWallet.length === 0) {
+      return true
+    }
+    // 检查 syncedWallet 中是否有相同的 principal_id
+    const isAlreadySynced = syncedWallet.some(
+      (synced) => synced.principal_id[0] === walletPrincipal,
+    )
+    // 如果没有找到匹配的 principal_id，则为新钱包
+    return !isAlreadySynced
+  })
+
+  // 处理新导入的钱包
+  if (newPrincipals.length > 0) {
+    console.log("New wallets detected:", newPrincipals)
+    // 在这里可以进行后续操作，比如获取代币种类等
+    isSyncNewToken.value = true
+    //循环调用getUserAssets，筛选每个钱包的代币种类
+    // 遍历新导入的钱包并调用 getUserAssets 收集代币
+    for (const wallet of newPrincipals) {
+      const principalId = wallet.principal_id[0]
+      console.log(`Fetching assets for wallet: ${principalId}`)
+      await getUserNewAssets(principalId)
+    }
+  } else {
+    console.log("No new wallets detected.")
+  }
+
+  // setStorage("syncedWallet", wallet)
+}
+
+const getUserNewAssets = async (principalId: string) => {
+  const icrc1 = getTokenList()
+  console.log("icrc1", icrc1)
+  // 获取用户未同步钱包的新资产。
+  const newIcrc1 = await getICRC1Balance(principalId)
+  newIcrc1.map((token) => {})
+}
 
 const syncAllWallet = async () => {
   syncLoading.value = true
@@ -350,6 +398,8 @@ const getWallets = (isRefresh: boolean) => {
       console.log("getUserWallet", res)
       if (res.Ok) {
         rows.value = res.Ok
+        //检查是否导入新钱包，方便为用户自动导入代币。
+        AutoImportToken(res.Ok)
         for (const row of rows.value) {
           try {
             //TODO 感觉可以用缓存

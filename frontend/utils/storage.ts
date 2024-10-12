@@ -3,7 +3,7 @@ import type { ICRC1Info } from "@/types/tokens"
 import type { UserInfo } from "@/types/user"
 
 //通用存储方法
-export const setStorage = (value: any, key: string) => {
+export const setStorage = (value: any, key: any) => {
   if (value && Object.keys(value).length !== 0) {
     //只有不为空或者不是空字符串时才会存入
     localStorage.setItem(key, JSON.stringify(value))
