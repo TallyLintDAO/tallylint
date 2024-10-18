@@ -26,3 +26,15 @@ export function isPrincipal(text: string): boolean {
     return false
   }
 }
+
+// 检查用户是否使用的老域名访问
+export function checkDomain() {
+  if (window.location.hostname === "taxlint.online") {
+    // 如果用户访问的是旧域名，自动重定向到新域名
+    const newUrl = window.location.href.replace(
+      "taxlint.online",
+      "tallylint.online",
+    )
+    window.location.replace(newUrl)
+  }
+}

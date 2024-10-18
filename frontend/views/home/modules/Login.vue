@@ -44,6 +44,7 @@
 import { IdentityInfo, initAuth, signIn } from "@/api/auth"
 import { setCurrentIdentity } from "@/api/canister_pool"
 import { useUserStore } from "@/stores/user"
+import { checkDomain } from "@/utils/common"
 import { onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
@@ -51,6 +52,7 @@ const router = useRouter()
 const userStore = useUserStore()
 onMounted(() => {
   // getOKInfo()
+  checkDomain()
 })
 // 与 II 认证相关的信息
 const signedIn = ref(false) // 是否登录
