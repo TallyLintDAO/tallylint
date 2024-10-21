@@ -33,6 +33,21 @@
       </q-card-section>
 
       <q-card-section class="token-list">
+        <q-banner
+          inline-actions
+          class="bg-primary text-white"
+          v-if="isSyncNewToken"
+        >
+          New tokens in your wallet have been automatically imported for you.
+          <template v-slot:action>
+            <q-btn
+              flat
+              color="white"
+              @click="autoImportTokens(false)"
+              label="Disable"
+            />
+          </template>
+        </q-banner>
         <q-list>
           <q-item v-for="(token, index) in addedTokenList">
             <!-- 遍历已添加的token -->
@@ -110,8 +125,14 @@
         <span class="text-caption" style="color: rgba(0, 0, 0, 0.54)">
           Need to click 'Sync All Transactions' again after adding new token
         </span>
-        <div class="row q-mt-sm">
+        <div class="row q-mt-sm q-gutter-sm">
           <q-space />
+          <q-btn
+            v-if="!enableSyncNewToken"
+            color="primary"
+            @click="autoImportTokens(true)"
+            >Enable automatic import</q-btn
+          >
           <q-btn @click="addSelectedToken()">Add</q-btn>
         </div>
       </q-card-section>
@@ -130,22 +151,33 @@
 </template>
 
 <script setup lang="ts">
+import { queryIcUserNewAssetsListWithoutICP } from "@/api/icrc1"
 import { getSNSInfoCache } from "@/api/sns"
 import type { ICRC1Info } from "@/types/tokens"
+import type { WalletInfo } from "@/types/user"
 import { showMessageError } from "@/utils/message"
-import { getTokenList, setTokenList } from "@/utils/storage"
-import { onMounted, ref } from "vue"
+import {
+  getStorage,
+  getTokenList,
+  setStorage,
+  setTokenList,
+} from "@/utils/storage"
+import { onMounted, ref, watch } from "vue"
 
 const props = defineProps<{
   method: () => void | Promise<void>
+  userWallets: WalletInfo[]
   loading: boolean
 }>()
 const tokensDialogVisible = ref(false)
 const tokensLoading = ref(true)
+const isSyncNewToken = ref(false) // 是否存在未同步的新代币，如果是则检查新钱包里包含的代币并导入
+const enableSyncNewToken = ref(true) //是否启用自动导入新代币列表的功能
 
 const tokens = ref<ICRC1Info[]>() //可选择的token列表，对应网络应该显示不同的币种们
-const selectedToken = ref<ICRC1Info>()
-const addedTokenList = ref<ICRC1Info[]>([])
+const selectedToken = ref<ICRC1Info>() //用户选择的准备添加的单个代币
+const addedTokenList = ref<ICRC1Info[]>([]) // 已添加的代币列表
+const checkedNewTokenList = ref<ICRC1Info[]>([]) //检查出来的未同步新代币列表
 
 const networks = ["ICRC-1"]
 const network = ref("ICRC-1")
@@ -154,6 +186,49 @@ onMounted(() => {
   getICRC1Info()
   init()
 })
+
+watch(
+  () => props.userWallets,
+  (newValue, oldValue) => {
+    if (newValue.length > 0) {
+      queryUserNewAssets()
+    }
+  },
+)
+//是否限制代币自动导入功能
+const autoImportTokens = (enable: boolean) => {
+  enableSyncNewToken.value = enable
+  isSyncNewToken.value = false //要禁用此功能的用户应该也不喜欢看到这条横幅
+  setStorage("EnableSyncNewToken", enableSyncNewToken.value)
+}
+//查询是否有尚未同步的代币
+const queryUserNewAssets = async () => {
+  //用户禁止自动导入新代币
+  if (!enableSyncNewToken.value) {
+    return
+  }
+  // 处理新导入的钱包
+  if (props.userWallets.length > 0 && tokens.value) {
+    // 遍历新导入的钱包并调用 queryUserNewAssets 收集代币
+    checkedNewTokenList.value = await queryIcUserNewAssetsListWithoutICP(
+      tokens.value,
+      props.userWallets,
+    )
+    if (checkedNewTokenList.value.length > 0) {
+      //只有检查到新代币才显示那个页面
+      isSyncNewToken.value = true
+    }
+    //将新代币导入旧代币列表并保存
+    addedTokenList.value = addedTokenList.value.concat(
+      checkedNewTokenList.value,
+    )
+    setTokenList(addedTokenList.value)
+  } else {
+    console.log("No new wallets detected.")
+  }
+  // setStorage("syncedWallet", wallet)
+}
+
 const openDialog = () => {
   tokensDialogVisible.value = true
 }
@@ -189,6 +264,8 @@ const removeToken = (index: number) => {
 }
 
 const init = () => {
+  //如果返回值为空则为true
+  enableSyncNewToken.value = getStorage("EnableSyncNewToken") ?? true
   const tokenList = getTokenList()
   if (tokenList !== null) {
     addedTokenList.value = tokenList
@@ -204,4 +281,3 @@ defineExpose({
   padding: 0 !important;
 }
 </style>
-@/types/token

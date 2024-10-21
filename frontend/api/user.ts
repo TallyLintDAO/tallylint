@@ -302,8 +302,18 @@ export async function getUserTaxProfit(
 }
 
 export async function getUserConfig(): Promise<UserConfig | null> {
-  const userConfig = getStorage("USER_CONFIG")
+  //如果存在本地userconfig，则直接引用
+  let userConfig = getStorage("USER_CONFIG")
+  // const res = await getBackend().get_user_config()
+  // console.log("getUserConfig", res)
+  // if (!userConfig) {
+  //   //如果不存在配置类，则尝试读取canister中的userconfig
+  //   const res = await getBackend().get_user_config()
+  //   //TODO 读取完userconfig再将userconfig保存至本地，方便下次调用
+  //   console.log("getUserConfig", res)
+  // }
   if (userConfig && userConfig.timezone !== "") {
+    //获取到时区以后，自动将moment.tz的时区设置为对应的时区
     moment.tz.setDefault(userConfig.timezone)
   }
 

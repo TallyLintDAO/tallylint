@@ -27,14 +27,12 @@ export function isPrincipal(text: string): boolean {
   }
 }
 
-// 检查用户是否使用的老域名访问
+// 检查用户是否使用的老域名访问，如果是老域名，则将其跳转到新域名。
 export function checkDomain() {
-  console.log("hostname", window.location.hostname)
   const oldDomain = "taxlint"
   const newDomain = "tallylint"
 
   if (window.location.hostname.includes(oldDomain)) {
-    console.log("checkedNewDomain")
     // 构建新的 URL，替换掉旧的域名
     const newUrl = window.location.href.replace(oldDomain, newDomain)
     window.location.replace(newUrl)

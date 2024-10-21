@@ -3,10 +3,20 @@ import type { ICRC1Info } from "@/types/tokens"
 import type { UserInfo } from "@/types/user"
 
 //通用存储方法
-export const setStorage = (value: any, key: any) => {
-  if (value && Object.keys(value).length !== 0) {
-    //只有不为空或者不是空字符串时才会存入
+export const setStorage = (key: string, value: any) => {
+  try {
+    // 检查 key 是否为字符串
+    if (typeof key !== "string" || key.trim() === "") {
+      throw new Error("Storage key must be a non-empty string")
+    }
+    // 检查 value 是否是可以序列化的有效类型
+    if (typeof value === "undefined") {
+      throw new Error("Cannot store undefined value")
+    }
+
     localStorage.setItem(key, JSON.stringify(value))
+  } catch (error) {
+    console.error("Error setting storage:", error)
   }
 }
 //通用读取存储方法
@@ -54,6 +64,7 @@ export const setTokenList = (tokens: ICRC1Info[]): void => {
   }
 }
 
+// 获取用户保留在本地的同步代币列表
 export const getTokenList = (): ICRC1Info[] | null => {
   initICPTokenCache()
   const info = localStorage.getItem(`USER_TOKEN_LIST`)

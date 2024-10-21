@@ -112,10 +112,11 @@
 </template>
 
 <script lang="ts" setup>
+import { getUserConfig, setUserConfig } from "@/api/user"
 import type { UserConfig } from "@/types/user"
 import baseCurrencies, { setCurrencyCode } from "@/utils/currencies"
 import { showMessageSuccess } from "@/utils/message"
-import { getStorage, setStorage } from "@/utils/storage"
+import { setStorage } from "@/utils/storage"
 import moment from "moment-timezone"
 import type { QForm } from "quasar"
 import { onMounted, ref } from "vue"
@@ -134,18 +135,26 @@ const costMethodOption = ["FIFO"]
 // const costMethodOption = ["FIFO", "LIFO"]
 
 onMounted(() => {
-  const res = getStorage("USER_CONFIG")
+  initUserConfig()
+})
+
+const initUserConfig = async () => {
+  const res = await getUserConfig()
   if (res) {
     userConfig.value = res
   }
-})
+}
 
 const onSubmit = async () => {
   loading.value = true
   const validationSuccess = await form.value?.validate()
   try {
     if (validationSuccess) {
-      setStorage(userConfig.value, "USER_CONFIG")
+      // TODO 等后端接口部署
+      // setUserConfig(userConfig.value).then((res) => {
+      //   console.log("setConfig", res)
+      // })
+      setStorage("USER_CONFIG", userConfig.value)
       setCurrencyCode(userConfig.value.currency)
       showMessageSuccess("Save settings success")
     }

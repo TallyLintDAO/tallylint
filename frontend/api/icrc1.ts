@@ -4,10 +4,11 @@ import { MILI_PER_SECOND } from "@/api/constants/ic"
 import type {
   Currency,
   ICRC1BalanceResult,
+  ICRC1Info,
   IRCR1Price,
   InferredTransaction,
 } from "@/types/tokens"
-import type { WalletTag } from "@/types/user"
+import type { WalletInfo, WalletTag } from "@/types/user"
 import { TTL, getCache } from "@/utils/cache"
 import { currencyCalculate } from "@/utils/common"
 import ic from "@/utils/icblast"
@@ -22,6 +23,54 @@ import { Principal } from "@dfinity/principal"
 // Docs: https://github.com/dfinity/ic-js/tree/main/packages/ledger-icrc
 
 const radixNumber = 4 //保留4位小数
+
+//TODO 筛选IC用户除了ICP以外，任何还有balance的，尚未导入已同步代币列表的新代币。
+export const queryIcUserNewAssetsListWithoutICP = async (
+  tokenList: ICRC1Info[],
+  wallets: WalletInfo[],
+): Promise<ICRC1Info[]> => {
+  if (!tokenList) {
+    return []
+  }
+  const knownTokens = getTokenListWithoutICP() //用户已导入的代币列表
+  const newTokens: ICRC1Info[] = [] //新的代币列表
+  const promises = tokenList.map(async (token) => {
+    try {
+      const can = await ic(token.canisters.ledger)
+      // Ledger Canister Method,
+      // *icrc1_balance_of: (record { owner: principal; subaccount:opt vec nat8 }) → (nat) query
+      // 遍历 wallets 数组，逐个获取余额
+      for (const wallet of wallets) {
+        if (!wallet.principal_id[0]) {
+          console.warn(
+            `Wallet ${wallet.name} does not have a valid principal ID`,
+          )
+          continue
+        }
+
+        const resBalance = await can.icrc1_balance_of({
+          owner: Principal.fromText(wallet.principal_id[0]),
+        })
+        //转换balance为正常数字。
+        const balance = currencyCalculate(resBalance, token.decimals)
+        // 如果该钱包中的代币余额不为 0，且代币不在 knownTokens 列表中
+        if (
+          balance > 0 &&
+          !knownTokens.some((knownToken) => knownToken.symbol === token.symbol)
+        ) {
+          newTokens.push(token)
+          return // 已经找到有余额的钱包，可以跳过后续钱包
+        }
+      }
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error(String(e))
+      console.error(`${token.symbol} Error with Token Request:`, error)
+      // showMessageError(`${token.symbol} Error with Token Request:` + error)
+    }
+  })
+  await Promise.all(promises)
+  return newTokens
+}
 
 export const getICRC1Balance = async (
   principalId: string,

@@ -3,6 +3,7 @@ import { TTL, getCache } from "@/utils/cache"
 import { showMessageError } from "@/utils/message"
 import axios from "axios"
 
+// SNS Aggregator DOCS: https://otgyv-wyaaa-aaaak-qcgba-cai.icp0.io/
 const AGGREGATOR_PAGE_SIZE = 10
 export const SNS_AGGREGATOR_CANISTER_URL =
   "https://3r4gx-wqaaa-aaaaq-aaaia-cai.icp0.io"
