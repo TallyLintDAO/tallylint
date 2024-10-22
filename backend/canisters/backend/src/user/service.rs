@@ -51,13 +51,12 @@ impl UserService {
     return self.users.len().try_into().unwrap_or_default();
   }
 
-  pub fn add_default_config(&mut self, owner: &Principal) -> () {
+  pub fn add_default_config(&mut self, owner: &Principal) -> (){
     let config = UserConfig::new(
       //默认值为fifo
       "fifo".to_string(),
       "USD".to_string(),
-      "UTC-5".to_string(),
-      // "test".to_string(),
+      "".to_string(),
     );
     self.configs.insert(owner.to_string(), config);
   }
@@ -90,7 +89,7 @@ impl UserService {
   ) -> Result<UserConfig, String> {
     // Try to get the config
     match self.configs.get(&owner.to_string()) {
-      // If the config exists, return it
+      //如果有用户配置则返回
       Some(config) => Ok(config.clone()),
       // If the config does not exist, set a default config and return it
       // None => {
@@ -98,7 +97,16 @@ impl UserService {
       //   self.update_config(&owner, default_config.clone());
       //   default_config
       // }
-      None => Err("Configuration not found".to_string()),
+      None => {
+        let config = UserConfig::new(
+          //默认值为fifo
+          "fifo".to_string(),
+          "USD".to_string(),
+          "".to_string(),
+        );
+        self.configs.insert(owner.to_string(), config.clone());
+        return Result::Ok(config.clone());
+      }
     }
   }
 
