@@ -188,7 +188,7 @@ onMounted(() => {
 })
 
 watch(
-  () => props.userWallets,
+  [() => props.userWallets, () => tokens.value], // 同时监听 props.userWallets 和 tokens 的变化
   (newValue, oldValue) => {
     if (newValue.length > 0) {
       queryUserNewAssets()
@@ -226,7 +226,6 @@ const queryUserNewAssets = async () => {
   } else {
     console.log("No new wallets detected.")
   }
-  // setStorage("syncedWallet", wallet)
 }
 
 const openDialog = () => {

@@ -1034,8 +1034,8 @@ const deleteTransaction = (transactionId: bigint | number) => {
       "Are you sure delete this transaction? Deleted transaction can't restore",
     okMethod: () => {
       deleteSyncedTransactions(transactionId).then((res) => {
+        console.log("deleteSyncedTransactions", res)
         if (res.Ok) {
-          console.log("deleteSyncedTransactions", res)
           showMessageSuccess("delete transaction success")
           init()
         }

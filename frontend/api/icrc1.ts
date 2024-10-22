@@ -145,14 +145,21 @@ export const getTransactionsICRC1 = async (
 
     const transactionsInfo = ICRC1getTransactions.transactions
     ICRCTransactions = await Promise.all(
-      transactionsInfo.map((transaction) => {
-        return formatICRC1Transaction(
-          wallet,
-          transaction,
-          currency,
-          ledgerCanisterId,
-        )
-      }),
+      transactionsInfo
+        .filter(
+          (transaction) =>
+            transaction.transaction.kind !== "approve" &&
+            transaction.transaction.kind !== "burn",
+        ) // TODO kind == burn时貌似也应该记录进来，但暂时先一起判空粗暴点解决了
+        // 直接过滤掉kind为approve和burn的交易
+        .map((transaction) => {
+          return formatICRC1Transaction(
+            wallet,
+            transaction,
+            currency,
+            ledgerCanisterId,
+          )
+        }),
     )
   }
   return ICRCTransactions
