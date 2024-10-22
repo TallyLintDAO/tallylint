@@ -159,6 +159,7 @@ service : {
   backup : (nat32, nat32) -> (vec record { text; CanisterContext });
   delete_neuron_wallet : (nat64) -> (Result);
   delete_transaction : (nat64) -> (Result_1);
+  delete_transactions_by_wid : (nat64) -> (Result_1);
   delete_wallet : (nat64) -> (Result);
   get_balance : () -> (nat64);
   get_neuron_info : (nat64) -> (Result_3);

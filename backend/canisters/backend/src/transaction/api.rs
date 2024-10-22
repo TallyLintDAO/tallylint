@@ -1,7 +1,8 @@
+use std::borrow::BorrowMut;
 use std::collections::HashMap;
 
 use ic_cdk::{caller, println};
-use ic_cdk_macros::{query, update};
+use ic_cdk::{query, update};
 
 use super::domain::*;
 use super::service::WalletAddress;
@@ -16,43 +17,6 @@ use crate::wallet::service::WalletId;
 use crate::STATE;
 use crate::{MySummary, TransactionB};
 
-//前端必须指定加到哪个钱包.如果不加到任何钱包就是用户的taxlint专有钱包
-#[update(guard = "user_owner_guard")]
-fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
-  STATE.with(|c| {
-    let mut ctx = c.borrow_mut();
-    ctx.id = ctx.id + 1;
-    let id = ctx.id;
-    data.id = id;
-    let result = ctx.wallet_transc_srv.add_transaction(data.clone());
-    match result {
-      Ok(_) => {
-        // update wallet info
-        // let mut cur_wallet = ctx.wallet_service.get_by_addr(data.address);
-        // cur_wallet.transactions = cur_wallet.transactions + 1;
-        // ctx.wallet_service.update_wallet(cur_wallet, caller());
-        return Ok(id);
-      }
-      Err(msg) => {
-        return Err(msg);
-      }
-    }
-  })
-}
-/**
- * 根据钱包id删除对应的
- */
-#[update(guard = "user_owner_guard")]
-fn delete_transaction(wid: WalletId) -> Result<WalletId, String> {
-  STATE.with(|c| {
-    let mut ctx = c.borrow_mut();
-    let ret = ctx.wallet_transc_srv.delete_transactions_by_wid(wid);
-    match ret {
-      Ok(_) => Ok(wid),
-      Err(msg) => Err(msg),
-    }
-  })
-}
 /**
  * 根据交易记录id查询交易记录
  */
@@ -88,6 +52,29 @@ fn query_all_transactions() -> Result<HashMap<WalletId, TransactionB>, String> {
     let ctx = c.borrow_mut();
     let rec = ctx.wallet_transc_srv.query_all_transactions();
     return Ok(rec);
+  })
+}
+//前端必须指定加到哪个钱包.如果不加到任何钱包就是用户的taxlint专有钱包
+#[update(guard = "user_owner_guard")]
+fn add_transaction(mut data: TransactionB) -> Result<u64, String> {
+  STATE.with(|c| {
+    let mut ctx = c.borrow_mut();
+    ctx.id = ctx.id + 1;
+    let id = ctx.id;
+    data.id = id;
+    let result = ctx.wallet_transc_srv.add_transaction(data.clone());
+    match result {
+      Ok(_) => {
+        // update wallet info
+        // let mut cur_wallet = ctx.wallet_service.get_by_addr(data.address);
+        // cur_wallet.transactions = cur_wallet.transactions + 1;
+        // ctx.wallet_service.update_wallet(cur_wallet, caller());
+        return Ok(id);
+      }
+      Err(msg) => {
+        return Err(msg);
+      }
+    }
   })
 }
 /**
@@ -133,6 +120,36 @@ fn update_transaction_tag(id: u64, tag: String) -> Result<bool, String> {
   })
 }
 
+/**
+ * 根据钱包id删除对应的
+ */
+#[update(guard = "admin_guard")]
+fn delete_transactions_by_wid(wid: WalletId) -> Result<WalletId, String> {
+  STATE.with(|c| {
+    let mut ctx = c.borrow_mut();
+    let ret = ctx.wallet_transc_srv.delete_transactions_by_wid(wid);
+    match ret {
+      Ok(_) => Ok(wid),
+      Err(msg) => Err(msg),
+    }
+  })
+}
+/**
+ * 根据id单个删除交易记录
+ */
+#[update(guard = "user_owner_guard")]
+fn delete_transaction(id: TransactionId) -> Result<TransactionId, String> {
+  STATE.with(|c| {
+    let mut ctx = c.borrow_mut();
+    let ret = ctx.wallet_transc_srv.delete_transaction(id);
+    match ret {
+      Ok(_) => Ok(id),
+      Err(msg) => Err(msg),
+    }
+  })
+}
+
+
 #[update(guard = "user_owner_guard")]
 fn remove_transaction_tag(id: u64) -> Result<bool, String> {
   STATE.with(|c| {
@@ -163,7 +180,7 @@ fn sync_transaction_record(
     let method = ctx.user_service.get_config(&caller()).unwrap().tax_method;
     for each_wallet in data {
       // 对前端传来的交易记录对象进行处理
-      let trans_b_vec: Vec<TransactionB> = each_wallet
+      let mut trans_b_vec: Vec<TransactionB> = each_wallet
         .history
         .iter()
         .map(|record| {
@@ -175,8 +192,8 @@ fn sync_transaction_record(
       //对交易记录的profit进行计算
       let calculated_transactions = ctx
         .wallet_transc_srv
-        .calculate_profit(trans_b_vec.clone(), &method);
-      println!("calculated_transactions: {:?}", &calculated_transactions);
+        .calculate_profit(&mut trans_b_vec.borrow_mut(), &method);
+      // println!("calculated_transactions: {:?}", &calculated_transactions);
       ctx
         .wallet_transc_srv
         .add_transaction_batch(calculated_transactions.unwrap());
@@ -223,7 +240,7 @@ fn my_summary(start: TimeStamp, end: TimeStamp) -> Result<MySummary, String> {
     for one_wallet in wallets {
       let mut vec_trans = ctx
         .wallet_transc_srv
-        .query_one_wallet_trans(one_wallet)
+        .query_trans_by_addr(one_wallet)
         .values()
         .next()
         .expect("wallet transaction empty")

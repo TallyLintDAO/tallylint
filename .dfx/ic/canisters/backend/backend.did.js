@@ -203,6 +203,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'delete_neuron_wallet' : IDL.Func([IDL.Nat64], [Result], []),
     'delete_transaction' : IDL.Func([IDL.Nat64], [Result_1], []),
+    'delete_transactions_by_wid' : IDL.Func([IDL.Nat64], [Result_1], []),
     'delete_wallet' : IDL.Func([IDL.Nat64], [Result], []),
     'get_balance' : IDL.Func([], [IDL.Nat64], []),
     'get_neuron_info' : IDL.Func([IDL.Nat64], [Result_3], []),

@@ -57,6 +57,7 @@ impl UserService {
       "fifo".to_string(),
       "USD".to_string(),
       "UTC-5".to_string(),
+      // "test".to_string(),
     );
     self.configs.insert(owner.to_string(), config);
   }

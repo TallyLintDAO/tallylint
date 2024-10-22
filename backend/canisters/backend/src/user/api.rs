@@ -4,8 +4,7 @@ use crate::{common::guard::admin_guard, UserConfig};
 use crate::{HistoryQueryCommand, STATE};
 use candid::Principal;
 use ic_cdk::api::{call, time};
-use ic_cdk::query;
-use ic_cdk_macros::update;
+use ic_cdk::{query,update};
 /**
  * !IMPORTANT INFO
 自动登录和自动注册.api名称定了.注释描述一下在这里.
@@ -67,13 +66,13 @@ fn set_user_config(config: UserConfig) -> Result<bool, String> {
       Some(wallet_vec.iter().map(|wallet| wallet.id).collect()),
       None,
     );
-    let sync_transactions = ctx
+    let mut sync_transactions = ctx
       .wallet_transc_srv
       .query_synced_transactions(query_command);
     //step2:根据用户的method_type更新交易记录
     let calculated_transactions = ctx
       .wallet_transc_srv
-      .calculate_profit(sync_transactions, &method);
+      .calculate_profit(&mut sync_transactions, &method);
     //step3:批量更新交易记录
     ctx
       .wallet_transc_srv

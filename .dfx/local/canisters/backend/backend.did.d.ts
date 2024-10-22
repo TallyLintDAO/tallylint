@@ -185,6 +185,7 @@ export interface _SERVICE {
   'backup' : ActorMethod<[number, number], Array<[string, CanisterContext]>>,
   'delete_neuron_wallet' : ActorMethod<[bigint], Result>,
   'delete_transaction' : ActorMethod<[bigint], Result_1>,
+  'delete_transactions_by_wid' : ActorMethod<[bigint], Result_1>,
   'delete_wallet' : ActorMethod<[bigint], Result>,
   'get_balance' : ActorMethod<[], bigint>,
   'get_neuron_info' : ActorMethod<[bigint], Result_3>,

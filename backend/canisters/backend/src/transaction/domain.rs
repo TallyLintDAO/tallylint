@@ -39,7 +39,6 @@ pub struct TransactionF {
 
 pub type TransactionId = u64;
 
-// TODO multi profit type
 //FIXME无用结构体，需要删除
 #[allow(non_snake_case)]
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
@@ -60,7 +59,7 @@ pub struct DetailsB {
 }
 
 #[allow(non_snake_case)]
-#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize, PartialEq)]
 pub struct TransactionB {
   //
   // backend autogen:
@@ -83,7 +82,7 @@ pub struct TransactionB {
 }
 
 #[allow(non_snake_case)]
-#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize,PartialEq)]
 pub struct Details {
   pub amount: f64,
   pub cost: f64, /* 由后端计算，理论上应该是不要持久化储存的，
@@ -99,7 +98,7 @@ pub struct Details {
   pub profit: f64,
 }
 
-#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize, PartialEq)]
 pub struct Currency {
   pub decimals: u8,   //代币精度,多少个0
   pub symbol: String, //代币符号，例如'ICP'，'CHAT'

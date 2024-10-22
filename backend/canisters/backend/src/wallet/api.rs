@@ -1,5 +1,5 @@
 use ic_cdk::caller;
-use ic_cdk_macros::{query, update};
+use ic_cdk::{query, update};
 use ic_ledger_types::AccountIdentifier;
 
 use super::domain::*;

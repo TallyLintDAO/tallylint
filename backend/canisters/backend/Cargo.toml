@@ -94,7 +94,7 @@ lazy_static ={ workspace = true }
 # i think {} to specifiy the scope as syntax here will be more obvious and clear.
 
 # testing:
-pocket-ic = "2.0.1"
+pocket-ic = "5.0.0"
 
 # using rust code to interact with ic-replica 
 # also means  like simulate  CLI dfx calls .

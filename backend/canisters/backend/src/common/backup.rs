@@ -1,4 +1,4 @@
-use ic_cdk_macros::{query,update};
+use ic_cdk::{query,update};
 use candid::{CandidType, Deserialize, Principal};
 use crate::common::guard::admin_guard;
 use super::context::CanisterContext;

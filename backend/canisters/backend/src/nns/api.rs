@@ -10,7 +10,7 @@ use candid::Principal;
 use candid::{self, CandidType, Decode, Deserialize, Encode};
 use ic_cdk::api::time;
 use ic_cdk::{api::call::CallResult, caller};
-use ic_cdk_macros::{query, update};
+use ic_cdk::{query, update};
 use serde::Serialize;
 
 /*
