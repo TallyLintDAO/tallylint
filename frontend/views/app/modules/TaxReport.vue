@@ -150,7 +150,7 @@
               <q-item-section overline>Cost basis method</q-item-section>
               <q-skeleton v-if="userConfigLoading" type="text" />
               <q-item-section v-else side>{{
-                userConfig.costMethod
+                userConfig.tax_method
               }}</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
@@ -191,7 +191,7 @@ const walletAmount = ref(0)
 const userConfig = ref<UserConfig>({
   currency: "USD",
   timezone: moment.tz.guess(),
-  costMethod: "FIFO",
+  tax_method: "FIFO",
 }) //用户选择税务报告所导出的单位为USD还是自选的货币
 
 const taxReportData = ref<TaxReportData>({

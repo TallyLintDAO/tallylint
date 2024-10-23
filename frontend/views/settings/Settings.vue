@@ -81,9 +81,9 @@
                     <q-item-label> Cost basis method </q-item-label>
                     <q-item-label caption>
                       <q-select
-                        v-model="userConfig.costMethod"
+                        v-model="userConfig.tax_method"
                         filled
-                        :options="costMethodOption"
+                        :options="taxMethodOption"
                         label="Select cost basis method *"
                         :rules="[
                           (val) => !!val || 'Please select cost basis method',
@@ -127,12 +127,12 @@ const loading = ref(false)
 const userConfig = ref<UserConfig>({
   currency: "USD",
   timezone: moment.tz.guess(),
-  costMethod: "FIFO",
+  tax_method: "FIFO",
 })
 const currencies = ref(baseCurrencies)
 const timezoneList = ref(moment.tz.names())
-const costMethodOption = ["FIFO"]
-// const costMethodOption = ["FIFO", "LIFO"]
+const taxMethodOption = ["FIFO"]
+// const taxMethodOption = ["FIFO", "LIFO", "HIFO"]
 
 onMounted(() => {
   initUserConfig()
@@ -151,12 +151,12 @@ const onSubmit = async () => {
   try {
     if (validationSuccess) {
       // TODO 等后端接口部署
-      // setUserConfig(userConfig.value).then((res) => {
-      //   console.log("setConfig", res)
-      // })
-      setStorage("USER_CONFIG", userConfig.value)
-      setCurrencyCode(userConfig.value.currency)
-      showMessageSuccess("Save settings success")
+      setUserConfig(userConfig.value).then((res) => {
+        console.log("setConfig", res)
+        setStorage("USER_CONFIG", userConfig.value)
+        setCurrencyCode(userConfig.value.currency)
+        showMessageSuccess("Save settings success")
+      })
     }
   } catch (error) {
   } finally {

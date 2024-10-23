@@ -110,7 +110,7 @@ export type SyncedHistory = TransactionB[]
 export interface UserConfig {
   currency: string
   timezone: string
-  costMethod: string
+  tax_method: string
 }
 
 export interface TaxReportData {
