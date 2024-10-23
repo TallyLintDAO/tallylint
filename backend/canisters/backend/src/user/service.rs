@@ -54,7 +54,7 @@ impl UserService {
   pub fn add_default_config(&mut self, owner: &Principal) -> (){
     let config = UserConfig::new(
       //默认值为fifo
-      "fifo".to_string(),
+      "FIFO".to_string(),
       "USD".to_string(),
       "".to_string(),
     );
@@ -93,14 +93,14 @@ impl UserService {
       Some(config) => Ok(config.clone()),
       // If the config does not exist, set a default config and return it
       // None => {
-      //   let default_config = UserConfig::new("fifo".to_string(), );
+      //   let default_config = UserConfig::new("FIFO".to_string(), );
       //   self.update_config(&owner, default_config.clone());
       //   default_config
       // }
       None => {
         let config = UserConfig::new(
-          //默认值为fifo
-          "fifo".to_string(),
+          //默认值为FIFO
+          "FIFO".to_string(),
           "USD".to_string(),
           "".to_string(),
         );

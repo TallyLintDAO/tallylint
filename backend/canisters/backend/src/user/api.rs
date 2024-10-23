@@ -92,11 +92,10 @@ fn add_user_config() -> bool {
 }
 
 #[query(guard = "user_owner_guard")]
-fn get_user_config() -> UserConfig {
+fn get_user_config() -> Result<UserConfig,String> {
   STATE.with(|c| {
     let mut ctx = c.borrow_mut();
-    let data = ctx.user_service.get_config(&caller()).unwrap();
-    return data;
+    ctx.user_service.get_config(&caller())
   })
 }
 

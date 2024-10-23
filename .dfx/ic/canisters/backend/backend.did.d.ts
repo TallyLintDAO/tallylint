@@ -87,26 +87,28 @@ export type Result = { 'Ok' : boolean } |
   { 'Err' : string };
 export type Result_1 = { 'Ok' : bigint } |
   { 'Err' : string };
-export type Result_10 = { 'Ok' : TransactionB } |
+export type Result_10 = { 'Ok' : Array<WalletProfile> } |
+  { 'Err' : Array<WalletProfile> };
+export type Result_11 = { 'Ok' : TransactionB } |
   { 'Err' : string };
-export type Result_11 = { 'Ok' : Array<TransactionB> } |
+export type Result_12 = { 'Ok' : Array<TransactionB> } |
   { 'Err' : string };
 export type Result_2 = { 'Ok' : UserProfile } |
   { 'Err' : string };
 export type Result_3 = { 'Ok' : [CustomResult1] } |
   { 'Err' : [RejectionCode, string] };
-export type Result_4 = { 'Ok' : MySummary } |
+export type Result_4 = { 'Ok' : UserConfig } |
   { 'Err' : string };
-export type Result_5 = { 'Ok' : NeuronProfile } |
+export type Result_5 = { 'Ok' : MySummary } |
   { 'Err' : string };
-export type Result_6 = { 'Ok' : WalletProfile } |
+export type Result_6 = { 'Ok' : NeuronProfile } |
   { 'Err' : string };
-export type Result_7 = { 'Ok' : Array<NeuronProfile> } |
+export type Result_7 = { 'Ok' : WalletProfile } |
+  { 'Err' : string };
+export type Result_8 = { 'Ok' : Array<NeuronProfile> } |
   { 'Err' : Array<NeuronProfile> };
-export type Result_8 = { 'Ok' : Array<[bigint, TransactionB]> } |
+export type Result_9 = { 'Ok' : Array<[bigint, TransactionB]> } |
   { 'Err' : string };
-export type Result_9 = { 'Ok' : Array<WalletProfile> } |
-  { 'Err' : Array<WalletProfile> };
 export interface SyncTransactionCommand {
   'history' : Array<TransactionF>,
   'walletId' : bigint,
@@ -189,17 +191,17 @@ export interface _SERVICE {
   'delete_wallet' : ActorMethod<[bigint], Result>,
   'get_balance' : ActorMethod<[], bigint>,
   'get_neuron_info' : ActorMethod<[bigint], Result_3>,
-  'get_user_config' : ActorMethod<[], UserConfig>,
+  'get_user_config' : ActorMethod<[], Result_4>,
   'greet_test_agent' : ActorMethod<[], string>,
   'list_all_user' : ActorMethod<[], Array<UserProfile>>,
-  'my_summary' : ActorMethod<[bigint, bigint], Result_4>,
-  'query_a_neuron_wallet' : ActorMethod<[bigint], Result_5>,
-  'query_a_wallet' : ActorMethod<[bigint], Result_6>,
-  'query_all_neuron_wallet' : ActorMethod<[], Result_7>,
-  'query_all_transactions' : ActorMethod<[], Result_8>,
-  'query_all_wallets' : ActorMethod<[], Result_9>,
-  'query_one_transaction' : ActorMethod<[bigint], Result_10>,
-  'query_synced_transactions' : ActorMethod<[HistoryQueryCommand], Result_11>,
+  'my_summary' : ActorMethod<[bigint, bigint], Result_5>,
+  'query_a_neuron_wallet' : ActorMethod<[bigint], Result_6>,
+  'query_a_wallet' : ActorMethod<[bigint], Result_7>,
+  'query_all_neuron_wallet' : ActorMethod<[], Result_8>,
+  'query_all_transactions' : ActorMethod<[], Result_9>,
+  'query_all_wallets' : ActorMethod<[], Result_10>,
+  'query_one_transaction' : ActorMethod<[bigint], Result_11>,
+  'query_synced_transactions' : ActorMethod<[HistoryQueryCommand], Result_12>,
   'remove_transaction_tag' : ActorMethod<[bigint], Result>,
   'restore' : ActorMethod<[Array<[string, CanisterContext]>], undefined>,
   'set_user_config' : ActorMethod<[UserConfig], Result>,

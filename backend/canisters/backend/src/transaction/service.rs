@@ -503,7 +503,7 @@ impl WalletRecordService {
           &trans_timestamps
         );
         match method {
-          "fifo" => {
+          "FIFO" => {
             //之前购买过且还有存量
             while remain > 0.0 && !bought_symbol_transactions.is_empty() {
               let first_bought_transaction = &mut bought_symbol_transactions[0];
@@ -541,7 +541,7 @@ impl WalletRecordService {
             //交易价值等于利润加成本
             value = profit + cost;
           }
-          "lifo" => {
+          "LIFO" => {
             while remain > 0.0 && !bought_symbol_transactions.is_empty() {
               let last_bought_transaction = bought_symbol_transactions
                 .last_mut()
@@ -576,7 +576,7 @@ impl WalletRecordService {
             //交易价值等于利润加成本
             value = profit + cost;
           }
-          "hifo" => {
+          "HIFO" => {
             while remain > 0.0 && !bought_symbol_transactions.is_empty() {
               let highest_index = bought_symbol_transactions
                 .iter()
