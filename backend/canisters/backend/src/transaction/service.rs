@@ -430,9 +430,9 @@ impl WalletRecordService {
         }
       })
       .collect();
-
+    //有可能此时钱包并未同步交易记录，所以没有对应的交易记录
     if ids_to_remove.is_empty() {
-      return Err(format!("No transaction records for wid {:?} exist", wid));
+      return Ok(true);
     }
 
     // 删除找到的所有记录
@@ -450,7 +450,7 @@ impl WalletRecordService {
     id: u64,
   ) -> Result<bool, String> {
     if !self.records.contains_key(&id) {
-      return Err("Transaction record does not exist".to_string());
+      return Err("Transaction does not exist".to_string());
     }
 
     self.records.remove(&id);
@@ -458,7 +458,7 @@ impl WalletRecordService {
     if !self.records.contains_key(&id) {
       return Ok(true);
     } else {
-      return Err("Failed to delete transaction record".to_string());
+      return Err("Failed to delete transaction".to_string());
     }
   }
   
