@@ -136,14 +136,14 @@
               <q-item-section overline>Timezone</q-item-section>
               <q-skeleton v-if="userConfigLoading" type="text" />
               <q-item-section v-else side>{{
-                userConfig.timezone
+                userConfig.time_zone
               }}</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section overline>Base Currency</q-item-section>
               <q-skeleton v-if="userConfigLoading" type="text" />
               <q-item-section v-else side>{{
-                userConfig.currency
+                userConfig.base_currency
               }}</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
@@ -189,8 +189,8 @@ const historyList = ref<SyncedTransaction[]>([])
 const transactionAmount = ref(0)
 const walletAmount = ref(0)
 const userConfig = ref<UserConfig>({
-  currency: "USD",
-  timezone: moment.tz.guess(),
+  base_currency: "USD",
+  time_zone: moment.tz.guess(),
   tax_method: "FIFO",
 }) //用户选择税务报告所导出的单位为USD还是自选的货币
 
@@ -284,7 +284,7 @@ const exportToCSV = async () => {
     "Profit",
   ]
   let exportRate = 1
-  if (userConfig.value.currency !== "USD") {
+  if (userConfig.value.base_currency !== "USD") {
     //如果用户选择使用他自己选择的货币汇率，则对即将导出的报告金额使用转换
     exportRate = rate
   }
@@ -304,7 +304,7 @@ const exportToCSV = async () => {
       transaction.details.amount,
       transaction.details.fee,
       transaction.details.currency.symbol,
-      userConfig.value.currency,
+      userConfig.value.base_currency,
       numberToFixed(transaction.details.price * exportRate, 2),
       numberToFixed(transaction.details.cost * exportRate, 2),
       numberToFixed(transaction.details.value * exportRate, 2),

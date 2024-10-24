@@ -15,7 +15,7 @@
                     <q-item-label> Base currency </q-item-label>
                     <q-item-label caption>
                       <q-select
-                        v-model="userConfig.currency"
+                        v-model="userConfig.base_currency"
                         filled
                         use-input
                         input-debounce="0"
@@ -53,17 +53,17 @@
                 </q-item>
                 <q-item>
                   <q-item-section>
-                    <q-item-label> Timezone for reports </q-item-label>
+                    <q-item-label> time_zone for reports </q-item-label>
                     <q-item-label caption>
                       <q-select
-                        v-model="userConfig.timezone"
+                        v-model="userConfig.time_zone"
                         filled
                         use-input
                         input-debounce="0"
-                        :options="timezoneList"
-                        label="Select Timezone *"
-                        :rules="[(val) => !!val || 'Please select timezone']"
-                        @filter="filterTimezone"
+                        :options="time_zoneList"
+                        label="Select time_zone *"
+                        :rules="[(val) => !!val || 'Please select time_zone']"
+                        @filter="filtertime_zone"
                       >
                         <template v-slot:no-option>
                           <q-item>
@@ -125,14 +125,14 @@ const form = ref<QForm | null>(null)
 const loading = ref(false)
 
 const userConfig = ref<UserConfig>({
-  currency: "USD",
-  timezone: moment.tz.guess(),
+  base_currency: "USD",
+  time_zone: moment.tz.guess(),
   tax_method: "FIFO",
 })
 const currencies = ref(baseCurrencies)
-const timezoneList = ref(moment.tz.names())
-const taxMethodOption = ["FIFO"]
-// const taxMethodOption = ["FIFO", "LIFO", "HIFO"]
+const time_zoneList = ref(moment.tz.names())
+// const taxMethodOption = ["FIFO"]
+const taxMethodOption = ["FIFO", "LIFO", "HIFO"]
 
 onMounted(() => {
   initUserConfig()
@@ -150,11 +150,10 @@ const onSubmit = async () => {
   const validationSuccess = await form.value?.validate()
   try {
     if (validationSuccess) {
-      // TODO 等后端接口部署
-      setUserConfig(userConfig.value).then((res) => {
+      await setUserConfig(userConfig.value).then((res) => {
         console.log("setConfig", res)
         setStorage("USER_CONFIG", userConfig.value)
-        setCurrencyCode(userConfig.value.currency)
+        setCurrencyCode(userConfig.value.base_currency)
         showMessageSuccess("Save settings success")
       })
     }
@@ -172,10 +171,10 @@ const filterCurrencies = (val, update) => {
     )
   })
 }
-const filterTimezone = (val, update) => {
+const filtertime_zone = (val, update) => {
   update(() => {
     const needle = val.toLowerCase()
-    timezoneList.value = moment.tz
+    time_zoneList.value = moment.tz
       .names()
       .filter((v) => v.toLowerCase().includes(needle))
   })

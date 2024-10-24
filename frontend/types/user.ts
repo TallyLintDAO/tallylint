@@ -108,8 +108,8 @@ export interface HistoryQueryParams {
 export type SyncedHistory = TransactionB[]
 
 export interface UserConfig {
-  currency: string
-  timezone: string
+  base_currency: string
+  time_zone: string
   tax_method: string
 }
 
