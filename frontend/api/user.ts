@@ -217,22 +217,26 @@ export async function fetchAllSyncTransactions(
   // console.log("getICPTransactions", res)
   if (tokenList && wallet.principal[0]) {
     const noICPTokenList = tokenList.filter((token) => token.symbol !== "ICP")
-    for (let index = 0; index < noICPTokenList.length; index++) {
-      const token = noICPTokenList[index]
-      const currency: Currency = {
-        decimals: token.decimals,
-        symbol: token.symbol,
-      }
-      const icrcArray = await getTransactionsICRC1(
-        wallet,
-        token.canisters.index,
-        token.canisters.ledger,
-        currency,
-      )
-      // console.log("icrcRes", currency, icrcArray)
-      // 合并数组
+    // 使用 Promise.all 并行获取所有 ICRC1 交易记录
+    const icrcResults = await Promise.all(
+      noICPTokenList.map(async (token) => {
+        const currency: Currency = {
+          decimals: token.decimals,
+          symbol: token.symbol,
+        }
+        return getTransactionsICRC1(
+          wallet,
+          token.canisters.index,
+          token.canisters.ledger,
+          currency,
+        )
+      }),
+    )
+
+    // 合并所有 ICRC1 交易记录
+    icrcResults.forEach((icrcArray) => {
       transactions = transactions.concat(icrcArray)
-    }
+    })
   }
   return transactions.sort((a, b) => b.timestamp - a.timestamp) //最新的数据排在排在数组的最前面 index0
 }
@@ -315,6 +319,7 @@ export async function getUserConfig(): Promise<UserConfig | null> {
     }
   }
   if (userConfig && userConfig.time_zone && userConfig.time_zone !== "") {
+    console.log("userConfig.time_zone", userConfig.time_zone)
     //根据用户设置的时区设置默认时区
     moment.tz.setDefault(userConfig.time_zone)
   } else {

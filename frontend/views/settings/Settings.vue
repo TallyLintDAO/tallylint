@@ -150,6 +150,7 @@ const onSubmit = async () => {
   const validationSuccess = await form.value?.validate()
   try {
     if (validationSuccess) {
+      //TODO 如果改了tax_method 应该重新加载一下transaction的缓存
       await setUserConfig(userConfig.value).then((res) => {
         console.log("setConfig", res)
         setStorage("USER_CONFIG", userConfig.value)
