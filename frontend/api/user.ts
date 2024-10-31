@@ -306,6 +306,7 @@ export async function getUserTaxProfit(
   return getBackend().my_summary(start, end)
 }
 
+// TODO 现在getUserConfig会调用后端的方法，页面初始化，用户还未登录时就触发此方法，不好。
 export async function getUserConfig(): Promise<UserConfig | null> {
   //如果存在本地userconfig，则直接引用
   let userConfig = getStorage("USER_CONFIG")
@@ -316,6 +317,9 @@ export async function getUserConfig(): Promise<UserConfig | null> {
     if (res.Ok) {
       //读取完userconfig再将userconfig保存至本地，方便下次调用
       userConfig = res.Ok
+    } else {
+      // 如果返回不成功则直接停止后面的操作
+      return null
     }
   }
   if (userConfig && userConfig.time_zone && userConfig.time_zone !== "") {

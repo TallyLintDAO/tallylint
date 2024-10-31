@@ -67,7 +67,6 @@ const onLogin = async () => {
   //检查用户是否已登录，未登录就登录
   signIn(auth.client) // 理论上有链接对象才会进入这个方法
     .then((ii) => {
-      enableTwitterAds()
       signedIn.value = true
       auth.info = ii
       loginSuccess(ii)
@@ -95,6 +94,7 @@ const loginSuccess = (ii: IdentityInfo) => {
   setCurrentIdentity(ii.identity, ii.principal)
   // 保存 principal 到状态
   userStore.setPrincipal(ii.principal).then(() => {
+    enableTwitterAds()
     //直接跳转到应用中，在应用里获取userInfo，加快速度。
     router.push({
       path: "/app",

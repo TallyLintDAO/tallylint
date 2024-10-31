@@ -10,18 +10,5 @@
       "Content-Type": "application/json"
     },
     "ignore": false
-  },
-  {
-    "match": "**/*",
-    "security_policy": "standard",
-    "headers": {
-      "Content-Security-Policy": "default-src 'self';script-src 'self' 'unsafe-eval';connect-src *;img-src * data:;style-src * 'unsafe-inline';style-src-elem * 'unsafe-inline';font-src *;object-src 'none';base-uri 'self';frame-ancestors 'none';form-action 'self';upgrade-insecure-requests;",
-      "Permissions-Policy": "",
-      "X-Frame-Options": "DENY",
-      "Referrer-Policy": "same-origin",
-      "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-      "X-Content-Type-Options": "nosniff",
-      "X-XSS-Protection": "1; mode=block"
-    }
   }
 ]
