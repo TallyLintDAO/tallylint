@@ -367,6 +367,7 @@ export const getDailyBalanceValue = async (
         tokenPrice = await matchICRC1Price(
           date.getTime(),
           balanceInfo[token].ledgerCanisterId,
+          token,
         )
       }
       //计算价值

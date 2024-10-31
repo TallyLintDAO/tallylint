@@ -88,7 +88,11 @@ export const getICRC1Balance = async (
         owner: Principal.fromText(principalId),
       })
       const balance = currencyCalculate(resBalance, token.decimals)
-      const price = await matchICRC1Price(Date.now(), token.canisters.ledger)
+      const price = await matchICRC1Price(
+        Date.now(),
+        token.canisters.ledger,
+        token.symbol,
+      )
       const value = processNumber(balance * price)
       return {
         symbol: token.symbol,
@@ -178,7 +182,11 @@ export const formatICRC1Transaction = async (
   let details: Details = detail
   details.amount = currencyCalculate(detail.amount, currency.decimals)
   details.to = detail.to.owner.toString()
-  details.price = await matchICRC1Price(timestampNormal, ledgerCanisterId) // 使用 await 获取价格
+  details.price = await matchICRC1Price(
+    timestampNormal,
+    ledgerCanisterId,
+    currency.symbol,
+  ) // 使用 await 获取价格
   details.cost = 0 // 置0，交给后端计算
   details.profit = 0 // 置0，交给后端计算
   details.value = parseFloat(
@@ -236,6 +244,7 @@ export const getICRC1Price = async (
 export const matchICRC1Price = async (
   timestamp: number,
   ledgerCanisterId: string,
+  symbol: string,
 ): Promise<number> => {
   //将小数点的时间戳转为整数时间戳
   const targetTimestamp = Math.floor(timestamp)
@@ -254,13 +263,8 @@ export const matchICRC1Price = async (
     ).open
     return processNumber(price)
   } catch (error) {
-    showMessageError(
-      `Failed to get price history for ledgerCanisterId ${ledgerCanisterId}`,
-    )
-    console.error(
-      `Failed to get price history for ledgerCanisterId ${ledgerCanisterId}:`,
-      error,
-    )
+    showMessageError(`Failed to get price history for token ${symbol}`)
+    console.error(`Failed to get price history for token ${symbol}:`, error)
 
     return NaN // 返回 NaN 表示获取价格失败
   }

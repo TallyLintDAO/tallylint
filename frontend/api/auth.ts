@@ -33,7 +33,7 @@ export async function initAuth(): Promise<AuthInfo> {
       idleOptions: {
         // idleTimeout:1000 * 20, // 设置闲置超时时间
         disableIdle: true, // 设置为true禁用检测闲置行为
-        disableDefaultIdleCallback: true, // 禁用默认空闲行为 - 调用注销和重新加载窗口
+        disableDefaultIdleCallback: true, // 禁用默认空闲行为 - 防止调用注销和重新加载窗口
         // onIdle() {
         //     // 检测到闲置时的回调，默认为登出并且刷新页面，假如有此方法则会替代原来的方法
         // },

@@ -16,6 +16,7 @@ import { showMessageError } from "@/utils/message"
 import { getNNS } from "@/utils/nns"
 import { getStorage, getTokenList, setStorage } from "@/utils/storage"
 import moment from "moment"
+import { initAuth } from "./auth"
 import { getBackend, getCurrentPrincipal } from "./canister_pool"
 import { getICPTransactions } from "./icp"
 import { getTransactionsICRC1 } from "./icrc1"
@@ -311,9 +312,13 @@ export async function getUserConfig(): Promise<UserConfig | null> {
   //如果存在本地userconfig，则直接引用
   let userConfig = getStorage("USER_CONFIG")
   if (!userConfig) {
+    const auth = await initAuth()
+    if (!auth.info) {
+      // 用户未登录时不执行以下方法
+      return null
+    }
     //如果本地不存在配置类，则尝试读取后端canister中的userconfig
     const res = await getBackend().get_user_config()
-    console.log("getBackend getUserConfig", res)
     if (res.Ok) {
       //读取完userconfig再将userconfig保存至本地，方便下次调用
       userConfig = res.Ok
@@ -323,14 +328,12 @@ export async function getUserConfig(): Promise<UserConfig | null> {
     }
   }
   if (userConfig && userConfig.time_zone && userConfig.time_zone !== "") {
-    console.log("userConfig.time_zone", userConfig.time_zone)
     //根据用户设置的时区设置默认时区
     moment.tz.setDefault(userConfig.time_zone)
   } else {
     //后端生成的默认配置会将time_zone设置为空，获取到时区以后，如果时区为空，自动将moment.tz的时区设置为对应的时区
     userConfig.time_zone = moment.tz.guess()
   }
-  console.log("end getUserconfig", userConfig)
   setCurrencyCode(userConfig.base_currency)
   setStorage("USER_CONFIG", userConfig)
   return userConfig
