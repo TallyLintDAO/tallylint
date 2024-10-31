@@ -67,6 +67,7 @@ const onLogin = async () => {
   //检查用户是否已登录，未登录就登录
   signIn(auth.client) // 理论上有链接对象才会进入这个方法
     .then((ii) => {
+      enableTwitterAds()
       signedIn.value = true
       auth.info = ii
       loginSuccess(ii)
@@ -81,6 +82,12 @@ const onLogin = async () => {
   //   //存在auth.info，说明用户已登录，不需要再登录
   //   loginSuccess(auth.info)
   // }
+}
+
+const enableTwitterAds = () => {
+  // 调用 Twitter 广告跟踪事件
+  //@ts-ignore
+  window.twq("event", "tw-opr1q-opr2m", {})
 }
 
 const loginSuccess = (ii: IdentityInfo) => {
