@@ -18,8 +18,18 @@ export class TTL {
   static day = (day: number) => 60 * 60 * 24 * day
 }
 
+type CacheItem = {
+  value: any
+  expired: number // 毫秒过期时间
+}
+// 存储进行中的请求，以避免重复请求
+const ongoingRequests: Record<string, Promise<any> | null> = {}
+
+//内存变量
+const CACHE_DATA = {}
+
 // 直接获取本地储存的带过期时间的数据进行验证，如果没有才发出网络请求
-// 方法返回值必须是res.Ok才会激活本地缓存
+//TODO 方法返回值必须是res.Ok才会激活本地缓存。注意，现在好像不是硬需求res.Ok也行了
 export async function getCache(info: {
   key: string // key: 设置storage里的key，注意：key 里面应当包含执行方法的参数信息，不同的参数不能共用一个 key
   execute: () => Promise<any> // execute: 传入执行方法
@@ -31,73 +41,78 @@ export async function getCache(info: {
   update?: boolean // 当update为true时，立即返回之前缓存的数据，并且在后台异步地加载新的数据，并在加载完成后更新缓存
   updatedCallback?: (_data: any) => void // 异步更新成功是否需要回调
 }): Promise<any> {
-  // 给key增加前缀，以防被覆盖
   const key = "CACHE_" + info.key
   let data
-  if (info.refresh == true) {
-    data = null // 如果主动设置了 refresh 是 true，那么表明不使用缓存
+
+  // 判断是否需要刷新缓存
+  if (info.refresh) {
+    data = null
   } else {
     data = getExpiredData(key, info.isLocal || false)
   }
   // data = null; // 启用则关闭缓存功能，方便测试
+  // 如果缓存中已有数据，直接返回缓存
   if (data) {
     if (info.notice) info.notice(true)
-    if (info.update === true) {
+    // 如果允许异步更新，则返回数据并异步更新
+    if (info.update) {
       setTimeout(async () => {
         const d = await info.execute()
-        if (data.Ok !== undefined) {
+        if (d) {
           setExpiredData(key, d, info.ttl || 60 * 60, info.isLocal || false)
           if (info.updatedCallback) info.updatedCallback(d)
         }
       }, 0)
     }
     return data
-  } else {
-    const timeout = info.timeout ?? 30000 // 默认 30 秒
-    // 如果超时就返回错误
-    data = await new Promise((resolve, reject) => {
-      const start = new Date().getTime()
-      let flag = false
-      const timeoutCallback = () => {
-        // ...error message
-        reject("getCache timeout: " + key)
-      }
-      setTimeout(() => !flag && timeoutCallback(), timeout)
-      info
-        .execute()
-        .then((d) => {
-          if (new Date().getTime() <= start + timeout) {
-            resolve(d)
-          } else {
-            timeoutCallback() // 即使获取到内容，超时了，也不接受
-          }
-        })
-        .catch((e) => reject(e))
-        .finally(() => (flag = true))
-    })
+  }
 
-    // 缓存中没有就执行方法产生最新的值
-    data = await info.execute()
-    // console.log('execute result for ' + key, data);
-    // 如果数据没有正常返回，就不缓存了
-    if (data === undefined) {
-      if (info.notice) info.notice(false)
-      return data
+  // 检查是否已有正在进行的请求，免得重复请求一种api链接，例如一百条历史交易记录同时请求100次ghost的价格API，现在只会请求一次
+  if (ongoingRequests[key]) {
+    return ongoingRequests[key]
+  }
+  // 发起新的请求，并设置超时机制
+  const timeout = info.timeout ?? 30000
+  ongoingRequests[key] = new Promise((resolve, reject) => {
+    const start = Date.now()
+    let flag = false
+
+    const timeoutCallback = () => {
+      delete ongoingRequests[key]
+      reject(`getCache timeout: ${key}`)
     }
-    setExpiredData(key, data, info.ttl || 60 * 60, info.isLocal || false)
 
+    setTimeout(() => !flag && timeoutCallback(), timeout)
+
+    info
+      .execute()
+      .then((d) => {
+        if (Date.now() <= start + timeout) {
+          if (d) {
+            setExpiredData(key, d, info.ttl || 60 * 60, info.isLocal || false)
+          }
+          resolve(d)
+        } else {
+          timeoutCallback() // 即使获取到内容，超时了，也不接受
+        }
+      })
+      .catch((error) => reject(error))
+      .finally(() => {
+        flag = true
+        delete ongoingRequests[key] // 清除请求状态
+      })
+  })
+
+  // 获取结果并返回
+  try {
+    const result = await ongoingRequests[key]
     if (info.notice) info.notice(false)
-    return data
+    return result
+  } catch (error) {
+    if (info.notice) info.notice(false)
+    throw error
   }
 }
-
-type CacheItem = {
-  value: any
-  expired: number // 毫秒过期时间
-}
-
-//内存变量
-const CACHE_DATA = {}
 
 // 保存值到缓存
 // key: 设置storage里的key

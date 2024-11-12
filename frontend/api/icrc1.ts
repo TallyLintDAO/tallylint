@@ -103,7 +103,10 @@ export const getICRC1Balance = async (
       }
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e))
-      console.error(`${token.symbol} Error with Token Request:`, error)
+      console.error(
+        `${token.symbol} | ${token.canisters.ledger} Error with Token Request:`,
+        error,
+      )
       showMessageError(`${token.symbol} Error with Token Request:` + error)
       return {
         symbol: token.symbol,
@@ -140,31 +143,38 @@ export const getTransactionsICRC1 = async (
         canisterId: canisterPrincipal,
       },
     )
-    const ICRC1getTransactions = await ICRC1_getTransactions({
-      account: {
-        owner: principal,
-      } as IcrcAccount,
-      max_results: BigInt(10000),
-    })
-
-    const transactionsInfo = ICRC1getTransactions.transactions
-    ICRCTransactions = await Promise.all(
-      transactionsInfo
-        .filter(
-          (transaction) =>
-            transaction.transaction.kind !== "approve" &&
-            transaction.transaction.kind !== "burn",
-        ) // TODO kind == burn时貌似也应该记录进来，但暂时先一起判空粗暴点解决了
-        // 直接过滤掉kind为approve和burn的交易
-        .map((transaction) => {
-          return formatICRC1Transaction(
-            wallet,
-            transaction,
-            currency,
-            ledgerCanisterId,
-          )
-        }),
-    )
+    try {
+      const ICRC1getTransactions = await ICRC1_getTransactions({
+        account: {
+          owner: principal,
+        } as IcrcAccount,
+        max_results: BigInt(10000),
+      })
+      const transactionsInfo = ICRC1getTransactions.transactions
+      ICRCTransactions = await Promise.all(
+        transactionsInfo
+          .filter(
+            (transaction) =>
+              transaction.transaction.kind !== "approve" &&
+              transaction.transaction.kind !== "burn",
+          ) // TODO kind == burn时貌似也应该记录进来，但暂时先一起判空粗暴点解决了
+          // 直接过滤掉kind为approve和burn的交易
+          .map((transaction) => {
+            return formatICRC1Transaction(
+              wallet,
+              transaction,
+              currency,
+              ledgerCanisterId,
+            )
+          }),
+      )
+    } catch (error) {
+      console.error("ICRC1getTransactions", currency, error)
+      showMessageError(
+        `Unable to access ${currency.symbol} Index Canister for transactions history, 
+        maybe there's something wrong with ${currency.symbol} canister.`,
+      )
+    }
   }
   return ICRCTransactions
 }
@@ -254,7 +264,7 @@ export const matchICRC1Price = async (
       key: "ICRC1_Price_History_" + ledgerCanisterId,
       execute: () => getICRC1Price(ledgerCanisterId),
       ttl: TTL.day1,
-      isLocal: false,
+      isLocal: true,
     })
     // 返回最接近时间戳对应的币价，如果没有找到则返回 undefined
     const price = binarySearchClosestICRC1Price(
@@ -268,4 +278,12 @@ export const matchICRC1Price = async (
 
     return NaN // 返回 NaN 表示获取价格失败
   }
+}
+
+export const getDIYToken = async (
+  ledgerCanisterId: string,
+): Promise<ICRC1Info> => {
+  //从icpswap记录罐子中获取存储罐子的id
+  let tokenCanister = await ic(ledgerCanisterId)
+  const token = tokenCanister.console.log("")
 }
