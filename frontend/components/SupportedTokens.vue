@@ -48,65 +48,7 @@
               />
             </template>
           </q-banner>
-          <q-card-section class="select-token">
-            <div class="row q-gutter-xs">
-              <q-select
-                filled
-                :loading="tokensLoading"
-                v-model="selectedToken"
-                :options="tokens"
-                label="Selected Token"
-                class="col"
-              >
-                <template v-slot:selected>
-                  <img
-                    v-if="selectedToken"
-                    class="selected-icon q-mr-xs"
-                    :src="selectedToken.meta.logo"
-                    alt="Icon"
-                  />
-                  {{ selectedToken?.symbol }}
-                </template>
-                <template v-slot:option="scope">
-                  <q-item v-bind="scope.itemProps">
-                    <q-item-section avatar>
-                      <img
-                        class="head-icon"
-                        :src="scope.opt.meta.logo"
-                        alt="Icon"
-                      />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>{{ scope.opt.symbol }}</q-item-label>
-                      <q-item-label caption>{{ scope.opt.name }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-              <q-btn
-                style="margin: 10px 0 10px 10px"
-                @click="addSelectedToken()"
-                >Add</q-btn
-              >
-            </div>
-            <span class="text-caption" style="color: rgba(0, 0, 0, 0.54)">
-              Need to click 'Sync All Transactions' again after adding new token
-            </span>
-            <div class="row q-mt-sm q-gutter-sm">
-              <q-space />
-              <q-btn
-                v-if="!enableSyncNewToken"
-                color="primary"
-                @click="autoImportTokens(true)"
-                >Enable automatic import</q-btn
-              >
-              <q-btn
-                color="primary"
-                label="Import"
-                @click="currentPage = 'importPage'"
-              />
-            </div>
-          </q-card-section>
+
           <q-list>
             <q-item v-for="(token, index) in addedTokenList">
               <!-- 遍历已添加的token -->
@@ -138,8 +80,66 @@
             </q-item>
           </q-list>
         </q-card-section>
-
-        <q-card-actions align="right">
+        <q-card-section class="select-token">
+          <div class="row q-gutter-xs">
+            <q-select
+              filled
+              :loading="tokensLoading"
+              v-model="selectedToken"
+              :options="tokens"
+              label="Selected Token"
+              class="col"
+            >
+              <template v-slot:selected>
+                <img
+                  v-if="selectedToken"
+                  class="selected-icon q-mr-xs"
+                  :src="selectedToken.meta.logo"
+                  alt="Icon"
+                />
+                {{ selectedToken?.symbol }}
+              </template>
+              <template v-slot:option="scope">
+                <q-item v-bind="scope.itemProps">
+                  <q-item-section avatar>
+                    <img
+                      class="head-icon"
+                      :src="scope.opt.meta.logo"
+                      alt="Icon"
+                    />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>{{ scope.opt.symbol }}</q-item-label>
+                    <q-item-label caption>{{ scope.opt.name }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+            <q-btn style="margin: 10px 0 10px 10px" @click="addSelectedToken()"
+              >Add</q-btn
+            >
+          </div>
+          <span class="text-caption" style="color: rgba(0, 0, 0, 0.54)">
+            Need to click 'Sync All Transactions' again after adding new token
+          </span>
+          <div class="row q-mt-sm q-gutter-sm">
+            <q-space />
+            <q-btn
+              v-if="!enableSyncNewToken"
+              color="primary"
+              @click="autoImportTokens(true)"
+              >Enable automatic import</q-btn
+            >
+            <q-btn
+              flat
+              no-caps
+              color="primary"
+              label="+ Don’t see your token? Import"
+              @click="currentPage = 'importPage'"
+            />
+          </div>
+        </q-card-section>
+        <q-card-actions align="between">
           <q-btn flat label="Close" color="primary" v-close-popup />
           <q-btn
             color="secondary"
@@ -167,12 +167,13 @@
             />
             <q-input
               filled
-              v-model="importTokenLedgerId"
+              v-model="tokenLedgerId"
               label="Token Ledger Canister Id"
+              class="col"
             />
           </div>
         </q-card-section>
-        <q-card-actions align="right">
+        <q-card-actions align="between">
           <q-btn
             flat
             label="Back"
@@ -193,7 +194,7 @@
 </template>
 
 <script setup lang="ts">
-import { queryIcUserNewAssetsListWithoutICP } from "@/api/icrc1"
+import { getDIYToken, queryIcUserNewAssetsListWithoutICP } from "@/api/icrc1"
 import { getSNSInfoCache } from "@/api/sns"
 import type { ICRC1Info } from "@/types/tokens"
 import type { WalletInfo } from "@/types/user"
@@ -217,7 +218,7 @@ const importLoading = ref(false) //用户导入自定义代币的loading
 const isSyncNewToken = ref(false) // 是否存在未同步的新代币，如果是则检查新钱包里包含的代币并导入
 const enableSyncNewToken = ref(true) //是否启用自动导入新代币列表的功能
 
-const importTokenLedgerId = ref() //导入代币的ledger canister id
+const tokenLedgerId = ref() //导入代币的ledger canister id
 const currentPage = ref<"tokenListPage" | "importPage">("tokenListPage")
 const networks = ["ICRC-1"]
 const network = ref("ICRC-1")
@@ -241,10 +242,29 @@ watch(
   },
 )
 
-const ImportDIYToken = () => {
+const ImportDIYToken = async () => {
+  // 查重，检查是否已存在具有相同ledger ID的代币
+  const isDuplicate = addedTokenList.value.some(
+    (token) => token.canisters.ledger === tokenLedgerId.value,
+  )
+  if (isDuplicate) {
+    showMessageError("This token has been imported")
+    return
+  }
   importLoading.value = true
-  //先查重
   //再调用canister对应方法
+  try {
+    // 调用canister方法获取代币信息
+    const newTokenInfo = await getDIYToken(tokenLedgerId.value)
+
+    // 将新代币信息添加到导入列表
+    tokenLedgerId.value.push(addedTokenList.value)
+    console.log("tokenLedgerId:", addedTokenList.value)
+  } catch (error) {
+    console.error("tokenLedgerId error:", error)
+  } finally {
+    importLoading.value = false
+  }
 }
 
 //是否限制代币自动导入功能
