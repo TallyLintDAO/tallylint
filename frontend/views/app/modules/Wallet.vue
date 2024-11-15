@@ -148,12 +148,12 @@
               :disable="isEdit"
               v-model="address"
               label="Wallet Address *"
-              hint="Enter Principal ID"
+              hint="Input Principal ID"
               lazy-rules
               :rules="[
                 (val: string) =>
                   (val && val.length > 0 && isPrincipal(val)) ||
-                  'Please enter Wallet Principal ID',
+                  'Please input Wallet Principal ID',
                 (val: string) =>
                   (val && !wallets.some((item) => item.address === val)) ||
                   isEdit ||
@@ -180,7 +180,7 @@
               hint="Identify your wallet quickly"
               lazy-rules
               :rules="[
-                (val: string) => (val && val.length > 0) || 'Please type wallet name',
+                (val: string) => (val && val.length > 0) || 'Please input wallet name',
               ]"
             />
             <div class="q-gutter-sm justify-end flex">

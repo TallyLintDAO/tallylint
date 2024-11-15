@@ -157,21 +157,34 @@
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
         <q-card-section class="token-import">
-          <div class="row q-gutter-xs">
+          <q-form ref="formRef" @submit="ImportDIYToken()">
             <q-select
               filled
               v-model="network"
               :options="networks"
               label="Network"
-              style="min-width: 125px"
+              class="q-field--with-bottom"
             />
             <q-input
               filled
               v-model="tokenLedgerId"
-              label="Token Ledger Canister Id"
+              label="Token Ledger Canister Id *"
+              lazy-rules
+              :rules="[
+                (val: string) => (val && val.length > 0) || 'Please input ledger canister id',
+              ]"
               class="col"
             />
-          </div>
+            <q-input
+              filled
+              v-model="tokenIndexId"
+              label="Token Index Canister Id *"
+              :rules="[
+                (val: string) => (val && val.length > 0) || 'Please input index canister id',
+              ]"
+              class="col"
+            />
+          </q-form>
         </q-card-section>
         <q-card-actions align="between">
           <q-btn
@@ -198,13 +211,14 @@ import { getDIYToken, queryIcUserNewAssetsListWithoutICP } from "@/api/icrc1"
 import { getSNSInfoCache } from "@/api/sns"
 import type { ICRC1Info } from "@/types/tokens"
 import type { WalletInfo } from "@/types/user"
-import { showMessageError } from "@/utils/message"
+import { showMessageError, showMessageSuccess } from "@/utils/message"
 import {
   getStorage,
   getTokenList,
   setStorage,
   setTokenList,
 } from "@/utils/storage"
+import type { QForm } from "quasar"
 import { onMounted, ref, watch } from "vue"
 
 const props = defineProps<{
@@ -212,13 +226,15 @@ const props = defineProps<{
   userWallets: WalletInfo[]
   loading: boolean
 }>()
+const formRef = ref<QForm | null>(null)
 const tokensDialogVisible = ref(false)
 const tokensLoading = ref(true)
 const importLoading = ref(false) //用户导入自定义代币的loading
 const isSyncNewToken = ref(false) // 是否存在未同步的新代币，如果是则检查新钱包里包含的代币并导入
 const enableSyncNewToken = ref(true) //是否启用自动导入新代币列表的功能
 
-const tokenLedgerId = ref() //导入代币的ledger canister id
+const tokenLedgerId = ref("") //导入代币的ledger canister id
+const tokenIndexId = ref("") //导入代币的index canister id
 const currentPage = ref<"tokenListPage" | "importPage">("tokenListPage")
 const networks = ["ICRC-1"]
 const network = ref("ICRC-1")
@@ -243,23 +259,33 @@ watch(
 )
 
 const ImportDIYToken = async () => {
+  const isValid = formRef.value?.validate()
+  if (!isValid) {
+    return
+  }
+
   // 查重，检查是否已存在具有相同ledger ID的代币
   const isDuplicate = addedTokenList.value.some(
     (token) => token.canisters.ledger === tokenLedgerId.value,
   )
   if (isDuplicate) {
-    showMessageError("This token has been imported")
+    showMessageError("This token already exists")
     return
   }
   importLoading.value = true
   //再调用canister对应方法
   try {
     // 调用canister方法获取代币信息
-    const newTokenInfo = await getDIYToken(tokenLedgerId.value)
-
+    const newTokenInfo = await getDIYToken(
+      tokenLedgerId.value,
+      tokenIndexId.value,
+    )
+    showMessageSuccess("Tokens have been successfully imported")
     // 将新代币信息添加到导入列表
-    tokenLedgerId.value.push(addedTokenList.value)
-    console.log("tokenLedgerId:", addedTokenList.value)
+    addedTokenList.value.push(newTokenInfo)
+    currentPage.value = "tokenListPage"
+    //保存新的tokenList
+    setTokenList(addedTokenList.value)
   } catch (error) {
     console.error("tokenLedgerId error:", error)
   } finally {

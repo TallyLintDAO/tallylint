@@ -178,6 +178,21 @@ export const getTransactionsICRC1 = async (
   }
   return ICRCTransactions
 }
+//没有index罐子的代币只能把全部交易记录拉下来，然后再通过代码筛选出其中的用户交易记录
+export const getTransactionsICRC1WithoutIndexCanister = async (
+  wallet: WalletTag,
+  ledgerCanisterId: string,
+  currency: Currency,
+) => {
+  const icrc1 = await ic(ledgerCanisterId)
+  let res = await icrc1.get_transactions(0, 10000)
+  let transactions = []
+  if (res.archived_transactions > 0) {
+    //存在archived容器
+  }
+
+  return
+}
 
 export const formatICRC1Transaction = async (
   wallet: WalletTag,
@@ -282,8 +297,53 @@ export const matchICRC1Price = async (
 
 export const getDIYToken = async (
   ledgerCanisterId: string,
+  indexCanisterId: string,
 ): Promise<ICRC1Info> => {
   //从icpswap记录罐子中获取存储罐子的id
   let tokenCanister = await ic(ledgerCanisterId)
-  const token = tokenCanister.console.log("")
+  const meta = await tokenCanister.icrc1_metadata()
+  console.log("meta", meta)
+  const result: ICRC1Info = {
+    canisters: {
+      governance: "",
+      index: "",
+      ledger: "",
+      root: "",
+      swap: "",
+    },
+    decimals: 0,
+    fee: 0,
+    meta: {
+      description: "",
+      logo: "",
+      name: "",
+      url: "",
+    },
+    name: "",
+    symbol: "",
+  }
+
+  meta.forEach(([key, value]) => {
+    switch (key) {
+      case "icrc1:fee":
+        result.fee = value.Nat ? Number(value.Nat) : 0
+        break
+      case "icrc1:name":
+        result.name = value.Text || ""
+        result.meta.name = value.Text || ""
+        break
+      case "icrc1:symbol":
+        result.symbol = value.Text || ""
+        break
+      case "icrc1:decimals":
+        result.decimals = value.Nat ? Number(value.Nat) : 0
+        break
+      case "icrc1:logo":
+        result.meta.logo = value.Text || ""
+        break
+    }
+  })
+  result.canisters.ledger = ledgerCanisterId
+  result.canisters.index = indexCanisterId
+  return result
 }
