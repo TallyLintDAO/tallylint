@@ -165,6 +165,27 @@
               label="Network"
               class="q-field--with-bottom"
             />
+            <div class="text-body1">
+              TallyLint requires an index canister id to get the history of
+              transactions. But some tokens may not have an index canister. If
+              the wrong canister id is provided, then the function may not work
+              properly
+              <br />
+              <div class="q-py-md">
+                <a
+                  @click="
+                    jumpToWebsite(
+                      'https://internetcomputer.org/docs/current/developer-docs/daos/nns/using-the-nns-dapp/nns-dapp-importing-tokens',
+                    )
+                  "
+                  color="primary"
+                  class="text-weight-bold"
+                >
+                  <q-icon name="open_in_new" size="sm"></q-icon>
+                  Read how ICRC token Integration works
+                </a>
+              </div>
+            </div>
             <q-input
               filled
               v-model="tokenLedgerId"
@@ -261,6 +282,10 @@ watch(
 const ImportDIYToken = async () => {
   const isValid = formRef.value?.validate()
   if (!isValid) {
+    return
+  }
+  if (tokenLedgerId.value === tokenIndexId.value) {
+    showMessageError("ledger canister id is duplicated with index canister id.")
     return
   }
 

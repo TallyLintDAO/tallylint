@@ -280,6 +280,7 @@ export const matchICRC1Price = async (
       execute: () => getICRC1Price(ledgerCanisterId),
       ttl: TTL.day1,
       isLocal: true,
+      update: true,
     })
     // 返回最接近时间戳对应的币价，如果没有找到则返回 undefined
     const price = binarySearchClosestICRC1Price(
@@ -302,7 +303,6 @@ export const getDIYToken = async (
   //从icpswap记录罐子中获取存储罐子的id
   let tokenCanister = await ic(ledgerCanisterId)
   const meta = await tokenCanister.icrc1_metadata()
-  console.log("meta", meta)
   const result: ICRC1Info = {
     canisters: {
       governance: "",

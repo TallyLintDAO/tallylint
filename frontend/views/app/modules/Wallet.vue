@@ -1,11 +1,11 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
-  <q-banner rounded class="text-white bg-orange-10">
+  <!-- <q-banner rounded class="text-white bg-orange-10">
     In order to support IRCR1 tokens, TallyLint no longer supports wallet in the
     form of Account ID, only Principal ID entered into wallet are supported now.
     <br />
     Wallet already entered are not affected, but wallet without Principal ID
     cannot support IRCR1 tokens
-  </q-banner>
+  </q-banner> -->
   <div class="wallet-container">
     <div class="row">
       <div class="q-gutter-sm">
