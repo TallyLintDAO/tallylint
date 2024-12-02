@@ -338,10 +338,10 @@ impl WalletRecordService {
    * 批量插入交易记录
    */
   pub fn add_transaction_batch(&mut self, record_vec: Vec<TransactionB>) -> () {
-    let existing_keys: HashSet<(u64, String)> = self
+    let existing_keys: HashSet<(u64, String, String)> = self
       .records
       .values()
-      .map(|record| (record.wid, record.hash.clone())) // 假设 TransactionB 有 wid 和 hash 字段
+      .map(|record| (record.wid, record.hash.clone(), record.details.currency.symbol.clone())) // 假设 TransactionB 有 wid 和 hash 字段
       .collect();
     // 检查是否已经存在相同的 wid 和 hash，重复性校验，使得交易记录唯一
     let unique_records: BTreeMap<TransactionId, TransactionB> = record_vec
@@ -349,8 +349,8 @@ impl WalletRecordService {
       .filter(|record| {
         //不保存amount=0的记录
         record.details.amount != 0.0
-        //校验wid和hash值
-          && !existing_keys.contains(&(record.wid, record.hash.clone()))
+        //校验wid和hash值以及币种
+          && !existing_keys.contains(&(record.wid, record.hash.clone(), record.details.currency.symbol.clone()))
       }) // 移除已存在的记录
       .map(|record| (record.id, record))
       .collect();

@@ -10,7 +10,6 @@ use crate::STATE;
 
 const MAX_WALLET_NAME_LENGTH: usize = 64;
 const ACCOUNT_ID_LENGTH: usize = 64;
-const PRINCIPAL_ID_LENGTH: usize = 63;
 use ic_cdk::api::time;
 #[update(guard = "user_owner_guard")]
 fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
@@ -23,11 +22,6 @@ fn add_wallet(cmd: WalletAddCommand) -> Result<bool, String> {
     }
 
     let if_principal: Option<String> = cmd.principal_id.clone();
-    if if_principal.is_some() {
-      if if_principal.clone().unwrap().len() != PRINCIPAL_ID_LENGTH {
-        return Err(String::from("principal_id length need to be 63"));
-      }
-    }
     let now = time();
     let mut ctx = c.borrow_mut();
     let caller = caller();
