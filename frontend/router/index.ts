@@ -6,6 +6,7 @@ import Neurons from "@/views/app/modules/Neurons.vue"
 import TaxReport from "@/views/app/modules/TaxReport.vue"
 import Wallet from "@/views/app/modules/Wallet.vue"
 import Home from "@/views/home/Home.vue"
+import Market from "@/views/market/marketHome.vue"
 import Settings from "@/views/settings/Settings.vue"
 import Transactions from "@/views/transactions/Transactions.vue"
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router"
@@ -16,6 +17,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/",
     name: "Home",
     component: Home,
+  },
+  {
+    path: "/market",
+    name: "Market",
+    component: Market,
   },
   {
     path: "/app",
