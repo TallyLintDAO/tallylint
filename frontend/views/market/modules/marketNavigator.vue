@@ -8,14 +8,24 @@
         @click="onHome"
       />
       <q-btn
+        v-if="!signIn"
         color="primary"
         class="login-button"
         @click="onLogin()"
         :loading="loading"
         no-caps
       >
-        Launch app
+        Login
       </q-btn>
+      <div v-else>
+        <q-avatar size="56px" class="q-mb-sm" :style="{ backgroundColor }">
+          {{ showAvatar }}
+        </q-avatar>
+        <div>
+          {{ showUser }}
+        </div>
+        <div>@user</div>
+      </div>
     </q-toolbar>
     <div class="nav-tab">
       <q-tabs v-model="tab" narrow-indicator dense align="justify" class="">
@@ -27,10 +37,17 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { IdentityInfo, initAuth, signIn } from "@/api/auth"
-import { setCurrentIdentity } from "@/api/canister_pool"
+import { IdentityInfo, initAuth, signIn, signOut } from "@/api/auth"
+import { clearCurrentIdentity, setCurrentIdentity } from "@/api/canister_pool"
+import { getUserAutoRegister } from "@/api/user"
 import { useUserStore } from "@/stores/user"
-import { ref } from "vue"
+import {
+  extractColorByName,
+  showAvatarName,
+  showUsername,
+} from "@/utils/avatars"
+import { showMessageError } from "@/utils/message"
+import { computed, ref } from "vue"
 import { useRouter } from "vue-router"
 
 const router = useRouter()
@@ -41,6 +58,9 @@ const signedIn = ref(false) // 是否登录
 const loading = ref(false)
 
 const tab = ref("mails")
+const username = ref("")
+
+const principal = computed(() => userStore.principal)
 
 const onLogin = async () => {
   const auth = await initAuth()
@@ -57,9 +77,7 @@ const onLogin = async () => {
     .catch((e) => {
       console.error("e", e)
     })
-    .finally(() => {
-      loading.value = false
-    })
+
   // } else {
   //   //存在auth.info，说明用户已登录，不需要再登录
   //   loginSuccess(auth.info)
@@ -69,14 +87,60 @@ const onLogin = async () => {
 const loginSuccess = (ii: IdentityInfo) => {
   // 保存登录状态到actor，方便调用
   setCurrentIdentity(ii.identity, ii.principal)
-  // 保存 principal 到状态
-  userStore.setPrincipal(ii.principal).then(() => {
-    //直接跳转到应用中，在应用里获取userInfo，加快速度。
-    router.push({
-      path: "/app",
-    })
-  })
+  //获取登录信息
+  signedIn.value = true
+  getUserInfoFromServices()
 }
+
+//从后台获取用户信息，并且设置
+const getUserInfoFromServices = () => {
+  getUserAutoRegister()
+    .then((info) => {
+      if (info.Ok) {
+        username.value = info.Ok.name
+      } else if (info.Err) {
+        console.error("no information for unregister user: ", info)
+      } else {
+        throw new Error("info not ok & info not err")
+      }
+    })
+    .catch((e) => {
+      console.error("mounted get user info failed: ", e)
+      showMessageError("mounted get user info failed: " + e)
+      onLogOut()
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+
+const onLogOut = async () => {
+  console.log("onLogout")
+  const auth = await initAuth()
+  signedIn.value = false
+  clearCurrentIdentity()
+  await signOut(auth.client)
+
+  // TODO 返回首页还要刷新页面，感觉不是很友好
+  //返回首页后，刷新页面，防止出现缓存问题。
+  // 如果不刷新页面，会导致A用户登出后，再登录B用户的账号，结果会读取A用户缓存的问题
+  setTimeout(() => {
+    window.location.reload()
+  }, 500)
+}
+
+const showAvatar = computed<string>(() => {
+  const m = showAvatarName(username.value, principal.value)
+  return m ? m : "A"
+})
+// 根据名字，定义头像颜色
+const backgroundColor = computed<string>(() => {
+  return extractColorByName(username.value)
+})
+// 根据名字，定义用户名
+const showUser = computed<string>(() => {
+  return showUsername(username.value, principal.value)
+})
 </script>
 <style lang="scss" scoped>
 .navigator-container {
