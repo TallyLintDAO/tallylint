@@ -8,7 +8,7 @@
         @click="onHome"
       />
       <q-btn
-        v-if="signedIn"
+        v-if="!signedIn"
         color="primary"
         class="login-button"
         @click="onLogin()"
@@ -18,13 +18,12 @@
         Login
       </q-btn>
       <div v-else>
-        <q-avatar size="56px" class="q-mb-sm" :style="{ backgroundColor }">
+        <q-avatar color="primary" text-color="white">
           {{ showAvatar }}
         </q-avatar>
         <div>
           {{ showUser }}
         </div>
-        <div>@user</div>
       </div>
     </q-toolbar>
     <div class="nav-tab">
@@ -47,7 +46,7 @@ import {
   showUsername,
 } from "@/utils/avatars"
 import { showMessageError } from "@/utils/message"
-import { computed, ref } from "vue"
+import { computed, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
 const router = useRouter()
@@ -61,6 +60,10 @@ const tab = ref("mails")
 const username = ref("")
 
 const principal = computed(() => userStore.principal)
+
+onMounted(() => {
+  console.log("signed", signedIn.value)
+})
 
 const onLogin = async () => {
   const auth = await initAuth()
