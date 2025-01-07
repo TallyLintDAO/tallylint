@@ -7,6 +7,7 @@ import { getUserConfig } from "./user"
 //全局存储rate变量，方便调用
 export let rate: number
 export let rate_time_last_update: number
+
 ;(async () => {
   const { rate: initialRate, time_last_update_unix: initialTime } =
     await getUserCurrencyRate()

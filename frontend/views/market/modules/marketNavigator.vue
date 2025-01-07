@@ -8,7 +8,7 @@
         @click="onHome"
       />
       <q-btn
-        v-if="!signIn"
+        v-if="signedIn"
         color="primary"
         class="login-button"
         @click="onLogin()"
@@ -77,6 +77,9 @@ const onLogin = async () => {
     .catch((e) => {
       console.error("e", e)
     })
+    .finally(() => {
+      loading.value = false
+    })
 
   // } else {
   //   //存在auth.info，说明用户已登录，不需要再登录
@@ -89,7 +92,12 @@ const loginSuccess = (ii: IdentityInfo) => {
   setCurrentIdentity(ii.identity, ii.principal)
   //获取登录信息
   signedIn.value = true
-  getUserInfoFromServices()
+  console.log("loginSuccess", signedIn.value, ii)
+  // 保存 principal 到用户信息状态
+  userStore.setPrincipal(ii.principal).then(() =>
+    // 获取用户信息
+    getUserInfoFromServices(),
+  )
 }
 
 //从后台获取用户信息，并且设置
@@ -108,9 +116,6 @@ const getUserInfoFromServices = () => {
       console.error("mounted get user info failed: ", e)
       showMessageError("mounted get user info failed: " + e)
       onLogOut()
-    })
-    .finally(() => {
-      loading.value = false
     })
 }
 

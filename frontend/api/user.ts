@@ -309,6 +309,10 @@ export async function getUserTaxProfit(
 
 // TODO 现在getUserConfig会调用后端的方法，页面初始化，用户还未登录时就触发此方法，不好。
 export async function getUserConfig(): Promise<UserConfig | null> {
+  //moment-timezone 防止moment未加载时被调用导致的报错，
+  if (!moment || !moment.tz) {
+    return null
+  }
   //如果存在本地userconfig，则直接引用
   let userConfig = getStorage("USER_CONFIG")
   if (!userConfig) {
