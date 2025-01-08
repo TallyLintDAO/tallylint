@@ -15,15 +15,55 @@
         :loading="loading"
         no-caps
       >
-        Login
+        Log In
       </q-btn>
       <div v-else>
-        <q-avatar color="primary" text-color="white">
-          {{ showAvatar }}
-        </q-avatar>
-        <div>
-          {{ showUser }}
-        </div>
+        <q-btn flat round color="primary">
+          <q-avatar color="primary" text-color="white">
+            {{ showAvatar }}
+          </q-avatar>
+          <q-icon name="expand_more" size="sm"></q-icon>
+          <!-- <q-icon name="expand_less" size="sm"></q-icon> -->
+          <!-- <div>
+            {{ showUser }}
+          </div> -->
+          <q-menu
+            transition-show="jump-down"
+            transition-hide="jump-up"
+            class="q-elevation-8"
+          >
+            <q-list style="min-width: 200px">
+              <div class="q-pa-md q-gutter-sm row items-center">
+                <q-avatar color="primary" text-color="white">
+                  {{ showAvatar }}
+                </q-avatar>
+
+                <div class="q-ml-sm">
+                  <div class="text-h6">{{ showUser }}</div>
+                  <div class="text-caption text-grey-6">
+                    {{ showPId }}
+                    <q-icon
+                      name="content_copy"
+                      class="cursor-pointer"
+                      @click="copyPid()"
+                    />
+                  </div>
+                </div>
+              </div>
+              <q-separator />
+              <q-item clickable v-close-popup>
+                <q-item-section>Profile</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup>
+                <q-item-section>Settings</q-item-section>
+              </q-item>
+              <q-separator />
+              <q-item clickable v-close-popup>
+                <q-item-section>Log Out</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
       </div>
     </q-toolbar>
     <div class="nav-tab">
@@ -45,7 +85,8 @@ import {
   showAvatarName,
   showUsername,
 } from "@/utils/avatars"
-import { showMessageError } from "@/utils/message"
+import { showMessageError, showMessageSuccess } from "@/utils/message"
+import { copyToClipboard } from "quasar"
 import { computed, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 
@@ -62,8 +103,22 @@ const username = ref("")
 const principal = computed(() => userStore.principal)
 
 onMounted(() => {
-  console.log("signed", signedIn.value)
+  doInitAuth()
 })
+
+const doInitAuth = () => {
+  initAuth().then((ai) => {
+    if (ai.info) {
+      signedIn.value = true
+      setCurrentIdentity(ai.info.identity, ai.info.principal)
+      // 保存 principal 到用户信息状态
+      userStore.setPrincipal(ai.info.principal).then(() =>
+        // 获取用户信息
+        getUserInfoFromServices(),
+      )
+    }
+  })
+}
 
 const onLogin = async () => {
   const auth = await initAuth()
@@ -83,7 +138,6 @@ const onLogin = async () => {
     .finally(() => {
       loading.value = false
     })
-
   // } else {
   //   //存在auth.info，说明用户已登录，不需要再登录
   //   loginSuccess(auth.info)
@@ -137,6 +191,16 @@ const onLogOut = async () => {
   }, 500)
 }
 
+const copyPid = () => {
+  copyToClipboard(principal.value)
+    .then(() => {
+      showMessageSuccess(`copy ${principal.value} success`)
+    })
+    .catch(() => {
+      showMessageError("copy failed")
+    })
+}
+
 const showAvatar = computed<string>(() => {
   const m = showAvatarName(username.value, principal.value)
   return m ? m : "A"
@@ -148,6 +212,10 @@ const backgroundColor = computed<string>(() => {
 // 根据名字，定义用户名
 const showUser = computed<string>(() => {
   return showUsername(username.value, principal.value)
+})
+// 展示缩写的principal id
+const showPId = computed<string>(() => {
+  return showUsername("", principal.value)
 })
 </script>
 <style lang="scss" scoped>
