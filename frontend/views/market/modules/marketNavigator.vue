@@ -30,7 +30,8 @@
           <q-menu
             transition-show="jump-down"
             transition-hide="jump-up"
-            class="q-elevation-8"
+            class="avatar-menu shadow-8"
+            v-model="menuShowing"
           >
             <q-list style="min-width: 200px">
               <div class="q-pa-md q-gutter-sm row items-center">
@@ -39,7 +40,12 @@
                 </q-avatar>
 
                 <div class="q-ml-sm">
-                  <div class="text-h6">{{ showUser }}</div>
+                  <div
+                    class="text-h6"
+                    style="line-height: normal; font-weight: 600"
+                  >
+                    {{ showUser }}
+                  </div>
                   <div class="text-caption text-grey-6">
                     {{ showPId }}
                     <q-icon
@@ -51,16 +57,21 @@
                 </div>
               </div>
               <q-separator />
-              <q-item clickable v-close-popup>
-                <q-item-section>Profile</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup>
-                <q-item-section>Settings</q-item-section>
-              </q-item>
+              <div class="function">
+                <q-item clickable v-close-popup>
+                  <q-item-section>Profile</q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup>
+                  <q-item-section>Settings</q-item-section>
+                </q-item>
+              </div>
+
               <q-separator />
-              <q-item clickable v-close-popup>
-                <q-item-section>Log Out</q-item-section>
-              </q-item>
+              <div class="logout">
+                <q-item clickable v-close-popup>
+                  <q-item-section>Log Out</q-item-section>
+                </q-item>
+              </div>
             </q-list>
           </q-menu>
         </q-btn>
@@ -95,6 +106,7 @@ const userStore = useUserStore()
 const onHome = () => router.push("/")
 // 与 II 认证相关的信息
 const signedIn = ref(false) // 是否登录
+const menuShowing = ref(false)
 const loading = ref(false)
 
 const tab = ref("mails")
@@ -218,7 +230,7 @@ const showPId = computed<string>(() => {
   return showUsername("", principal.value)
 })
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .navigator-container {
   width: 100%;
   display: flex;
@@ -239,6 +251,20 @@ const showPId = computed<string>(() => {
   }
   .nav-tab {
     margin-left: 40px;
+  }
+}
+.avatar-menu {
+  border-radius: 10px !important;
+  .function,
+  .logout {
+    padding: 10px 0;
+  }
+  .q-item {
+    margin: 0 10px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #2b2b2b;
   }
 }
 </style>
