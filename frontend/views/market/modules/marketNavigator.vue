@@ -22,11 +22,12 @@
           <q-avatar color="primary" text-color="white">
             {{ showAvatar }}
           </q-avatar>
-          <q-icon name="expand_more" size="sm"></q-icon>
-          <!-- <q-icon name="expand_less" size="sm"></q-icon> -->
-          <!-- <div>
-            {{ showUser }}
-          </div> -->
+          <q-icon
+            name="expand_more"
+            size="sm"
+            :class="{ rotated: menuShowing }"
+            class="rotate-icon"
+          />
           <q-menu
             transition-show="jump-down"
             transition-hide="jump-up"
@@ -266,5 +267,12 @@ const showPId = computed<string>(() => {
     font-size: 14px;
     color: #2b2b2b;
   }
+}
+.rotate-icon {
+  transition: transform 0.3s ease-in-out; /* 添加平滑过渡 */
+}
+
+.rotate-icon.rotated {
+  transform: rotate(180deg); /* 旋转180度 */
 }
 </style>
