@@ -72,7 +72,7 @@ const loginSuccess = (ii: IdentityInfo) => {
 <style lang="scss" scoped>
 .navigator-container {
   width: 100%;
-  height: 63px;
+  height: 80px;
   display: flex;
   background-color: #ffffff !important;
   box-shadow: 0px 0px 10px 10px rgb(36 51 54 / 5%);

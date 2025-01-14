@@ -7,18 +7,39 @@
         class="cursor-pointer"
         @click="onHome"
       />
-      <q-btn
-        v-if="!signedIn"
-        color="primary"
-        class="login-button"
-        @click="onLogin()"
-        :loading="loading"
-        no-caps
+      <q-input
+        outlined
+        dense
+        v-model="search"
+        placeholder="Search markets"
+        class="search-input"
       >
-        Log In
-      </q-btn>
+        <template v-slot:prepend>
+          <q-icon name="search" />
+        </template>
+        <template v-slot:append>
+          <q-icon
+            v-if="search !== ''"
+            name="close"
+            @click="search = ''"
+            class="cursor-pointer"
+          />
+        </template>
+      </q-input>
+      <div v-if="!signedIn">
+        <q-btn
+          color="primary"
+          class="login-button"
+          @click="onLogin()"
+          :loading="loading"
+          no-caps
+        >
+          Log In
+        </q-btn>
+      </div>
+
       <div v-else>
-        <q-btn flat round color="primary">
+        <q-btn flat round color="primary" class="avatar">
           <q-avatar color="primary" text-color="white">
             {{ showAvatar }}
           </q-avatar>
@@ -79,6 +100,12 @@
       </div>
     </q-toolbar>
     <div class="nav-tab">
+      <div class="flex-y-center q-gutter-sm">
+        <span> Live </span>
+
+        <q-badge align="middle" class="breathing-light" rounded />
+      </div>
+
       <q-tabs v-model="tab" narrow-indicator dense align="justify" class="">
         <q-tab :ripple="false" name="all" label="All" />
         <q-tab :ripple="false" name="icp" label="ICP" />
@@ -112,6 +139,7 @@ const loading = ref(false)
 
 const tab = ref("mails")
 const username = ref("")
+const search = ref("")
 
 const principal = computed(() => userStore.principal)
 
@@ -240,7 +268,7 @@ const showPId = computed<string>(() => {
   box-shadow: 0px 0px 10px 10px rgb(36 51 54 / 5%);
   .navbar {
     // width: 1200px;
-    height: 63px;
+    height: 80px;
     margin: auto 10px;
     padding: 0;
     display: flex;
@@ -251,7 +279,15 @@ const showPId = computed<string>(() => {
     }
   }
   .nav-tab {
-    margin-left: 40px;
+    margin-left: 20px;
+    display: flex;
+  }
+  .avatar {
+    padding: 10px;
+    border-radius: 30px;
+  }
+  .search-input {
+    min-width: 500px;
   }
 }
 .avatar-menu {
@@ -274,5 +310,22 @@ const showPId = computed<string>(() => {
 
 .rotate-icon.rotated {
   transform: rotate(180deg); /* 旋转180度 */
+}
+.breathing-light {
+  border-radius: 50%;
+  background-color: red;
+  animation: breathing 2s infinite ease-in-out;
+}
+
+@keyframes breathing {
+  0% {
+    background-color: rgba(255, 0, 0, 0.5);
+  }
+  50% {
+    background-color: rgba(255, 0, 0, 1);
+  }
+  100% {
+    background-color: rgba(255, 0, 0, 0.5);
+  }
 }
 </style>
