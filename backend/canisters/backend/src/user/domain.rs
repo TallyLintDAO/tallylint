@@ -7,29 +7,6 @@ pub struct UserProfile {
   pub name: String,
   pub create_time: u64,
 }
-
-#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
-pub struct UserConfig {
-  pub tax_method: String,
-  pub base_currency: String,
-  pub time_zone: String,
-}
-impl UserConfig {
-  pub fn new(tax_method: String,base_currency:String,time_zone:String) -> UserConfig {
-    UserConfig{
-        tax_method,
-        base_currency,
-        time_zone,
-    }
-  }
-}
-#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
-pub struct UserInfo {
-  pub owner: Principal, // 用户 Principal
-  pub name: String,
-  pub create_time: u64,
-}
-
 impl UserProfile {
   #[allow(dead_code)]
   pub fn new(owner: Principal, name: String, created_at: u64) -> Self {
@@ -40,5 +17,31 @@ impl UserProfile {
     }
   }
 }
+
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct UserConfig {
+  pub tax_method: String,
+  pub base_currency: String,
+  pub time_zone: String,
+  // pub test_field:String
+}
+impl UserConfig {
+  pub fn new(tax_method: String,base_currency:String,time_zone:String) -> UserConfig {
+    UserConfig{
+        tax_method,
+        base_currency,
+        time_zone,
+        // test_field
+    }
+  }
+}
+#[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
+pub struct UserInfo {
+  pub owner: Principal, // 用户 Principal
+  pub name: String,
+  pub create_time: u64,
+}
+
+
 
 

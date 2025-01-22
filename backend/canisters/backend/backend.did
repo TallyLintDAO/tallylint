@@ -1,3 +1,4 @@
+type BackupChunk = record { total : nat32; data : blob; index : nat32 };
 type BallotInfo = record { vote : int32; proposal_id : opt NeuronId };
 type CanisterContext = record {
   id : nat64;
@@ -28,6 +29,18 @@ type HistoryQueryCommand = record {
   to_time : nat64;
   wids : vec nat64;
   sort_method : opt text;
+};
+type HttpHeader = record { value : text; name : text };
+type HttpRequest = record {
+  url : text;
+  method : text;
+  body : blob;
+  headers : vec record { text; text };
+};
+type HttpResponse = record {
+  status : nat;
+  body : blob;
+  headers : vec HttpHeader;
 };
 type KnownNeuronData = record { name : text; description : opt text };
 type MySummary = record {
@@ -72,20 +85,25 @@ type RejectionCode = variant {
 };
 type Result = variant { Ok : bool; Err : text };
 type Result_1 = variant { Ok : nat64; Err : text };
-type Result_10 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
-type Result_11 = variant { Ok : TransactionB; Err : text };
-type Result_12 = variant { Ok : vec TransactionB; Err : text };
+type Result_10 = variant {
+  Ok : vec record { nat64; TransactionB };
+  Err : text;
+};
+type Result_11 = variant { Ok : vec WalletProfile; Err : vec WalletProfile };
+type Result_12 = variant { Ok : TransactionB; Err : text };
+type Result_13 = variant { Ok : vec TransactionB; Err : text };
+type Result_14 = variant { Ok; Err : text };
 type Result_2 = variant { Ok : UserProfile; Err : text };
-type Result_3 = variant {
+type Result_3 = variant { Ok : BackupChunk; Err : text };
+type Result_4 = variant {
   Ok : record { CustomResult1 };
   Err : record { RejectionCode; text };
 };
-type Result_4 = variant { Ok : UserConfig; Err : text };
-type Result_5 = variant { Ok : MySummary; Err : text };
-type Result_6 = variant { Ok : NeuronProfile; Err : text };
-type Result_7 = variant { Ok : WalletProfile; Err : text };
-type Result_8 = variant { Ok : vec NeuronProfile; Err : vec NeuronProfile };
-type Result_9 = variant { Ok : vec record { nat64; TransactionB }; Err : text };
+type Result_5 = variant { Ok : UserConfig; Err : text };
+type Result_6 = variant { Ok : MySummary; Err : text };
+type Result_7 = variant { Ok : NeuronProfile; Err : text };
+type Result_8 = variant { Ok : WalletProfile; Err : text };
+type Result_9 = variant { Ok : vec NeuronProfile; Err : vec NeuronProfile };
 type SyncTransactionCommand = record {
   history : vec TransactionF;
   walletId : nat64;
@@ -158,25 +176,28 @@ service : {
   add_wallet : (WalletAddCommand) -> (Result);
   auto_register_user : () -> (Result_2);
   backup : (nat32, nat32) -> (vec record { text; CanisterContext });
+  backup_data : (nat32) -> (Result_3);
   delete_neuron_wallet : (nat64) -> (Result);
   delete_transaction : (nat64) -> (Result_1);
   delete_transactions_by_wid : (nat64) -> (Result_1);
   delete_wallet : (nat64) -> (Result);
   get_balance : () -> (nat64);
-  get_neuron_info : (nat64) -> (Result_3);
-  get_user_config : () -> (Result_4) query;
+  get_neuron_info : (nat64) -> (Result_4);
+  get_user_config : () -> (Result_5) query;
   greet_test_agent : () -> (text) query;
+  http_request : (HttpRequest) -> (HttpResponse) query;
   list_all_user : () -> (vec UserProfile);
-  my_summary : (nat64, nat64) -> (Result_5);
-  query_a_neuron_wallet : (nat64) -> (Result_6) query;
-  query_a_wallet : (nat64) -> (Result_7) query;
-  query_all_neuron_wallet : () -> (Result_8) query;
-  query_all_transactions : () -> (Result_9) query;
-  query_all_wallets : () -> (Result_10) query;
-  query_one_transaction : (nat64) -> (Result_11) query;
-  query_synced_transactions : (HistoryQueryCommand) -> (Result_12) query;
+  my_summary : (nat64, nat64) -> (Result_6);
+  query_a_neuron_wallet : (nat64) -> (Result_7) query;
+  query_a_wallet : (nat64) -> (Result_8) query;
+  query_all_neuron_wallet : () -> (Result_9) query;
+  query_all_transactions : () -> (Result_10) query;
+  query_all_wallets : () -> (Result_11) query;
+  query_one_transaction : (nat64) -> (Result_12) query;
+  query_synced_transactions : (HistoryQueryCommand) -> (Result_13) query;
   remove_transaction_tag : (nat64) -> (Result);
   restore : (vec record { text; CanisterContext }) -> ();
+  restore_data : (blob) -> (Result_14);
   set_user_config : (UserConfig) -> (Result);
   sync_transaction_record : (vec SyncTransactionCommand) -> (Result);
   update_neuron_wallet : (NeuronUpdateCommand) -> (Result);

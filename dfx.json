@@ -2,17 +2,18 @@
   "dfx": "0.23.0",
   "canisters": {
     "assets": {
-      "dependencies": [],
+      "type": "assets",
+      "source": ["dist/"],
       "frontend": {
         "entrypoint": "dist/index.html"
-      },
-      "source": ["dist/"],
-      "type": "assets"
+      }
     },
     "backend": {
-      "candid": "backend/canisters/backend/backend.did",
+      "type": "custom",
       "package": "backend",
-      "type": "rust"
+      "candid": "backend/canisters/backend/backend.did",
+      "wasm": "./target/wasm32-unknown-unknown/release/backend.wasm",
+      "build": "bash ./predeploy.sh"  
     }
   },
   "networks": {
@@ -24,16 +25,16 @@
       }
     },
     "ic": {
-      "providers": ["https://ic0.app/"],
-      "type": "persistent"
+      "type": "persistent",
+      "providers": ["https://ic0.app/"]
     },
     "ic_test": {
-      "providers": ["https://ic0.app/"],
-      "type": "persistent"
+      "type": "persistent",
+      "providers": ["https://ic0.app/"]
     },
     "web_test": {
-      "providers": ["https://ic0.app/"],
-      "type": "persistent"
+      "type": "persistent",
+      "providers": ["https://ic0.app/"]
     }
   },
   "defaults": {
