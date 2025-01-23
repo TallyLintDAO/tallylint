@@ -1,8 +1,9 @@
 use crate::common::context::CanisterContext;
-use ic_cdk::{update,query};
+use ic_cdk::update;
 use std::cell::RefCell;
 use serde::{Deserialize, Serialize};
 use crate::http::http::HttpRequest;
+use crate::common::guard::admin_guard;
 thread_local! {
     pub static STATE: RefCell<CanisterContext> = RefCell::new(CanisterContext::new());
 }
@@ -17,7 +18,7 @@ pub struct BackupChunk {
     pub total: u32,       // 总块数
     pub data: Vec<u8>,    // 当前块的数据
 }
-#[update]
+#[update(guard = "admin_guard")]
 fn backup_data(index: u32) -> Result<BackupChunk, String> {
     const CHUNK_SIZE: usize = 2 * 1024 * 1024; // 每个块的大小为 2 MB
 
@@ -43,7 +44,7 @@ fn backup_data(index: u32) -> Result<BackupChunk, String> {
     })
 }
 
-#[update]
+#[update(guard = "admin_guard")]
 fn restore_data(backup: Vec<u8>) -> Result<(), String> {
     let deserialized: CanisterContext = serde_json::from_slice(&backup).map_err(|e| e.to_string())?;
     STATE.with(|state| {
