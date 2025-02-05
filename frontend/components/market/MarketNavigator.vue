@@ -38,7 +38,9 @@
         </q-btn>
       </div>
 
-      <div v-else>
+      <div v-else class="flex-y-center q-gutter-x-lg">
+        <q-btn color="primary">Predict</q-btn>
+        <q-separator vertical inset />
         <q-btn flat round color="primary" class="avatar">
           <q-avatar color="primary" text-color="white">
             {{ showAvatar }}
@@ -264,6 +266,7 @@ const showPId = computed<string>(() => {
   return showUsername("", principal.value)
 })
 </script>
+
 <style lang="scss">
 .navigator-container {
   width: 100%;

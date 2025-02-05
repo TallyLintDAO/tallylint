@@ -7,8 +7,8 @@
 </template>
 
 <script lang="ts" setup>
-import marketBanner from "./modules/banner.vue"
-import marketNav from "./modules/marketNavigator.vue"
+import marketBanner from "./modules/Banner.vue"
+import marketNav from "@/components/market/MarketNavigator.vue"
 </script>
 
 <style lang="scss">

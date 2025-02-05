@@ -1,5 +1,5 @@
 <template>
-  <div class="market-banner container q-mt-lg">
+  <div class="market-banner container-xl q-mt-lg">
     <div class="row q-col-gutter-md">
       <div
         class="col-6 col-md-4 col-lg-3"
