@@ -39,7 +39,10 @@
       </div>
 
       <div v-else class="flex-y-center q-gutter-x-lg">
-        <q-btn color="primary">Predict</q-btn>
+        <router-link :to="'/market/post'">
+          <q-btn color="primary">Predict</q-btn>
+        </router-link>
+
         <q-separator vertical inset />
         <q-btn flat round color="primary" class="avatar">
           <q-avatar color="primary" text-color="white">
