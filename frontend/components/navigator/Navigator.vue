@@ -9,9 +9,9 @@
       />
 
       <div class="flex-y-center">
-        <router-link :to="'/market'">
+        <!-- <router-link :to="'/market'">
           <q-btn flat rounded label="Market" class="q-mr-md" no-caps />
-        </router-link>
+        </router-link> -->
 
         <q-separator dark vertical />
         <q-btn

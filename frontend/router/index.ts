@@ -20,14 +20,14 @@ const routes: Array<RouteRecordRaw> = [
     name: "Home",
     component: Home,
   },
-  {
-    path: "/market",
-    component: MarketLayout, // 只是一个布局容器
-    children: [
-      { path: "", name: "Market", component: Market }, // /market
-      { path: "post", name: "Post", component: PostPredict }, // /market/post
-    ],
-  },
+  // {
+  //   path: "/market",
+  //   component: MarketLayout, // 只是一个布局容器
+  //   children: [
+  //     { path: "", name: "Market", component: Market }, // /market
+  //     { path: "post", name: "Post", component: PostPredict }, // /market/post
+  //   ],
+  // },
   {
     path: "/app",
     // name: 'App',
